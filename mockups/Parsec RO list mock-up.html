@@ -1,0 +1,899 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parsec RO list mock-up</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
+<style>:root, [data-theme="light"] {
+  --canvas: #F2F0EA;
+  --panel: #FBFAF7;
+  --raised: #FFFFFF;
+  --fill: #F0EDE6;
+  --selected: #E8E4DA;
+  --hairline: #E6E2D8;
+  --border: #D6D0C3;
+  --border-strong: #8F897C;
+  --ink: #1D1C1A;
+  --ink-2: #57534B;
+  --ink-3: #67625A;
+  --ink-4: #A8A398;
+  --accent: #86643A;
+  --accent-text: #7A5A32;
+  --accent-tint: #F4EDE1;
+  --accent-line: #D9C5A3;
+  --on-accent: #FFFFFF;
+  --primary: #1D1C1A;
+  --on-primary: #FBFAF7;
+  --status-hold: #857F75;
+  --status-working: #3A8C60;
+  --status-waiting: #AD7210;
+  --status-customer: #2F8795;
+  --status-support: #6C69C8;
+  --status-problem: #C0503F;
+  --good: #2C7350;
+  --good-tint: #E7F1EA;
+  --warn: #8C5B0B;
+  --warn-tint: #F8EEDC;
+  --bad: #A8402E;
+  --bad-tint: #F8E9E5;
+  --scrim: rgba(29,28,26,.28);
+  --shadow-panel: 0 0 0 1px rgba(29,28,26,.06), 0 1px 3px rgba(29,28,26,.04);
+  --shadow-raised: 0 0 0 1px rgba(29,28,26,.07), 0 2px 4px rgba(29,28,26,.04), 0 12px 32px -8px rgba(29,28,26,.18);
+  --shadow-focus: 0 0 0 2px #FBFAF7, 0 0 0 4px #86643A;
+}
+[data-theme="dark"] {
+  --canvas: #0E0E0D;
+  --panel: #151514;
+  --raised: #1D1D1B;
+  --fill: #222220;
+  --selected: #2A2A27;
+  --hairline: #262624;
+  --border: #363532;
+  --border-strong: #6E6A62;
+  --ink: #EDEBE6;
+  --ink-2: #B0ACA3;
+  --ink-3: #9A968D;
+  --ink-4: #5E5B55;
+  --accent: #D1B184;
+  --accent-text: #D6B88D;
+  --accent-tint: #2A241B;
+  --accent-line: #6B5A40;
+  --on-accent: #1A1610;
+  --primary: #EDEBE6;
+  --on-primary: #151514;
+  --status-hold: #8D897F;
+  --status-working: #5BBE8B;
+  --status-waiting: #E2A84C;
+  --status-customer: #58B3C0;
+  --status-support: #9E9DF0;
+  --status-problem: #EC7F6C;
+  --good: #63C291;
+  --good-tint: #16261E;
+  --warn: #E0A64A;
+  --warn-tint: #2A2114;
+  --bad: #EE8270;
+  --bad-tint: #2D1916;
+  --scrim: rgba(0,0,0,.6);
+  --shadow-panel: 0 0 0 1px rgba(255,255,255,.06);
+  --shadow-raised: 0 0 0 1px rgba(255,255,255,.07), 0 16px 40px -8px rgba(0,0,0,.7);
+  --shadow-focus: 0 0 0 2px #151514, 0 0 0 4px #D1B184;
+}
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 999px;
+  --control-sm: 28px;
+  --control-md: 32px;
+  --control-lg: 40px;
+  --row: 40px;
+  --header: 48px;
+  --sidebar: 236px;
+  --rail: 300px;
+  --measure: 760px;
+  --font-sans: "Geist", "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-serif: "Newsreader", "Iowan Old Style", Charter, Georgia, serif;
+  --font-mono: "Geist Mono", "Cascadia Mono", Consolas, ui-monospace, monospace;
+}
+.display-lg { font-family: var(--font-serif); font-size: 32px; line-height: 38px; font-weight: 500; letter-spacing: -0.015em; }
+.display { font-family: var(--font-serif); font-size: 24px; line-height: 30px; font-weight: 500; letter-spacing: -0.01em; }
+.title { font-family: var(--font-sans); font-size: 17px; line-height: 24px; font-weight: 600; letter-spacing: -0.01em; }
+.heading { font-family: var(--font-sans); font-size: 15px; line-height: 22px; font-weight: 600; letter-spacing: -0.005em; }
+.body { font-family: var(--font-sans); font-size: 14px; line-height: 21px; font-weight: 400; }
+.body-medium { font-family: var(--font-sans); font-size: 14px; line-height: 21px; font-weight: 500; }
+.small { font-family: var(--font-sans); font-size: 13px; line-height: 19px; font-weight: 400; }
+.label { font-family: var(--font-sans); font-size: 12px; line-height: 16px; font-weight: 500; }
+.micro { font-family: var(--font-sans); font-size: 11px; line-height: 14px; font-weight: 600; letter-spacing: 0.02em; }
+.timer { font-family: var(--font-sans); font-size: 30px; line-height: 36px; font-weight: 500; letter-spacing: -0.02em; }
+.stat { font-family: var(--font-sans); font-size: 18px; line-height: 24px; font-weight: 500; letter-spacing: -0.01em; }
+.id { font-family: var(--font-mono); font-size: 13px; line-height: 18px; font-weight: 500; }
+.id-sm { font-family: var(--font-mono); font-size: 11.5px; line-height: 16px; font-weight: 500; letter-spacing: 0.04em; }
+
+/* Parsec — component styles. Every value comes from tokens.json (var(--…)). Prefix: px- */
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; font-family: var(--font-sans); font-size: 14px; line-height: 21px; background: var(--panel); color: var(--ink); -webkit-font-smoothing: antialiased; }
+.px-num { font-variant-numeric: tabular-nums; }
+.px-id { font-family: var(--font-mono); font-size: 13px; font-weight: 500; letter-spacing: 0; }
+.px-muted { color: var(--ink-2); } .px-faint { color: var(--ink-3); }
+.px-demo { padding: var(--space-6); display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; }
+.px-demo.col { flex-direction: column; align-items: flex-start; }
+.px-ico { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+:where(.px-btn, .px-nav a, .px-row, .px-tab, .px-menu__item, .px-stage__seg, .px-hit, .px-total, .px-mrow, .px-mgrp):focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+
+/* ---------- Button ---------- */
+.px-btn { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); height: var(--control-md); padding: 0 var(--space-3); border-radius: var(--radius-md); font: 500 13.5px/1 var(--font-sans); white-space: nowrap; cursor: pointer; background: var(--raised); color: var(--ink); box-shadow: inset 0 0 0 1px var(--border); transition: background-color .15s ease-out, box-shadow .15s ease-out, transform .1s ease-out; }
+.px-btn:hover { background: var(--fill); }
+.px-btn:active { transform: scale(.98); }
+.px-btn--primary { background: var(--primary); color: var(--on-primary); box-shadow: none; }
+.px-btn--primary:hover { background: var(--primary); box-shadow: inset 0 0 0 999px rgba(128,128,128,.14); }
+.px-btn--accent { background: var(--accent); color: var(--on-accent); box-shadow: none; }
+.px-btn--accent:hover { background: var(--accent); box-shadow: inset 0 0 0 999px rgba(255,255,255,.1); }
+.px-btn--ghost { background: transparent; color: var(--ink-2); box-shadow: none; }
+.px-btn--ghost:hover { background: var(--fill); color: var(--ink); }
+.px-btn--danger { background: transparent; color: var(--bad); box-shadow: none; }
+.px-btn--danger:hover { background: var(--bad-tint); }
+.px-btn--sm { height: var(--control-sm); padding: 0 10px; font-size: 13px; border-radius: 7px; }
+.px-btn--lg { height: var(--control-lg); padding: 0 var(--space-4); font-size: 14px; }
+.px-btn--icon { width: var(--control-md); padding: 0; }
+.px-btn--icon.px-btn--sm { width: var(--control-sm); }
+.px-btn--round { border-radius: var(--radius-full); }
+.px-btn[disabled], .px-btn.is-disabled { color: var(--ink-4); background: var(--fill); box-shadow: none; cursor: default; transform: none; }
+.px-kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 4px; border-radius: var(--radius-xs); font: 600 11px/1 var(--font-sans); letter-spacing: .02em; color: var(--ink-3); background: var(--fill); box-shadow: inset 0 0 0 1px var(--hairline); }
+.px-btn--primary .px-kbd, .px-btn--accent .px-kbd { background: rgba(128,128,128,.22); color: inherit; box-shadow: none; opacity: .8; }
+
+/* ---------- Status icon + label ---------- */
+.px-si { width: 14px; height: 14px; flex: none; display: inline-block; vertical-align: -2px; color: var(--status-hold); }
+.px-si[data-s="working"], .px-si[data-s="roadtest"], .px-si[data-s="released"] { color: var(--status-working); }
+.px-si[data-s="parts"], .px-si[data-s="foreman"] { color: var(--status-waiting); }
+.px-si[data-s="customer"] { color: var(--status-customer); }
+.px-si[data-s="support"] { color: var(--status-support); }
+.px-si[data-s="problem"] { color: var(--status-problem); }
+.px-status { display: inline-flex; align-items: center; gap: var(--space-2); font-size: 13.5px; font-weight: 500; color: var(--ink); white-space: nowrap; }
+.px-status__sub { color: var(--ink-3); font-weight: 400; }
+.px-status--button { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: var(--space-2); height: var(--control-sm); padding: 0 10px 0 9px; border-radius: var(--radius-md); font: 500 13.5px/1 var(--font-sans); color: var(--ink); cursor: pointer; box-shadow: inset 0 0 0 1px var(--border); background: var(--raised); transition: background-color .15s ease-out; }
+.px-status--button:hover { background: var(--fill); }
+.px-status--button .px-chev { width: 12px; height: 12px; color: var(--ink-3); margin-left: 2px; }
+.px-live .px-si { animation: px-breathe 2.4s ease-in-out infinite; }
+@keyframes px-breathe { 50% { opacity: .55; } }
+
+/* ---------- Op-type tag ---------- */
+.px-tag { display: inline-flex; align-items: center; gap: 5px; height: 20px; padding: 0 7px 0 6px; border-radius: var(--radius-sm); background: var(--fill); color: var(--ink-2); font: 500 11.5px/1 var(--font-mono); letter-spacing: .04em; white-space: nowrap; }
+.px-tag::before { content: ""; width: 6px; height: 6px; border-radius: 2px; background: var(--status-hold); }
+.px-tag[data-t="DIAG"]::before { background: var(--status-support); }
+.px-tag[data-t="OP"]::before { background: var(--status-customer); }
+.px-tag[data-t="PM"]::before { background: var(--status-working); }
+.px-tag[data-t="WARR"]::before { background: var(--accent); }
+.px-tag[data-t="COMEBACK"]::before { background: var(--status-problem); }
+.px-tag[data-t="SUBLET"]::before { background: var(--status-waiting); }
+
+/* ---------- Avatar ---------- */
+.px-av { width: 20px; height: 20px; border-radius: var(--radius-full); display: inline-grid; place-items: center; flex: none; background: var(--selected); color: var(--ink-2); font: 600 9.5px/1 var(--font-sans); letter-spacing: .02em; }
+.px-av--md { width: 24px; height: 24px; font-size: 10.5px; }
+.px-av--me { background: var(--accent-tint); color: var(--accent-text); box-shadow: inset 0 0 0 1px var(--accent-line); }
+
+/* ---------- Menu / popover ---------- */
+.px-pop { background: var(--raised); border-radius: var(--radius-lg); box-shadow: var(--shadow-raised); padding: 6px; min-width: 220px; animation: px-up .18s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes px-up { from { opacity: 0; transform: translateY(6px); } }
+.px-menu__item { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 10px; width: 100%; height: 32px; padding: 0 10px; border-radius: var(--radius-md); font-size: 13.5px; color: var(--ink); cursor: pointer; }
+.px-menu__item .px-ico { color: var(--ink-3); }
+.px-menu__item:hover, .px-menu__item.is-hover { background: var(--fill); }
+.px-menu__item.is-on { background: var(--selected); }
+.px-menu__item .px-kbd, .px-menu__item .px-menu__meta { margin-left: auto; }
+.px-menu__meta { font-size: 12px; color: var(--ink-3); }
+.px-menu__item--danger, .px-menu__item--danger .px-ico { color: var(--bad); }
+.px-menu__item--danger:hover { background: var(--bad-tint); }
+.px-menu__sep { height: 1px; background: var(--hairline); margin: 6px 4px; }
+.px-menu__group { padding: 8px 10px 4px; font-size: 12px; font-weight: 500; color: var(--ink-3); }
+.px-menu__search { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 10px; margin: -6px -6px 6px; border-bottom: 1px solid var(--hairline); font-size: 13.5px; color: var(--ink-3); }
+.px-menu__search .px-kbd { margin-left: auto; }
+
+/* status menu: second level */
+.px-smenu { display: flex; align-items: flex-start; gap: 6px; }
+.px-smenu .px-pop { width: 260px; }
+.px-smenu__desc { font-size: 12px; color: var(--ink-3); margin-left: auto; padding-left: 12px; white-space: nowrap; }
+.px-smenu__more { width: 12px; height: 12px; color: var(--ink-3); margin-left: 4px; }
+.px-smenu .px-sub { width: 200px; min-width: 0; margin-top: 74px; }
+
+/* ---------- Tabs ---------- */
+.px-tabs { position: relative; display: flex; gap: var(--space-6); box-shadow: inset 0 -1px 0 var(--hairline); }
+.px-tabs__ink { position: absolute; bottom: 0; height: 2px; border-radius: 1px; background: var(--ink); transition: left .22s cubic-bezier(.2,.8,.2,1), width .22s cubic-bezier(.2,.8,.2,1); }
+.px-tabs.has-ink .px-tab.is-on { box-shadow: none; }
+.px-tab { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 6px; height: 36px; font-size: 14px; font-weight: 500; color: var(--ink-3); cursor: pointer; transition: color .15s ease-out; }
+.px-tab:hover { color: var(--ink); }
+.px-tab.is-on { color: var(--ink); box-shadow: inset 0 -2px 0 var(--ink); }
+.px-tab__n { font-size: 12px; font-weight: 500; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+
+/* ---------- Segmented ---------- */
+.px-seg { display: inline-flex; padding: 2px; border-radius: var(--radius-md); background: var(--fill); }
+.px-seg button { all: unset; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 500; color: var(--ink-2); cursor: pointer; text-align: center; transition: background-color .15s ease-out, color .15s ease-out, box-shadow .15s ease-out; }
+.px-seg button:hover { color: var(--ink); }
+.px-seg--fill { display: flex; }
+.px-seg--fill button { flex: 1; padding: 5px 6px; }
+.px-seg button.is-on { background: var(--raised); color: var(--ink); box-shadow: 0 0 0 1px var(--hairline), 0 1px 2px rgba(0,0,0,.06); }
+
+/* ---------- Fields ---------- */
+.px-field { display: flex; flex-direction: column; gap: 6px; }
+.px-field > label { font-size: 12px; font-weight: 500; color: var(--ink-3); }
+.px-input { box-sizing: border-box; height: var(--control-md); width: 240px; padding: 0 10px; border: 0; border-radius: var(--radius-md); background: var(--raised); color: var(--ink); font: 400 14px/1 var(--font-sans); box-shadow: inset 0 0 0 1px var(--border); outline: none; transition: box-shadow .15s ease-out; }
+.px-input::placeholder { color: var(--ink-3); }
+.px-input:hover { box-shadow: inset 0 0 0 1px var(--border-strong); }
+.px-input:focus, .px-input.is-focus { box-shadow: inset 0 0 0 1px var(--accent), 0 0 0 3px var(--accent-tint); }
+textarea.px-input { height: auto; min-height: 72px; padding: 9px 10px; line-height: 21px; resize: vertical; }
+.px-check { display: inline-flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--ink); cursor: pointer; }
+.px-check i { width: 16px; height: 16px; border-radius: 5px; box-shadow: inset 0 0 0 1.5px var(--border-strong); display: grid; place-items: center; flex: none; }
+.px-check i { transition: background-color .15s ease-out, box-shadow .15s ease-out; }
+.px-check.is-on i { background: var(--primary); box-shadow: none; }
+.px-check.is-on i::after { animation: px-pop .22s cubic-bezier(.2,.8,.2,1) both; }
+.px-check.is-on i::after { content: ""; width: 8px; height: 4px; border: solid var(--on-primary); border-width: 0 0 1.75px 1.75px; transform: translateY(-1px) rotate(-45deg); }
+.px-check span { transition: color .2s ease-out; }
+.px-check.is-on span { color: var(--ink-3); text-decoration: line-through; text-decoration-color: var(--ink-4); }
+.px-toggle { all: unset; box-sizing: border-box; cursor: pointer; width: 30px; height: 18px; border-radius: 999px; box-shadow: inset 0 0 0 1.5px var(--border-strong); position: relative; flex: none; display: inline-block; }
+.px-toggle::after { content: ""; position: absolute; left: 3px; top: 3px; width: 12px; height: 12px; border-radius: 50%; background: var(--border-strong); transition: transform .2s cubic-bezier(.2,.8,.2,1), background-color .2s; }
+.px-toggle { transition: background-color .2s ease-out, box-shadow .2s ease-out; }
+.px-toggle.is-on { background: var(--accent); box-shadow: none; }
+.px-toggle.is-on::after { transform: translateX(12px); background: var(--on-accent); }
+
+/* ---------- Toast ---------- */
+.px-toast { display: inline-flex; align-items: center; gap: var(--space-3); height: 40px; padding: 0 8px 0 16px; border-radius: var(--radius-full); background: var(--primary); color: var(--on-primary); font-size: 13.5px; box-shadow: var(--shadow-raised); }
+.px-toast .px-si { color: inherit; opacity: .7; }
+.px-toast__act { all: unset; cursor: pointer; font-weight: 600; padding: 0 10px; height: 28px; display: inline-flex; align-items: center; border-radius: var(--radius-full); }
+.px-toast__act:hover { background: rgba(128,128,128,.2); }
+
+/* ---------- Stage track ---------- */
+.px-stage { display: flex; flex-direction: column; gap: 10px; }
+.px-stage__top { display: flex; align-items: baseline; gap: var(--space-2); font-size: 13px; color: var(--ink-2); }
+.px-stage__top b { font-weight: 600; color: var(--ink); }
+.px-stage__top .px-stage__eta { margin-left: auto; color: var(--ink-3); }
+.px-stage__track { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.px-stage__seg { all: unset; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; cursor: pointer; padding: 4px 0 0; border-radius: 6px; }
+.px-stage__seg i { display: block; height: 4px; border-radius: 2px; background: var(--hairline); transition: background-color .35s ease-out, box-shadow .35s ease-out; }
+.px-stage__seg span { font-size: 12px; font-weight: 500; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.px-stage__seg.is-done i { background: var(--ink-2); }
+.px-stage__seg.is-done span { color: var(--ink-2); }
+.px-stage__seg.is-now i { background: var(--accent); }
+.px-stage__seg.is-now span { color: var(--accent-text); font-weight: 600; }
+.px-stage__seg.is-wait i { background: repeating-linear-gradient(135deg, var(--status-waiting) 0 3px, transparent 3px 6px); box-shadow: inset 0 0 0 1px var(--status-waiting); }
+.px-stage__seg.is-skip i { background: transparent; box-shadow: inset 0 0 0 1px var(--hairline); }
+.px-stage__seg.is-skip span { color: var(--ink-4); }
+.px-stage__seg:hover span { color: var(--ink); }
+.px-stagepop { width: 248px; padding: 12px 14px 14px; }
+.px-stagepop h4 { margin: 0 0 2px; font-size: 13.5px; font-weight: 600; }
+.px-stagepop p { margin: 0 0 12px; font-size: 12px; color: var(--ink-3); }
+.px-stagepop .px-check { display: flex; padding: 5px 0; }
+
+/* ---------- Next step ---------- */
+.px-next { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px 14px; border-radius: var(--radius-lg); background: var(--accent-tint); box-shadow: inset 0 0 0 1px var(--accent-line); }
+.px-next__head { display: flex; align-items: baseline; gap: 8px; }
+.px-next__k { font-size: 12px; font-weight: 600; color: var(--accent-text); white-space: nowrap; }
+.px-next__for { font-size: 12px; color: var(--ink-2); margin-left: auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.px-next__body { display: flex; flex-direction: column; gap: 10px; }
+.px-next__body.is-swap { animation: px-swap .28s cubic-bezier(.2,.8,.2,1) both; }
+.px-next__t { margin: 0; font-size: 13.5px; line-height: 20px; font-weight: 500; color: var(--ink); }
+.px-next__acts { display: flex; gap: var(--space-2); }
+.px-next__acts .px-btn { flex: 1 1 auto; min-width: 0; padding: 0 8px; font-size: 12.5px; }
+.px-next.is-clear { background: transparent; box-shadow: inset 0 0 0 1px var(--hairline); }
+.px-next.is-clear .px-next__k { color: var(--ink-3); }
+
+/* ---------- Time card ---------- */
+.px-time { display: flex; flex-direction: column; gap: var(--space-4); padding: var(--space-5); border-radius: var(--radius-lg); background: var(--raised); box-shadow: 0 0 0 1px var(--hairline); }
+.px-time__top { display: flex; align-items: center; gap: var(--space-4); }
+.px-time__clock { font: 500 30px/36px var(--font-sans); letter-spacing: -.02em; font-variant-numeric: tabular-nums; color: var(--ink); }
+.px-time.is-live .px-time__clock { color: var(--ink); }
+.px-time__cap { font-size: 12.5px; color: var(--ink-3); display: flex; align-items: center; gap: 6px; }
+.px-time.is-live .px-time__cap::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: px-breathe 2.4s ease-in-out infinite; }
+.px-time__go { margin-left: auto; width: var(--control-lg); height: var(--control-lg); padding: 0; border-radius: var(--radius-full); }
+.px-time__go .px-ico { width: 16px; height: 16px; fill: currentColor; stroke: none; }
+.px-time.is-live .px-time__go { background: var(--accent); color: var(--on-accent); }
+.px-bar { position: relative; height: 6px; border-radius: 3px; background: var(--fill); }
+.px-bar__fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: var(--ink-2); }
+.px-bar__over { position: absolute; top: 0; bottom: 0; border-radius: 0 3px 3px 0; background: var(--status-problem); }
+.px-bar__q { position: absolute; top: -4px; bottom: -4px; width: 2px; border-radius: 1px; background: var(--ink); }
+.px-time__stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); }
+.px-time__stats div { display: flex; flex-direction: column; gap: 2px; }
+.px-time__stats > div > span { font-size: 12px; font-weight: 500; color: var(--ink-3); }
+.px-time__stats b { font: 500 18px/24px var(--font-sans); letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.px-time__stats small { font-size: 12px; color: var(--ink-3); font-weight: 400; margin-left: 3px; }
+.px-good { color: var(--good); } .px-warn { color: var(--warn); } .px-bad { color: var(--bad); }
+
+/* ---------- Operation list ---------- */
+.px-ops { display: flex; flex-direction: column; }
+.px-row { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: var(--space-3); height: var(--row); padding: 0 10px; margin: 0 -10px; border-radius: var(--radius-md); cursor: pointer; transition: background-color .15s ease-out; }
+.px-row:hover { background: var(--fill); }
+.px-row.is-on { background: var(--selected); }
+.px-row__n { width: 14px; font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; text-align: right; }
+.px-row__t { flex: 1; min-width: 0; font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.px-row__m { font-size: 12.5px; color: var(--ink-3); white-space: nowrap; }
+.px-row__time { font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; width: 92px; text-align: right; }
+.px-row__time em { font-style: normal; color: var(--ink-3); }
+.px-mini { width: 40px; height: 4px; border-radius: 2px; background: var(--hairline); position: relative; overflow: hidden; flex: none; }
+.px-mini i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--ink-2); border-radius: 2px; }
+.px-mini i.over { background: var(--status-problem); }
+.px-op { display: flex; flex-direction: column; gap: var(--space-5); padding: var(--space-4) 0 var(--space-6) 26px; }
+.px-op__note { font-size: 14px; color: var(--ink-2); }
+
+/* entries & parts tables */
+.px-list { display: flex; flex-direction: column; }
+.px-li { display: grid; align-items: center; gap: var(--space-4); min-height: 40px; padding: 8px 0; box-shadow: inset 0 -1px 0 var(--hairline); font-size: 13.5px; }
+.px-li:last-child { box-shadow: none; }
+.px-li--time { grid-template-columns: 96px 1fr 120px 64px 24px; }
+.px-li--part { grid-template-columns: 1fr 120px 32px 150px; }
+.px-li small { color: var(--ink-3); font-size: 12.5px; }
+.px-li .r { text-align: right; font-variant-numeric: tabular-nums; }
+.px-add { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; height: 32px; font-size: 13px; color: var(--ink-3); }
+.px-add:hover { color: var(--ink); }
+
+/* ---------- Properties rail ---------- */
+.px-props { display: flex; flex-direction: column; gap: 4px; margin-top: var(--space-5); }
+.px-pg { display: flex; flex-direction: column; }
+.px-pg__h { display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 8px 0 4px; margin: 0 -8px 0 -4px; border-radius: var(--radius-md); font-size: 12px; font-weight: 500; color: var(--ink-3); cursor: pointer; user-select: none; transition: background-color .15s ease-out, color .15s ease-out; }
+.px-pg__h:hover { background: var(--fill); color: var(--ink-2); }
+.px-pg__chev { width: 12px; height: 12px; transition: transform .2s cubic-bezier(.2,.8,.2,1); transform: rotate(-90deg); }
+.px-pg.is-open .px-pg__chev { transform: none; }
+.px-pg__t { color: inherit; }
+.px-pg__sum { margin-left: auto; font-size: 12px; font-weight: 400; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; transition: opacity .18s ease-out; }
+.px-pg.is-open .px-pg__sum { opacity: 0; pointer-events: none; width: 0; }
+.px-pg .px-pg__act { margin-left: auto; font-size: 12px; opacity: 0; transition: opacity .18s ease-out; pointer-events: none; }
+.px-pg.is-open .px-pg__act { opacity: 1; pointer-events: auto; }
+.px-pg__b { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .24s cubic-bezier(.2,.8,.2,1); }
+.px-pg.is-open .px-pg__b { grid-template-rows: 1fr; }
+.px-pg__in { min-height: 0; overflow: hidden; padding-bottom: 0; transition: padding-bottom .24s; }
+.px-pg.is-open .px-pg__in { padding-bottom: 8px; }
+.px-prop { position: relative; display: grid; grid-template-columns: 92px 1fr; align-items: center; gap: var(--space-3); min-height: 30px; padding: 0 8px; margin: 0 -8px; border-radius: var(--radius-md); font-size: 13px; transition: background-color .15s ease-out; }
+.px-prop:hover { background: var(--fill); }
+.px-prop > span { color: var(--ink-3); }
+.px-prop > b { font-weight: 500; color: var(--ink); display: flex; align-items: center; gap: 8px; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.px-prop > b.px-empty { color: var(--ink-3); font-weight: 400; }
+.px-copy { all: unset; position: absolute; right: 4px; top: 50%; translate: 0 -50%; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 6px; color: var(--ink-3); cursor: pointer; opacity: 0; transition: opacity .15s ease-out, background-color .15s; }
+.px-copy:hover { background: var(--selected); color: var(--ink); }
+.px-prop:hover .px-copy, .px-copy.is-done { opacity: 1; }
+.px-copy .px-ico { width: 13px; height: 13px; grid-area: 1 / 1; transition: opacity .15s, transform .2s cubic-bezier(.2,.8,.2,1); }
+.px-copy .px-ico + .px-ico { opacity: 0; transform: scale(.6); color: var(--good); }
+.px-copy.is-done .px-ico:first-child { opacity: 0; transform: scale(.6); }
+.px-copy.is-done .px-ico + .px-ico { opacity: 1; transform: none; }
+.px-link { all: unset; cursor: pointer; color: var(--accent-text); font-weight: 500; font-size: 13px; }
+.px-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---------- Activity ---------- */
+.px-feed { display: flex; flex-direction: column; gap: 2px; }
+.px-ev { display: grid; grid-template-columns: 20px 1fr auto; gap: var(--space-3); align-items: start; padding: 7px 0; font-size: 13px; color: var(--ink-2); }
+.px-ev b { color: var(--ink); font-weight: 500; }
+.px-ev time { color: var(--ink-3); font-size: 12px; white-space: nowrap; padding-top: 1px; }
+.px-ev__dot { width: 20px; height: 20px; display: grid; place-items: center; color: var(--ink-3); }
+.px-ev__dot .px-ico { width: 14px; height: 14px; }
+.px-note { grid-column: 2 / 4; margin-top: 6px; padding: 10px 12px; border-radius: var(--radius-lg); background: var(--raised); box-shadow: 0 0 0 1px var(--hairline); color: var(--ink); font-size: 13.5px; line-height: 21px; }
+.px-composer { display: flex; align-items: center; gap: var(--space-3); margin-top: var(--space-3); padding: 0 6px 0 12px; height: 40px; border-radius: var(--radius-lg); background: var(--raised); box-shadow: inset 0 0 0 1px var(--border); color: var(--ink-3); font-size: 13.5px; }
+.px-composer .px-btn { margin-left: auto; }
+
+/* ---------- Sidebar ---------- */
+.px-side { width: var(--sidebar); box-sizing: border-box; display: flex; flex-direction: column; gap: var(--space-4); padding: 12px 10px 10px; background: var(--canvas); height: 100%; }
+.px-brand { display: flex; align-items: center; gap: 9px; height: 32px; padding: 0 8px; font: 600 15px/1 var(--font-sans); letter-spacing: -.01em; color: var(--ink); }
+.px-brand svg { width: 20px; height: 20px; }
+.px-brand svg circle { fill: var(--ink); } .px-brand svg .o { fill: var(--ink-3); } .px-brand svg .c { fill: #22c55e; }
+.px-brand .px-btn { margin-left: auto; }
+.px-search { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 8px 0 10px; border-radius: var(--radius-md); background: var(--panel); box-shadow: inset 0 0 0 1px var(--hairline); font-size: 13px; color: var(--ink-3); cursor: pointer; }
+.px-search:hover { box-shadow: inset 0 0 0 1px var(--border); }
+.px-search .px-kbd { margin-left: auto; background: var(--fill); }
+.px-clockin { display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 10px; border-radius: var(--radius-md); background: var(--panel); box-shadow: inset 0 0 0 1px var(--hairline); font-size: 12.5px; color: var(--ink-2); }
+.px-clockin b { display: block; font: 500 14px/18px var(--font-sans); color: var(--ink); font-variant-numeric: tabular-nums; }
+.px-clockin .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--status-working); flex: none; box-shadow: 0 0 0 3px var(--good-tint); }
+.px-clockin .px-btn { margin-left: auto; }
+.px-clockin { flex-wrap: wrap; }
+.px-clockin__job { display: grid; grid-template-columns: 8px minmax(0, 1fr) auto auto; align-items: center; column-gap: 8px; row-gap: 1px; width: 100%; margin-top: 2px; padding-top: 8px; box-shadow: inset 0 1px 0 var(--hairline); cursor: pointer; animation: px-unfold .22s cubic-bezier(.2,.8,.2,1) both; }
+.px-clockin__job[hidden] { display: none; }
+.px-clockin__live { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: none; animation: px-breathe 2.4s ease-in-out infinite; }
+.px-clockin__job small { font-size: 11.5px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.px-clockin__job b { grid-column: 2 / -1; font: 500 12.5px/17px var(--font-sans); color: var(--ink); white-space: normal; }
+.px-clockin__v { font: 600 13px/1 var(--font-sans); color: var(--ink); font-variant-numeric: tabular-nums; }
+.px-clockin__job .px-btn { margin-left: 0; width: 26px; height: 26px; }
+.px-clockin__job .px-btn .px-ico { width: 12px; height: 12px; }
+
+/* ---------- Day strip (Today on the phone, Time log on the desktop) ---------- */
+.px-day { position: relative; height: 30px; border-radius: 8px; background: var(--fill); }
+.px-day i { position: absolute; top: 5px; bottom: 5px; border-radius: 4px; background: var(--ink-2); min-width: 3px; }
+.px-day i.is-live { background: var(--accent); }
+.px-day .px-day__in { position: absolute; top: 0; bottom: 0; border-radius: 8px; background: var(--selected); }
+.px-day b { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; border-radius: 1px; background: var(--ink); }
+.px-day__axis { position: relative; height: 16px; margin-top: 6px; font-size: 11px; color: var(--ink-3); }
+.px-day__axis span { position: absolute; transform: translateX(-2px); white-space: nowrap; }
+.px-week { display: grid; grid-template-columns: 92px 1fr 64px 64px; align-items: center; gap: 6px 16px; }
+.px-week__d { font-size: 13px; color: var(--ink-2); }
+.px-week__d b { display: block; font-weight: 500; color: var(--ink); }
+.px-week .px-day { height: 22px; border-radius: 6px; }
+.px-week .px-day i { top: 4px; bottom: 4px; border-radius: 3px; }
+.px-week__n { font: 500 14px/1 var(--font-sans); font-variant-numeric: tabular-nums; text-align: right; }
+.px-week__n small { display: block; margin-top: 3px; font-size: 11.5px; font-weight: 400; color: var(--ink-3); }
+.px-week__h { font-size: 12px; font-weight: 500; color: var(--ink-3); }
+.px-nav { display: flex; flex-direction: column; gap: 1px; }
+.px-nav__h { padding: 10px 8px 4px; font-size: 12px; font-weight: 500; color: var(--ink-3); }
+.px-nav a { display: flex; align-items: center; gap: 10px; height: 30px; padding: 0 8px; border-radius: var(--radius-md); font-size: 13.5px; font-weight: 500; color: var(--ink-2); text-decoration: none; cursor: pointer; transition: background-color .15s ease-out, color .15s ease-out; }
+.px-nav a .px-ico { color: var(--ink-3); }
+.px-nav a:hover { background: var(--fill); color: var(--ink); }
+.px-nav a.is-on { background: var(--selected); color: var(--ink); }
+.px-nav a.is-on .px-ico { color: var(--ink); }
+.px-nav a .n { margin-left: auto; font-size: 12px; font-weight: 500; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.px-side__foot { margin-top: auto; display: flex; flex-direction: column; gap: 1px; }
+.px-me { display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 8px; border-radius: var(--radius-md); font-size: 13px; color: var(--ink); cursor: pointer; }
+.px-me:hover { background: var(--fill); }
+.px-me small { display: block; font-size: 11.5px; color: var(--ink-3); line-height: 14px; }
+
+/* ---------- Page header (panel top bar) ---------- */
+.px-head { display: flex; align-items: center; gap: var(--space-2); height: var(--header); padding: 0 12px 0 var(--space-5); box-shadow: inset 0 -1px 0 var(--hairline); }
+.px-crumb { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--ink-3); white-space: nowrap; }
+.px-crumb a { color: var(--ink-3); text-decoration: none; } .px-crumb a:hover { color: var(--ink); }
+.px-crumb b { color: var(--ink); font-weight: 500; }
+.px-crumb .sl { color: var(--ink-4); }
+.px-head__pager { display: flex; align-items: center; gap: 2px; margin-left: var(--space-3); font-size: 12.5px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.px-head__acts { margin-left: auto; display: flex; align-items: center; gap: 2px; }
+
+/* ---------- Command menu ---------- */
+.px-cmd { width: 600px; max-width: 100%; background: var(--raised); border-radius: var(--radius-xl); box-shadow: var(--shadow-raised); overflow: hidden; }
+.px-cmd__in { display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 18px; border-bottom: 1px solid var(--hairline); font-size: 15px; color: var(--ink); }
+.px-cmd__in .px-ico { color: var(--ink-3); }
+.px-cmd__in .ph { color: var(--ink-3); }
+.px-cmd__body { padding: 6px 8px 8px; }
+.px-cmd__item { display: flex; align-items: center; gap: 12px; height: 40px; padding: 0 10px; border-radius: var(--radius-md); font-size: 13.5px; color: var(--ink); }
+.px-cmd__item .px-ico { color: var(--ink-3); }
+.px-cmd__item.is-on { background: var(--accent-tint); }
+.px-cmd__item .px-menu__meta, .px-cmd__item .px-kbd { margin-left: auto; }
+.px-cmd__foot { display: flex; gap: var(--space-4); padding: 10px 18px; border-top: 1px solid var(--hairline); font-size: 12px; color: var(--ink-3); }
+.px-cmd__foot span { display: inline-flex; align-items: center; gap: 6px; }
+
+/* ---------- App shell + RO page ---------- */
+.px-app { display: flex; height: 100%; background: var(--canvas); color: var(--ink); }
+.px-panel { flex: 1; min-width: 0; margin: 8px 8px 8px 0; display: flex; flex-direction: column; background: var(--panel); border-radius: var(--radius-xl); box-shadow: var(--shadow-panel); overflow: hidden; }
+.px-ro { flex: 1; min-height: 0; display: flex; }
+.px-ro__main { flex: 1; min-width: 0; overflow: auto; }
+.px-ro__col { max-width: calc(var(--measure) + 2 * var(--space-12)); margin: 0 auto; padding: var(--space-10) var(--space-12) var(--space-16); display: flex; flex-direction: column; }
+.px-ro__rail { width: var(--rail); flex: none; overflow: hidden; display: flex; flex-direction: column; padding: var(--space-5) var(--space-5) var(--space-4); box-shadow: inset 1px 0 0 var(--hairline); }
+.px-ro__eyebrow { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--ink-3); }
+.px-ro__eyebrow .px-id { color: var(--ink-2); }
+.px-ro__title { margin: 10px 0 6px; font: 500 32px/38px var(--font-serif); letter-spacing: -.015em; font-variation-settings: "opsz" 36; color: var(--ink); }
+.px-ro__sub { font-size: 14px; color: var(--ink-2); }
+.px-ro__status { display: flex; align-items: center; gap: var(--space-3); margin-top: var(--space-5); }
+.px-ro__status .px-with { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); }
+.px-sec { display: flex; align-items: center; gap: var(--space-3); margin: var(--space-12) 0 var(--space-3); }
+.px-sec h3 { margin: 0; font-size: 17px; line-height: 24px; font-weight: 600; letter-spacing: -.01em; }
+.px-sec .n { font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.px-sec .px-btn { margin-left: auto; }
+
+
+/* ---------- Part status dropdown ---------- */
+.px-pstat { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 8px; height: 28px; padding: 0 6px 0 8px; margin-left: -8px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; color: var(--ink); cursor: pointer; white-space: nowrap; transition: background-color .15s ease-out; }
+.px-pstat:hover, .px-pstat.is-open { background: var(--fill); }
+.px-pstat .px-chev { width: 12px; height: 12px; color: var(--ink-3); margin-left: auto; transition: transform .2s cubic-bezier(.2,.8,.2,1); }
+.px-pstat.is-open .px-chev { transform: rotate(180deg); }
+.px-pmenu { width: 236px; }
+.px-menu__tick { margin-left: auto; color: var(--ink); }
+.px-li.is-flash { animation: px-flash 1.4s ease-out; }
+
+/* ---------- Select (dropdown trigger) ---------- */
+.px-select { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 8px; height: var(--control-md); padding: 0 10px; border-radius: var(--radius-md); background: var(--raised); box-shadow: inset 0 0 0 1px var(--border); font-size: 14px; color: var(--ink); cursor: pointer; transition: box-shadow .15s ease-out; }
+.px-select:hover { box-shadow: inset 0 0 0 1px var(--border-strong); }
+.px-select .px-chev { width: 14px; height: 14px; margin-left: auto; color: var(--ink-3); }
+
+/* ---------- Modal ---------- */
+.px-scrim { position: fixed; inset: 0; z-index: 60; display: flex; justify-content: center; align-items: flex-start; padding: 12vh 16px 16px; background: var(--scrim); backdrop-filter: blur(2px); animation: px-fade .16s ease-out both; }
+.px-modal { width: 480px; max-width: 100%; max-height: 76vh; display: flex; flex-direction: column; background: var(--raised); border-radius: var(--radius-xl); box-shadow: var(--shadow-raised); animation: px-rise .22s cubic-bezier(.2,.8,.2,1) both; }
+.px-modal--sm { width: 400px; }
+.px-scrim.is-closing { animation: px-fade .12s ease-in reverse both; }
+.px-scrim.is-closing .px-modal { animation: px-rise .12s ease-in reverse both; }
+.px-modal__h { display: flex; align-items: flex-start; gap: 12px; padding: 20px 16px 4px 24px; }
+.px-modal__h h2 { margin: 0; font: 500 22px/28px var(--font-serif); letter-spacing: -.01em; font-variation-settings: "opsz" 24; color: var(--ink); }
+.px-modal__h p { margin: 4px 0 0; font-size: 13px; color: var(--ink-3); }
+.px-modal__h .px-btn { margin-left: auto; }
+.px-modal__b { display: flex; flex-direction: column; gap: 16px; padding: 16px 24px 4px; overflow: auto; }
+.px-modal__p { margin: 0; font-size: 14px; line-height: 21px; color: var(--ink-2); }
+.px-modal__f { display: flex; align-items: center; gap: 8px; padding: 20px 16px 16px 24px; }
+.px-modal__hint { margin-right: auto; display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--ink-3); }
+.px-modal--sm .px-modal__f { justify-content: flex-end; }
+.px-input--full { width: 100%; }
+.px-picks { display: flex; flex-direction: column; gap: 2px; }
+.px-pick { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 12px; height: 48px; padding: 0 12px 0 10px; border-radius: var(--radius-md); cursor: pointer; transition: background-color .15s ease-out, box-shadow .15s ease-out; }
+.px-pick:hover { background: var(--fill); }
+.px-pick.is-on { background: var(--panel); box-shadow: inset 0 0 0 1px var(--accent-line); }
+.px-pick.is-dis { cursor: default; opacity: .55; }
+.px-pick.is-dis:hover { background: transparent; }
+.px-pick__t { display: flex; flex-direction: column; min-width: 0; }
+.px-pick__t b { font-size: 14px; font-weight: 500; color: var(--ink); }
+.px-pick__t small { font-size: 12px; color: var(--ink-3); }
+.px-radio { margin-left: auto; width: 16px; height: 16px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--border-strong); display: grid; place-items: center; transition: box-shadow .15s ease-out; }
+.px-pick.is-on .px-radio { box-shadow: inset 0 0 0 5px var(--accent); }
+.px-tagpick { display: flex; flex-wrap: wrap; gap: 6px; }
+.px-tagpick .px-tag { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 10px 0 9px; border-radius: var(--radius-md); background: transparent; box-shadow: inset 0 0 0 1px var(--border); color: var(--ink-2); font: 500 11.5px/1 var(--font-mono); letter-spacing: .04em; cursor: pointer; transition: background-color .15s ease-out, box-shadow .15s ease-out; }
+.px-tagpick .px-tag:hover { background: var(--fill); }
+.px-tagpick .px-tag.is-on { background: var(--fill); box-shadow: inset 0 0 0 1.5px var(--ink); color: var(--ink); }
+.px-affix { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-3); }
+.px-check-row { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--ink); cursor: pointer; }
+.px-btn--solid.px-btn--danger { background: var(--bad); color: var(--on-primary); }
+.px-btn--solid.px-btn--danger:hover { background: var(--bad); box-shadow: inset 0 0 0 999px rgba(0,0,0,.08); }
+
+/* ---------- Header totals (Time · Parts · Files) ---------- */
+.px-totals { display: flex; align-items: center; gap: 2px; }
+.px-total { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 6px; height: var(--control-sm); padding: 0 8px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; cursor: pointer; white-space: nowrap; transition: background-color .15s ease-out; }
+.px-total > span { display: inline-flex; align-items: baseline; }
+.px-total:hover, .px-total.is-open { background: var(--fill); }
+.px-total .px-ico { width: 16px; height: 16px; color: var(--ink-3); transition: color .15s ease-out; }
+.px-total:hover .px-ico { color: var(--ink-2); }
+.px-total.is-live .px-ico { color: var(--accent); }
+.px-total em { font-style: normal; font-weight: 400; color: var(--ink-3); margin-left: 4px; }
+.px-head__sep { width: 1px; height: 16px; margin: 0 8px; background: var(--border); }
+
+/* ---------- Totals modals: summary, grouped read-only lists that jump to the operation ---------- */
+.px-modal--md { width: 560px; }
+.px-tsum { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); padding-bottom: 4px; }
+.px-tsum--5 { grid-template-columns: repeat(5, auto); justify-content: space-between; gap: var(--space-3); }
+.px-tsum > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.px-tsum > div > span { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--ink-3); white-space: nowrap; }
+.px-tsum b { font: 500 20px/26px var(--font-sans); letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.px-tsum small { font-size: 12px; color: var(--ink-3); font-weight: 400; margin-left: 3px; }
+.px-mlist { display: flex; flex-direction: column; }
+.px-mgrp { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 6px; height: 32px; font-size: 12.5px; color: var(--ink-3); white-space: nowrap; border-radius: var(--radius-sm); }
+.px-mgrp b { font-weight: 500; color: var(--ink-2); flex: none; }
+.px-mgrp > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.px-mgrp .px-ico { width: 14px; height: 14px; margin-left: auto; flex: none; opacity: 0; transition: opacity .15s ease-out; }
+button.px-mgrp { cursor: pointer; }
+button.px-mgrp:hover { color: var(--ink-2); }
+button.px-mgrp:hover .px-ico, button.px-mgrp:focus-visible .px-ico { opacity: 1; }
+.px-mrow { all: unset; box-sizing: border-box; position: relative; display: grid; align-items: center; column-gap: var(--space-4); min-height: 40px; margin: 0 -8px; padding: 6px 8px; border-radius: var(--radius-md); font-size: 13.5px; color: var(--ink); cursor: pointer; transition: background-color .15s ease-out; }
+.px-mrow::after { content: ""; position: absolute; left: 8px; right: 8px; bottom: 0; height: 1px; background: var(--hairline); }
+.px-mrow:last-child::after { display: none; }
+.px-mrow:hover { background: var(--fill); }
+.px-mrow:hover::after { opacity: 0; }
+.px-mrow__t { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.px-mrow__n { display: inline-block; width: 20px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.px-mrow__v { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.px-mrow__v em { font-style: normal; color: var(--ink-3); }
+.px-mrow .px-mini { width: 72px; }
+.px-mrow--time { grid-template-columns: 14px minmax(0, 1fr) 72px 100px; }
+.px-mrow--part { grid-template-columns: minmax(0, 1fr) 84px 20px 124px; }
+.px-mrow--part .r { text-align: right; font-variant-numeric: tabular-nums; }
+.px-mrow--file { grid-template-columns: 16px minmax(0, 1fr) 88px 48px; }
+.px-mrow--file .px-ico { width: 16px; height: 16px; color: var(--ink-3); }
+.px-mrow--file small { text-align: right; font-size: 12.5px; color: var(--ink-3); }
+.px-pstat-ro { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; white-space: nowrap; }
+
+/* ---------- Micro-interactions (all removed under reduced motion) ---------- */
+@keyframes px-fade { from { opacity: 0; } }
+@keyframes px-rise { from { opacity: 0; transform: translateY(8px) scale(.98); } }
+@keyframes px-pop { from { opacity: 0; transform: scale(.6); } }
+@keyframes px-swap { from { opacity: 0; transform: translateY(4px); } }
+@keyframes px-unfold { from { opacity: 0; transform: translateY(-4px); } }
+@keyframes px-flash { from { background-color: var(--accent-tint); } }
+.px-si.is-new { animation: px-pop .26s cubic-bezier(.2,.8,.2,1) both; }
+.px-op { animation: px-unfold .22s cubic-bezier(.2,.8,.2,1) both; }
+.px-time__go .px-ico { animation: px-pop .2s cubic-bezier(.2,.8,.2,1) both; }
+.px-row.is-flash, .px-total.is-flash { animation: px-flash 1.4s ease-out; }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+
+html,body{margin:0;background:var(--canvas)}
+body{font-family:var(--font-sans);color:var(--ink)}
+.wt-bar{position:sticky;top:0;z-index:80;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:12px 20px;background:var(--canvas);box-shadow:inset 0 -1px 0 var(--hairline)}
+.wt-bar h1{margin:0;font:500 20px/26px var(--font-serif);letter-spacing:-.01em;margin-right:auto;display:flex;align-items:center;gap:10px}
+.wt-bar h1 svg{width:20px;height:20px}.wt-bar h1 svg circle{fill:var(--ink)}.wt-bar h1 svg .o{fill:var(--ink-3)}.wt-bar h1 svg .c{fill:#22c55e}
+.wt-bar label{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-2);cursor:pointer;user-select:none}
+.wt-stage{padding:20px}
+.wt-wrap{position:relative;width:100%;overflow:hidden;border-radius:18px;box-shadow:0 0 0 1px var(--hairline)}
+.mock{position:absolute;left:0;top:0;width:1440px;height:900px;transform-origin:0 0;overflow:hidden}
+.wt-notes{list-style:none;margin:0;padding:8px 20px 48px;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px 32px}
+.wt-notes li{display:flex;gap:12px;padding:12px 0;box-shadow:inset 0 -1px 0 var(--hairline)}
+.wt-notes b{font-size:14px;font-weight:600}.wt-notes p{margin:2px 0 0;font-size:13px;line-height:19px;color:var(--ink-2)}
+.wt-n,.wt [data-n]::after{width:22px;height:22px;border-radius:999px;display:grid;place-items:center;flex:none;background:var(--accent);color:var(--on-accent);font:600 12px/1 var(--font-sans)}
+.wt [data-n]{position:relative}
+.wt [data-n]::after{content:attr(data-n);position:absolute;top:-1px;left:-32px;z-index:30;box-shadow:0 0 0 3px var(--panel)}
+.wt .rl-tools [data-n]::after{top:-12px;left:auto;right:-10px}
+.wt .rl-row[data-n]::after{left:-30px;top:10px}
+.wt .rl-grp[data-n]{position:sticky}.wt .rl-grp[data-n]::after{left:-32px;top:8px}
+.wt .rl-bulk[data-n]::after{left:-30px;top:8px;box-shadow:none}
+.wt .rl-peek[data-n]::after{left:-12px;top:14px}
+.wt .rl-open[data-n]::after{left:auto;right:-8px;top:-12px}
+.wt .rl-col[data-n]::after{left:auto;right:6px;top:6px}
+.wt .rl-card[data-n]::after{left:auto;right:8px;top:30px}
+
+/* ---------- RO list page ---------- */
+.rl{flex:1;min-height:0;display:flex}
+.rl-main{flex:1;min-width:0;display:flex;flex-direction:column}
+.rl-top{padding:28px 40px 0}
+.rl-titlerow{display:flex;align-items:flex-end;gap:16px}
+.rl-title{margin:0;font:500 26px/32px var(--font-serif);letter-spacing:-.015em;font-variation-settings:"opsz" 30}
+.rl-facts{margin:4px 0 0;font-size:13.5px;color:var(--ink-3);display:flex;gap:6px;flex-wrap:wrap}
+.rl-facts b{font-weight:500;color:var(--ink-2)}
+.rl-facts .warn{color:var(--warn)}
+.rl-titlerow .px-btn--primary{margin-left:auto}
+.rl-tools{display:flex;align-items:center;gap:10px;margin-top:22px;padding-bottom:12px;box-shadow:inset 0 -1px 0 var(--hairline)}
+.rl-seg .px-seg button{display:inline-flex;align-items:center;gap:6px;padding:5px 11px}
+.rl-seg .px-seg button span{font-size:12px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.rl-seg .px-seg button.is-on span{color:var(--ink-2)}
+.rl-find{position:relative;margin-left:auto}
+.rl-find .px-ico{position:absolute;left:10px;top:50%;margin-top:-8px;color:var(--ink-3);pointer-events:none}
+.rl.is-peek .rl-find input{width:210px}
+.rl-find input{width:300px;padding-left:34px;padding-right:30px;height:32px;font-size:13.5px}
+.rl-find .px-kbd{position:absolute;right:8px;top:50%;margin-top:-9px}
+.rl-scroll{flex:1;min-height:0;overflow:auto;padding:0 40px 64px;scrollbar-width:thin}
+.rl-head,.rl-row{display:grid;grid-template-columns:var(--cols);align-items:center;column-gap:14px}
+.rl{--cols:18px 76px 16px minmax(170px,1.2fr) minmax(150px,1.5fr) 76px 126px 24px 58px 84px 40px 24px}
+.rl.is-peek{--cols:18px 84px 16px minmax(140px,1.2fr) minmax(120px,1.4fr) 76px 24px 40px 24px}
+.rl.is-peek .c-time,.rl.is-peek .c-spot,.rl.is-peek .c-ready{display:none}
+.rl-head{position:sticky;top:0;z-index:4;height:34px;background:var(--panel);font-size:12px;font-weight:500;color:var(--ink-3);box-shadow:inset 0 -1px 0 var(--hairline)}
+.rl-head .r,.rl-row .r{text-align:right}
+.rl-grp{position:sticky;top:34px;z-index:3;display:flex;align-items:center;gap:8px;height:38px;margin-top:10px;background:var(--panel);font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;user-select:none}
+.rl-grp .px-chev{width:14px;height:14px;color:var(--ink-3);transition:transform .2s cubic-bezier(.2,.8,.2,1)}
+.rl-grp.is-closed .px-chev{transform:rotate(-90deg)}
+.rl-grp .n{font-weight:400;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.rl-grp .px-btn{margin-left:auto;opacity:0;transition:opacity .15s}
+.rl-grp:hover .px-btn{opacity:1}
+.rl-rows{display:flex;flex-direction:column}
+.rl-grp.is-closed + .rl-rows{display:none}
+.rl-row{position:relative;height:44px;padding:0 6px;margin:0 -6px;border-radius:var(--radius-md);font-size:13.5px;color:var(--ink);cursor:pointer;transition:background-color .12s ease-out}
+.rl-row::after{content:"";position:absolute;left:6px;right:6px;bottom:0;height:1px;background:var(--hairline)}
+.rl-row:hover{background:var(--fill)}
+.rl-row:hover::after,.rl-row.is-sel::after,.rl-row.is-cur::after{opacity:0}
+.rl-row.is-sel{background:var(--accent-tint)}
+.rl-row.is-cur{background:var(--selected)}
+.rl-row > *{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rl-cb{width:16px;height:16px;border-radius:5px;box-shadow:inset 0 0 0 1.5px var(--border-strong);display:grid;place-items:center;opacity:0;transition:opacity .12s}
+.rl-row:hover .rl-cb,.rl-row.is-sel .rl-cb,.rl.has-sel .rl-cb{opacity:1}
+.rl-row.is-sel .rl-cb{background:var(--primary);box-shadow:none}
+.rl-row.is-sel .rl-cb::after{content:"";width:8px;height:4px;border:solid var(--on-primary);border-width:0 0 1.75px 1.75px;transform:translateY(-1px) rotate(-45deg)}
+.rl-no{display:flex;align-items:center;gap:6px;font:500 13px/1 var(--font-mono);color:var(--ink-2)}
+.rl-live{width:7px;height:7px;border-radius:50%;background:var(--accent);flex:none;animation:px-breathe 2.4s ease-in-out infinite}
+.rl-cu b{font-weight:500}
+.rl-cu small{margin-left:6px;font-size:12.5px;color:var(--ink-3)}
+.rl-cmp{color:var(--ink-2)}
+.rl-cmp em{font-style:normal;margin-left:6px;font-size:11.5px;color:var(--ink-3);background:var(--fill);border-radius:5px;padding:1px 5px}
+.rl-cmp .sub{color:var(--ink-3)}
+.rl-ticks{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.rl-ticks i{height:4px;border-radius:2px;background:var(--hairline)}
+.rl-ticks i.done{background:var(--ink-2)}.rl-ticks i.now{background:var(--accent)}.rl-ticks i.skip{background:transparent;box-shadow:inset 0 0 0 1px var(--hairline)}
+.rl-ticks i.wait{background:repeating-linear-gradient(90deg,var(--status-customer) 0 3px,transparent 3px 5px)}
+.rl-time{display:flex;align-items:center;gap:8px;font-variant-numeric:tabular-nums;font-size:12.5px;color:var(--ink-2)}
+.rl-time em{font-style:normal;color:var(--ink-3)}
+.rl-time .px-mini{width:32px}
+.rl-sub{font-size:12.5px;color:var(--ink-3)}
+.rl-days{font-variant-numeric:tabular-nums;font-size:12.5px;color:var(--ink-3)}
+.rl-days.late{color:var(--warn);font-weight:500}
+.rl-opt{opacity:0;width:24px;height:24px}
+.rl-row:hover .rl-opt{opacity:1}
+.rl-opt .px-ico{width:14px;height:14px}
+.rl-shop{margin-top:6px;color:var(--ink-2)}
+.rl-shop .rl-no{color:var(--ink-3)}
+.rl-shop .px-ico{width:14px;height:14px}
+.rl-tag{display:inline-flex;align-items:center;gap:4px;margin-left:6px;font-size:11px;color:var(--accent-text)}
+.rl-tag .px-ico{width:12px;height:12px}
+/* bulk bar */
+.rl-bulkwrap{position:absolute;left:0;right:0;bottom:24px;z-index:40;display:flex;justify-content:center;pointer-events:none}
+.rl-bulk{position:relative;pointer-events:auto;display:flex;align-items:center;gap:6px;height:44px;padding:0 6px 0 16px;border-radius:14px;background:var(--raised);box-shadow:var(--shadow-raised),inset 0 0 0 1px var(--hairline);font-size:13.5px;animation:px-rise .2s cubic-bezier(.2,.8,.2,1) both}
+.rl-bulk b{font-weight:600;margin-right:8px;font-variant-numeric:tabular-nums}
+.rl-bulk[hidden]{display:none}
+/* display popover */
+.rl-disp{position:absolute;z-index:45;width:280px;padding:12px}
+.rl-disp h5{margin:4px 4px 6px;font-size:12px;font-weight:500;color:var(--ink-3)}
+.rl-disp .px-seg{display:flex;margin-bottom:12px}.rl-disp .px-seg button{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.rl-disp .px-seg .px-ico{width:14px;height:14px}
+.rl-disp .rl-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 2px 12px}
+.rl-disp .rl-chips button{all:unset;cursor:pointer;height:26px;padding:0 10px;border-radius:7px;font-size:12.5px;color:var(--ink-2);box-shadow:inset 0 0 0 1px var(--border)}
+.rl-disp .rl-chips button.is-on{color:var(--ink);background:var(--fill);box-shadow:inset 0 0 0 1.5px var(--ink)}
+/* board */
+.rl-board{flex:1;min-height:0;display:flex;gap:12px;overflow-x:auto;padding:16px 40px 40px;scrollbar-width:thin;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent)}
+.rl-col{flex:0 0 214px;display:flex;flex-direction:column;gap:8px;min-height:0}
+.rl-colh{display:flex;align-items:center;gap:8px;height:30px;font-size:13px;font-weight:600}
+.rl-colh .n{font-weight:400;color:var(--ink-3)}
+.rl-colh i{width:8px;height:8px;border-radius:2px;background:var(--ink-3)}
+.rl-colh i.now{background:var(--accent)}
+.rl-cards{display:flex;flex-direction:column;gap:8px;overflow:auto;padding:2px;scrollbar-width:none}
+.rl-card{position:relative;padding:12px 12px 10px;border-radius:var(--radius-lg);background:var(--raised);box-shadow:inset 0 0 0 1px var(--hairline);cursor:grab;transition:box-shadow .15s ease-out}
+.rl-card:hover{box-shadow:inset 0 0 0 1px var(--border-strong)}
+.rl-card__top{display:flex;align-items:center;gap:6px;font:500 12px/1 var(--font-mono);color:var(--ink-3)}
+.rl-card__top .d{margin-left:auto;font-family:var(--font-sans);font-variant-numeric:tabular-nums}
+.rl-card__top .d.late{color:var(--warn);font-weight:500}
+.rl-card h4{margin:7px 0 3px;font-size:14px;font-weight:600;color:var(--ink)}
+.rl-card p{margin:0;font-size:12.5px;line-height:17px;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.rl-card__ft{display:flex;align-items:center;gap:7px;margin-top:10px;font-size:12px;color:var(--ink-2)}
+.rl-card__ft .s{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rl-card__ft .px-mini{width:28px;margin-left:auto;flex:none}
+.rl-card__ft .px-av{flex:none}
+.rl-card__ft .t{font-variant-numeric:tabular-nums;color:var(--ink-3)}
+.rl-empty{font-size:12.5px;color:var(--ink-4);padding:14px 4px;text-align:center;border-radius:var(--radius-lg);box-shadow:inset 0 0 0 1px var(--hairline);border-style:dashed}
+/* peek */
+.rl-peek{flex:0 0 360px;display:flex;flex-direction:column;gap:18px;padding:24px 24px 32px;box-shadow:inset 1px 0 0 var(--hairline);overflow:auto;animation:px-fade .18s ease-out both}
+.rl-peek[hidden]{display:none}
+.rl-peek__top{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-3)}
+.rl-peek__top .px-id{color:var(--ink-2)}
+.rl-peek__top .px-btn{margin-left:auto}
+.rl-peek h2{margin:-8px 0 0;font:500 24px/30px var(--font-serif);letter-spacing:-.01em}
+.rl-peek .sub{margin-top:-14px;font-size:13px;color:var(--ink-2)}
+.rl-peek .px-next{margin:0}
+.rl-tots{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:8px}
+.rl-tots div{padding:9px 11px;border-radius:12px;background:var(--fill)}
+.rl-tots span{display:flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;color:var(--ink-3)}
+.rl-tots span .px-ico{width:13px;height:13px}
+.rl-tots b{display:block;margin-top:2px;font:500 15px/20px var(--font-sans);font-variant-numeric:tabular-nums}
+.rl-tots em{font-style:normal;font-weight:400;font-size:12px;color:var(--ink-3)}
+.rl-pops{display:flex;flex-direction:column}
+.rl-pop{display:flex;align-items:center;gap:10px;min-height:40px;box-shadow:inset 0 -1px 0 var(--hairline);font-size:13px}
+.rl-pop .n{width:14px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.rl-pop .t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rl-pop .h{font-size:12px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.rl-peek .rl-open{display:flex;gap:8px}.rl-peek .rl-open .px-btn{flex:1}
+.rl-pk-h{font-size:12px;font-weight:500;color:var(--ink-3);margin-bottom:-10px}
+</style>
+</head>
+<body>
+<div class="wt-bar">
+  <h1><svg viewBox="-110 -110 220 220" aria-hidden="true"><circle class="c" r="14"/><circle cx="44" r="9.5"/><circle cx="-44" r="9.5"/><circle cx="22" cy="38" r="9.5"/><circle cx="-22" cy="38" r="9.5"/><circle cx="22" cy="-38" r="9.5"/><circle cx="-22" cy="-38" r="9.5"/><circle cy="-84" r="7" class="o"/><circle cy="84" r="7" class="o"/><circle cx="73" cy="42" r="7" class="o"/><circle cx="-73" cy="42" r="7" class="o"/><circle cx="73" cy="-42" r="7" class="o"/><circle cx="-73" cy="-42" r="7" class="o"/></svg>Parsec · RO list</h1>
+  <div class="px-seg"><button data-optset="list">A · List</button><button data-optset="board">B · Board</button><button class="is-on" data-optset="peek">C · List + peek ✓</button></div>
+  <div class="px-seg"><button class="is-on" data-theme-set="light">Ivory</button><button data-theme-set="dark">Graphite</button></div>
+  <label id="wtToggle" class="is-on"><span class="px-toggle is-on"></span>Numbers</label>
+</div>
+<div class="wt-stage"><div class="wt-wrap"><div class="mock wt"><div class="px-app">
+<aside class="px-side">
+  <div class="px-brand"><svg viewBox="-110 -110 220 220" aria-hidden="true"><circle class="c" r="14"/><circle cx="44" r="9.5"/><circle cx="-44" r="9.5"/><circle cx="22" cy="38" r="9.5"/><circle cx="-22" cy="38" r="9.5"/><circle cx="22" cy="-38" r="9.5"/><circle cx="-22" cy="-38" r="9.5"/><circle cy="-84" r="7" class="o"/><circle cy="84" r="7" class="o"/><circle cx="73" cy="42" r="7" class="o"/><circle cx="-73" cy="42" r="7" class="o"/><circle cx="73" cy="-42" r="7" class="o"/><circle cx="-73" cy="-42" r="7" class="o"/></svg>Parsec<button class="px-btn px-btn--ghost px-btn--icon px-btn--sm" title="Collapse sidebar"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.75" y="4.75" width="16.5" height="14.5" rx="2.75"/><path d="M9.5 4.75v14.5"/></svg></button></div>
+  <button class="px-search" data-cmd><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>Search or jump to…<span class="px-kbd">⌘K</span></button>
+  <div class="px-clockin" data-clockin><span class="dot"></span><div>On the clock<b class="px-num">since 6:58</b></div><button class="px-btn px-btn--sm">Clock out</button>
+    <div class="px-clockin__job" data-clockin-job hidden><span class="px-clockin__live"></span><small data-clockin-what>RO-37538 · Op 1</small><span class="px-clockin__v" data-clockin-t>6:15:57</span><button class="px-btn px-btn--ghost px-btn--icon px-btn--sm" title="Stop clock" data-clockin-stop><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2.75"/></svg></button><b data-clockin-name>Clutch slipping – replace clutch</b></div></div>
+  <nav class="px-nav">
+    <a data-page="inbox"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.75 13.5l2.6-7.1A1.5 1.5 0 0 1 7.76 5.4h8.48a1.5 1.5 0 0 1 1.41 1l2.6 7.1v4.75a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5z"/><path d="M3.75 13.5h4.5l1.25 2h5l1.25-2h4.5"/></svg>Inbox<span class="n">27</span></a>
+    <a data-page="console"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.75" y="3.75" width="7" height="7" rx="2"/><rect x="13.25" y="3.75" width="7" height="7" rx="2"/><rect x="3.75" y="13.25" width="7" height="7" rx="2"/><rect x="13.25" y="13.25" width="7" height="7" rx="2"/></svg>Console</a>
+    <a data-page="triage"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="7.5" width="17" height="12.25" rx="2.75"/><path d="M9 7.5V6a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 6v1.5M12 10.75v5.5M9.25 13.5h5.5"/></svg>Triage<span class="n">5</span></a>
+    <a class="is-on" data-page="ros"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.75h7l4.75 4.75v10.25a1.5 1.5 0 0 1-1.5 1.5H6.5A1.5 1.5 0 0 1 5 18.75V5.25a1.5 1.5 0 0 1 1.5-1.5z"/><path d="M13.5 3.75V8.5h4.75"/><path d="M8.5 12.5h7M8.5 16h4.5"/></svg>RO list<span class="n">12</span></a>
+    <div class="px-nav__h">Shop</div>
+    <a data-page="foreman"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4.75" width="14" height="15.5" rx="2.5"/><path d="M9.5 4.75V4a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v.75M8.75 10.5h6.5M8.75 14h6.5M8.75 17.25h3.5"/></svg>Foreman</a>
+    <a data-page="warranty"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l7 2.75v5.5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9v-5.5z"/><path d="M8.9 12.1l2.2 2.2 4.1-4.4"/></svg>Warranty<span class="n">3</span></a>
+    <a data-page="manager"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9.25" cy="8.25" r="3.25"/><path d="M3.5 19.5c0-3.2 2.6-5.25 5.75-5.25s5.75 2.05 5.75 5.25"/><path d="M15.5 5.3a3.2 3.2 0 0 1 0 5.9M17.2 14.6c2 .6 3.3 2.2 3.3 4.4"/></svg>Manager</a>
+    <a data-page="parts"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l7.5 4v9l-7.5 4-7.5-4v-9z"/><path d="M4.5 7.5l7.5 4 7.5-4M12 11.5v9"/></svg>Parts</a>
+    <div class="px-nav__h">You</div>
+    <a data-page="timelog"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.25V12l3.25 1.9"/></svg>Time log</a>
+    <a data-page="fixes"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Fixes</a>
+    <a data-page="career"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19.5v-5M10 19.5v-11M15 19.5v-7.5M20 19.5V5"/></svg>Career</a>
+  </nav>
+  <div class="px-side__foot">
+    <nav class="px-nav"><a data-page="settings"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h8.5M17 8h3M4 16h3M11.5 16H20"/><circle cx="14.75" cy="8" r="2.25"/><circle cx="9.25" cy="16" r="2.25"/></svg>Settings</a></nav>
+    <div class="px-me"><span class="px-av px-av--md px-av--me">MR</span><div>Mike Rodriguez<small>Technician</small></div></div>
+  </div>
+</aside>
+<section class="px-panel" style="position:relative;display:flex;flex-direction:column">
+<header class="px-head"><div class="px-crumb"><b>Repair orders</b></div><div class="px-head__acts"><button class="px-btn px-btn--ghost px-btn--icon px-btn--sm" title="Print list"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9V4.5h10V9"/><rect x="3.75" y="9" width="16.5" height="7.5" rx="2"/><path d="M7 14.5h10v5H7z"/></svg></button><button class="px-btn px-btn--ghost px-btn--icon px-btn--sm" title="Options"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 12h.01M12 12h.01M18.5 12h.01" stroke-width="2.4"/></svg></button></div></header>
+<div class="rl">
+ <div class="rl-main">
+  <div class="rl-top">
+   <div class="rl-titlerow"><div data-nl="1"><h1 class="rl-title">Repair orders</h1><p class="rl-facts"><span><b>12</b> open</span><span>·</span><span><b>6</b> waiting</span><span>·</span><span><b>2</b> on the clock</span><span>·</span><span class="warn"><b class="warn">5</b> open 7+ days</span></p></div>
+   <button class="px-btn px-btn--primary"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>New RO<span class="px-kbd">N</span></button></div>
+   <div class="rl-tools">
+    <div class="rl-seg" data-nl="2"><div class="px-seg"><button data-grp="open">Open<span>0</span></button><button data-grp="mine">Mine<span>0</span></button><button data-grp="working">Working<span>0</span></button><button data-grp="waiting">Waiting<span>0</span></button><button data-grp="hold">Hold<span>0</span></button><button data-grp="done">Done<span>0</span></button></div></div>
+    <label class="rl-find" data-nl="3"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input class="px-input" data-q placeholder="Search RO, customer, VIN, part #, DTC…" aria-label="Search repair orders"><span class="px-kbd">/</span></label>
+    <button class="px-btn" data-disp data-nl="10"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>Display</button>
+   </div>
+  </div>
+  <div class="rl-body" style="flex:1;min-height:0;display:flex;flex-direction:column"></div>
+ </div>
+ <aside class="rl-peek" hidden></aside>
+</div>
+<div class="rl-bulkwrap"><div class="rl-bulk" hidden data-nl="8"><b>0 selected</b><button class="px-btn px-btn--ghost px-btn--sm"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7.5h12.5L16 4M17 16.5H4.5L8 20"/></svg>Transfer…</button><button class="px-btn px-btn--ghost px-btn--sm"><svg class="px-si" data-s="hold" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.25" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>Set status…</button><button class="px-btn px-btn--ghost px-btn--sm"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9V4.5h10V9"/><rect x="3.75" y="9" width="16.5" height="7.5" rx="2"/><path d="M7 14.5h10v5H7z"/></svg>Print</button><button class="px-btn px-btn--ghost px-btn--icon px-btn--sm" data-clear title="Clear (Esc)"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>
+</section>
+</div></div></div></div>
+<ol class="wt-notes"></ol>
+<script>
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const DATA=[{"id": "ro37538", "no": "37538", "cust": "Blue Ridge Haulage", "veh": "2020 Volvo VNL", "unit": "4417", "st": "hold", "stn": "Hold tech", "sub": "", "stage": "repair", "stagen": "Repair", "ticks": ["done", "skip", "done", "done", "now", "", ""], "tech": "MR", "techn": "Mike Rodriguez", "spot": "Lot D5", "days": 15, "b": 6.27, "q": 11.9, "nops": 3, "cmp": "Clutch slipping \u2013 replace clutch", "typ": "OP", "ready": "Thu 10:04", "live": false, "warr": false, "grp": "hold", "si": "<svg class=\"px-si\" data-s=\"hold\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg>"}, {"id": "ro34601", "no": "34601", "cust": "Carolina Line Freight", "veh": "2019 Volvo VNR", "unit": "2210", "st": "parts", "stn": "Waiting \u2013 Parts", "sub": "Backordered \u00b7 due Fri", "stage": "parts", "stagen": "Parts", "ticks": ["done", "done", "done", "wait", "", "", ""], "tech": "MR", "techn": "Mike Rodriguez", "spot": "Yard B2", "days": 9, "b": 1.85, "q": 4.2, "nops": 2, "cmp": "Check engine light \u2013 DPF differential pressure high", "typ": "DIAG", "ready": "Mon 14:00", "live": false, "warr": false, "grp": "waiting", "si": "<svg class=\"px-si\" data-s=\"parts\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-dasharray=\"2.3 1.82\"/><circle cx=\"7\" cy=\"7\" r=\"1.75\" fill=\"currentColor\"/></svg>"}, {"id": "ro35112", "no": "35112", "cust": "Piedmont Aggregates", "veh": "2021 Volvo VHD", "unit": "318", "st": "hold", "stn": "Hold tech", "sub": "", "stage": "diag", "stagen": "Diag", "ticks": ["done", "now", "", "", "", "", ""], "tech": "MR", "techn": "Mike Rodriguez", "spot": "Bay 4", "days": 1, "b": 0.42, "q": 1.2, "nops": 1, "cmp": "Air leak at the front axle", "typ": "DIAG", "ready": "Fri 11:30", "live": false, "warr": false, "grp": "hold", "si": "<svg class=\"px-si\" data-s=\"hold\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg>"}, {"id": "ro37602", "no": "37602", "cust": "Triad Cold Chain", "veh": "2022 Volvo VNL", "unit": "88", "st": "working", "stn": "Working", "sub": "Repairing", "stage": "repair", "stagen": "Repair", "ticks": ["done", "done", "done", "done", "now", "", ""], "tech": "MR", "techn": "Mike Rodriguez", "spot": "Bay 2", "days": 3, "b": 3.1, "q": 5.5, "nops": 2, "cmp": "Alternator not charging \u2013 replace alternator", "typ": "OP", "ready": "Today 15:40", "live": true, "warr": false, "grp": "working", "si": "<svg class=\"px-si\" data-s=\"working\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M7 3.5a3.5 3.5 0 0 1 0 7z\" fill=\"currentColor\"/></svg>"}, {"id": "ro37590", "no": "37590", "cust": "Yadkin Valley Logistics", "veh": "2018 Volvo VNL", "unit": "1204", "st": "customer", "stn": "Waiting \u2013 Customer", "sub": "Estimate sent", "stage": "approval", "stagen": "Approval", "ticks": ["done", "done", "wait", "", "", "", ""], "tech": "LM", "techn": "Luis Martinez", "spot": "Lot C3", "days": 4, "b": 1.0, "q": 1.0, "nops": 2, "cmp": "Front brakes grinding \u2013 brake job", "typ": "OP", "ready": "Fri 16:00", "live": false, "warr": false, "grp": "waiting", "si": "<svg class=\"px-si\" data-s=\"customer\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-dasharray=\"2.3 1.82\"/><circle cx=\"7\" cy=\"7\" r=\"1.75\" fill=\"currentColor\"/></svg>"}, {"id": "ro36988", "no": "36988", "cust": "Old Salem Moving", "veh": "2017 Volvo VNM", "unit": "61", "st": "support", "stn": "Waiting \u2013 Tech support", "sub": "Awaiting reply", "stage": "diag", "stagen": "Diag", "ticks": ["done", "wait", "", "", "", "", ""], "tech": "PS", "techn": "Priya Shah", "spot": "Bay 6", "days": 11, "b": 4.8, "q": 3.0, "nops": 1, "cmp": "Intermittent no-start, U0100 lost comms with ECM", "typ": "WARR", "ready": "\u2014", "live": false, "warr": true, "grp": "waiting", "si": "<svg class=\"px-si\" data-s=\"support\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-dasharray=\"2.3 1.82\"/><circle cx=\"7\" cy=\"7\" r=\"1.75\" fill=\"currentColor\"/></svg>"}, {"id": "ro37420", "no": "37420", "cust": "Guilford Paving", "veh": "2020 Volvo VHD", "unit": "902", "st": "parts", "stn": "Waiting \u2013 Parts", "sub": "Ordered \u00b7 due Thu", "stage": "parts", "stagen": "Parts", "ticks": ["done", "skip", "done", "wait", "", "", ""], "tech": "LM", "techn": "Luis Martinez", "spot": "Yard A4", "days": 6, "b": 0.9, "q": 6.4, "nops": 3, "cmp": "Hydraulic PTO leak at the pump", "typ": "OP", "ready": "Fri 12:00", "live": false, "warr": false, "grp": "waiting", "si": "<svg class=\"px-si\" data-s=\"parts\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-dasharray=\"2.3 1.82\"/><circle cx=\"7\" cy=\"7\" r=\"1.75\" fill=\"currentColor\"/></svg>"}, {"id": "ro37011", "no": "37011", "cust": "Catawba Timber", "veh": "2019 Volvo VNL", "unit": "330", "st": "foreman", "stn": "Waiting \u2013 Foreman", "sub": "", "stage": "repair", "stagen": "Repair", "ticks": ["done", "done", "done", "done", "wait", "", ""], "tech": "PS", "techn": "Priya Shah", "spot": "Bay 5", "days": 8, "b": 7.2, "q": 8.0, "nops": 2, "cmp": "Comeback \u2013 coolant loss after head gasket", "typ": "COMEBACK", "ready": "Thu 17:00", "live": false, "warr": false, "grp": "waiting", "si": "<svg class=\"px-si\" data-s=\"foreman\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-dasharray=\"2.3 1.82\"/><circle cx=\"7\" cy=\"7\" r=\"1.75\" fill=\"currentColor\"/></svg>"}, {"id": "ro37555", "no": "37555", "cust": "Haw River Dairy", "veh": "2023 Volvo VNR", "unit": "17", "st": "hold", "stn": "Hold tech", "sub": "", "stage": "checkin", "stagen": "Check-in", "ticks": ["now", "", "", "", "", "", ""], "tech": "", "techn": "Unassigned", "spot": "Lot A1", "days": 0, "b": 0.0, "q": 0.5, "nops": 1, "cmp": "PM service \u2013 A", "typ": "PM", "ready": "Today 13:30", "live": false, "warr": false, "grp": "hold", "si": "<svg class=\"px-si\" data-s=\"hold\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg>"}, {"id": "ro37489", "no": "37489", "cust": "Pilot Mountain Express", "veh": "2021 Volvo VNL", "unit": "5530", "st": "roadtest", "stn": "Complete \u2013 Road test", "sub": "", "stage": "roadtest", "stagen": "Road test", "ticks": ["done", "skip", "done", "done", "done", "now", ""], "tech": "MR", "techn": "Mike Rodriguez", "spot": "Lot D1", "days": 5, "b": 9.6, "q": 10.5, "nops": 4, "cmp": "Overhead and injector cups", "typ": "OP", "ready": "Today 12:15", "live": false, "warr": false, "grp": "working", "si": "<svg class=\"px-si\" data-s=\"roadtest\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M7 3.5a3.5 3.5 0 1 1-3.5 3.5H7z\" fill=\"currentColor\"/></svg>"}, {"id": "ro37544", "no": "37544", "cust": "Greensboro City Waste", "veh": "2020 Volvo VHD", "unit": "4061", "st": "working", "stn": "Working", "sub": "Diagnosing", "stage": "diag", "stagen": "Diag", "ticks": ["done", "now", "", "", "", "", ""], "tech": "LM", "techn": "Luis Martinez", "spot": "Bay 1", "days": 2, "b": 1.4, "q": 2.0, "nops": 1, "cmp": "Air dryer purging constantly", "typ": "DIAG", "ready": "Thu 09:30", "live": false, "warr": false, "grp": "working", "si": "<svg class=\"px-si\" data-s=\"working\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M7 3.5a3.5 3.5 0 0 1 0 7z\" fill=\"currentColor\"/></svg>"}, {"id": "ro37516", "no": "37516", "cust": "Sandhills Grain", "veh": "2019 Volvo VNL", "unit": "77", "st": "customer", "stn": "Waiting \u2013 Customer", "sub": "Approval pending", "stage": "approval", "stagen": "Approval", "ticks": ["done", "done", "wait", "", "", "", ""], "tech": "PS", "techn": "Priya Shah", "spot": "Lot B6", "days": 7, "b": 2.2, "q": 2.0, "nops": 2, "cmp": "Steer axle kingpin play", "typ": "DIAG", "ready": "Mon 10:00", "live": false, "warr": false, "grp": "waiting", "si": "<svg class=\"px-si\" data-s=\"customer\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-dasharray=\"2.3 1.82\"/><circle cx=\"7\" cy=\"7\" r=\"1.75\" fill=\"currentColor\"/></svg>"}, {"id": "ro37301", "no": "37301", "cust": "Uwharrie Fuel", "veh": "2016 Volvo VNL", "unit": "12", "st": "released", "stn": "Complete \u2013 Released", "sub": "", "stage": "closeout", "stagen": "Close-out", "ticks": ["done", "done", "done", "done", "done", "done", "done"], "tech": "LM", "techn": "Luis Martinez", "spot": "\u2014", "days": 12, "b": 5.1, "q": 5.5, "nops": 2, "cmp": "Turbo actuator fault \u2013 replace actuator", "typ": "OP", "ready": "Released Tue", "live": false, "warr": false, "grp": "done", "si": "<svg class=\"px-si\" data-s=\"released\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"6\" fill=\"currentColor\"/><path d=\"M4.4 7.2l1.8 1.8 3.5-3.7\" fill=\"none\" stroke=\"var(--panel)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>"}], SI={"hold": "<svg class=\"px-si\" data-s=\"hold\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg>", "working": "<svg class=\"px-si\" data-s=\"working\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M7 3.5a3.5 3.5 0 0 1 0 7z\" fill=\"currentColor\"/></svg>", "parts": "<svg class=\"px-si\" data-s=\"parts\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-dasharray=\"2.3 1.82\"/><circle cx=\"7\" cy=\"7\" r=\"1.75\" fill=\"currentColor\"/></svg>", "foreman": "<svg class=\"px-si\" data-s=\"foreman\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-dasharray=\"2.3 1.82\"/><circle cx=\"7\" cy=\"7\" r=\"1.75\" fill=\"currentColor\"/></svg>", "support": "<svg class=\"px-si\" data-s=\"support\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-dasharray=\"2.3 1.82\"/><circle cx=\"7\" cy=\"7\" r=\"1.75\" fill=\"currentColor\"/></svg>", "customer": "<svg class=\"px-si\" data-s=\"customer\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-dasharray=\"2.3 1.82\"/><circle cx=\"7\" cy=\"7\" r=\"1.75\" fill=\"currentColor\"/></svg>", "roadtest": "<svg class=\"px-si\" data-s=\"roadtest\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M7 3.5a3.5 3.5 0 1 1-3.5 3.5H7z\" fill=\"currentColor\"/></svg>", "released": "<svg class=\"px-si\" data-s=\"released\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"6\" fill=\"currentColor\"/><path d=\"M4.4 7.2l1.8 1.8 3.5-3.7\" fill=\"none\" stroke=\"var(--panel)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "declined": "<svg class=\"px-si\" data-s=\"declined\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"6\" fill=\"currentColor\"/><path d=\"M5 5l4 4M9 5l-4 4\" fill=\"none\" stroke=\"var(--panel)\" stroke-width=\"1.6\" stroke-linecap=\"round\"/></svg>"}, ICO={"chevD": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M6.5 9.5L12 15l5.5-5.5\"/></svg>", "chevR": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M9.5 6.5L15 12l-5.5 5.5\"/></svg>", "more": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M5.5 12h.01M12 12h.01M18.5 12h.01\" stroke-width=\"2.4\"/></svg>", "check": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M5 12.5l4.5 4.5L19 7.5\"/></svg>", "x": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M6 6l12 12M18 6L6 18\"/></svg>", "swap": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M7 7.5h12.5L16 4M17 16.5H4.5L8 20\"/></svg>", "print": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M7 9V4.5h10V9\"/><rect x=\"3.75\" y=\"9\" width=\"16.5\" height=\"7.5\" rx=\"2\"/><path d=\"M7 14.5h10v5H7z\"/></svg>", "plus": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 5v14M5 12h14\"/></svg>", "clock": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M12 7.5V12l3 2\"/></svg>", "parts": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 3.5l7.5 4v9l-7.5 4-7.5-4v-9z\"/><path d=\"M4.5 7.5l7.5 4 7.5-4M12 11.5v9\"/></svg>", "clip": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M19.4 11.2l-7.1 7.2a4.4 4.4 0 0 1-6.2-6.2l7.6-7.6a2.9 2.9 0 0 1 4.1 4.1l-7.3 7.3a1.4 1.4 0 0 1-2-2l6.6-6.6\"/></svg>", "kit": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4.5 9.5h15v9a1.5 1.5 0 0 1-1.5 1.5H6a1.5 1.5 0 0 1-1.5-1.5z\"/><path d=\"M9 9.5V7a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 7v2.5M4.5 13.5h15\"/></svg>", "search": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"6.5\"/><path d=\"M16 16l4.5 4.5\"/></svg>", "sliders": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4 7h9M17 7h3M4 17h3M11 17h9\"/><circle cx=\"15\" cy=\"7\" r=\"2\"/><circle cx=\"9\" cy=\"17\" r=\"2\"/></svg>", "list": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M8.5 6.5h11M8.5 12h11M8.5 17.5h11\"/><circle cx=\"4.75\" cy=\"6.5\" r=\".9\"/><circle cx=\"4.75\" cy=\"12\" r=\".9\"/><circle cx=\"4.75\" cy=\"17.5\" r=\".9\"/></svg>", "board": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"3.75\" y=\"4.75\" width=\"4.5\" height=\"14.5\" rx=\"1.5\"/><rect x=\"9.75\" y=\"4.75\" width=\"4.5\" height=\"9.5\" rx=\"1.5\"/><rect x=\"15.75\" y=\"4.75\" width=\"4.5\" height=\"12\" rx=\"1.5\"/></svg>", "peek": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"3.75\" y=\"4.75\" width=\"16.5\" height=\"14.5\" rx=\"2.75\"/><path d=\"M14.5 4.75v14.5\"/></svg>", "unit": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M2.75 16.5V7.25A1.5 1.5 0 0 1 4.25 5.75h9.25v10.75M13.5 9.25h3.6a1.5 1.5 0 0 1 1.2.6l2.2 2.9a1.5 1.5 0 0 1 .3.9v2.85h-2\"/><circle cx=\"7\" cy=\"17.25\" r=\"2\"/><circle cx=\"16.5\" cy=\"17.25\" r=\"2\"/><path d=\"M9 17.25h5.5\"/></svg>", "keyTag": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"8\" cy=\"15.5\" r=\"4\"/><path d=\"M10.9 12.6l8.6-8.6M16.5 7l2.5 2.5M14 9.5l2 2\"/></svg>", "warranty": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 3.5l7 2.75v5.5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9v-5.5z\"/><path d=\"M8.9 12.1l2.2 2.2 4.1-4.4\"/></svg>", "user": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"8\" r=\"3.75\"/><path d=\"M4.75 20c.6-3.6 3.6-5.75 7.25-5.75s6.65 2.15 7.25 5.75\"/></svg>"}, NOTES={"list": [["One title, one line of facts", "Serif title, then what matters across the shop: open, waiting, and how many are a week old."], ["Groups you can count", "Open \u00b7 Mine \u00b7 Working \u00b7 Waiting \u00b7 Hold \u00b7 Done, each with its count \u2014 the same groups as today."], ["Search everything", "RO, customer, VIN, unit, part number, DTC. Press / to jump into it."], ["Grouped by status", "Each group starts with the status icon and a count, and folds away. Group by stage or tech from Display."], ["A row that reads left to right", "RO \u00b7 customer and unit \u00b7 complaint (+ more) \u00b7 stage ticks \u00b7 time used \u00b7 tech \u00b7 spot \u00b7 ready by \u00b7 days open."], ["Live and late at a glance", "A breathing bronze dot when the clock is running; days open turn amber at 7."], ["Hover for more", "A checkbox appears on the left, the RO options (\u22ef) on the right."], ["Do it to several", "Select rows and a bar rises: Transfer, Set status, Print, Clear."], ["Shop time stays on top", "Non-RO time keeps its row, quiet, above the groups."], ["Display", "One menu for view (List \u00b7 Board), group by, sort and columns."]], "board": [["Seven stages, left to right", "Check-in \u2192 Close-out, the same steps as the stage track on the RO page, with counts."], ["Cards stay small", "RO, days, customer, complaint, status, tech and time used \u2014 the rest is one click away."], ["Waiting stands out by shape", "Dashed status icons and the hatched stage on cards held on someone else."], ["Drag to move a stage", "Drop a card on the next stage to tick that step (on the real page)."]], "peek": [["The list keeps its place", "Click a row (or J / K) and the RO opens in a pane on the right \u2014 the list doesn't move."], ["Open is one flat list", "No groups under Open \u2014 every open RO in one list, oldest first, with its status at the start of the complaint. Mine, Working, Waiting, Hold and Done still group by status."], ["The pane is the RO details pane", "Next card, Time \u00b7 Parts \u00b7 Files, operations \u2014 the same pieces as the RO page."], ["Enter opens the full RO", "\u21b5 or Open RO goes to the RO page; Esc closes the pane."]]}, OPTS="<div class=\"px-pop\" style=\"width:240px\">\n  <button class=\"px-menu__item\"><svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M5.5 4h10.2L20 8.3v10.2a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-13A1.5 1.5 0 0 1 5.5 4z\"/><path d=\"M8 4v4.5h7V4M8 20v-6h8v6\"/></svg>Save a copy</button>\n  <button class=\"px-menu__item is-hover\"><svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M7 9V4.5h10V9\"/><rect x=\"3.75\" y=\"9\" width=\"16.5\" height=\"7.5\" rx=\"2\"/><path d=\"M7 14.5h10v5H7z\"/></svg>Print<span class=\"px-kbd\">P</span></button>\n  <div class=\"px-menu__sep\"></div>\n  <button class=\"px-menu__item\"><svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M6.5 3.75h7l4.75 4.75v10.25a1.5 1.5 0 0 1-1.5 1.5H6.5A1.5 1.5 0 0 1 5 18.75V5.25a1.5 1.5 0 0 1 1.5-1.5z\"/><path d=\"M13.5 3.75V8.5h4.75\"/><path d=\"M12 11v6M9 14h6\"/></svg>Add operation<span class=\"px-kbd\">O</span></button>\n  <button class=\"px-menu__item\"><svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M6.5 3.75h7l4.75 4.75v10.25a1.5 1.5 0 0 1-1.5 1.5H6.5A1.5 1.5 0 0 1 5 18.75V5.25a1.5 1.5 0 0 1 1.5-1.5z\"/><path d=\"M13.5 3.75V8.5h4.75\"/><path d=\"M8.5 12.5h7M8.5 16h4.5\"/></svg>Extract operations\u2026</button>\n  <button class=\"px-menu__item\"><svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M6 3.75h12A1.25 1.25 0 0 1 19.25 5v9.5l-4.75 5.75H6A1.25 1.25 0 0 1 4.75 19V5A1.25 1.25 0 0 1 6 3.75z\"/><path d=\"M14.5 20.25v-4.5a1.25 1.25 0 0 1 1.25-1.25h3.5M8 8.5h8M8 12h5\"/></svg>Add standard operation\u2026</button>\n  <button class=\"px-menu__item\"><svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 3.5l7 2.75v5.5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9v-5.5z\"/><path d=\"M8.9 12.1l2.2 2.2 4.1-4.4\"/></svg>Mark as warranty RO</button>\n  <div class=\"px-menu__sep\"></div>\n  <button class=\"px-menu__item px-menu__item--danger\"><svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4.5 6.5h15M9.5 6.5V4.75h5V6.5M6.5 6.5l.9 12.2a1.5 1.5 0 0 0 1.5 1.3h6.2a1.5 1.5 0 0 0 1.5-1.3l.9-12.2M10 10.5v5.5M14 10.5v5.5\"/></svg>Delete RO</button>\n</div>";
+const root=document.documentElement, mock=$('.mock'), wrap=$('.wt-wrap');
+let scale=1; function fit(){scale=Math.min(1,wrap.clientWidth/1440);mock.style.transform=`scale(${scale})`;wrap.style.height=(900*scale)+'px';}
+addEventListener('resize',fit); fit();
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const st={view:'peek',grp:'open',q:'',groupBy:'status',sort:'days',sel:new Set(),cur:'ro37538',closed:{},opt:'peek'};
+const GORDER=['working','roadtest','parts','customer','support','foreman','hold','released'];
+const GNAME={working:'Working',roadtest:'Complete – Road test',parts:'Waiting – Parts',customer:'Waiting – Customer',support:'Waiting – Tech support',foreman:'Waiting – Foreman',hold:'Hold tech',released:'Complete – Released'};
+const STG=['checkin','diag','approval','parts','repair','roadtest','closeout'], STGN={checkin:'Check-in',diag:'Diag',approval:'Approval',parts:'Parts',repair:'Repair',roadtest:'Road test',closeout:'Close-out'};
+const SHORT={working:'Working',roadtest:'Road test',parts:'Parts',customer:'Customer',support:'Tech support',foreman:'Foreman',hold:'Hold tech',released:'Released'};
+const TECHN={MR:'Mike Rodriguez',LM:'Luis Martinez',PS:'Priya Shah','':'Unassigned'};
+function rows(){const q=st.q.trim().toLowerCase();
+  return DATA.filter(r=>{ if(st.grp==='done'?r.grp!=='done':r.grp==='done')return false; if(st.grp==='mine'&&r.tech!=='MR')return false; if(['working','waiting','hold'].includes(st.grp)&&r.grp!==st.grp)return false;
+    return !q||[r.no,r.cust,r.unit,r.veh,r.cmp,r.techn,r.spot].join(' ').toLowerCase().includes(q); })
+   .sort((a,b)=>st.sort==='days'?b.days-a.days:st.sort==='no'?a.no.localeCompare(b.no):a.ready.localeCompare(b.ready));}
+function counts(){const c={open:0,mine:0,working:0,waiting:0,hold:0,done:0};DATA.forEach(r=>{if(r.grp==='done'){c.done++;return;}c.open++;if(r.tech==='MR')c.mine++;c[r.grp]++;});return c;}
+const ticks=r=>`<span class="rl-ticks" title="${esc(STGN[r.stage])}">${r.ticks.map(t=>`<i class="${t}"></i>`).join('')}</span>`;
+const mini=(b,q)=>`<span class="px-mini"><i${b>q?' class="over"':''} style="width:${q?Math.min(100,b/q*100):0}%"></i></span>`;
+function row(r,mark){const late=r.days>=7&&r.grp!=='done';
+  return `<div class="rl-row${st.sel.has(r.id)?' is-sel':''}${st.view==='peek'&&st.cur===r.id?' is-cur':''}" data-ro="${r.id}"${mark?` data-n="${mark}"`:''}>
+   <span class="rl-cb" data-cb></span><span class="rl-no">${r.live?'<i class="rl-live" title="Clock running"></i>':''}${r.no}</span>${r.si}
+   <span class="rl-cu"><b>${esc(r.cust)}</b><small>Unit ${esc(r.unit)}</small>${r.warr?`<span class="rl-tag">${ICO.warranty}WARR</span>`:''}</span>
+   <span class="rl-cmp">${st.grp==='open'?`<span class="sub">${esc(r.sub?r.sub.split(' · ')[0]:SHORT[r.st])} · </span>`:r.sub&&st.groupBy!=='none'?`<span class="sub">${esc(r.sub)} · </span>`:''}${esc(r.cmp)}${r.nops>1?`<em>+${r.nops-1}</em>`:''}</span>
+   ${ticks(r)}<span class="rl-time c-time">${mini(r.b,r.q)}<span>${r.b.toFixed(2)} <em>/ ${r.q.toFixed(2)}</em></span></span>
+   <span class="px-av" title="${esc(r.techn)}">${r.tech||'—'}</span><span class="rl-sub c-spot">${esc(r.spot)}</span><span class="rl-sub c-ready">${esc(r.ready)}</span>
+   <span class="rl-days r${late?' late':''}">${r.days===0?'today':r.days+'d'}</span>
+   <button class="px-btn px-btn--ghost px-btn--icon px-btn--sm rl-opt" data-opt title="RO options">${ICO.more}</button></div>`;}
+function groupKey(r){return st.groupBy==='status'?r.st:st.groupBy==='stage'?r.stage:st.groupBy==='tech'?r.tech:'all';}
+function groupLabel(k){if(st.groupBy==='status')return SI[k]+`<span>${GNAME[k]}</span>`;if(st.groupBy==='stage')return `<span>${STGN[k]}</span>`;if(st.groupBy==='tech')return `<span class="px-av">${k||'—'}</span><span>${TECHN[k]}</span>`;return '<span>All open</span>';}
+function renderList(){
+  const L=rows(), flat=st.grp==='open', gb=flat?'none':st.groupBy, keys=gb==='status'?GORDER:gb==='stage'?STG:gb==='tech'?['MR','LM','PS','']:['all'];
+  const _unused=st.groupBy==='status'?GORDER:st.groupBy==='stage'?STG:st.groupBy==='tech'?['MR','LM','PS','']:['all'];
+  let h=`<div class="rl-head"><span></span><span>RO</span><span></span><span>Customer</span><span>Complaint</span><span>Stage</span><span class="c-time">Time</span><span>Tech</span><span class="c-spot">Spot</span><span class="c-ready">Ready by</span><span class="r">Open</span><span></span></div>`;
+  if(st.grp!=='done'&&!st.q) h+=`<div class="rl-row rl-shop"${st.opt==='list'?' data-n="9"':''}><span></span><span class="rl-no">${ICO.kit}</span><span></span><span class="rl-cu"><b>Shop time</b><small>clock non-RO work</small></span><span class="rl-cmp">Cleaning, training, shop truck…</span><span></span><span class="c-time"></span><span></span><span class="c-spot"></span><span class="c-ready"></span><span></span><span></span></div>`;
+  let first=true;
+  keys.forEach(k=>{const g=L.filter(r=>flat||groupKey(r)===k);if(!g.length)return;if(flat){h+=`<div class="rl-rows" style="margin-top:6px">${g.map(r=>row(r,0)).join('')}</div>`;return;}const closed=st.closed[st.groupBy+k];
+    h+=`<div class="rl-grp${closed?' is-closed':''}" data-g="${st.groupBy+k}"${first&&st.opt==='list'?' data-n="4"':''}>${ICO.chevD.replace('px-ico','px-ico px-chev')}${groupLabel(k)}<span class="n">${g.length}</span><button class="px-btn px-btn--ghost px-btn--icon px-btn--sm" title="New RO in this group">${ICO.plus}</button></div><div class="rl-rows">${g.map((r,i)=>row(r,first&&i===0&&st.opt==='list'?5:(r.live&&st.opt==='list'?6:0))).join('')}</div>`;first=false;});
+  if(!L.length) h+='<div class="px-empty" style="padding:48px 0;text-align:center;color:var(--ink-3)">Nothing matches that — check the spelling, or clear the search.</div>';
+  return `<div class="rl-scroll">${h}</div>`;}
+function renderBoard(){const L=rows();
+  return `<div class="rl-board">${STG.map((k,i)=>{const g=L.filter(r=>r.stage===k);
+    return `<div class="rl-col"${i===0&&st.opt==='board'?' data-n="1"':''}><div class="rl-colh"><i class="${k==='repair'?'now':''}"></i>${STGN[k]}<span class="n">${g.length}</span></div><div class="rl-cards">${g.map((r,j)=>`<div class="rl-card" data-ro="${r.id}"${i===2&&j===0&&st.opt==='board'?' data-n="3"':''}${i===4&&j===0&&st.opt==='board'?' data-n="2"':''}>
+      <div class="rl-card__top">${r.live?'<i class="rl-live"></i>':''}${r.no}<span class="d${r.days>=7?' late':''}">${r.days===0?'today':r.days+'d'}</span></div>
+      <h4>${esc(r.cust)}</h4><p>${esc(r.cmp)}${r.nops>1?` · +${r.nops-1}`:''}</p>
+      <div class="rl-card__ft">${r.si}<span class="s">${esc(r.sub?r.sub.split(' · ')[0]:SHORT[r.st])}</span>${mini(r.b,r.q)}<span class="px-av">${r.tech||'—'}</span></div></div>`).join('')||'<div class="rl-empty">Nothing here</div>'}</div></div>`;}).join('')}</div>`;}
+function renderPeek(){const r=DATA.find(x=>x.id===st.cur)||DATA[0];const left=Math.max(0,r.q-r.b);
+  const ops=[[1,r.cmp,r.si,r.b,r.q]].concat(Array.from({length:r.nops-1},(_,i)=>[i+2,['PM service – A','Wheel seal leaking','DOT inspection'][i%3],SI.hold,0,[1.5,2.4,0.8][i%3]]));
+  const nx=r.st==='parts'?`Waiting on parts — ${r.sub}. Check the ETA with the parts desk.`:r.st==='customer'?`${r.sub} — follow up with ${r.cust.split(' ')[0]} if nothing by 2 pm.`:r.st==='support'?'Tech support case open — awaiting their reply.':r.st==='foreman'?'Held for the foreman — needs a look before it goes on.':r.st==='roadtest'?'Work done — road test, then release.':r.st==='working'?`Clock running · ${r.sub}.`:`Ready to work — ${left.toFixed(2)} h left on the quote.`;
+  return `<div class="rl-peek__top"><span class="px-id">RO-${r.no}</span><span>·</span><span>${r.days===0?'opened today':r.days+' days open'}</span><button class="px-btn px-btn--ghost px-btn--icon px-btn--sm" data-peekx title="Close (Esc)">${ICO.x}</button></div>
+   <h2>${esc(r.cust)}</h2><div class="sub">${esc(r.veh)} · Unit ${esc(r.unit)} · ${esc(r.spot)}</div>
+   <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="px-status--button">${r.si}<span>${esc(r.stn)}</span>${r.sub?`<span class="px-status__sub">· ${esc(r.sub.split(' · ')[0])}</span>`:''}${ICO.chevD.replace('px-ico','px-ico px-chev')}</button><span class="px-with">with <span class="px-av">${r.tech||'—'}</span> ${esc(TECHN[r.tech])}</span></div>
+   <div class="px-next${r.st==='hold'||r.st==='working'?' is-clear':''}"><div class="px-next__head"><span class="px-next__k">Next</span><span class="px-next__for">${esc(STGN[r.stage])} · ready ${esc(r.ready)}</span></div><div class="px-next__body"><p class="px-next__t">${esc(nx)}</p></div></div>
+   <div class="rl-tots"><div><span>${ICO.clock}Time</span><b>${r.b.toFixed(2)}<em> / ${r.q.toFixed(2)} h</em></b></div><div><span>${ICO.parts}Parts</span><b>${r.st==='parts'?'1':'2'}<em> / ${r.st==='parts'?'2':'2'}</em></b></div><div><span>${ICO.clip}Files</span><b>${3+r.nops}</b></div></div>
+   <div class="rl-pk-h">Operations</div><div class="rl-pops">${ops.map(o=>`<div class="rl-pop">${o[2]}<span class="n">${o[0]}</span><span class="t">${esc(o[1])}</span><span class="h">${o[3].toFixed(2)} / ${o[4].toFixed(2)} h</span></div>`).join('')}</div>
+   <div class="rl-open"><button class="px-btn px-btn--primary">Open RO<span class="px-kbd">↵</span></button><button class="px-btn">${ICO.swap}Transfer…</button></div>`;}
+function render(){
+  const c=counts(), main=$('.rl-main'), peek=$('.rl-peek'), rl=$('.rl');
+  $$('[data-grp]').forEach(b=>{b.classList.toggle('is-on',b.dataset.grp===st.grp);$('span',b).textContent=c[b.dataset.grp];});
+  rl.classList.toggle('is-peek',st.view==='peek');rl.classList.toggle('has-sel',st.sel.size>0);
+  $('.rl-body').innerHTML=st.view==='board'?renderBoard():renderList();
+  peek.hidden=st.view!=='peek'; if(st.view==='peek')peek.innerHTML=renderPeek();
+  const bulk=$('.rl-bulk');bulk.hidden=!st.sel.size;$('b',bulk).textContent=`${st.sel.size} selected`;
+  $$('[data-optset]').forEach(b=>b.classList.toggle('is-on',b.dataset.optset===st.opt));
+  $$('[data-nl]').forEach(e=>{if(st.opt==='list')e.dataset.n=e.dataset.nl;else delete e.dataset.n;});
+  if(st.opt==='peek'){const c=$('.rl-row.is-cur');if(c)c.dataset.n='1';peek.dataset.n='2';const o=$('.rl-open',peek);if(o)o.dataset.n='3';}else delete peek.dataset.n;
+  renderNotes();}
+function renderNotes(){const N=NOTES[st.opt];$('.wt-notes').innerHTML=N.map((n,i)=>`<li><span class="wt-n">${i+1}</span><div><b>${n[0]}</b><p>${n[1]}</p></div></li>`).join('');}
+/* toolbar of the walkthrough */
+$$('[data-theme-set]').forEach(b=>b.onclick=()=>{root.dataset.theme=b.dataset.themeSet;$$('[data-theme-set]').forEach(x=>x.classList.toggle('is-on',x===b));});
+$$('[data-optset]').forEach(b=>b.onclick=()=>{st.opt=b.dataset.optset;st.view=st.opt;st.sel.clear();closePop();render();});
+const wl=$('#wtToggle'); wl.onclick=()=>{const on=!wl.classList.contains('is-on');wl.classList.toggle('is-on',on);$('.px-toggle',wl).classList.toggle('is-on',on);mock.classList.toggle('wt',on);};
+/* page interactions */
+$$('[data-grp]').forEach(b=>b.onclick=()=>{st.grp=b.dataset.grp;st.sel.clear();render();});
+$('[data-q]').oninput=e=>{st.q=e.target.value;render();};
+let pop=null; function closePop(){if(pop){pop.remove();pop=null;}}
+function place(el,anchor,dx){const a=anchor.getBoundingClientRect(),m=mock.getBoundingClientRect();el.style.left=((a.right-m.left)/scale-280+(dx||0))+'px';el.style.top=((a.bottom-m.top)/scale+6)+'px';}
+$('[data-disp]').onclick=e=>{e.stopPropagation();if(pop){closePop();return;}const d=document.createElement('div');d.className='px-pop rl-disp';
+  d.innerHTML=`<h5>View</h5><div class="px-seg"><button class="${st.view!=='board'?'is-on':''}" data-v="list">${ICO.list}List</button><button class="${st.view==='board'?'is-on':''}" data-v="board">${ICO.board}Board</button></div>
+   <h5>Group by</h5><div class="rl-chips">${[['status','Status'],['stage','Stage'],['tech','Tech'],['none','None']].map(([k,l])=>`<button class="${st.groupBy===k?'is-on':''}" data-gb="${k}">${l}</button>`).join('')}</div>
+   <h5>Sort</h5><div class="rl-chips">${[['days','Days open'],['no','RO number'],['ready','Ready by']].map(([k,l])=>`<button class="${st.sort===k?'is-on':''}" data-so="${k}">${l}</button>`).join('')}</div>
+   <h5>Columns</h5><div class="rl-chips">${['Stage','Time','Tech','Spot','Ready by','Open'].map(l=>`<button class="is-on">${l}</button>`).join('')}</div>`;
+  mock.appendChild(d);place(d,e.currentTarget);pop=d;
+  $$('[data-v]',d).forEach(b=>b.onclick=()=>{st.view=b.dataset.v==='board'?'board':(st.opt==='peek'?'peek':'list');closePop();render();});
+  $$('[data-gb]',d).forEach(b=>b.onclick=()=>{st.groupBy=b.dataset.gb;$$('[data-gb]',d).forEach(x=>x.classList.toggle('is-on',x===b));render();});
+  $$('[data-so]',d).forEach(b=>b.onclick=()=>{st.sort=b.dataset.so;$$('[data-so]',d).forEach(x=>x.classList.toggle('is-on',x===b));render();});};
+mock.addEventListener('mousedown',e=>{if(pop&&!pop.contains(e.target)&&!e.target.closest('[data-disp],[data-opt]'))closePop();});
+mock.addEventListener('click',e=>{
+  const g=e.target.closest('.rl-grp');if(g&&!e.target.closest('.px-btn')){st.closed[g.dataset.g]=!st.closed[g.dataset.g];g.classList.toggle('is-closed');return;}
+  const o=e.target.closest('[data-opt]');if(o){e.stopPropagation();closePop();const d=document.createElement('div');d.innerHTML=OPTS;const m=d.firstElementChild;m.style.position='absolute';m.style.zIndex=45;mock.appendChild(m);place(m,o,40);pop=m;return;}
+  const cb=e.target.closest('[data-cb]');const r=e.target.closest('.rl-row[data-ro]');
+  if(cb&&r){const id=r.dataset.ro;st.sel.has(id)?st.sel.delete(id):st.sel.add(id);render();return;}
+  if(r){ if(e.shiftKey||e.metaKey||e.ctrlKey){const id=r.dataset.ro;st.sel.has(id)?st.sel.delete(id):st.sel.add(id);render();return;}
+    if(st.view==='peek'){st.cur=r.dataset.ro;render();return;} flashOpen(r);return;}
+  const c=e.target.closest('.rl-card');if(c){flashOpen(c);return;}
+  if(e.target.closest('[data-peekx]')){st.opt='list';st.view='list';render();return;}
+  if(e.target.closest('[data-clear]')){st.sel.clear();render();}
+});
+function flashOpen(el){el.animate([{background:'var(--accent-tint)'},{background:'transparent'}],{duration:700});toast('Opens RO-'+DATA.find(x=>x.id===el.dataset.ro).no+' on the RO page');}
+let tt;function toast(m){$('.tw')?.remove();const w=document.createElement('div');w.className='tw';w.style.cssText='position:absolute;left:0;right:0;bottom:24px;display:flex;justify-content:center;z-index:50;pointer-events:none';w.innerHTML=`<div class="px-toast" style="animation:px-rise .2s cubic-bezier(.2,.8,.2,1) both">${m}</div>`;mock.appendChild(w);clearTimeout(tt);tt=setTimeout(()=>w.remove(),2200);}
+addEventListener('keydown',e=>{if(e.target.matches('input'))return;
+  if(e.key==='/'){e.preventDefault();$('[data-q]').focus();}
+  if(e.key==='Escape'){closePop();if(st.sel.size){st.sel.clear();render();}}
+  if(st.view==='peek'&&(e.key==='j'||e.key==='k')){const L=rows(),i=L.findIndex(r=>r.id===st.cur);const n=L[Math.max(0,Math.min(L.length-1,i+(e.key==='j'?1:-1)))];if(n){st.cur=n.id;render();}}});
+render();
+</script>
+</body>
+</html>

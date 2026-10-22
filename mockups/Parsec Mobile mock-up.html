@@ -1,0 +1,1003 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parsec Mobile mock-up</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
+<style>:root, [data-theme="light"] {
+  --canvas: #F2F0EA;
+  --panel: #FBFAF7;
+  --raised: #FFFFFF;
+  --fill: #F0EDE6;
+  --selected: #E8E4DA;
+  --hairline: #E6E2D8;
+  --border: #D6D0C3;
+  --border-strong: #8F897C;
+  --ink: #1D1C1A;
+  --ink-2: #57534B;
+  --ink-3: #67625A;
+  --ink-4: #A8A398;
+  --accent: #86643A;
+  --accent-text: #7A5A32;
+  --accent-tint: #F4EDE1;
+  --accent-line: #D9C5A3;
+  --on-accent: #FFFFFF;
+  --primary: #1D1C1A;
+  --on-primary: #FBFAF7;
+  --status-hold: #857F75;
+  --status-working: #3A8C60;
+  --status-waiting: #AD7210;
+  --status-customer: #2F8795;
+  --status-support: #6C69C8;
+  --status-problem: #C0503F;
+  --good: #2C7350;
+  --good-tint: #E7F1EA;
+  --warn: #8C5B0B;
+  --warn-tint: #F8EEDC;
+  --bad: #A8402E;
+  --bad-tint: #F8E9E5;
+  --scrim: rgba(29,28,26,.28);
+  --shadow-panel: 0 0 0 1px rgba(29,28,26,.06), 0 1px 3px rgba(29,28,26,.04);
+  --shadow-raised: 0 0 0 1px rgba(29,28,26,.07), 0 2px 4px rgba(29,28,26,.04), 0 12px 32px -8px rgba(29,28,26,.18);
+  --shadow-focus: 0 0 0 2px #FBFAF7, 0 0 0 4px #86643A;
+}
+[data-theme="dark"] {
+  --canvas: #0E0E0D;
+  --panel: #151514;
+  --raised: #1D1D1B;
+  --fill: #222220;
+  --selected: #2A2A27;
+  --hairline: #262624;
+  --border: #363532;
+  --border-strong: #6E6A62;
+  --ink: #EDEBE6;
+  --ink-2: #B0ACA3;
+  --ink-3: #9A968D;
+  --ink-4: #5E5B55;
+  --accent: #D1B184;
+  --accent-text: #D6B88D;
+  --accent-tint: #2A241B;
+  --accent-line: #6B5A40;
+  --on-accent: #1A1610;
+  --primary: #EDEBE6;
+  --on-primary: #151514;
+  --status-hold: #8D897F;
+  --status-working: #5BBE8B;
+  --status-waiting: #E2A84C;
+  --status-customer: #58B3C0;
+  --status-support: #9E9DF0;
+  --status-problem: #EC7F6C;
+  --good: #63C291;
+  --good-tint: #16261E;
+  --warn: #E0A64A;
+  --warn-tint: #2A2114;
+  --bad: #EE8270;
+  --bad-tint: #2D1916;
+  --scrim: rgba(0,0,0,.6);
+  --shadow-panel: 0 0 0 1px rgba(255,255,255,.06);
+  --shadow-raised: 0 0 0 1px rgba(255,255,255,.07), 0 16px 40px -8px rgba(0,0,0,.7);
+  --shadow-focus: 0 0 0 2px #151514, 0 0 0 4px #D1B184;
+}
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 999px;
+  --control-sm: 28px;
+  --control-md: 32px;
+  --control-lg: 40px;
+  --row: 40px;
+  --header: 48px;
+  --sidebar: 236px;
+  --rail: 300px;
+  --measure: 760px;
+  --font-sans: "Geist", "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-serif: "Newsreader", "Iowan Old Style", Charter, Georgia, serif;
+  --font-mono: "Geist Mono", "Cascadia Mono", Consolas, ui-monospace, monospace;
+}
+.display-lg { font-family: var(--font-serif); font-size: 32px; line-height: 38px; font-weight: 500; letter-spacing: -0.015em; }
+.display { font-family: var(--font-serif); font-size: 24px; line-height: 30px; font-weight: 500; letter-spacing: -0.01em; }
+.title { font-family: var(--font-sans); font-size: 17px; line-height: 24px; font-weight: 600; letter-spacing: -0.01em; }
+.heading { font-family: var(--font-sans); font-size: 15px; line-height: 22px; font-weight: 600; letter-spacing: -0.005em; }
+.body { font-family: var(--font-sans); font-size: 14px; line-height: 21px; font-weight: 400; }
+.body-medium { font-family: var(--font-sans); font-size: 14px; line-height: 21px; font-weight: 500; }
+.small { font-family: var(--font-sans); font-size: 13px; line-height: 19px; font-weight: 400; }
+.label { font-family: var(--font-sans); font-size: 12px; line-height: 16px; font-weight: 500; }
+.micro { font-family: var(--font-sans); font-size: 11px; line-height: 14px; font-weight: 600; letter-spacing: 0.02em; }
+.timer { font-family: var(--font-sans); font-size: 30px; line-height: 36px; font-weight: 500; letter-spacing: -0.02em; }
+.stat { font-family: var(--font-sans); font-size: 18px; line-height: 24px; font-weight: 500; letter-spacing: -0.01em; }
+.id { font-family: var(--font-mono); font-size: 13px; line-height: 18px; font-weight: 500; }
+.id-sm { font-family: var(--font-mono); font-size: 11.5px; line-height: 16px; font-weight: 500; letter-spacing: 0.04em; }
+
+/* Parsec — component styles. Every value comes from tokens.json (var(--…)). Prefix: px- */
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; font-family: var(--font-sans); font-size: 14px; line-height: 21px; background: var(--panel); color: var(--ink); -webkit-font-smoothing: antialiased; }
+.px-num { font-variant-numeric: tabular-nums; }
+.px-id { font-family: var(--font-mono); font-size: 13px; font-weight: 500; letter-spacing: 0; }
+.px-muted { color: var(--ink-2); } .px-faint { color: var(--ink-3); }
+.px-demo { padding: var(--space-6); display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; }
+.px-demo.col { flex-direction: column; align-items: flex-start; }
+.px-ico { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+:where(.px-btn, .px-nav a, .px-row, .px-tab, .px-menu__item, .px-stage__seg, .px-hit, .px-total, .px-mrow, .px-mgrp):focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+
+/* ---------- Button ---------- */
+.px-btn { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); height: var(--control-md); padding: 0 var(--space-3); border-radius: var(--radius-md); font: 500 13.5px/1 var(--font-sans); white-space: nowrap; cursor: pointer; background: var(--raised); color: var(--ink); box-shadow: inset 0 0 0 1px var(--border); transition: background-color .15s ease-out, box-shadow .15s ease-out, transform .1s ease-out; }
+.px-btn:hover { background: var(--fill); }
+.px-btn:active { transform: scale(.98); }
+.px-btn--primary { background: var(--primary); color: var(--on-primary); box-shadow: none; }
+.px-btn--primary:hover { background: var(--primary); box-shadow: inset 0 0 0 999px rgba(128,128,128,.14); }
+.px-btn--accent { background: var(--accent); color: var(--on-accent); box-shadow: none; }
+.px-btn--accent:hover { background: var(--accent); box-shadow: inset 0 0 0 999px rgba(255,255,255,.1); }
+.px-btn--ghost { background: transparent; color: var(--ink-2); box-shadow: none; }
+.px-btn--ghost:hover { background: var(--fill); color: var(--ink); }
+.px-btn--danger { background: transparent; color: var(--bad); box-shadow: none; }
+.px-btn--danger:hover { background: var(--bad-tint); }
+.px-btn--sm { height: var(--control-sm); padding: 0 10px; font-size: 13px; border-radius: 7px; }
+.px-btn--lg { height: var(--control-lg); padding: 0 var(--space-4); font-size: 14px; }
+.px-btn--icon { width: var(--control-md); padding: 0; }
+.px-btn--icon.px-btn--sm { width: var(--control-sm); }
+.px-btn--round { border-radius: var(--radius-full); }
+.px-btn[disabled], .px-btn.is-disabled { color: var(--ink-4); background: var(--fill); box-shadow: none; cursor: default; transform: none; }
+.px-kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 4px; border-radius: var(--radius-xs); font: 600 11px/1 var(--font-sans); letter-spacing: .02em; color: var(--ink-3); background: var(--fill); box-shadow: inset 0 0 0 1px var(--hairline); }
+.px-btn--primary .px-kbd, .px-btn--accent .px-kbd { background: rgba(128,128,128,.22); color: inherit; box-shadow: none; opacity: .8; }
+
+/* ---------- Status icon + label ---------- */
+.px-si { width: 14px; height: 14px; flex: none; display: inline-block; vertical-align: -2px; color: var(--status-hold); }
+.px-si[data-s="working"], .px-si[data-s="roadtest"], .px-si[data-s="released"] { color: var(--status-working); }
+.px-si[data-s="parts"], .px-si[data-s="foreman"] { color: var(--status-waiting); }
+.px-si[data-s="customer"] { color: var(--status-customer); }
+.px-si[data-s="support"] { color: var(--status-support); }
+.px-si[data-s="problem"] { color: var(--status-problem); }
+.px-status { display: inline-flex; align-items: center; gap: var(--space-2); font-size: 13.5px; font-weight: 500; color: var(--ink); white-space: nowrap; }
+.px-status__sub { color: var(--ink-3); font-weight: 400; }
+.px-status--button { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: var(--space-2); height: var(--control-sm); padding: 0 10px 0 9px; border-radius: var(--radius-md); font: 500 13.5px/1 var(--font-sans); color: var(--ink); cursor: pointer; box-shadow: inset 0 0 0 1px var(--border); background: var(--raised); transition: background-color .15s ease-out; }
+.px-status--button:hover { background: var(--fill); }
+.px-status--button .px-chev { width: 12px; height: 12px; color: var(--ink-3); margin-left: 2px; }
+.px-live .px-si { animation: px-breathe 2.4s ease-in-out infinite; }
+@keyframes px-breathe { 50% { opacity: .55; } }
+
+/* ---------- Op-type tag ---------- */
+.px-tag { display: inline-flex; align-items: center; gap: 5px; height: 20px; padding: 0 7px 0 6px; border-radius: var(--radius-sm); background: var(--fill); color: var(--ink-2); font: 500 11.5px/1 var(--font-mono); letter-spacing: .04em; white-space: nowrap; }
+.px-tag::before { content: ""; width: 6px; height: 6px; border-radius: 2px; background: var(--status-hold); }
+.px-tag[data-t="DIAG"]::before { background: var(--status-support); }
+.px-tag[data-t="OP"]::before { background: var(--status-customer); }
+.px-tag[data-t="PM"]::before { background: var(--status-working); }
+.px-tag[data-t="WARR"]::before { background: var(--accent); }
+.px-tag[data-t="COMEBACK"]::before { background: var(--status-problem); }
+.px-tag[data-t="SUBLET"]::before { background: var(--status-waiting); }
+
+/* ---------- Avatar ---------- */
+.px-av { width: 20px; height: 20px; border-radius: var(--radius-full); display: inline-grid; place-items: center; flex: none; background: var(--selected); color: var(--ink-2); font: 600 9.5px/1 var(--font-sans); letter-spacing: .02em; }
+.px-av--md { width: 24px; height: 24px; font-size: 10.5px; }
+.px-av--me { background: var(--accent-tint); color: var(--accent-text); box-shadow: inset 0 0 0 1px var(--accent-line); }
+
+/* ---------- Menu / popover ---------- */
+.px-pop { background: var(--raised); border-radius: var(--radius-lg); box-shadow: var(--shadow-raised); padding: 6px; min-width: 220px; animation: px-up .18s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes px-up { from { opacity: 0; transform: translateY(6px); } }
+.px-menu__item { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 10px; width: 100%; height: 32px; padding: 0 10px; border-radius: var(--radius-md); font-size: 13.5px; color: var(--ink); cursor: pointer; }
+.px-menu__item .px-ico { color: var(--ink-3); }
+.px-menu__item:hover, .px-menu__item.is-hover { background: var(--fill); }
+.px-menu__item.is-on { background: var(--selected); }
+.px-menu__item .px-kbd, .px-menu__item .px-menu__meta { margin-left: auto; }
+.px-menu__meta { font-size: 12px; color: var(--ink-3); }
+.px-menu__item--danger, .px-menu__item--danger .px-ico { color: var(--bad); }
+.px-menu__item--danger:hover { background: var(--bad-tint); }
+.px-menu__sep { height: 1px; background: var(--hairline); margin: 6px 4px; }
+.px-menu__group { padding: 8px 10px 4px; font-size: 12px; font-weight: 500; color: var(--ink-3); }
+.px-menu__search { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 10px; margin: -6px -6px 6px; border-bottom: 1px solid var(--hairline); font-size: 13.5px; color: var(--ink-3); }
+.px-menu__search .px-kbd { margin-left: auto; }
+
+/* status menu: second level */
+.px-smenu { display: flex; align-items: flex-start; gap: 6px; }
+.px-smenu .px-pop { width: 260px; }
+.px-smenu__desc { font-size: 12px; color: var(--ink-3); margin-left: auto; padding-left: 12px; white-space: nowrap; }
+.px-smenu__more { width: 12px; height: 12px; color: var(--ink-3); margin-left: 4px; }
+.px-smenu .px-sub { width: 200px; min-width: 0; margin-top: 74px; }
+
+/* ---------- Tabs ---------- */
+.px-tabs { position: relative; display: flex; gap: var(--space-6); box-shadow: inset 0 -1px 0 var(--hairline); }
+.px-tabs__ink { position: absolute; bottom: 0; height: 2px; border-radius: 1px; background: var(--ink); transition: left .22s cubic-bezier(.2,.8,.2,1), width .22s cubic-bezier(.2,.8,.2,1); }
+.px-tabs.has-ink .px-tab.is-on { box-shadow: none; }
+.px-tab { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 6px; height: 36px; font-size: 14px; font-weight: 500; color: var(--ink-3); cursor: pointer; transition: color .15s ease-out; }
+.px-tab:hover { color: var(--ink); }
+.px-tab.is-on { color: var(--ink); box-shadow: inset 0 -2px 0 var(--ink); }
+.px-tab__n { font-size: 12px; font-weight: 500; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+
+/* ---------- Segmented ---------- */
+.px-seg { display: inline-flex; padding: 2px; border-radius: var(--radius-md); background: var(--fill); }
+.px-seg button { all: unset; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 500; color: var(--ink-2); cursor: pointer; text-align: center; transition: background-color .15s ease-out, color .15s ease-out, box-shadow .15s ease-out; }
+.px-seg button:hover { color: var(--ink); }
+.px-seg--fill { display: flex; }
+.px-seg--fill button { flex: 1; padding: 5px 6px; }
+.px-seg button.is-on { background: var(--raised); color: var(--ink); box-shadow: 0 0 0 1px var(--hairline), 0 1px 2px rgba(0,0,0,.06); }
+
+/* ---------- Fields ---------- */
+.px-field { display: flex; flex-direction: column; gap: 6px; }
+.px-field > label { font-size: 12px; font-weight: 500; color: var(--ink-3); }
+.px-input { box-sizing: border-box; height: var(--control-md); width: 240px; padding: 0 10px; border: 0; border-radius: var(--radius-md); background: var(--raised); color: var(--ink); font: 400 14px/1 var(--font-sans); box-shadow: inset 0 0 0 1px var(--border); outline: none; transition: box-shadow .15s ease-out; }
+.px-input::placeholder { color: var(--ink-3); }
+.px-input:hover { box-shadow: inset 0 0 0 1px var(--border-strong); }
+.px-input:focus, .px-input.is-focus { box-shadow: inset 0 0 0 1px var(--accent), 0 0 0 3px var(--accent-tint); }
+textarea.px-input { height: auto; min-height: 72px; padding: 9px 10px; line-height: 21px; resize: vertical; }
+.px-check { display: inline-flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--ink); cursor: pointer; }
+.px-check i { width: 16px; height: 16px; border-radius: 5px; box-shadow: inset 0 0 0 1.5px var(--border-strong); display: grid; place-items: center; flex: none; }
+.px-check i { transition: background-color .15s ease-out, box-shadow .15s ease-out; }
+.px-check.is-on i { background: var(--primary); box-shadow: none; }
+.px-check.is-on i::after { animation: px-pop .22s cubic-bezier(.2,.8,.2,1) both; }
+.px-check.is-on i::after { content: ""; width: 8px; height: 4px; border: solid var(--on-primary); border-width: 0 0 1.75px 1.75px; transform: translateY(-1px) rotate(-45deg); }
+.px-check span { transition: color .2s ease-out; }
+.px-check.is-on span { color: var(--ink-3); text-decoration: line-through; text-decoration-color: var(--ink-4); }
+.px-toggle { all: unset; box-sizing: border-box; cursor: pointer; width: 30px; height: 18px; border-radius: 999px; box-shadow: inset 0 0 0 1.5px var(--border-strong); position: relative; flex: none; display: inline-block; }
+.px-toggle::after { content: ""; position: absolute; left: 3px; top: 3px; width: 12px; height: 12px; border-radius: 50%; background: var(--border-strong); transition: transform .2s cubic-bezier(.2,.8,.2,1), background-color .2s; }
+.px-toggle { transition: background-color .2s ease-out, box-shadow .2s ease-out; }
+.px-toggle.is-on { background: var(--accent); box-shadow: none; }
+.px-toggle.is-on::after { transform: translateX(12px); background: var(--on-accent); }
+
+/* ---------- Toast ---------- */
+.px-toast { display: inline-flex; align-items: center; gap: var(--space-3); height: 40px; padding: 0 8px 0 16px; border-radius: var(--radius-full); background: var(--primary); color: var(--on-primary); font-size: 13.5px; box-shadow: var(--shadow-raised); }
+.px-toast .px-si { color: inherit; opacity: .7; }
+.px-toast__act { all: unset; cursor: pointer; font-weight: 600; padding: 0 10px; height: 28px; display: inline-flex; align-items: center; border-radius: var(--radius-full); }
+.px-toast__act:hover { background: rgba(128,128,128,.2); }
+
+/* ---------- Stage track ---------- */
+.px-stage { display: flex; flex-direction: column; gap: 10px; }
+.px-stage__top { display: flex; align-items: baseline; gap: var(--space-2); font-size: 13px; color: var(--ink-2); }
+.px-stage__top b { font-weight: 600; color: var(--ink); }
+.px-stage__top .px-stage__eta { margin-left: auto; color: var(--ink-3); }
+.px-stage__track { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.px-stage__seg { all: unset; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; cursor: pointer; padding: 4px 0 0; border-radius: 6px; }
+.px-stage__seg i { display: block; height: 4px; border-radius: 2px; background: var(--hairline); transition: background-color .35s ease-out, box-shadow .35s ease-out; }
+.px-stage__seg span { font-size: 12px; font-weight: 500; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.px-stage__seg.is-done i { background: var(--ink-2); }
+.px-stage__seg.is-done span { color: var(--ink-2); }
+.px-stage__seg.is-now i { background: var(--accent); }
+.px-stage__seg.is-now span { color: var(--accent-text); font-weight: 600; }
+.px-stage__seg.is-wait i { background: repeating-linear-gradient(135deg, var(--status-waiting) 0 3px, transparent 3px 6px); box-shadow: inset 0 0 0 1px var(--status-waiting); }
+.px-stage__seg.is-skip i { background: transparent; box-shadow: inset 0 0 0 1px var(--hairline); }
+.px-stage__seg.is-skip span { color: var(--ink-4); }
+.px-stage__seg:hover span { color: var(--ink); }
+.px-stagepop { width: 248px; padding: 12px 14px 14px; }
+.px-stagepop h4 { margin: 0 0 2px; font-size: 13.5px; font-weight: 600; }
+.px-stagepop p { margin: 0 0 12px; font-size: 12px; color: var(--ink-3); }
+.px-stagepop .px-check { display: flex; padding: 5px 0; }
+
+/* ---------- Next step ---------- */
+.px-next { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px 14px; border-radius: var(--radius-lg); background: var(--accent-tint); box-shadow: inset 0 0 0 1px var(--accent-line); }
+.px-next__head { display: flex; align-items: baseline; gap: 8px; }
+.px-next__k { font-size: 12px; font-weight: 600; color: var(--accent-text); white-space: nowrap; }
+.px-next__for { font-size: 12px; color: var(--ink-2); margin-left: auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.px-next__body { display: flex; flex-direction: column; gap: 10px; }
+.px-next__body.is-swap { animation: px-swap .28s cubic-bezier(.2,.8,.2,1) both; }
+.px-next__t { margin: 0; font-size: 13.5px; line-height: 20px; font-weight: 500; color: var(--ink); }
+.px-next__acts { display: flex; gap: var(--space-2); }
+.px-next__acts .px-btn { flex: 1 1 auto; min-width: 0; padding: 0 8px; font-size: 12.5px; }
+.px-next.is-clear { background: transparent; box-shadow: inset 0 0 0 1px var(--hairline); }
+.px-next.is-clear .px-next__k { color: var(--ink-3); }
+
+/* ---------- Time card ---------- */
+.px-time { display: flex; flex-direction: column; gap: var(--space-4); padding: var(--space-5); border-radius: var(--radius-lg); background: var(--raised); box-shadow: 0 0 0 1px var(--hairline); }
+.px-time__top { display: flex; align-items: center; gap: var(--space-4); }
+.px-time__clock { font: 500 30px/36px var(--font-sans); letter-spacing: -.02em; font-variant-numeric: tabular-nums; color: var(--ink); }
+.px-time.is-live .px-time__clock { color: var(--ink); }
+.px-time__cap { font-size: 12.5px; color: var(--ink-3); display: flex; align-items: center; gap: 6px; }
+.px-time.is-live .px-time__cap::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: px-breathe 2.4s ease-in-out infinite; }
+.px-time__go { margin-left: auto; width: var(--control-lg); height: var(--control-lg); padding: 0; border-radius: var(--radius-full); }
+.px-time__go .px-ico { width: 16px; height: 16px; fill: currentColor; stroke: none; }
+.px-time.is-live .px-time__go { background: var(--accent); color: var(--on-accent); }
+.px-bar { position: relative; height: 6px; border-radius: 3px; background: var(--fill); }
+.px-bar__fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: var(--ink-2); }
+.px-bar__over { position: absolute; top: 0; bottom: 0; border-radius: 0 3px 3px 0; background: var(--status-problem); }
+.px-bar__q { position: absolute; top: -4px; bottom: -4px; width: 2px; border-radius: 1px; background: var(--ink); }
+.px-time__stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); }
+.px-time__stats div { display: flex; flex-direction: column; gap: 2px; }
+.px-time__stats > div > span { font-size: 12px; font-weight: 500; color: var(--ink-3); }
+.px-time__stats b { font: 500 18px/24px var(--font-sans); letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.px-time__stats small { font-size: 12px; color: var(--ink-3); font-weight: 400; margin-left: 3px; }
+.px-good { color: var(--good); } .px-warn { color: var(--warn); } .px-bad { color: var(--bad); }
+
+/* ---------- Operation list ---------- */
+.px-ops { display: flex; flex-direction: column; }
+.px-row { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: var(--space-3); height: var(--row); padding: 0 10px; margin: 0 -10px; border-radius: var(--radius-md); cursor: pointer; transition: background-color .15s ease-out; }
+.px-row:hover { background: var(--fill); }
+.px-row.is-on { background: var(--selected); }
+.px-row__n { width: 14px; font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; text-align: right; }
+.px-row__t { flex: 1; min-width: 0; font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.px-row__m { font-size: 12.5px; color: var(--ink-3); white-space: nowrap; }
+.px-row__time { font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; width: 92px; text-align: right; }
+.px-row__time em { font-style: normal; color: var(--ink-3); }
+.px-mini { width: 40px; height: 4px; border-radius: 2px; background: var(--hairline); position: relative; overflow: hidden; flex: none; }
+.px-mini i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--ink-2); border-radius: 2px; }
+.px-mini i.over { background: var(--status-problem); }
+.px-op { display: flex; flex-direction: column; gap: var(--space-5); padding: var(--space-4) 0 var(--space-6) 26px; }
+.px-op__note { font-size: 14px; color: var(--ink-2); }
+
+/* entries & parts tables */
+.px-list { display: flex; flex-direction: column; }
+.px-li { display: grid; align-items: center; gap: var(--space-4); min-height: 40px; padding: 8px 0; box-shadow: inset 0 -1px 0 var(--hairline); font-size: 13.5px; }
+.px-li:last-child { box-shadow: none; }
+.px-li--time { grid-template-columns: 96px 1fr 120px 64px 24px; }
+.px-li--part { grid-template-columns: 1fr 120px 32px 150px; }
+.px-li small { color: var(--ink-3); font-size: 12.5px; }
+.px-li .r { text-align: right; font-variant-numeric: tabular-nums; }
+.px-add { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; height: 32px; font-size: 13px; color: var(--ink-3); }
+.px-add:hover { color: var(--ink); }
+
+/* ---------- Properties rail ---------- */
+.px-props { display: flex; flex-direction: column; gap: 4px; margin-top: var(--space-5); }
+.px-pg { display: flex; flex-direction: column; }
+.px-pg__h { display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 8px 0 4px; margin: 0 -8px 0 -4px; border-radius: var(--radius-md); font-size: 12px; font-weight: 500; color: var(--ink-3); cursor: pointer; user-select: none; transition: background-color .15s ease-out, color .15s ease-out; }
+.px-pg__h:hover { background: var(--fill); color: var(--ink-2); }
+.px-pg__chev { width: 12px; height: 12px; transition: transform .2s cubic-bezier(.2,.8,.2,1); transform: rotate(-90deg); }
+.px-pg.is-open .px-pg__chev { transform: none; }
+.px-pg__t { color: inherit; }
+.px-pg__sum { margin-left: auto; font-size: 12px; font-weight: 400; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; transition: opacity .18s ease-out; }
+.px-pg.is-open .px-pg__sum { opacity: 0; pointer-events: none; width: 0; }
+.px-pg .px-pg__act { margin-left: auto; font-size: 12px; opacity: 0; transition: opacity .18s ease-out; pointer-events: none; }
+.px-pg.is-open .px-pg__act { opacity: 1; pointer-events: auto; }
+.px-pg__b { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .24s cubic-bezier(.2,.8,.2,1); }
+.px-pg.is-open .px-pg__b { grid-template-rows: 1fr; }
+.px-pg__in { min-height: 0; overflow: hidden; padding-bottom: 0; transition: padding-bottom .24s; }
+.px-pg.is-open .px-pg__in { padding-bottom: 8px; }
+.px-prop { position: relative; display: grid; grid-template-columns: 92px 1fr; align-items: center; gap: var(--space-3); min-height: 30px; padding: 0 8px; margin: 0 -8px; border-radius: var(--radius-md); font-size: 13px; transition: background-color .15s ease-out; }
+.px-prop:hover { background: var(--fill); }
+.px-prop > span { color: var(--ink-3); }
+.px-prop > b { font-weight: 500; color: var(--ink); display: flex; align-items: center; gap: 8px; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.px-prop > b.px-empty { color: var(--ink-3); font-weight: 400; }
+.px-copy { all: unset; position: absolute; right: 4px; top: 50%; translate: 0 -50%; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 6px; color: var(--ink-3); cursor: pointer; opacity: 0; transition: opacity .15s ease-out, background-color .15s; }
+.px-copy:hover { background: var(--selected); color: var(--ink); }
+.px-prop:hover .px-copy, .px-copy.is-done { opacity: 1; }
+.px-copy .px-ico { width: 13px; height: 13px; grid-area: 1 / 1; transition: opacity .15s, transform .2s cubic-bezier(.2,.8,.2,1); }
+.px-copy .px-ico + .px-ico { opacity: 0; transform: scale(.6); color: var(--good); }
+.px-copy.is-done .px-ico:first-child { opacity: 0; transform: scale(.6); }
+.px-copy.is-done .px-ico + .px-ico { opacity: 1; transform: none; }
+.px-link { all: unset; cursor: pointer; color: var(--accent-text); font-weight: 500; font-size: 13px; }
+.px-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---------- Activity ---------- */
+.px-feed { display: flex; flex-direction: column; gap: 2px; }
+.px-ev { display: grid; grid-template-columns: 20px 1fr auto; gap: var(--space-3); align-items: start; padding: 7px 0; font-size: 13px; color: var(--ink-2); }
+.px-ev b { color: var(--ink); font-weight: 500; }
+.px-ev time { color: var(--ink-3); font-size: 12px; white-space: nowrap; padding-top: 1px; }
+.px-ev__dot { width: 20px; height: 20px; display: grid; place-items: center; color: var(--ink-3); }
+.px-ev__dot .px-ico { width: 14px; height: 14px; }
+.px-note { grid-column: 2 / 4; margin-top: 6px; padding: 10px 12px; border-radius: var(--radius-lg); background: var(--raised); box-shadow: 0 0 0 1px var(--hairline); color: var(--ink); font-size: 13.5px; line-height: 21px; }
+.px-composer { display: flex; align-items: center; gap: var(--space-3); margin-top: var(--space-3); padding: 0 6px 0 12px; height: 40px; border-radius: var(--radius-lg); background: var(--raised); box-shadow: inset 0 0 0 1px var(--border); color: var(--ink-3); font-size: 13.5px; }
+.px-composer .px-btn { margin-left: auto; }
+
+/* ---------- Sidebar ---------- */
+.px-side { width: var(--sidebar); box-sizing: border-box; display: flex; flex-direction: column; gap: var(--space-4); padding: 12px 10px 10px; background: var(--canvas); height: 100%; }
+.px-brand { display: flex; align-items: center; gap: 9px; height: 32px; padding: 0 8px; font: 600 15px/1 var(--font-sans); letter-spacing: -.01em; color: var(--ink); }
+.px-brand svg { width: 20px; height: 20px; }
+.px-brand svg circle { fill: var(--ink); } .px-brand svg .o { fill: var(--ink-3); } .px-brand svg .c { fill: #22c55e; }
+.px-brand .px-btn { margin-left: auto; }
+.px-search { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 8px 0 10px; border-radius: var(--radius-md); background: var(--panel); box-shadow: inset 0 0 0 1px var(--hairline); font-size: 13px; color: var(--ink-3); cursor: pointer; }
+.px-search:hover { box-shadow: inset 0 0 0 1px var(--border); }
+.px-search .px-kbd { margin-left: auto; background: var(--fill); }
+.px-clockin { display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 10px; border-radius: var(--radius-md); background: var(--panel); box-shadow: inset 0 0 0 1px var(--hairline); font-size: 12.5px; color: var(--ink-2); }
+.px-clockin b { display: block; font: 500 14px/18px var(--font-sans); color: var(--ink); font-variant-numeric: tabular-nums; }
+.px-clockin .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--status-working); flex: none; box-shadow: 0 0 0 3px var(--good-tint); }
+.px-clockin .px-btn { margin-left: auto; }
+.px-nav { display: flex; flex-direction: column; gap: 1px; }
+.px-nav__h { padding: 10px 8px 4px; font-size: 12px; font-weight: 500; color: var(--ink-3); }
+.px-nav a { display: flex; align-items: center; gap: 10px; height: 30px; padding: 0 8px; border-radius: var(--radius-md); font-size: 13.5px; font-weight: 500; color: var(--ink-2); text-decoration: none; cursor: pointer; transition: background-color .15s ease-out, color .15s ease-out; }
+.px-nav a .px-ico { color: var(--ink-3); }
+.px-nav a:hover { background: var(--fill); color: var(--ink); }
+.px-nav a.is-on { background: var(--selected); color: var(--ink); }
+.px-nav a.is-on .px-ico { color: var(--ink); }
+.px-nav a .n { margin-left: auto; font-size: 12px; font-weight: 500; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.px-side__foot { margin-top: auto; display: flex; flex-direction: column; gap: 1px; }
+.px-me { display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 8px; border-radius: var(--radius-md); font-size: 13px; color: var(--ink); cursor: pointer; }
+.px-me:hover { background: var(--fill); }
+.px-me small { display: block; font-size: 11.5px; color: var(--ink-3); line-height: 14px; }
+
+/* ---------- Page header (panel top bar) ---------- */
+.px-head { display: flex; align-items: center; gap: var(--space-2); height: var(--header); padding: 0 12px 0 var(--space-5); box-shadow: inset 0 -1px 0 var(--hairline); }
+.px-crumb { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--ink-3); white-space: nowrap; }
+.px-crumb a { color: var(--ink-3); text-decoration: none; } .px-crumb a:hover { color: var(--ink); }
+.px-crumb b { color: var(--ink); font-weight: 500; }
+.px-crumb .sl { color: var(--ink-4); }
+.px-head__pager { display: flex; align-items: center; gap: 2px; margin-left: var(--space-3); font-size: 12.5px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.px-head__acts { margin-left: auto; display: flex; align-items: center; gap: 2px; }
+
+/* ---------- Command menu ---------- */
+.px-cmd { width: 600px; max-width: 100%; background: var(--raised); border-radius: var(--radius-xl); box-shadow: var(--shadow-raised); overflow: hidden; }
+.px-cmd__in { display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 18px; border-bottom: 1px solid var(--hairline); font-size: 15px; color: var(--ink); }
+.px-cmd__in .px-ico { color: var(--ink-3); }
+.px-cmd__in .ph { color: var(--ink-3); }
+.px-cmd__body { padding: 6px 8px 8px; }
+.px-cmd__item { display: flex; align-items: center; gap: 12px; height: 40px; padding: 0 10px; border-radius: var(--radius-md); font-size: 13.5px; color: var(--ink); }
+.px-cmd__item .px-ico { color: var(--ink-3); }
+.px-cmd__item.is-on { background: var(--accent-tint); }
+.px-cmd__item .px-menu__meta, .px-cmd__item .px-kbd { margin-left: auto; }
+.px-cmd__foot { display: flex; gap: var(--space-4); padding: 10px 18px; border-top: 1px solid var(--hairline); font-size: 12px; color: var(--ink-3); }
+.px-cmd__foot span { display: inline-flex; align-items: center; gap: 6px; }
+
+/* ---------- App shell + RO page ---------- */
+.px-app { display: flex; height: 100%; background: var(--canvas); color: var(--ink); }
+.px-panel { flex: 1; min-width: 0; margin: 8px 8px 8px 0; display: flex; flex-direction: column; background: var(--panel); border-radius: var(--radius-xl); box-shadow: var(--shadow-panel); overflow: hidden; }
+.px-ro { flex: 1; min-height: 0; display: flex; }
+.px-ro__main { flex: 1; min-width: 0; overflow: auto; }
+.px-ro__col { max-width: calc(var(--measure) + 2 * var(--space-12)); margin: 0 auto; padding: var(--space-10) var(--space-12) var(--space-16); display: flex; flex-direction: column; }
+.px-ro__rail { width: var(--rail); flex: none; overflow: hidden; display: flex; flex-direction: column; padding: var(--space-5) var(--space-5) var(--space-4); box-shadow: inset 1px 0 0 var(--hairline); }
+.px-ro__eyebrow { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--ink-3); }
+.px-ro__eyebrow .px-id { color: var(--ink-2); }
+.px-ro__title { margin: 10px 0 6px; font: 500 32px/38px var(--font-serif); letter-spacing: -.015em; font-variation-settings: "opsz" 36; color: var(--ink); }
+.px-ro__sub { font-size: 14px; color: var(--ink-2); }
+.px-ro__status { display: flex; align-items: center; gap: var(--space-3); margin-top: var(--space-5); }
+.px-ro__status .px-with { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); }
+.px-sec { display: flex; align-items: center; gap: var(--space-3); margin: var(--space-12) 0 var(--space-3); }
+.px-sec h3 { margin: 0; font-size: 17px; line-height: 24px; font-weight: 600; letter-spacing: -.01em; }
+.px-sec .n { font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.px-sec .px-btn { margin-left: auto; }
+
+
+/* ---------- Part status dropdown ---------- */
+.px-pstat { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 8px; height: 28px; padding: 0 6px 0 8px; margin-left: -8px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; color: var(--ink); cursor: pointer; white-space: nowrap; transition: background-color .15s ease-out; }
+.px-pstat:hover, .px-pstat.is-open { background: var(--fill); }
+.px-pstat .px-chev { width: 12px; height: 12px; color: var(--ink-3); margin-left: auto; transition: transform .2s cubic-bezier(.2,.8,.2,1); }
+.px-pstat.is-open .px-chev { transform: rotate(180deg); }
+.px-pmenu { width: 236px; }
+.px-menu__tick { margin-left: auto; color: var(--ink); }
+.px-li.is-flash { animation: px-flash 1.4s ease-out; }
+
+/* ---------- Select (dropdown trigger) ---------- */
+.px-select { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 8px; height: var(--control-md); padding: 0 10px; border-radius: var(--radius-md); background: var(--raised); box-shadow: inset 0 0 0 1px var(--border); font-size: 14px; color: var(--ink); cursor: pointer; transition: box-shadow .15s ease-out; }
+.px-select:hover { box-shadow: inset 0 0 0 1px var(--border-strong); }
+.px-select .px-chev { width: 14px; height: 14px; margin-left: auto; color: var(--ink-3); }
+
+/* ---------- Modal ---------- */
+.px-scrim { position: fixed; inset: 0; z-index: 60; display: flex; justify-content: center; align-items: flex-start; padding: 12vh 16px 16px; background: var(--scrim); backdrop-filter: blur(2px); animation: px-fade .16s ease-out both; }
+.px-modal { width: 480px; max-width: 100%; max-height: 76vh; display: flex; flex-direction: column; background: var(--raised); border-radius: var(--radius-xl); box-shadow: var(--shadow-raised); animation: px-rise .22s cubic-bezier(.2,.8,.2,1) both; }
+.px-modal--sm { width: 400px; }
+.px-scrim.is-closing { animation: px-fade .12s ease-in reverse both; }
+.px-scrim.is-closing .px-modal { animation: px-rise .12s ease-in reverse both; }
+.px-modal__h { display: flex; align-items: flex-start; gap: 12px; padding: 20px 16px 4px 24px; }
+.px-modal__h h2 { margin: 0; font: 500 22px/28px var(--font-serif); letter-spacing: -.01em; font-variation-settings: "opsz" 24; color: var(--ink); }
+.px-modal__h p { margin: 4px 0 0; font-size: 13px; color: var(--ink-3); }
+.px-modal__h .px-btn { margin-left: auto; }
+.px-modal__b { display: flex; flex-direction: column; gap: 16px; padding: 16px 24px 4px; overflow: auto; }
+.px-modal__p { margin: 0; font-size: 14px; line-height: 21px; color: var(--ink-2); }
+.px-modal__f { display: flex; align-items: center; gap: 8px; padding: 20px 16px 16px 24px; }
+.px-modal__hint { margin-right: auto; display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--ink-3); }
+.px-modal--sm .px-modal__f { justify-content: flex-end; }
+.px-input--full { width: 100%; }
+.px-picks { display: flex; flex-direction: column; gap: 2px; }
+.px-pick { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 12px; height: 48px; padding: 0 12px 0 10px; border-radius: var(--radius-md); cursor: pointer; transition: background-color .15s ease-out, box-shadow .15s ease-out; }
+.px-pick:hover { background: var(--fill); }
+.px-pick.is-on { background: var(--panel); box-shadow: inset 0 0 0 1px var(--accent-line); }
+.px-pick.is-dis { cursor: default; opacity: .55; }
+.px-pick.is-dis:hover { background: transparent; }
+.px-pick__t { display: flex; flex-direction: column; min-width: 0; }
+.px-pick__t b { font-size: 14px; font-weight: 500; color: var(--ink); }
+.px-pick__t small { font-size: 12px; color: var(--ink-3); }
+.px-radio { margin-left: auto; width: 16px; height: 16px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--border-strong); display: grid; place-items: center; transition: box-shadow .15s ease-out; }
+.px-pick.is-on .px-radio { box-shadow: inset 0 0 0 5px var(--accent); }
+.px-tagpick { display: flex; flex-wrap: wrap; gap: 6px; }
+.px-tagpick .px-tag { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 10px 0 9px; border-radius: var(--radius-md); background: transparent; box-shadow: inset 0 0 0 1px var(--border); color: var(--ink-2); font: 500 11.5px/1 var(--font-mono); letter-spacing: .04em; cursor: pointer; transition: background-color .15s ease-out, box-shadow .15s ease-out; }
+.px-tagpick .px-tag:hover { background: var(--fill); }
+.px-tagpick .px-tag.is-on { background: var(--fill); box-shadow: inset 0 0 0 1.5px var(--ink); color: var(--ink); }
+.px-affix { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-3); }
+.px-check-row { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--ink); cursor: pointer; }
+.px-btn--solid.px-btn--danger { background: var(--bad); color: var(--on-primary); }
+.px-btn--solid.px-btn--danger:hover { background: var(--bad); box-shadow: inset 0 0 0 999px rgba(0,0,0,.08); }
+
+/* ---------- Header totals (Time · Parts · Files) ---------- */
+.px-totals { display: flex; align-items: center; gap: 2px; }
+.px-total { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 6px; height: var(--control-sm); padding: 0 8px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; cursor: pointer; white-space: nowrap; transition: background-color .15s ease-out; }
+.px-total > span { display: inline-flex; align-items: baseline; }
+.px-total:hover, .px-total.is-open { background: var(--fill); }
+.px-total .px-ico { width: 16px; height: 16px; color: var(--ink-3); transition: color .15s ease-out; }
+.px-total:hover .px-ico { color: var(--ink-2); }
+.px-total.is-live .px-ico { color: var(--accent); }
+.px-total em { font-style: normal; font-weight: 400; color: var(--ink-3); margin-left: 4px; }
+.px-head__sep { width: 1px; height: 16px; margin: 0 8px; background: var(--border); }
+
+/* ---------- Totals modals: summary, grouped read-only lists that jump to the operation ---------- */
+.px-modal--md { width: 560px; }
+.px-tsum { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); padding-bottom: 4px; }
+.px-tsum--5 { grid-template-columns: repeat(5, auto); justify-content: space-between; gap: var(--space-3); }
+.px-tsum > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.px-tsum > div > span { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--ink-3); white-space: nowrap; }
+.px-tsum b { font: 500 20px/26px var(--font-sans); letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.px-tsum small { font-size: 12px; color: var(--ink-3); font-weight: 400; margin-left: 3px; }
+.px-mlist { display: flex; flex-direction: column; }
+.px-mgrp { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 6px; height: 32px; font-size: 12.5px; color: var(--ink-3); white-space: nowrap; border-radius: var(--radius-sm); }
+.px-mgrp b { font-weight: 500; color: var(--ink-2); flex: none; }
+.px-mgrp > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.px-mgrp .px-ico { width: 14px; height: 14px; margin-left: auto; flex: none; opacity: 0; transition: opacity .15s ease-out; }
+button.px-mgrp { cursor: pointer; }
+button.px-mgrp:hover { color: var(--ink-2); }
+button.px-mgrp:hover .px-ico, button.px-mgrp:focus-visible .px-ico { opacity: 1; }
+.px-mrow { all: unset; box-sizing: border-box; position: relative; display: grid; align-items: center; column-gap: var(--space-4); min-height: 40px; margin: 0 -8px; padding: 6px 8px; border-radius: var(--radius-md); font-size: 13.5px; color: var(--ink); cursor: pointer; transition: background-color .15s ease-out; }
+.px-mrow::after { content: ""; position: absolute; left: 8px; right: 8px; bottom: 0; height: 1px; background: var(--hairline); }
+.px-mrow:last-child::after { display: none; }
+.px-mrow:hover { background: var(--fill); }
+.px-mrow:hover::after { opacity: 0; }
+.px-mrow__t { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.px-mrow__n { display: inline-block; width: 20px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.px-mrow__v { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.px-mrow__v em { font-style: normal; color: var(--ink-3); }
+.px-mrow .px-mini { width: 72px; }
+.px-mrow--time { grid-template-columns: 14px minmax(0, 1fr) 72px 100px; }
+.px-mrow--part { grid-template-columns: minmax(0, 1fr) 84px 20px 124px; }
+.px-mrow--part .r { text-align: right; font-variant-numeric: tabular-nums; }
+.px-mrow--file { grid-template-columns: 16px minmax(0, 1fr) 88px 48px; }
+.px-mrow--file .px-ico { width: 16px; height: 16px; color: var(--ink-3); }
+.px-mrow--file small { text-align: right; font-size: 12.5px; color: var(--ink-3); }
+.px-pstat-ro { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; white-space: nowrap; }
+
+/* ---------- Micro-interactions (all removed under reduced motion) ---------- */
+@keyframes px-fade { from { opacity: 0; } }
+@keyframes px-rise { from { opacity: 0; transform: translateY(8px) scale(.98); } }
+@keyframes px-pop { from { opacity: 0; transform: scale(.6); } }
+@keyframes px-swap { from { opacity: 0; transform: translateY(4px); } }
+@keyframes px-unfold { from { opacity: 0; transform: translateY(-4px); } }
+@keyframes px-flash { from { background-color: var(--accent-tint); } }
+.px-si.is-new { animation: px-pop .26s cubic-bezier(.2,.8,.2,1) both; }
+.px-op { animation: px-unfold .22s cubic-bezier(.2,.8,.2,1) both; }
+.px-time__go .px-ico { animation: px-pop .2s cubic-bezier(.2,.8,.2,1) both; }
+.px-row.is-flash, .px-total.is-flash { animation: px-flash 1.4s ease-out; }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+
+html,body{margin:0;background:var(--canvas)}
+body{font-family:var(--font-sans);color:var(--ink);-webkit-font-smoothing:antialiased}
+.wt-bar{position:sticky;top:0;z-index:80;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:12px 20px;background:var(--canvas);box-shadow:inset 0 -1px 0 var(--hairline)}
+.wt-bar h1{margin:0;font:500 20px/26px var(--font-serif);letter-spacing:-.01em;margin-right:auto;display:flex;align-items:center;gap:10px}
+.wt-bar h1 svg{width:20px;height:20px}.wt-bar h1 svg circle{fill:var(--ink)}.wt-bar h1 svg .o{fill:var(--ink-3)}.wt-bar h1 svg .c{fill:#22c55e}
+.wt-bar label{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-2);cursor:pointer;user-select:none}
+.pm-board{display:flex;flex-wrap:wrap;gap:48px 44px;justify-content:center;padding:36px 24px 16px}
+.wt-notes{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px 40px;padding:24px 32px 56px;max-width:1440px;margin:0 auto}
+.wt-g h3{margin:0 0 4px;font:600 13px/20px var(--font-sans);color:var(--ink-3)}
+.wt-g ol{list-style:none;margin:0;padding:0}
+.wt-g li{display:flex;gap:12px;padding:11px 0;box-shadow:inset 0 -1px 0 var(--hairline)}
+.wt-g b{font-size:14px;font-weight:600}.wt-g p{margin:2px 0 0;font-size:13px;line-height:19px;color:var(--ink-2)}
+.wt-n,.wt [data-n]::after{width:22px;height:22px;border-radius:999px;display:grid;place-items:center;flex:none;background:var(--accent);color:var(--on-accent);font:600 12px/1 var(--font-sans)}
+.wt-n.is-plain{background:var(--fill);color:var(--ink-3)}
+.wt [data-n]{position:relative}
+.wt [data-n]::after{content:attr(data-n);position:absolute;top:-9px;right:-6px;z-index:25;box-shadow:0 0 0 3px var(--panel)}
+.wt .pm-screen [data-n]::after{width:18px;height:18px;font-size:11px;top:-8px;right:-5px}
+.wt .pm-screen .pm-stage[data-n]::after{right:auto;left:-19px;top:0}
+
+/* ---------- phone frame ---------- */
+.pm-dev{margin:0;display:flex;flex-direction:column;gap:16px;align-items:center}
+.pm-dev figcaption{display:flex;align-items:center;gap:8px;font:500 14px/20px var(--font-sans);color:var(--ink-2)}
+.pm-cap__n{width:20px;height:20px;border-radius:6px;display:grid;place-items:center;background:var(--fill);color:var(--ink-3);font-size:12px;font-weight:600}
+.pm-phone{position:relative;width:390px;height:844px;border-radius:54px;background:var(--panel);box-shadow:0 0 0 9px #1b1a18,0 0 0 10px #44413c,0 40px 70px -30px rgba(0,0,0,.45);overflow:hidden;flex:none;isolation:isolate}
+.pm-screen{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--panel);
+  --pm-row:56px;--pm-tap:40px;--pm-body:15px;--pm-small:12.5px;--pm-lab:var(--ink-3)}
+.is-bay .pm-screen{--pm-row:66px;--pm-tap:52px;--pm-body:17px;--pm-small:14px;--pm-lab:var(--ink-2)}
+.pm-island{position:absolute;top:11px;left:50%;width:122px;height:35px;margin-left:-61px;border-radius:20px;background:#000;z-index:60}
+.pm-sb{height:54px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:4px 32px 0 40px;font:600 16px/1 var(--font-sans);color:var(--ink)}
+.pm-sb__r{display:flex;gap:6px;align-items:center}.pm-sb__r svg{fill:currentColor}
+.pm-body{flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:4px 20px 28px;font-size:var(--pm-body)}
+.pm-body::-webkit-scrollbar{display:none}
+.pm-hero{padding-top:8px}
+.pm-eyebrow{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--pm-lab)}
+.pm-eyebrow .px-id{color:var(--ink-2)}
+.pm-hero__row{display:flex;align-items:center;justify-content:space-between}
+.pm-title{margin:2px 0 0;font:500 30px/36px var(--font-serif);letter-spacing:-.015em;font-variation-settings:"opsz" 36;color:var(--ink)}
+.is-bay .pm-title{font-size:32px;line-height:38px}
+.pm-sub{margin-top:4px;font-size:14px;color:var(--ink-2)}
+.pm-card{margin-top:20px;background:var(--raised);border-radius:18px;box-shadow:inset 0 0 0 1px var(--hairline);padding:16px}
+.pm-h{display:flex;align-items:baseline;gap:8px;margin:28px 0 2px}
+.pm-h h2{margin:0;font:600 17px/24px var(--font-sans);letter-spacing:-.01em}
+.pm-h span{font-size:13px;color:var(--ink-3)}
+.pm-list{display:flex;flex-direction:column}
+
+/* today */
+.pm-shift__top{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500}
+.pm-shift__top small{display:block;font-size:var(--pm-small);font-weight:400;color:var(--pm-lab)}
+.pm-shift__top .px-btn{margin-left:auto}
+.pm-dot{width:8px;height:8px;border-radius:50%;background:var(--good);flex:none}
+.pm-day{position:relative;height:30px;margin-top:16px;border-radius:8px;background:var(--fill)}
+.pm-day i{position:absolute;top:5px;bottom:5px;border-radius:4px;background:var(--ink-2);min-width:4px}
+.pm-day i.is-live{background:var(--accent)}
+.pm-day b{position:absolute;top:-3px;bottom:-3px;width:2px;margin-left:-1px;border-radius:1px;background:var(--ink)}
+.pm-day__axis{position:relative;height:16px;margin-top:6px;font-size:11px;color:var(--ink-3)}
+.pm-day__axis span{position:absolute;transform:translateX(-2px)}
+.pm-tsum3{grid-template-columns:repeat(3,1fr);margin-top:14px;padding-top:14px;box-shadow:inset 0 1px 0 var(--hairline)}
+.pm-tsum3 b{font-size:19px}
+.pm-job{display:flex;align-items:center;gap:12px;min-height:var(--pm-row);padding:12px 0;box-shadow:inset 0 -1px 0 var(--hairline)}
+.pm-job:last-child{box-shadow:none}
+.pm-job__main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.pm-job__meta,.pm-job__time{display:flex;align-items:center;gap:6px;font-size:var(--pm-small);color:var(--pm-lab);white-space:nowrap;overflow:hidden}
+.pm-job__meta .px-id{font-size:12px;color:var(--ink-2)}
+.pm-job__t{font-size:var(--pm-body);font-weight:500;line-height:1.3;color:var(--ink)}
+.pm-job__time em,.pm-op__sub em{font-style:normal;color:var(--ink-3)}
+.pm-job__time .px-tag,.pm-op__sub .px-tag{height:18px;font-size:10.5px}
+.pm-job .px-mini{width:44px}
+.pm-play{all:unset;box-sizing:border-box;width:var(--pm-tap);height:var(--pm-tap);border-radius:50%;display:grid;place-items:center;flex:none;box-shadow:inset 0 0 0 1px var(--border);color:var(--ink);cursor:pointer;transition:background-color .15s ease-out}
+.pm-play .px-ico{width:16px;height:16px}
+.pm-play:active{transform:scale(.96)}
+.pm-play.is-live{background:var(--accent);color:var(--on-accent);box-shadow:none}
+.pm-job.is-wait .pm-job__t{color:var(--ink-2)}
+
+/* clock bar + tab bar */
+.pm-cbar{flex:none;margin:0 12px 8px;display:flex;align-items:center;gap:10px;height:54px;padding:0 7px 0 14px;border-radius:18px;background:var(--primary);color:var(--on-primary);box-shadow:var(--shadow-raised);cursor:pointer;animation:pm-up .24s cubic-bezier(.2,.8,.2,1) both}
+.pm-cbar[hidden]{display:none!important}
+.pm-cbar__dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex:none;animation:px-breathe 2.4s ease-in-out infinite}
+.pm-cbar .pm-cbar__dot{background:#D1B184}
+.pm-cbar__t{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.2}
+.pm-cbar__t small{font-size:11.5px;opacity:.7}
+.pm-cbar__t b{font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pm-cbar__v{font:600 16px/1 var(--font-sans);font-variant-numeric:tabular-nums}
+.pm-cbar__stop{all:unset;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(128,128,128,.28);cursor:pointer}
+.pm-cbar__stop .px-ico{width:15px;height:15px;color:inherit}
+.pm-tabs{flex:none;display:grid;grid-template-columns:repeat(4,1fr);padding:6px 10px 30px;box-shadow:inset 0 1px 0 var(--hairline);background:var(--panel)}
+.pm-tab{all:unset;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 0;font-size:10.5px;font-weight:500;color:var(--ink-3);cursor:pointer}
+.pm-tab .px-ico{width:23px;height:23px}
+.pm-tab.is-on{color:var(--ink)}
+
+/* RO */
+.pm-nav{display:flex;align-items:center;gap:8px;height:44px;margin:0 -8px 8px}
+.pm-back{all:unset;display:inline-flex;align-items:center;gap:2px;height:36px;padding:0 8px 0 2px;font-size:15px;color:var(--ink-2);cursor:pointer}
+.pm-back .px-ico{width:20px;height:20px}
+.pm-nav__t{flex:1;text-align:center;font-size:14px;font-weight:500;color:var(--ink-2)}
+.pm-nav__acts{margin-left:auto;display:flex}
+.pm-ro__status{display:flex;align-items:center;gap:10px;margin-top:16px;flex-wrap:wrap}
+.pm-ro__status .px-status--button{height:34px}
+.pm-totals{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:20px}
+.pm-tot{all:unset;box-sizing:border-box;display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-radius:14px;background:var(--fill);cursor:pointer;transition:background-color .15s ease-out}
+.pm-tot:active{background:var(--selected)}
+.pm-tot > span{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--pm-lab)}
+.pm-tot > span .px-ico{width:14px;height:14px}
+.pm-tot b{font:500 17px/22px var(--font-sans);font-variant-numeric:tabular-nums;white-space:nowrap}
+.pm-tot em{font-style:normal;font-weight:400;font-size:13px;color:var(--ink-3);margin-left:3px}
+.pm-stage{margin-top:22px}
+.pm-stage__top{display:flex;gap:5px;font-size:13.5px;color:var(--ink-2)}
+.pm-stage__top b{font-weight:600;color:var(--accent-text)}
+.pm-stage__top .r{margin-left:auto;color:var(--ink-3)}
+.pm-ticks{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:10px}
+.pm-ticks i{height:5px;border-radius:3px;background:var(--hairline)}
+.pm-ticks i.is-done{background:var(--ink-2)}
+.pm-ticks i.is-now{background:var(--accent)}
+.pm-ticks i.is-skip{background:transparent;box-shadow:inset 0 0 0 1px var(--hairline)}
+.pm-ticks i.is-wait{background:repeating-linear-gradient(90deg,var(--status-customer) 0 4px,transparent 4px 7px)}
+.pm-next{margin-top:20px}
+.pm-next .px-next__acts .px-btn{flex:0 0 auto}
+.pm-op{display:flex;align-items:center;gap:12px;min-height:var(--pm-row);padding:12px 0;box-shadow:inset 0 -1px 0 var(--hairline);background:var(--panel);cursor:pointer}
+.pm-op__main{flex:1;min-width:0}
+.pm-op__t{font-size:var(--pm-body);font-weight:500;line-height:1.3}
+.pm-op__n{color:var(--ink-3);margin-right:8px;font-variant-numeric:tabular-nums}
+.pm-op__sub{display:flex;align-items:center;gap:7px;margin-top:5px;font-size:var(--pm-small);color:var(--pm-lab);white-space:nowrap}
+.pm-op__sub .px-mini{width:36px}
+.pm-op__m{overflow:hidden;text-overflow:ellipsis}
+.pm-op__go{width:16px;height:16px;color:var(--ink-4)}
+.pm-swipe{position:relative;overflow:hidden;margin:0 -20px;padding:0 20px}
+.pm-swipe__act{position:absolute;top:0;bottom:0;right:0;width:104px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:var(--primary);color:var(--on-primary);font-size:12px;font-weight:500}
+.pm-swipe__act .px-ico{width:18px;height:18px}
+.pm-swipe.is-open .pm-op{transform:translateX(-104px);box-shadow:none}
+.pm-props{display:flex;flex-direction:column}
+.pm-prop{all:unset;display:flex;align-items:center;gap:12px;min-height:50px;box-shadow:inset 0 -1px 0 var(--hairline);font-size:14px;cursor:pointer}
+.pm-prop span{width:84px;flex:none;color:var(--pm-lab);font-size:13px}
+.pm-prop b{flex:1;min-width:0;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pm-prop .px-ico{width:16px;height:16px;color:var(--ink-4)}
+
+/* operation */
+.pm-optitle{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.pm-optitle h1{margin:0;font:500 26px/32px var(--font-serif);letter-spacing:-.01em;font-variation-settings:"opsz" 30}
+.pm-clock{margin-top:18px;padding:18px 18px 16px;border-radius:20px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--hairline)}
+.pm-clock__v{font:500 52px/56px var(--font-sans);letter-spacing:-.025em;font-variant-numeric:tabular-nums}
+.pm-clock__cap{display:flex;align-items:center;gap:8px;margin:2px 0 14px;font-size:13px;color:var(--ink-3)}
+.pm-clock:not(.is-live) .pm-cbar__dot{display:none}
+.pm-clock .px-time__stats{margin-top:14px;gap:8px}
+.pm-clock .px-time__stats b{font-size:17px}
+.pm-seg{margin:22px 0 4px}
+.pm-seg button{padding:8px 4px;font-size:13.5px}
+.pm-seg .n{color:var(--ink-3);font-weight:400;margin-left:2px}
+.pm-part,.pm-trow{display:flex;align-items:center;gap:12px;min-height:var(--pm-row);padding:10px 0;box-shadow:inset 0 -1px 0 var(--hairline)}
+.pm-part > div,.pm-trow > div{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.pm-part b,.pm-trow b{font-size:var(--pm-body);font-weight:500}
+.pm-part small,.pm-trow small{font-size:var(--pm-small);color:var(--pm-lab)}
+.pm-part small .px-id{font-size:12px}
+.pm-trow > span{font:500 15px/1 var(--font-sans);font-variant-numeric:tabular-nums}
+.pm-pill{all:unset;box-sizing:border-box;display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 10px 0 11px;border-radius:999px;background:var(--fill);font-size:13px;font-weight:500;white-space:nowrap;cursor:pointer;flex:none}
+.is-bay .pm-pill{height:44px;font-size:14.5px}
+.pm-pill .px-chev{width:12px;height:12px;color:var(--ink-3)}
+.pm-addrow{all:unset;display:flex;align-items:center;gap:10px;height:48px;font-size:14px;color:var(--ink-3);cursor:pointer}
+.pm-addrow .px-ico{width:16px;height:16px}
+.pm-notes{width:100%;margin-top:14px;font-size:16px;line-height:23px;padding:12px;height:auto}
+.pm-hint{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--ink-3);margin:10px 0 0}
+.pm-hint .px-ico{width:15px;height:15px;flex:none;margin-top:1px}
+.pm-files{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.pm-file{all:unset;box-sizing:border-box;position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:linear-gradient(160deg,hsl(var(--h),14%,58%),hsl(var(--h),12%,26%));display:flex;align-items:flex-end;padding:6px}
+.pm-file span{font-size:10.5px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.pm-file--add{background:none;box-shadow:inset 0 0 0 1.5px var(--border);flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--ink-2);cursor:pointer}
+.pm-file--add span{color:var(--ink-2);text-shadow:none;font-size:12px}
+.pm-file--add .px-ico{width:22px;height:22px}
+.pm-actbar{flex:none;display:flex;gap:10px;padding:10px 16px 30px;box-shadow:inset 0 1px 0 var(--hairline);background:var(--panel)}
+.pm-act{all:unset;box-sizing:border-box;width:76px;height:58px;border-radius:16px;background:var(--fill);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11.5px;font-weight:500;color:var(--ink);cursor:pointer}
+.pm-act .px-ico{width:21px;height:21px}
+.pm-go{all:unset;box-sizing:border-box;flex:1;height:58px;border-radius:16px;display:flex;align-items:center;justify-content:center;gap:10px;background:var(--primary);color:var(--on-primary);font-size:16px;font-weight:600;cursor:pointer;transition:background-color .2s ease-out}
+.pm-go .px-ico{width:18px;height:18px}
+.pm-go.is-live{background:var(--accent);color:var(--on-accent)}
+.is-bay .pm-act,.is-bay .pm-go{height:66px}
+
+/* sheets */
+.pm-sheet{position:absolute;inset:0;z-index:50;display:flex;flex-direction:column;justify-content:flex-end;background:var(--scrim);animation:px-fade .16s ease-out both}
+.pm-sheet__p{position:relative;background:var(--raised);border-radius:24px 24px 0 0;padding:8px 14px 32px;box-shadow:var(--shadow-raised);max-height:82%;overflow-y:auto;scrollbar-width:none;animation:pm-up .26s cubic-bezier(.2,.8,.2,1) both}
+.pm-sheet.is-closing{animation:px-fade .14s ease-in reverse both}.pm-sheet.is-closing .pm-sheet__p{animation:pm-up .14s ease-in reverse both}
+.pm-sheet.is-static,.pm-sheet.is-static .pm-sheet__p{animation:none}
+.pm-sheet__grab{width:36px;height:5px;border-radius:3px;background:var(--border-strong);margin:0 auto 12px}
+.pm-sheet__h{padding:2px 10px 12px}
+.pm-sheet__h h3{margin:0;font:500 21px/27px var(--font-serif);letter-spacing:-.01em}
+.pm-sheet__h p{margin:3px 0 0;font-size:13px;color:var(--ink-3)}
+.pm-srow{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:14px;width:100%;min-height:52px;padding:0 12px;border-radius:12px;font-size:16px;color:var(--ink);cursor:pointer}
+.is-bay .pm-srow{min-height:60px;font-size:17px}
+.pm-srow:hover{background:var(--fill)}
+.pm-srow .px-si{width:16px;height:16px}
+.pm-srow > .px-ico{width:18px;height:18px;color:var(--ink-3)}
+.pm-srow__tick{margin-left:auto;opacity:0}
+.pm-srow.is-on .pm-srow__tick{opacity:1;color:var(--ink)}
+.pm-srow--danger,.pm-srow--danger > .px-ico{color:var(--bad)}
+.pm-ssep{height:1px;background:var(--hairline);margin:6px 12px}
+.pm-sheet .px-tsum{padding:0 10px 6px}
+.pm-sheet .px-tsum b{font-size:19px}
+.pm-sl{padding:0 10px}
+.pm-sl .pm-part{min-height:52px}
+.pm-sgrp{font-size:12.5px;color:var(--ink-3);padding:14px 0 2px}
+.pm-sgrp b{font-weight:500;color:var(--ink-2)}
+.pm-pbar{display:flex;gap:3px;height:8px;margin:2px 10px 10px}
+.pm-pbar i{border-radius:3px}
+.pm-pleg{display:flex;flex-wrap:wrap;gap:6px 14px;padding:0 10px 4px;font-size:12.5px;color:var(--ink-2)}
+.pm-pleg span{display:inline-flex;align-items:center;gap:6px}
+.pm-pst{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:500;white-space:nowrap}
+.pm-done{all:unset;box-sizing:border-box;display:block;width:calc(100% - 20px);margin:16px 10px 0;height:48px;border-radius:14px;background:var(--fill);text-align:center;font-size:15px;font-weight:500;cursor:pointer}
+
+/* sync */
+.pm-qr{position:relative;width:264px;height:264px;margin:24px auto 0;display:grid;place-items:center}
+.pm-qr__ring{position:absolute;inset:0;transform:rotate(-90deg)}
+.pm-qr__ring circle{fill:none;stroke:var(--hairline);stroke-width:4}
+.pm-qr__ring circle.p{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset .4s ease-out}
+.pm-qr__box{width:212px;height:212px;border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 0 0 1px var(--hairline)}
+.pm-qr__code{display:block;width:100%;height:100%}
+.pm-qr__cap{text-align:center;margin-top:16px;display:flex;flex-direction:column;gap:4px;padding:0 12px}
+.pm-qr__cap b{font-size:16px;font-weight:600;font-variant-numeric:tabular-nums}
+.pm-qr__cap span{font-size:13px;line-height:19px;color:var(--ink-3)}
+.pm-cam{position:relative;height:300px;margin-top:20px;border-radius:20px;background:#121211;display:flex;align-items:flex-end;justify-content:center;padding:18px;color:#cfcac2;font-size:13px;text-align:center}
+.pm-cam i{position:absolute;width:34px;height:34px;border:3px solid #D1B184}
+.pm-cam i:nth-child(1){top:60px;left:90px;border-right:0;border-bottom:0;border-radius:10px 0 0 0}
+.pm-cam i:nth-child(2){top:60px;right:90px;border-left:0;border-bottom:0;border-radius:0 10px 0 0}
+.pm-cam i:nth-child(3){bottom:70px;left:90px;border-right:0;border-top:0;border-radius:0 0 0 10px}
+.pm-cam i:nth-child(4){bottom:70px;right:90px;border-left:0;border-top:0;border-radius:0 0 10px 0}
+.pm-sync .pm-sync__h{font-size:13px;font-weight:600;color:var(--ink-2);margin-bottom:4px}
+.pm-sync__r{display:flex;justify-content:space-between;height:38px;align-items:center;box-shadow:inset 0 -1px 0 var(--hairline);font-size:14px}
+.pm-sync__r span{color:var(--ink-2)}.pm-sync__r b{font-weight:500;font-variant-numeric:tabular-nums}
+.pm-sync__f{margin-top:10px;font-size:12.5px;line-height:18px;color:var(--ink-3)}
+
+/* toasts in the phone */
+[data-screen=today] .pm-toastwrap,[data-screen=ro] .pm-toastwrap,[data-screen=sync] .pm-toastwrap{bottom:160px}
+.pm-toastwrap{position:absolute;left:0;right:0;bottom:112px;display:flex;justify-content:center;z-index:45;pointer-events:none}
+.pm-toastwrap .px-toast{pointer-events:auto;animation:px-rise .2s cubic-bezier(.2,.8,.2,1) both;max-width:340px}
+@keyframes pm-up{from{transform:translateY(100%)}}
+.is-new{animation:px-pop .26s cubic-bezier(.2,.8,.2,1) both}
+@media (max-width:440px){.pm-board{padding:24px 0}.pm-dev{zoom:.86}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wt-bar">
+  <h1><svg viewBox="-110 -110 220 220" aria-hidden="true"><circle class="c" r="14"/><circle cx="44" r="9.5"/><circle cx="-44" r="9.5"/><circle cx="22" cy="38" r="9.5"/><circle cx="-22" cy="38" r="9.5"/><circle cx="22" cy="-38" r="9.5"/><circle cx="-22" cy="-38" r="9.5"/><circle cy="-84" r="7" class="o"/><circle cy="84" r="7" class="o"/><circle cx="73" cy="42" r="7" class="o"/><circle cx="-73" cy="42" r="7" class="o"/><circle cx="73" cy="-42" r="7" class="o"/><circle cx="-73" cy="-42" r="7" class="o"/></svg>Parsec Mobile · technician mock-up</h1>
+  <div class="px-seg"><button class="is-on" data-theme-set="light">Ivory</button><button data-theme-set="dark">Graphite</button></div>
+  <label id="bay"><span class="px-toggle"></span>Bay mode</label>
+  <label id="nums" class="is-on"><span class="px-toggle is-on"></span>Numbers</label>
+</div>
+<div class="pm-board wt"><figure class="pm-dev"><figcaption><span class="pm-cap__n">1</span>Today — your jobs, your day</figcaption><div class="pm-phone"><div class="pm-screen" data-screen="today"><div class="pm-sb"><b>9:41</b><span class="pm-sb__r"><svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg viewBox="0 0 16 12" width="16" height="12"><path d="M8 11.5l2.4-2.9a3.6 3.6 0 0 0-4.8 0zM3.3 6.3a7 7 0 0 1 9.4 0l1.5-1.8a9.4 9.4 0 0 0-12.4 0zM.4 2.8a11.6 11.6 0 0 1 15.2 0" /></svg><svg viewBox="0 0 27 12" width="27" height="12"><rect x=".5" y=".5" width="23" height="11" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="17" height="8" rx="2"/><rect x="24.6" y="4" width="1.6" height="4" rx=".8" opacity=".4"/></svg></span></div><div class="pm-island"></div>
+<div class="pm-body">
+  <header class="pm-hero"><div class="pm-eyebrow">Thursday, Oct 22</div><div class="pm-hero__row"><h1 class="pm-title">Today</h1><span class="px-av px-av--md px-av--me">MR</span></div></header>
+  <section class="pm-card pm-shift" data-n="2">
+    <div class="pm-shift__top"><span class="pm-dot"></span><div>On the clock<small>since 6:58 · 3.28 h</small></div><button class="px-btn px-btn--sm">Clock out</button></div>
+    <div class="pm-day"><i class="" title="RO-37538 · Operation 1 · 1:12" style="left:5.88%;width:14.12%"></i><i class="" title="RO-34601 · Operation 2 · 0:45" style="left:21.76%;width:8.82%"></i><i class="is-live" title="RO-37538 · Operation 1 · running" style="left:31.76%;width:6.47%" data-liveseg></i><b style="left:38.24%"></b></div>
+    <div class="pm-day__axis"><span style="left:0.00%">7a</span><span style="left:23.53%">9a</span><span style="left:47.06%">11a</span><span style="left:70.59%">1p</span><span style="left:94.12%">3p</span></div>
+    <div class="px-tsum pm-tsum3"><div><span>On jobs</span><b>2.50<small>h</small></b></div><div><span>Off jobs</span><b>0.78<small>h</small></b></div><div><span>Efficiency</span><b class="px-good">112<small>%</small></b></div></div>
+  </section>
+  <div class="pm-h"><h2>Ready to work</h2><span>3</span></div>
+  <div class="pm-list" data-n="3"><div class="pm-job" data-job="37538-1" data-ro="RO-37538" data-t="Clutch slipping – replace clutch"><div class="pm-job__main"><div class="pm-job__meta"><svg class="px-si" data-s="working" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.25" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7 3.5a3.5 3.5 0 0 1 0 7z" fill="currentColor"/></svg><span class="px-id">RO-37538</span><span>Blue Ridge Haulage</span></div><div class="pm-job__t">Clutch slipping – replace clutch</div><div class="pm-job__time"><span class="px-mini"><i style="width:78%"></i></span><span><span data-b1>6.27</span> <em>/ 8.00 h</em></span><span class="px-tag" data-t="OP">OP</span></div></div><button class="pm-play is-live" data-play="37538-1" title="Start clock"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2.75"/></svg></button></div><div class="pm-job" data-job="37538-3" data-ro="RO-37538" data-t="PM service – A"><div class="pm-job__main"><div class="pm-job__meta"><svg class="px-si" data-s="hold" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.25" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span class="px-id">RO-37538</span><span>Blue Ridge Haulage</span></div><div class="pm-job__t">PM service – A</div><div class="pm-job__time"><span class="px-mini"><i style="width:0%"></i></span><span>0.00 <em>/ 1.50 h</em></span><span class="px-tag" data-t="PM">PM</span></div></div><button class="pm-play" data-play="37538-3" title="Start clock"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.6v12.8a.8.8 0 0 0 1.2.7l10.2-6.4a.8.8 0 0 0 0-1.4L9.2 4.9A.8.8 0 0 0 8 5.6z"/></svg></button></div><div class="pm-job" data-job="35112-1" data-ro="RO-35112" data-t="Air leak at the front axle"><div class="pm-job__main"><div class="pm-job__meta"><svg class="px-si" data-s="hold" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.25" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span class="px-id">RO-35112</span><span>Piedmont Aggregates</span></div><div class="pm-job__t">Air leak at the front axle</div><div class="pm-job__time"><span class="px-mini"><i style="width:35%"></i></span><span>0.42 <em>/ 1.20 h</em></span><span class="px-tag" data-t="DIAG">DIAG</span></div></div><button class="pm-play" data-play="35112-1" title="Start clock"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.6v12.8a.8.8 0 0 0 1.2.7l10.2-6.4a.8.8 0 0 0 0-1.4L9.2 4.9A.8.8 0 0 0 8 5.6z"/></svg></button></div></div>
+  <div class="pm-h"><h2>Waiting</h2><span>1</span></div>
+  <div class="pm-list"><div class="pm-job is-wait"><div class="pm-job__main"><div class="pm-job__meta"><svg class="px-si" data-s="problem" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.25" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2.3 1.82"/><circle cx="7" cy="7" r="1.75" fill="currentColor"/></svg><span class="px-id">RO-34601</span><span>Carolina Line Freight</span></div><div class="pm-job__t">DPF differential pressure high</div><div class="pm-job__time"><span>Waiting – Parts · Backordered</span><span>· due Fri</span></div></div></div></div>
+</div>
+<div class="pm-cbar" data-cbar data-n="1"><span class="pm-cbar__dot"></span><div class="pm-cbar__t"><small data-cbar-ro>RO-37538 · Operation 1</small><b data-cbar-job>Clutch slipping – replace clutch</b></div><span class="pm-cbar__v" data-clock-mini>6:15:57</span><button class="pm-cbar__stop" data-stop title="Stop clock"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2.75"/></svg></button></div><nav class="pm-tabs"><button class="pm-tab is-on"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2.75"/><path d="M4 9.75h16M8.5 3v4M15.5 3v4"/><circle cx="12" cy="14.75" r="1.25"/></svg><span>Today</span></button><button class="pm-tab"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.75h7l4.75 4.75v10.25a1.5 1.5 0 0 1-1.5 1.5H6.5A1.5 1.5 0 0 1 5 18.75V5.25a1.5 1.5 0 0 1 1.5-1.5z"/><path d="M13.5 3.75V8.5h4.75"/><path d="M8.5 12.5h7M8.5 16h4.5"/></svg><span>ROs</span></button><button class="pm-tab"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5h3.5M4 4v3.5M4.75 7.5A8 8 0 0 1 19.6 9.5M20 16.5h-3.5M20 20v-3.5M19.25 16.5A8 8 0 0 1 4.4 14.5"/></svg><span>Sync</span></button><button class="pm-tab"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.75"/><path d="M4.75 20c.6-3.6 3.6-5.75 7.25-5.75s6.65 2.15 7.25 5.75"/></svg><span>Me</span></button></nav></div></div></figure><figure class="pm-dev"><figcaption><span class="pm-cap__n">2</span>RO — the same page, one column</figcaption><div class="pm-phone"><div class="pm-screen" data-screen="ro"><div class="pm-sb"><b>9:41</b><span class="pm-sb__r"><svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg viewBox="0 0 16 12" width="16" height="12"><path d="M8 11.5l2.4-2.9a3.6 3.6 0 0 0-4.8 0zM3.3 6.3a7 7 0 0 1 9.4 0l1.5-1.8a9.4 9.4 0 0 0-12.4 0zM.4 2.8a11.6 11.6 0 0 1 15.2 0" /></svg><svg viewBox="0 0 27 12" width="27" height="12"><rect x=".5" y=".5" width="23" height="11" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="17" height="8" rx="2"/><rect x="24.6" y="4" width="1.6" height="4" rx=".8" opacity=".4"/></svg></span></div><div class="pm-island"></div>
+<div class="pm-body">
+  <nav class="pm-nav"><button class="pm-back"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5L9 12l5.5 5.5"/></svg>Today</button><span class="pm-nav__acts"><button class="px-btn px-btn--ghost px-btn--icon" title="Search"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg></button><button class="px-btn px-btn--ghost px-btn--icon" title="Options"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 12h.01M12 12h.01M18.5 12h.01" stroke-width="2.4"/></svg></button></span></nav>
+  <div class="pm-eyebrow"><span class="px-id">RO-37538</span><span>·</span><span>15 days open</span></div>
+  <h1 class="pm-title">Blue Ridge Haulage</h1>
+  <div class="pm-sub">2020 Volvo VNL · Unit 4417 · Lot D5</div>
+  <div class="pm-ro__status"><button class="px-status--button" data-rostatus><svg class="px-si" data-s="working" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.25" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7 3.5a3.5 3.5 0 0 1 0 7z" fill="currentColor"/></svg><span data-rostatus-name>Working</span><span class="px-status__sub" data-rostatus-sub>· Repairing</span><svg class="px-ico px-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 9.5L12 15l5.5-5.5"/></svg></button><span class="px-with">with <span class="px-av">MR</span> you</span></div>
+  <div class="pm-totals" data-n="5">
+    <button class="pm-tot" data-sheet="time"><span><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>Time</span><b><span data-b1>6.27</span><em>/ 11.90 h</em></b></button>
+    <button class="pm-tot" data-sheet="parts"><span><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l7.5 4v9l-7.5 4-7.5-4v-9z"/><path d="M4.5 7.5l7.5 4 7.5-4M12 11.5v9"/></svg>Parts</span><b><span data-inhand>3</span><em>/ <span data-nparts>5</span></em></b></button>
+    <button class="pm-tot" data-sheet="files"><span><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 11.2l-7.1 7.2a4.4 4.4 0 0 1-6.2-6.2l7.6-7.6a2.9 2.9 0 0 1 4.1 4.1l-7.3 7.3a1.4 1.4 0 0 1-2-2l6.6-6.6"/></svg>Files</span><b>6</b></button>
+  </div>
+  <div class="pm-stage" data-n="4"><div class="pm-stage__top"><b>Repair</b><span>· stage 5 of 7</span><span class="r">Ready Thu 10:04</span></div><div class="pm-ticks"><i class="is-done" title="Check-in"></i><i class="is-skip" title="Diag"></i><i class="is-wait" title="Approval"></i><i class="is-done" title="Parts"></i><i class="is-now" title="Repair"></i><i class="" title="Road test"></i><i class="" title="Close-out"></i></div></div>
+  <div class="px-next pm-next"><div class="px-next__head"><span class="px-next__k">Next</span><span class="px-next__for">Operation 2 · Wheel seal</span></div><div class="px-next__body"><p class="px-next__t">Waiting on customer approval for operation 2 — keep going on operation 1.</p><div class="px-next__acts"><button class="px-btn px-btn--sm">Remind Dana</button></div></div></div>
+  <div class="pm-h"><h2>Operations</h2><span>3</span></div>
+  <div class="pm-list"><div class="pm-op" data-oprow="1"><svg class="px-si" data-s="working" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.25" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7 3.5a3.5 3.5 0 0 1 0 7z" fill="currentColor"/></svg><div class="pm-op__main"><div class="pm-op__t"><span class="pm-op__n">1</span>Clutch slipping – replace clutch</div><div class="pm-op__sub"><span class="px-tag" data-t="OP">OP</span><span class="px-mini"><i style="width:78%"></i></span><span><span data-b1>6.27</span> <em>/ 8.00 h</em></span></div></div><svg class="px-ico pm-op__go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6.5L15 12l-5.5 5.5"/></svg></div><div class="pm-op" data-oprow="2"><svg class="px-si" data-s="customer" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.25" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2.3 1.82"/><circle cx="7" cy="7" r="1.75" fill="currentColor"/></svg><div class="pm-op__main"><div class="pm-op__t"><span class="pm-op__n">2</span>Wheel seal leaking</div><div class="pm-op__sub"><span class="px-tag" data-t="OP">OP</span><span class="px-mini"><i style="width:0%"></i></span><span>0.00 <em>/ 2.40 h</em></span><span class="pm-op__m">Waiting on approval</span></div></div><svg class="px-ico pm-op__go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6.5L15 12l-5.5 5.5"/></svg></div><div class="pm-swipe is-open" data-n="11"><div class="pm-swipe__act"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.6v12.8a.8.8 0 0 0 1.2.7l10.2-6.4a.8.8 0 0 0 0-1.4L9.2 4.9A.8.8 0 0 0 8 5.6z"/></svg><span>Start clock</span></div><div class="pm-op" data-oprow="3"><svg class="px-si" data-s="hold" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.25" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><div class="pm-op__main"><div class="pm-op__t"><span class="pm-op__n">3</span>PM service – A</div><div class="pm-op__sub"><span class="px-tag" data-t="PM">PM</span><span class="px-mini"><i style="width:0%"></i></span><span>0.00 <em>/ 1.50 h</em></span></div></div><svg class="px-ico pm-op__go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6.5L15 12l-5.5 5.5"/></svg></div></div></div>
+  <div class="pm-h"><h2>Details</h2></div>
+  <div class="pm-props">
+    <button class="pm-prop"><span>Vehicle</span><b>VIN …891160 · 616,000 mi</b><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6.5L15 12l-5.5 5.5"/></svg></button>
+    <button class="pm-prop"><span>People</span><b>Dana Kowalski, advisor</b><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6.5L15 12l-5.5 5.5"/></svg></button>
+    <button class="pm-prop"><span>Key tag</span><b class="px-id">112 · Board B</b><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6.5L15 12l-5.5 5.5"/></svg></button>
+    <button class="pm-prop"><span>Paperwork</span><b>Opened Oct 6 · no case</b><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6.5L15 12l-5.5 5.5"/></svg></button>
+  </div>
+</div>
+<div class="pm-sheetwrap" data-sheetwrap hidden></div>
+<div class="pm-cbar" data-cbar><span class="pm-cbar__dot"></span><div class="pm-cbar__t"><small data-cbar-ro>RO-37538 · Operation 1</small><b data-cbar-job>Clutch slipping – replace clutch</b></div><span class="pm-cbar__v" data-clock-mini>6:15:57</span><button class="pm-cbar__stop" data-stop title="Stop clock"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2.75"/></svg></button></div><nav class="pm-tabs"><button class="pm-tab"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2.75"/><path d="M4 9.75h16M8.5 3v4M15.5 3v4"/><circle cx="12" cy="14.75" r="1.25"/></svg><span>Today</span></button><button class="pm-tab is-on"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.75h7l4.75 4.75v10.25a1.5 1.5 0 0 1-1.5 1.5H6.5A1.5 1.5 0 0 1 5 18.75V5.25a1.5 1.5 0 0 1 1.5-1.5z"/><path d="M13.5 3.75V8.5h4.75"/><path d="M8.5 12.5h7M8.5 16h4.5"/></svg><span>ROs</span></button><button class="pm-tab"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5h3.5M4 4v3.5M4.75 7.5A8 8 0 0 1 19.6 9.5M20 16.5h-3.5M20 20v-3.5M19.25 16.5A8 8 0 0 1 4.4 14.5"/></svg><span>Sync</span></button><button class="pm-tab"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.75"/><path d="M4.75 20c.6-3.6 3.6-5.75 7.25-5.75s6.65 2.15 7.25 5.75"/></svg><span>Me</span></button></nav></div></div></figure><figure class="pm-dev"><figcaption><span class="pm-cap__n">3</span>Operation — where the work happens</figcaption><div class="pm-phone"><div class="pm-screen" data-screen="op"><div class="pm-sb"><b>9:41</b><span class="pm-sb__r"><svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg viewBox="0 0 16 12" width="16" height="12"><path d="M8 11.5l2.4-2.9a3.6 3.6 0 0 0-4.8 0zM3.3 6.3a7 7 0 0 1 9.4 0l1.5-1.8a9.4 9.4 0 0 0-12.4 0zM.4 2.8a11.6 11.6 0 0 1 15.2 0" /></svg><svg viewBox="0 0 27 12" width="27" height="12"><rect x=".5" y=".5" width="23" height="11" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="17" height="8" rx="2"/><rect x="24.6" y="4" width="1.6" height="4" rx=".8" opacity=".4"/></svg></span></div><div class="pm-island"></div>
+<div class="pm-body">
+  <nav class="pm-nav"><button class="pm-back"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5L9 12l5.5 5.5"/></svg>RO-37538</button><span class="pm-nav__t">Operation 1 of 3</span><span class="pm-nav__acts"><button class="px-btn px-btn--ghost px-btn--icon" title="Options"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 12h.01M12 12h.01M18.5 12h.01" stroke-width="2.4"/></svg></button></span></nav>
+  <div class="pm-optitle"><span class="px-tag" data-t="OP">OP</span><h1>Clutch slipping – replace clutch</h1></div>
+  <div class="pm-clock is-live" data-clockcard>
+    <div class="pm-clock__v" data-clock>6:15:57</div>
+    <div class="pm-clock__cap"><span class="pm-cbar__dot"></span><span data-clockcap>Clock running · Repairing</span></div>
+    <div class="px-bar"><div class="px-bar__fill" data-bar style="width:78.4%"></div><div class="px-bar__q" style="left:calc(100% - 2px)"></div></div>
+    <div class="px-time__stats"><div><span>Quoted</span><b>8.00<small>h</small></b></div><div><span>Burnt</span><b><span data-b1>6.27</span><small>h</small></b></div><div><span>Left</span><b><span data-left>1.73</span><small>h</small></b></div><div><span>Efficiency</span><b class="px-good"><span data-eff>128</span><small>%</small></b></div></div>
+  </div>
+  <div class="px-seg px-seg--fill pm-seg" role="tablist"><button class="is-on" data-ptab="parts">Parts <span class="n" data-pcount>2/2</span></button><button data-ptab="time">Time <span class="n">3</span></button><button data-ptab="notes">Notes</button><button data-ptab="files">Files <span class="n">2</span></button></div>
+  <div data-ppane="parts"><div class="pm-part"><div><b>Clutch kit, 15.5 in</b><small><span class="px-id">85136213</span> · Qty 1</small></div><button class="pm-pill" data-pp="1-1" data-k="received"><svg class="px-si" data-s="working" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.25" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7 3.5a3.5 3.5 0 0 1 0 7z" fill="currentColor"/></svg><span>Received</span><svg class="px-ico px-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 9.5L12 15l5.5-5.5"/></svg></button></div><div class="pm-part"><div><b>Clutch release bearing</b><small><span class="px-id">21515427</span> · Qty 1</small></div><button class="pm-pill" data-pp="1-2" data-k="installed"><svg class="px-si" data-s="released" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="6" fill="currentColor"/><path d="M4.4 7.2l1.8 1.8 3.5-3.7" fill="none" stroke="var(--panel)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Installed</span><svg class="px-ico px-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 9.5L12 15l5.5-5.5"/></svg></button></div><button class="pm-addrow"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add part</button></div>
+  <div data-ppane="time" hidden><div class="pm-trow"><div><b>Mon, Oct 19</b><small>7:32 – 11:05 · Repairing</small></div><span>3:33</span></div><div class="pm-trow"><div><b>Mon, Oct 19</b><small>12:10 – 13:41 · Repairing</small></div><span>1:31</span></div><div class="pm-trow"><div><b>Tue, Oct 20</b><small>7:30 – 8:42 · Repairing</small></div><span>1:12</span></div><button class="pm-addrow"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add time entry</button></div>
+  <div data-ppane="notes" hidden><textarea class="px-input pm-notes" rows="5">Removed transmission. Clutch disc worn to the rivets, flywheel scored — resurfaced. Installing new clutch kit. (Oct 20 · 8:40)</textarea><p class="pm-hint"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3.75" width="6" height="10.5" rx="3"/><path d="M5.75 11a6.25 6.25 0 0 0 12.5 0M12 17.25v3"/></svg>Hold Note to dictate — the date and time stamp is added when you let go.</p></div>
+  <div data-ppane="files" hidden><div class="pm-files"><div class="pm-file" style="--h:28"><span>flywheel-scoring.jpg</span></div><div class="pm-file" style="--h:34"><span>clutch-disc.jpg</span></div><button class="pm-file pm-file--add"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.75 8.5A1.75 1.75 0 0 1 6.5 6.75h1.75l1.5-2h4.5l1.5 2h1.75a1.75 1.75 0 0 1 1.75 1.75v9a1.75 1.75 0 0 1-1.75 1.75h-11a1.75 1.75 0 0 1-1.75-1.75z"/><circle cx="12" cy="12.75" r="3.4"/></svg><span>Add photo</span></button></div></div>
+</div>
+<div class="pm-toastwrap" data-ptoast></div>
+<div class="pm-actbar">
+  <button class="pm-act" data-n="8"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.75 8.5A1.75 1.75 0 0 1 6.5 6.75h1.75l1.5-2h4.5l1.5 2h1.75a1.75 1.75 0 0 1 1.75 1.75v9a1.75 1.75 0 0 1-1.75 1.75h-11a1.75 1.75 0 0 1-1.75-1.75z"/><circle cx="12" cy="12.75" r="3.4"/></svg><span>Photo</span></button>
+  <button class="pm-act" data-n="9"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3.75" width="6" height="10.5" rx="3"/><path d="M5.75 11a6.25 6.25 0 0 0 12.5 0M12 17.25v3"/></svg><span>Note</span></button>
+  <button class="pm-go is-live" data-go data-n="6"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2.75"/></svg><span data-go-l>Stop clock</span></button>
+</div>
+</div></div></figure><figure class="pm-dev"><figcaption><span class="pm-cap__n">4</span>Part status — a bottom sheet</figcaption><div class="pm-phone"><div class="pm-screen" data-screen="opsheet"><div class="pm-sb"><b>9:41</b><span class="pm-sb__r"><svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg viewBox="0 0 16 12" width="16" height="12"><path d="M8 11.5l2.4-2.9a3.6 3.6 0 0 0-4.8 0zM3.3 6.3a7 7 0 0 1 9.4 0l1.5-1.8a9.4 9.4 0 0 0-12.4 0zM.4 2.8a11.6 11.6 0 0 1 15.2 0" /></svg><svg viewBox="0 0 27 12" width="27" height="12"><rect x=".5" y=".5" width="23" height="11" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="17" height="8" rx="2"/><rect x="24.6" y="4" width="1.6" height="4" rx=".8" opacity=".4"/></svg></span></div><div class="pm-island"></div>
+<div class="pm-body">
+  <nav class="pm-nav"><button class="pm-back"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5L9 12l5.5 5.5"/></svg>RO-37538</button><span class="pm-nav__t">Operation 1 of 3</span><span class="pm-nav__acts"><button class="px-btn px-btn--ghost px-btn--icon" title="Options"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 12h.01M12 12h.01M18.5 12h.01" stroke-width="2.4"/></svg></button></span></nav>
+  <div class="pm-optitle"><span class="px-tag" data-t="OP">OP</span><h1>Clutch slipping – replace clutch</h1></div>
+  <div class="pm-clock is-live" data-clockcard>
+    <div class="pm-clock__v" data-clock>6:15:57</div>
+    <div class="pm-clock__cap"><span class="pm-cbar__dot"></span><span data-clockcap>Clock running · Repairing</span></div>
+    <div class="px-bar"><div class="px-bar__fill" data-bar style="width:78.4%"></div><div class="px-bar__q" style="left:calc(100% - 2px)"></div></div>
+    <div class="px-time__stats"><div><span>Quoted</span><b>8.00<small>h</small></b></div><div><span>Burnt</span><b><span data-b1>6.27</span><small>h</small></b></div><div><span>Left</span><b><span data-left>1.73</span><small>h</small></b></div><div><span>Efficiency</span><b class="px-good"><span data-eff>128</span><small>%</small></b></div></div>
+  </div>
+  <div class="px-seg px-seg--fill pm-seg" role="tablist"><button class="is-on" data-ptab="parts">Parts <span class="n" data-pcount>2/2</span></button><button data-ptab="time">Time <span class="n">3</span></button><button data-ptab="notes">Notes</button><button data-ptab="files">Files <span class="n">2</span></button></div>
+  <div data-ppane="parts"><div class="pm-part"><div><b>Clutch kit, 15.5 in</b><small><span class="px-id">85136213</span> · Qty 1</small></div><button class="pm-pill" data-pp="1-1" data-k="received"><svg class="px-si" data-s="working" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.25" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7 3.5a3.5 3.5 0 0 1 0 7z" fill="currentColor"/></svg><span>Received</span><svg class="px-ico px-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 9.5L12 15l5.5-5.5"/></svg></button></div><div class="pm-part"><div><b>Clutch release bearing</b><small><span class="px-id">21515427</span> · Qty 1</small></div><button class="pm-pill" data-pp="1-2" data-k="installed"><svg class="px-si" data-s="released" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="6" fill="currentColor"/><path d="M4.4 7.2l1.8 1.8 3.5-3.7" fill="none" stroke="var(--panel)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Installed</span><svg class="px-ico px-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 9.5L12 15l5.5-5.5"/></svg></button></div><button class="pm-addrow"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add part</button></div>
+  <div data-ppane="time" hidden><div class="pm-trow"><div><b>Mon, Oct 19</b><small>7:32 – 11:05 · Repairing</small></div><span>3:33</span></div><div class="pm-trow"><div><b>Mon, Oct 19</b><small>12:10 – 13:41 · Repairing</small></div><span>1:31</span></div><div class="pm-trow"><div><b>Tue, Oct 20</b><small>7:30 – 8:42 · Repairing</small></div><span>1:12</span></div><button class="pm-addrow"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add time entry</button></div>
+  <div data-ppane="notes" hidden><textarea class="px-input pm-notes" rows="5">Removed transmission. Clutch disc worn to the rivets, flywheel scored — resurfaced. Installing new clutch kit. (Oct 20 · 8:40)</textarea><p class="pm-hint"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3.75" width="6" height="10.5" rx="3"/><path d="M5.75 11a6.25 6.25 0 0 0 12.5 0M12 17.25v3"/></svg>Hold Note to dictate — the date and time stamp is added when you let go.</p></div>
+  <div data-ppane="files" hidden><div class="pm-files"><div class="pm-file" style="--h:28"><span>flywheel-scoring.jpg</span></div><div class="pm-file" style="--h:34"><span>clutch-disc.jpg</span></div><button class="pm-file pm-file--add"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.75 8.5A1.75 1.75 0 0 1 6.5 6.75h1.75l1.5-2h4.5l1.5 2h1.75a1.75 1.75 0 0 1 1.75 1.75v9a1.75 1.75 0 0 1-1.75 1.75h-11a1.75 1.75 0 0 1-1.75-1.75z"/><circle cx="12" cy="12.75" r="3.4"/></svg><span>Add photo</span></button></div></div>
+</div>
+<div class="pm-toastwrap" data-ptoast></div>
+<div class="pm-actbar">
+  <button class="pm-act"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.75 8.5A1.75 1.75 0 0 1 6.5 6.75h1.75l1.5-2h4.5l1.5 2h1.75a1.75 1.75 0 0 1 1.75 1.75v9a1.75 1.75 0 0 1-1.75 1.75h-11a1.75 1.75 0 0 1-1.75-1.75z"/><circle cx="12" cy="12.75" r="3.4"/></svg><span>Photo</span></button>
+  <button class="pm-act"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3.75" width="6" height="10.5" rx="3"/><path d="M5.75 11a6.25 6.25 0 0 0 12.5 0M12 17.25v3"/></svg><span>Note</span></button>
+  <button class="pm-go is-live" data-go><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2.75"/></svg><span data-go-l>Stop clock</span></button>
+</div>
+<div class="pm-sheet is-static" data-sheet-el><div class="pm-sheet__p"><div class="pm-sheet__grab"></div><div class="pm-sheet__h" data-n="7"><h3 data-sheet-title>Clutch kit, 15.5 in</h3><p><span class="px-id">85136213</span> · Qty 1 · Operation 1</p></div><button class="pm-srow" data-set="notordered"><svg class="px-si" data-s="hold" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.25" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>Not ordered</span><svg class="px-ico pm-srow__tick" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button><button class="pm-srow" data-set="ordered"><svg class="px-si" data-s="parts" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.25" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2.3 1.82"/><circle cx="7" cy="7" r="1.75" fill="currentColor"/></svg><span>Ordered</span><svg class="px-ico pm-srow__tick" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button><button class="pm-srow" data-set="backordered"><svg class="px-si" data-s="problem" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.25" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2.3 1.82"/><circle cx="7" cy="7" r="1.75" fill="currentColor"/></svg><span>Backordered</span><svg class="px-ico pm-srow__tick" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button><button class="pm-srow is-on" data-set="received"><svg class="px-si" data-s="working" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.25" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7 3.5a3.5 3.5 0 0 1 0 7z" fill="currentColor"/></svg><span>Received</span><svg class="px-ico pm-srow__tick" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button><button class="pm-srow" data-set="installed"><svg class="px-si" data-s="released" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="6" fill="currentColor"/><path d="M4.4 7.2l1.8 1.8 3.5-3.7" fill="none" stroke="var(--panel)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Installed</span><svg class="px-ico pm-srow__tick" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button><div class="pm-ssep"></div><button class="pm-srow"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Copy part number</span></button><button class="pm-srow"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7.5h12.5L16 4M17 16.5H4.5L8 20"/></svg><span>Move to operation…</span></button><button class="pm-srow pm-srow--danger"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 6.5h15M9.5 6.5V4.75h5V6.5M6.5 6.5l.9 12.2a1.5 1.5 0 0 0 1.5 1.3h6.2a1.5 1.5 0 0 0 1.5-1.3l.9-12.2M10 10.5v5.5M14 10.5v5.5"/></svg><span>Remove part</span></button></div></div></div></div></figure><figure class="pm-dev"><figcaption><span class="pm-cap__n">5</span>Sync — QR codes, no network</figcaption><div class="pm-phone"><div class="pm-screen" data-screen="sync"><div class="pm-sb"><b>9:41</b><span class="pm-sb__r"><svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg viewBox="0 0 16 12" width="16" height="12"><path d="M8 11.5l2.4-2.9a3.6 3.6 0 0 0-4.8 0zM3.3 6.3a7 7 0 0 1 9.4 0l1.5-1.8a9.4 9.4 0 0 0-12.4 0zM.4 2.8a11.6 11.6 0 0 1 15.2 0" /></svg><svg viewBox="0 0 27 12" width="27" height="12"><rect x=".5" y=".5" width="23" height="11" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="17" height="8" rx="2"/><rect x="24.6" y="4" width="1.6" height="4" rx=".8" opacity=".4"/></svg></span></div><div class="pm-island"></div>
+<div class="pm-body">
+  <header class="pm-hero"><div class="pm-eyebrow">No network needed</div><div class="pm-hero__row"><h1 class="pm-title">Sync</h1></div></header>
+  <div class="px-seg px-seg--fill pm-seg" style="margin-top:16px"><button class="is-on" data-sync="send">Send to computer</button><button data-sync="get">Get from computer</button></div>
+  <div data-syncpane="send">
+    <div class="pm-qr" data-n="10">
+      <svg class="pm-qr__ring" viewBox="0 0 264 264"><circle cx="132" cy="132" r="126" /><circle class="p" cx="132" cy="132" r="126" data-ring style="stroke-dasharray:791.7;stroke-dashoffset:483.8"/></svg>
+      <div class="pm-qr__box" data-qrbox><svg class="pm-qr__code" viewBox="-2 -2 33 33" data-qr="11"><rect x="-2" y="-2" width="33" height="33" fill="#fff"/><path d="M0 0h1v1h-1zM1 0h1v1h-1zM2 0h1v1h-1zM3 0h1v1h-1zM4 0h1v1h-1zM5 0h1v1h-1zM6 0h1v1h-1zM10 0h1v1h-1zM11 0h1v1h-1zM12 0h1v1h-1zM15 0h1v1h-1zM20 0h1v1h-1zM22 0h1v1h-1zM23 0h1v1h-1zM24 0h1v1h-1zM25 0h1v1h-1zM26 0h1v1h-1zM27 0h1v1h-1zM28 0h1v1h-1zM0 1h1v1h-1zM6 1h1v1h-1zM11 1h1v1h-1zM12 1h1v1h-1zM13 1h1v1h-1zM14 1h1v1h-1zM16 1h1v1h-1zM18 1h1v1h-1zM22 1h1v1h-1zM28 1h1v1h-1zM0 2h1v1h-1zM2 2h1v1h-1zM3 2h1v1h-1zM4 2h1v1h-1zM6 2h1v1h-1zM8 2h1v1h-1zM9 2h1v1h-1zM11 2h1v1h-1zM13 2h1v1h-1zM14 2h1v1h-1zM16 2h1v1h-1zM18 2h1v1h-1zM19 2h1v1h-1zM20 2h1v1h-1zM22 2h1v1h-1zM24 2h1v1h-1zM25 2h1v1h-1zM26 2h1v1h-1zM28 2h1v1h-1zM0 3h1v1h-1zM2 3h1v1h-1zM3 3h1v1h-1zM4 3h1v1h-1zM6 3h1v1h-1zM8 3h1v1h-1zM9 3h1v1h-1zM11 3h1v1h-1zM13 3h1v1h-1zM14 3h1v1h-1zM19 3h1v1h-1zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM25 3h1v1h-1zM26 3h1v1h-1zM28 3h1v1h-1zM0 4h1v1h-1zM2 4h1v1h-1zM3 4h1v1h-1zM4 4h1v1h-1zM6 4h1v1h-1zM8 4h1v1h-1zM11 4h1v1h-1zM12 4h1v1h-1zM14 4h1v1h-1zM15 4h1v1h-1zM19 4h1v1h-1zM22 4h1v1h-1zM24 4h1v1h-1zM25 4h1v1h-1zM26 4h1v1h-1zM28 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM9 5h1v1h-1zM13 5h1v1h-1zM17 5h1v1h-1zM19 5h1v1h-1zM22 5h1v1h-1zM28 5h1v1h-1zM0 6h1v1h-1zM1 6h1v1h-1zM2 6h1v1h-1zM3 6h1v1h-1zM4 6h1v1h-1zM5 6h1v1h-1zM6 6h1v1h-1zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM23 6h1v1h-1zM24 6h1v1h-1zM25 6h1v1h-1zM26 6h1v1h-1zM27 6h1v1h-1zM28 6h1v1h-1zM9 7h1v1h-1zM11 7h1v1h-1zM13 7h1v1h-1zM14 7h1v1h-1zM18 7h1v1h-1zM20 7h1v1h-1zM0 8h1v1h-1zM1 8h1v1h-1zM2 8h1v1h-1zM3 8h1v1h-1zM6 8h1v1h-1zM9 8h1v1h-1zM10 8h1v1h-1zM11 8h1v1h-1zM13 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM19 8h1v1h-1zM20 8h1v1h-1zM21 8h1v1h-1zM23 8h1v1h-1zM24 8h1v1h-1zM25 8h1v1h-1zM27 8h1v1h-1zM4 9h1v1h-1zM7 9h1v1h-1zM10 9h1v1h-1zM11 9h1v1h-1zM12 9h1v1h-1zM17 9h1v1h-1zM20 9h1v1h-1zM23 9h1v1h-1zM24 9h1v1h-1zM27 9h1v1h-1zM3 10h1v1h-1zM5 10h1v1h-1zM6 10h1v1h-1zM10 10h1v1h-1zM16 10h1v1h-1zM19 10h1v1h-1zM20 10h1v1h-1zM21 10h1v1h-1zM25 10h1v1h-1zM27 10h1v1h-1zM0 11h1v1h-1zM1 11h1v1h-1zM3 11h1v1h-1zM4 11h1v1h-1zM12 11h1v1h-1zM13 11h1v1h-1zM15 11h1v1h-1zM21 11h1v1h-1zM22 11h1v1h-1zM25 11h1v1h-1zM1 12h1v1h-1zM5 12h1v1h-1zM6 12h1v1h-1zM8 12h1v1h-1zM13 12h1v1h-1zM15 12h1v1h-1zM18 12h1v1h-1zM20 12h1v1h-1zM21 12h1v1h-1zM25 12h1v1h-1zM26 12h1v1h-1zM0 13h1v1h-1zM2 13h1v1h-1zM3 13h1v1h-1zM4 13h1v1h-1zM7 13h1v1h-1zM9 13h1v1h-1zM11 13h1v1h-1zM13 13h1v1h-1zM14 13h1v1h-1zM16 13h1v1h-1zM17 13h1v1h-1zM18 13h1v1h-1zM20 13h1v1h-1zM21 13h1v1h-1zM28 13h1v1h-1zM3 14h1v1h-1zM4 14h1v1h-1zM6 14h1v1h-1zM9 14h1v1h-1zM10 14h1v1h-1zM12 14h1v1h-1zM13 14h1v1h-1zM15 14h1v1h-1zM17 14h1v1h-1zM18 14h1v1h-1zM20 14h1v1h-1zM21 14h1v1h-1zM25 14h1v1h-1zM1 15h1v1h-1zM2 15h1v1h-1zM3 15h1v1h-1zM4 15h1v1h-1zM8 15h1v1h-1zM9 15h1v1h-1zM10 15h1v1h-1zM14 15h1v1h-1zM15 15h1v1h-1zM17 15h1v1h-1zM19 15h1v1h-1zM20 15h1v1h-1zM22 15h1v1h-1zM24 15h1v1h-1zM27 15h1v1h-1zM28 15h1v1h-1zM1 16h1v1h-1zM2 16h1v1h-1zM3 16h1v1h-1zM5 16h1v1h-1zM6 16h1v1h-1zM11 16h1v1h-1zM16 16h1v1h-1zM21 16h1v1h-1zM27 16h1v1h-1zM0 17h1v1h-1zM1 17h1v1h-1zM2 17h1v1h-1zM3 17h1v1h-1zM4 17h1v1h-1zM7 17h1v1h-1zM10 17h1v1h-1zM14 17h1v1h-1zM20 17h1v1h-1zM23 17h1v1h-1zM24 17h1v1h-1zM25 17h1v1h-1zM26 17h1v1h-1zM27 17h1v1h-1zM28 17h1v1h-1zM0 18h1v1h-1zM6 18h1v1h-1zM9 18h1v1h-1zM12 18h1v1h-1zM14 18h1v1h-1zM16 18h1v1h-1zM19 18h1v1h-1zM21 18h1v1h-1zM24 18h1v1h-1zM25 18h1v1h-1zM28 18h1v1h-1zM1 19h1v1h-1zM2 19h1v1h-1zM3 19h1v1h-1zM4 19h1v1h-1zM5 19h1v1h-1zM7 19h1v1h-1zM10 19h1v1h-1zM13 19h1v1h-1zM15 19h1v1h-1zM18 19h1v1h-1zM22 19h1v1h-1zM26 19h1v1h-1zM28 19h1v1h-1zM0 20h1v1h-1zM1 20h1v1h-1zM3 20h1v1h-1zM4 20h1v1h-1zM6 20h1v1h-1zM7 20h1v1h-1zM9 20h1v1h-1zM15 20h1v1h-1zM16 20h1v1h-1zM20 20h1v1h-1zM21 20h1v1h-1zM27 20h1v1h-1zM28 20h1v1h-1zM8 21h1v1h-1zM10 21h1v1h-1zM11 21h1v1h-1zM15 21h1v1h-1zM17 21h1v1h-1zM18 21h1v1h-1zM21 21h1v1h-1zM22 21h1v1h-1zM26 21h1v1h-1zM27 21h1v1h-1zM28 21h1v1h-1zM0 22h1v1h-1zM1 22h1v1h-1zM2 22h1v1h-1zM3 22h1v1h-1zM4 22h1v1h-1zM5 22h1v1h-1zM6 22h1v1h-1zM8 22h1v1h-1zM9 22h1v1h-1zM10 22h1v1h-1zM12 22h1v1h-1zM13 22h1v1h-1zM17 22h1v1h-1zM19 22h1v1h-1zM20 22h1v1h-1zM22 22h1v1h-1zM23 22h1v1h-1zM26 22h1v1h-1zM27 22h1v1h-1zM28 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h1v1h-1zM10 23h1v1h-1zM11 23h1v1h-1zM12 23h1v1h-1zM15 23h1v1h-1zM16 23h1v1h-1zM17 23h1v1h-1zM18 23h1v1h-1zM19 23h1v1h-1zM20 23h1v1h-1zM21 23h1v1h-1zM27 23h1v1h-1zM0 24h1v1h-1zM2 24h1v1h-1zM3 24h1v1h-1zM4 24h1v1h-1zM6 24h1v1h-1zM9 24h1v1h-1zM12 24h1v1h-1zM13 24h1v1h-1zM16 24h1v1h-1zM18 24h1v1h-1zM21 24h1v1h-1zM22 24h1v1h-1zM26 24h1v1h-1zM27 24h1v1h-1zM0 25h1v1h-1zM2 25h1v1h-1zM3 25h1v1h-1zM4 25h1v1h-1zM6 25h1v1h-1zM18 25h1v1h-1zM19 25h1v1h-1zM20 25h1v1h-1zM23 25h1v1h-1zM24 25h1v1h-1zM25 25h1v1h-1zM26 25h1v1h-1zM27 25h1v1h-1zM0 26h1v1h-1zM2 26h1v1h-1zM3 26h1v1h-1zM4 26h1v1h-1zM6 26h1v1h-1zM10 26h1v1h-1zM11 26h1v1h-1zM12 26h1v1h-1zM13 26h1v1h-1zM14 26h1v1h-1zM17 26h1v1h-1zM18 26h1v1h-1zM19 26h1v1h-1zM20 26h1v1h-1zM22 26h1v1h-1zM26 26h1v1h-1zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h1v1h-1zM11 27h1v1h-1zM14 27h1v1h-1zM15 27h1v1h-1zM17 27h1v1h-1zM21 27h1v1h-1zM22 27h1v1h-1zM23 27h1v1h-1zM24 27h1v1h-1zM0 28h1v1h-1zM1 28h1v1h-1zM2 28h1v1h-1zM3 28h1v1h-1zM4 28h1v1h-1zM5 28h1v1h-1zM6 28h1v1h-1zM8 28h1v1h-1zM9 28h1v1h-1zM11 28h1v1h-1zM13 28h1v1h-1zM17 28h1v1h-1zM19 28h1v1h-1zM21 28h1v1h-1zM23 28h1v1h-1zM26 28h1v1h-1zM28 28h1v1h-1z" fill="#111"/></svg></div>
+    </div>
+    <div class="pm-qr__cap"><b data-qrn>Code 7 of 18</b><span>Hold the phone up to the computer’s webcam. The screen stays awake until it’s done.</span></div>
+  </div>
+  <div data-syncpane="get" hidden>
+    <div class="pm-cam"><i></i><i></i><i></i><i></i><span>Point the camera at the codes on the computer screen</span></div>
+  </div>
+  <div class="pm-card pm-sync">
+    <div class="pm-sync__h">What’s going</div>
+    <div class="pm-sync__r"><span>ROs</span><b>3</b></div>
+    <div class="pm-sync__r"><span>Time entries</span><b>14</b></div>
+    <div class="pm-sync__r"><span>Part changes</span><b>2</b></div>
+    <div class="pm-sync__r"><span>Notes</span><b>3</b></div>
+    <div class="pm-sync__f">Last synced 7:12 this morning · photos go to the RO folder separately</div>
+  </div>
+</div>
+<div class="pm-cbar" data-cbar><span class="pm-cbar__dot"></span><div class="pm-cbar__t"><small data-cbar-ro>RO-37538 · Operation 1</small><b data-cbar-job>Clutch slipping – replace clutch</b></div><span class="pm-cbar__v" data-clock-mini>6:15:57</span><button class="pm-cbar__stop" data-stop title="Stop clock"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2.75"/></svg></button></div><nav class="pm-tabs"><button class="pm-tab"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2.75"/><path d="M4 9.75h16M8.5 3v4M15.5 3v4"/><circle cx="12" cy="14.75" r="1.25"/></svg><span>Today</span></button><button class="pm-tab"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.75h7l4.75 4.75v10.25a1.5 1.5 0 0 1-1.5 1.5H6.5A1.5 1.5 0 0 1 5 18.75V5.25a1.5 1.5 0 0 1 1.5-1.5z"/><path d="M13.5 3.75V8.5h4.75"/><path d="M8.5 12.5h7M8.5 16h4.5"/></svg><span>ROs</span></button><button class="pm-tab is-on"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5h3.5M4 4v3.5M4.75 7.5A8 8 0 0 1 19.6 9.5M20 16.5h-3.5M20 20v-3.5M19.25 16.5A8 8 0 0 1 4.4 14.5"/></svg><span>Sync</span></button><button class="pm-tab"><svg class="px-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.75"/><path d="M4.75 20c.6-3.6 3.6-5.75 7.25-5.75s6.65 2.15 7.25 5.75"/></svg><span>Me</span></button></nav></div></div></figure></div>
+<div class="wt-notes"><section class="wt-g"><h3>Visualization</h3><ol><li><span class="wt-n">1</span><div><b>Running clock bar</b><p>Follows you on every screen. Tap it to go back to the job; stop without hunting.</p></div></li><li><span class="wt-n">2</span><div><b>Day strip</b><p>Today's clocked time as segments per job; gaps are time not on a job. Feeds EOD.</p></div></li><li><span class="wt-n">3</span><div><b>Jobs, not ROs</b><p>Today lists your operations across every RO — ready vs waiting — with play on each row.</p></div></li><li><span class="wt-n">4</span><div><b>Stage in one line</b><p>Seven ticks and the current stage instead of the labelled track.</p></div></li><li><span class="wt-n">5</span><div><b>Totals as tiles</b><p>Time · Parts · Files, same as the desktop header; each opens a bottom sheet.</p></div></li></ol></section><section class="wt-g"><h3>Efficiency</h3><ol><li><span class="wt-n">6</span><div><b>Thumb zone</b><p>Start / stop clock sits bottom right — one thumb, no reaching.</p></div></li><li><span class="wt-n">7</span><div><b>Bottom sheets</b><p>Replace menus and modals: 52px rows, tap outside or swipe down to close.</p></div></li><li><span class="wt-n">8</span><div><b>Camera first</b><p>Photos land in the operation's Files and the Dash pic / DTC bulletins, shrunk on capture.</p></div></li><li><span class="wt-n">9</span><div><b>Voice notes</b><p>Hold Note to dictate work performed; the time stamp is added like Enter does today.</p></div></li><li><span class="wt-n">10</span><div><b>QR sync, upgraded</b><p>Progress ring, what's going, last synced; works with no network, like today.</p></div></li><li><span class="wt-n">11</span><div><b>Swipe actions</b><p>Swipe an operation to start its clock, a part to mark it Received; long-press for the full menu.</p></div></li></ol></section><section class="wt-g"><h3>Styling</h3><ol><li><span class="wt-n is-plain">·</span><div><b>Bay mode</b><p>Bigger type and targets, stronger labels — for gloves and bright bays. Try the toggle.</p></div></li><li><span class="wt-n is-plain">·</span><div><b>Phone rules</b><p>16px inputs (no zoom on focus), safe areas, 44px+ targets, tabular numbers, same tokens.</p></div></li><li><span class="wt-n is-plain">·</span><div><b>Follows the phone</b><p>Ivory by day, Graphite when the phone is in dark mode; status colours never change.</p></div></li></ol></section><section class="wt-g"><h3>Back on the desktop</h3><ol><li><span class="wt-n is-plain">·</span><div><b>Day strip on Time log</b><p>The same strip, one row per day — EOD and corrections at a glance.</p></div></li><li><span class="wt-n is-plain">·</span><div><b>Running job in the sidebar</b><p>The clock-in card shows the job that's running and stops it.</p></div></li></ol></section></div>
+<script>
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const root=document.documentElement, stage=$('.pm-board');
+const PSI={"notordered": "<svg class=\"px-si\" data-s=\"hold\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg>", "ordered": "<svg class=\"px-si\" data-s=\"parts\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-dasharray=\"2.3 1.82\"/><circle cx=\"7\" cy=\"7\" r=\"1.75\" fill=\"currentColor\"/></svg>", "backordered": "<svg class=\"px-si\" data-s=\"problem\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-dasharray=\"2.3 1.82\"/><circle cx=\"7\" cy=\"7\" r=\"1.75\" fill=\"currentColor\"/></svg>", "received": "<svg class=\"px-si\" data-s=\"working\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M7 3.5a3.5 3.5 0 0 1 0 7z\" fill=\"currentColor\"/></svg>", "installed": "<svg class=\"px-si\" data-s=\"released\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"6\" fill=\"currentColor\"/><path d=\"M4.4 7.2l1.8 1.8 3.5-3.7\" fill=\"none\" stroke=\"var(--panel)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>"}, PNAME={"notordered": "Not ordered", "ordered": "Ordered", "backordered": "Backordered", "received": "Received", "installed": "Installed"}, ICO={"play": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M8 5.6v12.8a.8.8 0 0 0 1.2.7l10.2-6.4a.8.8 0 0 0 0-1.4L9.2 4.9A.8.8 0 0 0 8 5.6z\"/></svg>", "stop": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"6\" y=\"6\" width=\"12\" height=\"12\" rx=\"2.75\"/></svg>", "check": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M5 12.5l4.5 4.5L19 7.5\"/></svg>", "copy": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"8\" y=\"8\" width=\"12\" height=\"12\" rx=\"2.5\"/><path d=\"M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2\"/></svg>", "swap": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M7 7.5h12.5L16 4M17 16.5H4.5L8 20\"/></svg>", "trash": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4.5 6.5h15M9.5 6.5V4.75h5V6.5M6.5 6.5l.9 12.2a1.5 1.5 0 0 0 1.5 1.3h6.2a1.5 1.5 0 0 0 1.5-1.3l.9-12.2M10 10.5v5.5M14 10.5v5.5\"/></svg>", "chevD": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M6.5 9.5L12 15l5.5-5.5\"/></svg>", "chevR": "<svg class=\"px-ico\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M9.5 6.5L15 12l-5.5 5.5\"/></svg>"}, QRS=["<svg class=\"pm-qr__code\" viewBox=\"-2 -2 33 33\" data-qr=\"11\"><rect x=\"-2\" y=\"-2\" width=\"33\" height=\"33\" fill=\"#fff\"/><path d=\"M0 0h1v1h-1zM1 0h1v1h-1zM2 0h1v1h-1zM3 0h1v1h-1zM4 0h1v1h-1zM5 0h1v1h-1zM6 0h1v1h-1zM10 0h1v1h-1zM11 0h1v1h-1zM12 0h1v1h-1zM15 0h1v1h-1zM20 0h1v1h-1zM22 0h1v1h-1zM23 0h1v1h-1zM24 0h1v1h-1zM25 0h1v1h-1zM26 0h1v1h-1zM27 0h1v1h-1zM28 0h1v1h-1zM0 1h1v1h-1zM6 1h1v1h-1zM11 1h1v1h-1zM12 1h1v1h-1zM13 1h1v1h-1zM14 1h1v1h-1zM16 1h1v1h-1zM18 1h1v1h-1zM22 1h1v1h-1zM28 1h1v1h-1zM0 2h1v1h-1zM2 2h1v1h-1zM3 2h1v1h-1zM4 2h1v1h-1zM6 2h1v1h-1zM8 2h1v1h-1zM9 2h1v1h-1zM11 2h1v1h-1zM13 2h1v1h-1zM14 2h1v1h-1zM16 2h1v1h-1zM18 2h1v1h-1zM19 2h1v1h-1zM20 2h1v1h-1zM22 2h1v1h-1zM24 2h1v1h-1zM25 2h1v1h-1zM26 2h1v1h-1zM28 2h1v1h-1zM0 3h1v1h-1zM2 3h1v1h-1zM3 3h1v1h-1zM4 3h1v1h-1zM6 3h1v1h-1zM8 3h1v1h-1zM9 3h1v1h-1zM11 3h1v1h-1zM13 3h1v1h-1zM14 3h1v1h-1zM19 3h1v1h-1zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM25 3h1v1h-1zM26 3h1v1h-1zM28 3h1v1h-1zM0 4h1v1h-1zM2 4h1v1h-1zM3 4h1v1h-1zM4 4h1v1h-1zM6 4h1v1h-1zM8 4h1v1h-1zM11 4h1v1h-1zM12 4h1v1h-1zM14 4h1v1h-1zM15 4h1v1h-1zM19 4h1v1h-1zM22 4h1v1h-1zM24 4h1v1h-1zM25 4h1v1h-1zM26 4h1v1h-1zM28 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM9 5h1v1h-1zM13 5h1v1h-1zM17 5h1v1h-1zM19 5h1v1h-1zM22 5h1v1h-1zM28 5h1v1h-1zM0 6h1v1h-1zM1 6h1v1h-1zM2 6h1v1h-1zM3 6h1v1h-1zM4 6h1v1h-1zM5 6h1v1h-1zM6 6h1v1h-1zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM23 6h1v1h-1zM24 6h1v1h-1zM25 6h1v1h-1zM26 6h1v1h-1zM27 6h1v1h-1zM28 6h1v1h-1zM9 7h1v1h-1zM11 7h1v1h-1zM13 7h1v1h-1zM14 7h1v1h-1zM18 7h1v1h-1zM20 7h1v1h-1zM0 8h1v1h-1zM1 8h1v1h-1zM2 8h1v1h-1zM3 8h1v1h-1zM6 8h1v1h-1zM9 8h1v1h-1zM10 8h1v1h-1zM11 8h1v1h-1zM13 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM19 8h1v1h-1zM20 8h1v1h-1zM21 8h1v1h-1zM23 8h1v1h-1zM24 8h1v1h-1zM25 8h1v1h-1zM27 8h1v1h-1zM4 9h1v1h-1zM7 9h1v1h-1zM10 9h1v1h-1zM11 9h1v1h-1zM12 9h1v1h-1zM17 9h1v1h-1zM20 9h1v1h-1zM23 9h1v1h-1zM24 9h1v1h-1zM27 9h1v1h-1zM3 10h1v1h-1zM5 10h1v1h-1zM6 10h1v1h-1zM10 10h1v1h-1zM16 10h1v1h-1zM19 10h1v1h-1zM20 10h1v1h-1zM21 10h1v1h-1zM25 10h1v1h-1zM27 10h1v1h-1zM0 11h1v1h-1zM1 11h1v1h-1zM3 11h1v1h-1zM4 11h1v1h-1zM12 11h1v1h-1zM13 11h1v1h-1zM15 11h1v1h-1zM21 11h1v1h-1zM22 11h1v1h-1zM25 11h1v1h-1zM1 12h1v1h-1zM5 12h1v1h-1zM6 12h1v1h-1zM8 12h1v1h-1zM13 12h1v1h-1zM15 12h1v1h-1zM18 12h1v1h-1zM20 12h1v1h-1zM21 12h1v1h-1zM25 12h1v1h-1zM26 12h1v1h-1zM0 13h1v1h-1zM2 13h1v1h-1zM3 13h1v1h-1zM4 13h1v1h-1zM7 13h1v1h-1zM9 13h1v1h-1zM11 13h1v1h-1zM13 13h1v1h-1zM14 13h1v1h-1zM16 13h1v1h-1zM17 13h1v1h-1zM18 13h1v1h-1zM20 13h1v1h-1zM21 13h1v1h-1zM28 13h1v1h-1zM3 14h1v1h-1zM4 14h1v1h-1zM6 14h1v1h-1zM9 14h1v1h-1zM10 14h1v1h-1zM12 14h1v1h-1zM13 14h1v1h-1zM15 14h1v1h-1zM17 14h1v1h-1zM18 14h1v1h-1zM20 14h1v1h-1zM21 14h1v1h-1zM25 14h1v1h-1zM1 15h1v1h-1zM2 15h1v1h-1zM3 15h1v1h-1zM4 15h1v1h-1zM8 15h1v1h-1zM9 15h1v1h-1zM10 15h1v1h-1zM14 15h1v1h-1zM15 15h1v1h-1zM17 15h1v1h-1zM19 15h1v1h-1zM20 15h1v1h-1zM22 15h1v1h-1zM24 15h1v1h-1zM27 15h1v1h-1zM28 15h1v1h-1zM1 16h1v1h-1zM2 16h1v1h-1zM3 16h1v1h-1zM5 16h1v1h-1zM6 16h1v1h-1zM11 16h1v1h-1zM16 16h1v1h-1zM21 16h1v1h-1zM27 16h1v1h-1zM0 17h1v1h-1zM1 17h1v1h-1zM2 17h1v1h-1zM3 17h1v1h-1zM4 17h1v1h-1zM7 17h1v1h-1zM10 17h1v1h-1zM14 17h1v1h-1zM20 17h1v1h-1zM23 17h1v1h-1zM24 17h1v1h-1zM25 17h1v1h-1zM26 17h1v1h-1zM27 17h1v1h-1zM28 17h1v1h-1zM0 18h1v1h-1zM6 18h1v1h-1zM9 18h1v1h-1zM12 18h1v1h-1zM14 18h1v1h-1zM16 18h1v1h-1zM19 18h1v1h-1zM21 18h1v1h-1zM24 18h1v1h-1zM25 18h1v1h-1zM28 18h1v1h-1zM1 19h1v1h-1zM2 19h1v1h-1zM3 19h1v1h-1zM4 19h1v1h-1zM5 19h1v1h-1zM7 19h1v1h-1zM10 19h1v1h-1zM13 19h1v1h-1zM15 19h1v1h-1zM18 19h1v1h-1zM22 19h1v1h-1zM26 19h1v1h-1zM28 19h1v1h-1zM0 20h1v1h-1zM1 20h1v1h-1zM3 20h1v1h-1zM4 20h1v1h-1zM6 20h1v1h-1zM7 20h1v1h-1zM9 20h1v1h-1zM15 20h1v1h-1zM16 20h1v1h-1zM20 20h1v1h-1zM21 20h1v1h-1zM27 20h1v1h-1zM28 20h1v1h-1zM8 21h1v1h-1zM10 21h1v1h-1zM11 21h1v1h-1zM15 21h1v1h-1zM17 21h1v1h-1zM18 21h1v1h-1zM21 21h1v1h-1zM22 21h1v1h-1zM26 21h1v1h-1zM27 21h1v1h-1zM28 21h1v1h-1zM0 22h1v1h-1zM1 22h1v1h-1zM2 22h1v1h-1zM3 22h1v1h-1zM4 22h1v1h-1zM5 22h1v1h-1zM6 22h1v1h-1zM8 22h1v1h-1zM9 22h1v1h-1zM10 22h1v1h-1zM12 22h1v1h-1zM13 22h1v1h-1zM17 22h1v1h-1zM19 22h1v1h-1zM20 22h1v1h-1zM22 22h1v1h-1zM23 22h1v1h-1zM26 22h1v1h-1zM27 22h1v1h-1zM28 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h1v1h-1zM10 23h1v1h-1zM11 23h1v1h-1zM12 23h1v1h-1zM15 23h1v1h-1zM16 23h1v1h-1zM17 23h1v1h-1zM18 23h1v1h-1zM19 23h1v1h-1zM20 23h1v1h-1zM21 23h1v1h-1zM27 23h1v1h-1zM0 24h1v1h-1zM2 24h1v1h-1zM3 24h1v1h-1zM4 24h1v1h-1zM6 24h1v1h-1zM9 24h1v1h-1zM12 24h1v1h-1zM13 24h1v1h-1zM16 24h1v1h-1zM18 24h1v1h-1zM21 24h1v1h-1zM22 24h1v1h-1zM26 24h1v1h-1zM27 24h1v1h-1zM0 25h1v1h-1zM2 25h1v1h-1zM3 25h1v1h-1zM4 25h1v1h-1zM6 25h1v1h-1zM18 25h1v1h-1zM19 25h1v1h-1zM20 25h1v1h-1zM23 25h1v1h-1zM24 25h1v1h-1zM25 25h1v1h-1zM26 25h1v1h-1zM27 25h1v1h-1zM0 26h1v1h-1zM2 26h1v1h-1zM3 26h1v1h-1zM4 26h1v1h-1zM6 26h1v1h-1zM10 26h1v1h-1zM11 26h1v1h-1zM12 26h1v1h-1zM13 26h1v1h-1zM14 26h1v1h-1zM17 26h1v1h-1zM18 26h1v1h-1zM19 26h1v1h-1zM20 26h1v1h-1zM22 26h1v1h-1zM26 26h1v1h-1zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h1v1h-1zM11 27h1v1h-1zM14 27h1v1h-1zM15 27h1v1h-1zM17 27h1v1h-1zM21 27h1v1h-1zM22 27h1v1h-1zM23 27h1v1h-1zM24 27h1v1h-1zM0 28h1v1h-1zM1 28h1v1h-1zM2 28h1v1h-1zM3 28h1v1h-1zM4 28h1v1h-1zM5 28h1v1h-1zM6 28h1v1h-1zM8 28h1v1h-1zM9 28h1v1h-1zM11 28h1v1h-1zM13 28h1v1h-1zM17 28h1v1h-1zM19 28h1v1h-1zM21 28h1v1h-1zM23 28h1v1h-1zM26 28h1v1h-1zM28 28h1v1h-1z\" fill=\"#111\"/></svg>", "<svg class=\"pm-qr__code\" viewBox=\"-2 -2 33 33\" data-qr=\"27\"><rect x=\"-2\" y=\"-2\" width=\"33\" height=\"33\" fill=\"#fff\"/><path d=\"M0 0h1v1h-1zM1 0h1v1h-1zM2 0h1v1h-1zM3 0h1v1h-1zM4 0h1v1h-1zM5 0h1v1h-1zM6 0h1v1h-1zM9 0h1v1h-1zM12 0h1v1h-1zM15 0h1v1h-1zM22 0h1v1h-1zM23 0h1v1h-1zM24 0h1v1h-1zM25 0h1v1h-1zM26 0h1v1h-1zM27 0h1v1h-1zM28 0h1v1h-1zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h1v1h-1zM10 1h1v1h-1zM12 1h1v1h-1zM14 1h1v1h-1zM16 1h1v1h-1zM18 1h1v1h-1zM19 1h1v1h-1zM20 1h1v1h-1zM22 1h1v1h-1zM28 1h1v1h-1zM0 2h1v1h-1zM2 2h1v1h-1zM3 2h1v1h-1zM4 2h1v1h-1zM6 2h1v1h-1zM8 2h1v1h-1zM11 2h1v1h-1zM12 2h1v1h-1zM16 2h1v1h-1zM22 2h1v1h-1zM24 2h1v1h-1zM25 2h1v1h-1zM26 2h1v1h-1zM28 2h1v1h-1zM0 3h1v1h-1zM2 3h1v1h-1zM3 3h1v1h-1zM4 3h1v1h-1zM6 3h1v1h-1zM9 3h1v1h-1zM10 3h1v1h-1zM12 3h1v1h-1zM14 3h1v1h-1zM16 3h1v1h-1zM17 3h1v1h-1zM18 3h1v1h-1zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM25 3h1v1h-1zM26 3h1v1h-1zM28 3h1v1h-1zM0 4h1v1h-1zM2 4h1v1h-1zM3 4h1v1h-1zM4 4h1v1h-1zM6 4h1v1h-1zM8 4h1v1h-1zM11 4h1v1h-1zM12 4h1v1h-1zM13 4h1v1h-1zM14 4h1v1h-1zM15 4h1v1h-1zM16 4h1v1h-1zM18 4h1v1h-1zM22 4h1v1h-1zM24 4h1v1h-1zM25 4h1v1h-1zM26 4h1v1h-1zM28 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM9 5h1v1h-1zM10 5h1v1h-1zM16 5h1v1h-1zM20 5h1v1h-1zM22 5h1v1h-1zM28 5h1v1h-1zM0 6h1v1h-1zM1 6h1v1h-1zM2 6h1v1h-1zM3 6h1v1h-1zM4 6h1v1h-1zM5 6h1v1h-1zM6 6h1v1h-1zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM23 6h1v1h-1zM24 6h1v1h-1zM25 6h1v1h-1zM26 6h1v1h-1zM27 6h1v1h-1zM28 6h1v1h-1zM9 7h1v1h-1zM12 7h1v1h-1zM14 7h1v1h-1zM20 7h1v1h-1zM0 8h1v1h-1zM4 8h1v1h-1zM5 8h1v1h-1zM6 8h1v1h-1zM7 8h1v1h-1zM8 8h1v1h-1zM9 8h1v1h-1zM12 8h1v1h-1zM17 8h1v1h-1zM20 8h1v1h-1zM21 8h1v1h-1zM24 8h1v1h-1zM25 8h1v1h-1zM26 8h1v1h-1zM27 8h1v1h-1zM28 8h1v1h-1zM0 9h1v1h-1zM1 9h1v1h-1zM3 9h1v1h-1zM7 9h1v1h-1zM8 9h1v1h-1zM9 9h1v1h-1zM10 9h1v1h-1zM11 9h1v1h-1zM15 9h1v1h-1zM16 9h1v1h-1zM19 9h1v1h-1zM21 9h1v1h-1zM22 9h1v1h-1zM26 9h1v1h-1zM1 10h1v1h-1zM3 10h1v1h-1zM6 10h1v1h-1zM10 10h1v1h-1zM15 10h1v1h-1zM16 10h1v1h-1zM17 10h1v1h-1zM19 10h1v1h-1zM22 10h1v1h-1zM23 10h1v1h-1zM26 10h1v1h-1zM2 11h1v1h-1zM4 11h1v1h-1zM9 11h1v1h-1zM12 11h1v1h-1zM14 11h1v1h-1zM16 11h1v1h-1zM19 11h1v1h-1zM23 11h1v1h-1zM25 11h1v1h-1zM28 11h1v1h-1zM0 12h1v1h-1zM6 12h1v1h-1zM7 12h1v1h-1zM10 12h1v1h-1zM11 12h1v1h-1zM12 12h1v1h-1zM15 12h1v1h-1zM19 12h1v1h-1zM21 12h1v1h-1zM0 13h1v1h-1zM1 13h1v1h-1zM9 13h1v1h-1zM15 13h1v1h-1zM16 13h1v1h-1zM19 13h1v1h-1zM26 13h1v1h-1zM3 14h1v1h-1zM4 14h1v1h-1zM6 14h1v1h-1zM7 14h1v1h-1zM8 14h1v1h-1zM9 14h1v1h-1zM11 14h1v1h-1zM15 14h1v1h-1zM16 14h1v1h-1zM18 14h1v1h-1zM19 14h1v1h-1zM21 14h1v1h-1zM22 14h1v1h-1zM24 14h1v1h-1zM27 14h1v1h-1zM0 15h1v1h-1zM1 15h1v1h-1zM7 15h1v1h-1zM9 15h1v1h-1zM11 15h1v1h-1zM14 15h1v1h-1zM15 15h1v1h-1zM17 15h1v1h-1zM19 15h1v1h-1zM25 15h1v1h-1zM3 16h1v1h-1zM4 16h1v1h-1zM5 16h1v1h-1zM6 16h1v1h-1zM7 16h1v1h-1zM8 16h1v1h-1zM10 16h1v1h-1zM11 16h1v1h-1zM13 16h1v1h-1zM14 16h1v1h-1zM15 16h1v1h-1zM18 16h1v1h-1zM19 16h1v1h-1zM20 16h1v1h-1zM23 16h1v1h-1zM24 16h1v1h-1zM26 16h1v1h-1zM28 16h1v1h-1zM0 17h1v1h-1zM4 17h1v1h-1zM8 17h1v1h-1zM9 17h1v1h-1zM11 17h1v1h-1zM17 17h1v1h-1zM18 17h1v1h-1zM26 17h1v1h-1zM28 17h1v1h-1zM2 18h1v1h-1zM4 18h1v1h-1zM6 18h1v1h-1zM10 18h1v1h-1zM13 18h1v1h-1zM14 18h1v1h-1zM15 18h1v1h-1zM16 18h1v1h-1zM19 18h1v1h-1zM23 18h1v1h-1zM24 18h1v1h-1zM25 18h1v1h-1zM26 18h1v1h-1zM27 18h1v1h-1zM28 18h1v1h-1zM1 19h1v1h-1zM3 19h1v1h-1zM4 19h1v1h-1zM5 19h1v1h-1zM15 19h1v1h-1zM17 19h1v1h-1zM19 19h1v1h-1zM24 19h1v1h-1zM25 19h1v1h-1zM28 19h1v1h-1zM1 20h1v1h-1zM2 20h1v1h-1zM3 20h1v1h-1zM5 20h1v1h-1zM6 20h1v1h-1zM7 20h1v1h-1zM8 20h1v1h-1zM10 20h1v1h-1zM12 20h1v1h-1zM13 20h1v1h-1zM18 20h1v1h-1zM19 20h1v1h-1zM22 20h1v1h-1zM26 20h1v1h-1zM28 20h1v1h-1zM8 21h1v1h-1zM9 21h1v1h-1zM10 21h1v1h-1zM12 21h1v1h-1zM13 21h1v1h-1zM19 21h1v1h-1zM20 21h1v1h-1zM24 21h1v1h-1zM0 22h1v1h-1zM1 22h1v1h-1zM2 22h1v1h-1zM3 22h1v1h-1zM4 22h1v1h-1zM5 22h1v1h-1zM6 22h1v1h-1zM9 22h1v1h-1zM10 22h1v1h-1zM15 22h1v1h-1zM16 22h1v1h-1zM18 22h1v1h-1zM19 22h1v1h-1zM20 22h1v1h-1zM22 22h1v1h-1zM23 22h1v1h-1zM26 22h1v1h-1zM27 22h1v1h-1zM28 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM9 23h1v1h-1zM15 23h1v1h-1zM17 23h1v1h-1zM19 23h1v1h-1zM24 23h1v1h-1zM28 23h1v1h-1zM0 24h1v1h-1zM2 24h1v1h-1zM3 24h1v1h-1zM4 24h1v1h-1zM6 24h1v1h-1zM10 24h1v1h-1zM12 24h1v1h-1zM13 24h1v1h-1zM15 24h1v1h-1zM19 24h1v1h-1zM20 24h1v1h-1zM22 24h1v1h-1zM24 24h1v1h-1zM27 24h1v1h-1zM28 24h1v1h-1zM0 25h1v1h-1zM2 25h1v1h-1zM3 25h1v1h-1zM4 25h1v1h-1zM6 25h1v1h-1zM11 25h1v1h-1zM12 25h1v1h-1zM19 25h1v1h-1zM23 25h1v1h-1zM28 25h1v1h-1zM0 26h1v1h-1zM2 26h1v1h-1zM3 26h1v1h-1zM4 26h1v1h-1zM6 26h1v1h-1zM9 26h1v1h-1zM10 26h1v1h-1zM14 26h1v1h-1zM20 26h1v1h-1zM24 26h1v1h-1zM26 26h1v1h-1zM27 26h1v1h-1zM28 26h1v1h-1zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h1v1h-1zM10 27h1v1h-1zM13 27h1v1h-1zM15 27h1v1h-1zM17 27h1v1h-1zM18 27h1v1h-1zM19 27h1v1h-1zM21 27h1v1h-1zM24 27h1v1h-1zM25 27h1v1h-1zM27 27h1v1h-1zM0 28h1v1h-1zM1 28h1v1h-1zM2 28h1v1h-1zM3 28h1v1h-1zM4 28h1v1h-1zM5 28h1v1h-1zM6 28h1v1h-1zM8 28h1v1h-1zM10 28h1v1h-1zM11 28h1v1h-1zM12 28h1v1h-1zM13 28h1v1h-1zM15 28h1v1h-1zM20 28h1v1h-1zM21 28h1v1h-1zM25 28h1v1h-1z\" fill=\"#111\"/></svg>", "<svg class=\"pm-qr__code\" viewBox=\"-2 -2 33 33\" data-qr=\"53\"><rect x=\"-2\" y=\"-2\" width=\"33\" height=\"33\" fill=\"#fff\"/><path d=\"M0 0h1v1h-1zM1 0h1v1h-1zM2 0h1v1h-1zM3 0h1v1h-1zM4 0h1v1h-1zM5 0h1v1h-1zM6 0h1v1h-1zM9 0h1v1h-1zM10 0h1v1h-1zM13 0h1v1h-1zM15 0h1v1h-1zM16 0h1v1h-1zM17 0h1v1h-1zM18 0h1v1h-1zM19 0h1v1h-1zM22 0h1v1h-1zM23 0h1v1h-1zM24 0h1v1h-1zM25 0h1v1h-1zM26 0h1v1h-1zM27 0h1v1h-1zM28 0h1v1h-1zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h1v1h-1zM10 1h1v1h-1zM11 1h1v1h-1zM12 1h1v1h-1zM15 1h1v1h-1zM17 1h1v1h-1zM18 1h1v1h-1zM19 1h1v1h-1zM20 1h1v1h-1zM22 1h1v1h-1zM28 1h1v1h-1zM0 2h1v1h-1zM2 2h1v1h-1zM3 2h1v1h-1zM4 2h1v1h-1zM6 2h1v1h-1zM8 2h1v1h-1zM10 2h1v1h-1zM11 2h1v1h-1zM12 2h1v1h-1zM13 2h1v1h-1zM14 2h1v1h-1zM18 2h1v1h-1zM22 2h1v1h-1zM24 2h1v1h-1zM25 2h1v1h-1zM26 2h1v1h-1zM28 2h1v1h-1zM0 3h1v1h-1zM2 3h1v1h-1zM3 3h1v1h-1zM4 3h1v1h-1zM6 3h1v1h-1zM12 3h1v1h-1zM15 3h1v1h-1zM16 3h1v1h-1zM18 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM25 3h1v1h-1zM26 3h1v1h-1zM28 3h1v1h-1zM0 4h1v1h-1zM2 4h1v1h-1zM3 4h1v1h-1zM4 4h1v1h-1zM6 4h1v1h-1zM8 4h1v1h-1zM10 4h1v1h-1zM20 4h1v1h-1zM22 4h1v1h-1zM24 4h1v1h-1zM25 4h1v1h-1zM26 4h1v1h-1zM28 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM10 5h1v1h-1zM11 5h1v1h-1zM12 5h1v1h-1zM15 5h1v1h-1zM16 5h1v1h-1zM18 5h1v1h-1zM22 5h1v1h-1zM28 5h1v1h-1zM0 6h1v1h-1zM1 6h1v1h-1zM2 6h1v1h-1zM3 6h1v1h-1zM4 6h1v1h-1zM5 6h1v1h-1zM6 6h1v1h-1zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM23 6h1v1h-1zM24 6h1v1h-1zM25 6h1v1h-1zM26 6h1v1h-1zM27 6h1v1h-1zM28 6h1v1h-1zM9 7h1v1h-1zM10 7h1v1h-1zM11 7h1v1h-1zM12 7h1v1h-1zM15 7h1v1h-1zM19 7h1v1h-1zM0 8h1v1h-1zM2 8h1v1h-1zM3 8h1v1h-1zM6 8h1v1h-1zM7 8h1v1h-1zM8 8h1v1h-1zM9 8h1v1h-1zM10 8h1v1h-1zM11 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM16 8h1v1h-1zM22 8h1v1h-1zM23 8h1v1h-1zM24 8h1v1h-1zM25 8h1v1h-1zM27 8h1v1h-1zM28 8h1v1h-1zM3 9h1v1h-1zM4 9h1v1h-1zM5 9h1v1h-1zM9 9h1v1h-1zM10 9h1v1h-1zM15 9h1v1h-1zM16 9h1v1h-1zM18 9h1v1h-1zM20 9h1v1h-1zM22 9h1v1h-1zM23 9h1v1h-1zM4 10h1v1h-1zM5 10h1v1h-1zM6 10h1v1h-1zM7 10h1v1h-1zM9 10h1v1h-1zM13 10h1v1h-1zM14 10h1v1h-1zM17 10h1v1h-1zM18 10h1v1h-1zM20 10h1v1h-1zM22 10h1v1h-1zM25 10h1v1h-1zM0 11h1v1h-1zM2 11h1v1h-1zM4 11h1v1h-1zM7 11h1v1h-1zM9 11h1v1h-1zM12 11h1v1h-1zM13 11h1v1h-1zM14 11h1v1h-1zM15 11h1v1h-1zM16 11h1v1h-1zM18 11h1v1h-1zM20 11h1v1h-1zM21 11h1v1h-1zM22 11h1v1h-1zM26 11h1v1h-1zM1 12h1v1h-1zM2 12h1v1h-1zM6 12h1v1h-1zM11 12h1v1h-1zM16 12h1v1h-1zM17 12h1v1h-1zM18 12h1v1h-1zM22 12h1v1h-1zM26 12h1v1h-1zM27 12h1v1h-1zM0 13h1v1h-1zM2 13h1v1h-1zM5 13h1v1h-1zM7 13h1v1h-1zM11 13h1v1h-1zM12 13h1v1h-1zM13 13h1v1h-1zM14 13h1v1h-1zM16 13h1v1h-1zM18 13h1v1h-1zM19 13h1v1h-1zM20 13h1v1h-1zM21 13h1v1h-1zM24 13h1v1h-1zM25 13h1v1h-1zM26 13h1v1h-1zM1 14h1v1h-1zM3 14h1v1h-1zM5 14h1v1h-1zM6 14h1v1h-1zM10 14h1v1h-1zM11 14h1v1h-1zM12 14h1v1h-1zM13 14h1v1h-1zM18 14h1v1h-1zM20 14h1v1h-1zM23 14h1v1h-1zM27 14h1v1h-1zM0 15h1v1h-1zM2 15h1v1h-1zM5 15h1v1h-1zM7 15h1v1h-1zM9 15h1v1h-1zM10 15h1v1h-1zM12 15h1v1h-1zM13 15h1v1h-1zM14 15h1v1h-1zM15 15h1v1h-1zM16 15h1v1h-1zM17 15h1v1h-1zM19 15h1v1h-1zM27 15h1v1h-1zM28 15h1v1h-1zM0 16h1v1h-1zM4 16h1v1h-1zM6 16h1v1h-1zM8 16h1v1h-1zM9 16h1v1h-1zM12 16h1v1h-1zM17 16h1v1h-1zM21 16h1v1h-1zM24 16h1v1h-1zM27 16h1v1h-1zM0 17h1v1h-1zM1 17h1v1h-1zM4 17h1v1h-1zM8 17h1v1h-1zM9 17h1v1h-1zM10 17h1v1h-1zM11 17h1v1h-1zM13 17h1v1h-1zM14 17h1v1h-1zM15 17h1v1h-1zM16 17h1v1h-1zM20 17h1v1h-1zM21 17h1v1h-1zM26 17h1v1h-1zM28 17h1v1h-1zM0 18h1v1h-1zM3 18h1v1h-1zM6 18h1v1h-1zM7 18h1v1h-1zM11 18h1v1h-1zM15 18h1v1h-1zM16 18h1v1h-1zM17 18h1v1h-1zM18 18h1v1h-1zM22 18h1v1h-1zM25 18h1v1h-1zM28 18h1v1h-1zM2 19h1v1h-1zM7 19h1v1h-1zM11 19h1v1h-1zM13 19h1v1h-1zM16 19h1v1h-1zM19 19h1v1h-1zM22 19h1v1h-1zM25 19h1v1h-1zM26 19h1v1h-1zM0 20h1v1h-1zM2 20h1v1h-1zM4 20h1v1h-1zM6 20h1v1h-1zM8 20h1v1h-1zM10 20h1v1h-1zM12 20h1v1h-1zM13 20h1v1h-1zM19 20h1v1h-1zM21 20h1v1h-1zM26 20h1v1h-1zM28 20h1v1h-1zM10 21h1v1h-1zM14 21h1v1h-1zM15 21h1v1h-1zM16 21h1v1h-1zM17 21h1v1h-1zM18 21h1v1h-1zM22 21h1v1h-1zM23 21h1v1h-1zM25 21h1v1h-1zM26 21h1v1h-1zM28 21h1v1h-1zM0 22h1v1h-1zM1 22h1v1h-1zM2 22h1v1h-1zM3 22h1v1h-1zM4 22h1v1h-1zM5 22h1v1h-1zM6 22h1v1h-1zM17 22h1v1h-1zM20 22h1v1h-1zM21 22h1v1h-1zM22 22h1v1h-1zM24 22h1v1h-1zM27 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM9 23h1v1h-1zM12 23h1v1h-1zM13 23h1v1h-1zM17 23h1v1h-1zM19 23h1v1h-1zM21 23h1v1h-1zM22 23h1v1h-1zM24 23h1v1h-1zM25 23h1v1h-1zM27 23h1v1h-1zM0 24h1v1h-1zM2 24h1v1h-1zM3 24h1v1h-1zM4 24h1v1h-1zM6 24h1v1h-1zM8 24h1v1h-1zM9 24h1v1h-1zM11 24h1v1h-1zM13 24h1v1h-1zM14 24h1v1h-1zM16 24h1v1h-1zM17 24h1v1h-1zM21 24h1v1h-1zM26 24h1v1h-1zM0 25h1v1h-1zM2 25h1v1h-1zM3 25h1v1h-1zM4 25h1v1h-1zM6 25h1v1h-1zM9 25h1v1h-1zM14 25h1v1h-1zM18 25h1v1h-1zM19 25h1v1h-1zM22 25h1v1h-1zM23 25h1v1h-1zM24 25h1v1h-1zM26 25h1v1h-1zM27 25h1v1h-1zM0 26h1v1h-1zM2 26h1v1h-1zM3 26h1v1h-1zM4 26h1v1h-1zM6 26h1v1h-1zM13 26h1v1h-1zM14 26h1v1h-1zM22 26h1v1h-1zM24 26h1v1h-1zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h1v1h-1zM9 27h1v1h-1zM10 27h1v1h-1zM12 27h1v1h-1zM18 27h1v1h-1zM19 27h1v1h-1zM24 27h1v1h-1zM0 28h1v1h-1zM1 28h1v1h-1zM2 28h1v1h-1zM3 28h1v1h-1zM4 28h1v1h-1zM5 28h1v1h-1zM6 28h1v1h-1zM8 28h1v1h-1zM9 28h1v1h-1zM11 28h1v1h-1zM16 28h1v1h-1zM23 28h1v1h-1zM25 28h1v1h-1zM27 28h1v1h-1z\" fill=\"#111\"/></svg>"];
+const scr=k=>$(`[data-screen="${k}"]`);
+/* toolbar */
+$$('[data-theme-set]').forEach(b=>b.onclick=()=>{root.dataset.theme=b.dataset.themeSet;$$('[data-theme-set]').forEach(x=>x.classList.toggle('is-on',x===b));});
+function tog(id,fn){const l=$(id);l.onclick=()=>{const on=!l.classList.contains('is-on');l.classList.toggle('is-on',on);$('.px-toggle',l).classList.toggle('is-on',on);fn(on);};}
+tog('#bay',on=>stage.classList.toggle('is-bay',on)); tog('#nums',on=>stage.classList.toggle('wt',on));
+const pop=el=>{if(!el)return;el.classList.remove('is-new');void el.offsetWidth;el.classList.add('is-new');};
+
+/* toast inside a phone */
+let tt;function ptoast(k,msg,undo){const w=$('[data-ptoast]',scr(k))||(()=>{const d=document.createElement('div');d.className='pm-toastwrap';d.dataset.ptoast='';scr(k).appendChild(d);return d;})();
+  w.innerHTML=`<div class="px-toast">${msg}${undo?'<button class="px-toast__act">Undo</button>':''}</div>`;if(undo)$('button',w).onclick=()=>{undo();w.innerHTML='';};clearTimeout(tt);tt=setTimeout(()=>w.innerHTML='',3200);}
+
+/* ---------- the clock: one running job, everywhere ---------- */
+const JOBT={'37538-1':['RO-37538 · Operation 1','Clutch slipping – replace clutch'],'37538-3':['RO-37538 · Operation 3','PM service – A'],'35112-1':['RO-35112 · Operation 1','Air leak at the front axle']};
+let running='37538-1', base=22557, started=Date.now();
+const fmt=s=>{const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return h+':'+String(m).padStart(2,'0')+':'+String(x).padStart(2,'0');};
+let secs1=22557;
+function tick(){if(running==='37538-1'){secs1=base+Math.floor((Date.now()-started)/1000);}
+  const h=secs1/3600;
+  $$('[data-screen="op"] [data-clock]').forEach(e=>e.textContent=fmt(secs1));
+  $$('[data-b1]').forEach(e=>e.textContent=h.toFixed(2));
+  $$('[data-screen="op"] [data-left]').forEach(e=>e.textContent=Math.max(0,8-h).toFixed(2));
+  $$('[data-screen="op"] [data-eff]').forEach(e=>e.textContent=Math.round(8/h*100));
+  $$('[data-screen="op"] [data-bar]').forEach(e=>e.style.width=Math.min(100,h/8*100)+'%');
+  if(running){const s=running==='37538-1'?secs1:Math.floor((Date.now()-started)/1000);$$('[data-clock-mini]').forEach(e=>e.textContent=fmt(s));}}
+setInterval(tick,1000);
+function render(){
+  $$('[data-cbar]').forEach(c=>{c.hidden=!running;if(running){$('[data-cbar-ro]',c).textContent=JOBT[running][0];$('[data-cbar-job]',c).textContent=JOBT[running][1];}});
+  $$('[data-screen="today"] [data-play]').forEach(b=>{const on=b.dataset.play===running;b.classList.toggle('is-live',on);b.innerHTML=on?ICO.stop:ICO.play;b.title=on?'Stop clock':'Start clock';
+    const row=b.closest('.pm-job'),s=$('.px-si',row);const want=on?'working':'hold';if(s.dataset.s!==want){s.outerHTML={"working": "<svg class=\"px-si\" data-s=\"working\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M7 3.5a3.5 3.5 0 0 1 0 7z\" fill=\"currentColor\"/></svg>", "hold": "<svg class=\"px-si\" data-s=\"hold\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg>"}[want];pop($('.px-si',row));}});
+  const on1=running==='37538-1', o=scr('op');
+  $('[data-clockcard]',o).classList.toggle('is-live',on1);$('[data-clockcap]',o).textContent=on1?'Clock running · Repairing':'On this operation · clock stopped';
+  const g=$('[data-go]',o);g.classList.toggle('is-live',on1);g.innerHTML=(on1?ICO.stop:ICO.play)+`<span>${on1?'Stop clock':'Start clock'}</span>`;
+  const r=scr('ro'),st=$('[data-rostatus]',r),cur=$('.px-si',st).dataset.s,want=running&&running.startsWith('37538')?'working':'hold';
+  if(cur!==want){$('.px-si',st).outerHTML={"working": "<svg class=\"px-si\" data-s=\"working\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M7 3.5a3.5 3.5 0 0 1 0 7z\" fill=\"currentColor\"/></svg>", "hold": "<svg class=\"px-si\" data-s=\"hold\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg>"}[want];pop($('.px-si',st));$('[data-rostatus-name]',st).textContent=want==='working'?'Working':'Hold tech';$('[data-rostatus-sub]',st).textContent=want==='working'?'· Repairing':'';}
+  const op1=$('[data-oprow="1"] .px-si',r);if(op1.dataset.s!==(on1?'working':'hold')){op1.outerHTML={"working": "<svg class=\"px-si\" data-s=\"working\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M7 3.5a3.5 3.5 0 0 1 0 7z\" fill=\"currentColor\"/></svg>", "hold": "<svg class=\"px-si\" data-s=\"hold\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg>"}[on1?'working':'hold'];}
+  const seg=$('[data-liveseg]');if(seg)seg.classList.toggle('is-live',on1);
+  tick();}
+function start(id,from){if(running==='37538-1')base=secs1;running=id;started=Date.now();if(id==='37538-1')started=Date.now();render();ptoast(from,{"working": "<svg class=\"px-si\" data-s=\"working\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M7 3.5a3.5 3.5 0 0 1 0 7z\" fill=\"currentColor\"/></svg>", "hold": "<svg class=\"px-si\" data-s=\"hold\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg>"}.working+`Clock started · ${JOBT[id][0].split(' · ')[1]}`);}
+function stop(from){const was=running;if(!was)return;if(was==='37538-1')base=secs1;running=null;render();ptoast(from,{"working": "<svg class=\"px-si\" data-s=\"working\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M7 3.5a3.5 3.5 0 0 1 0 7z\" fill=\"currentColor\"/></svg>", "hold": "<svg class=\"px-si\" data-s=\"hold\" viewBox=\"0 0 14 14\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg>"}.hold+`Clock stopped · ${JOBT[was][0].split(' · ')[1]}`,()=>{start(was,from);});}
+$$('[data-screen="today"] [data-play]').forEach(b=>b.onclick=()=>b.dataset.play===running?stop('today'):start(b.dataset.play,'today'));
+$$('[data-screen] [data-stop]').forEach(b=>b.onclick=e=>{e.stopPropagation();stop(b.closest('[data-screen]').dataset.screen);});
+$('[data-screen="op"] [data-go]').onclick=()=>running==='37538-1'?stop('op'):start('37538-1','op');
+
+/* ---------- operation tabs ---------- */
+const op=scr('op');
+$$('[data-ptab]',op).forEach(t=>t.onclick=()=>{$$('[data-ptab]',op).forEach(x=>x.classList.toggle('is-on',x===t));$$('[data-ppane]',op).forEach(p=>p.hidden=p.dataset.ppane!==t.dataset.ptab);});
+
+/* ---------- bottom sheets ---------- */
+const PARTS=[{id:'1-1',op:1,d:'Clutch kit, 15.5 in',pn:'85136213',q:1,k:'received'},{id:'1-2',op:1,d:'Clutch release bearing',pn:'21515427',q:1,k:'installed'},
+  {id:'2-1',op:2,d:'Inner wheel seal, right rear',pn:'21422645',q:1,k:'notordered'},{id:'3-1',op:3,d:'Oil filter',pn:'21707134',q:2,k:'received'},{id:'3-2',op:3,d:'Fuel filter kit',pn:'23658092',q:1,k:'ordered'}];
+const OPN={1:'Clutch slipping – replace clutch',2:'Wheel seal leaking',3:'PM service – A'};
+const IN=k=>k==='received'||k==='installed';
+function counts(){$$('[data-inhand]').forEach(e=>e.textContent=PARTS.filter(p=>IN(p.k)).length);const o1=PARTS.filter(p=>p.op===1);$('[data-pcount]',op).textContent=o1.filter(p=>IN(p.k)).length+'/'+o1.length;}
+function openSheet(k,html,onbind){closeSheet(k,true);const s=document.createElement('div');s.className='pm-sheet';s.dataset.live='';s.innerHTML=`<div class="pm-sheet__p"><div class="pm-sheet__grab"></div>${html}</div>`;scr(k).appendChild(s);
+  s.onclick=e=>{if(e.target===s)closeSheet(k);};$$('[data-done]',s).forEach(b=>b.onclick=()=>closeSheet(k));onbind&&onbind(s);return s;}
+function closeSheet(k,now){const s=$('.pm-sheet[data-live]',scr(k));if(!s)return;if(now){s.remove();return;}s.classList.add('is-closing');setTimeout(()=>s.remove(),140);}
+const pst=k=>`<span class="pm-pst">${PSI[k]}${PNAME[k]}</span>`;
+const PCOL={notordered:'var(--status-hold)',ordered:'var(--status-waiting)',backordered:'var(--status-problem)',received:'var(--status-working)',installed:'var(--status-working)'};
+function sheetParts(){const inh=PARTS.filter(p=>IN(p.k)).length;
+  const bar=Object.keys(PSI).map(k=>{const c=PARTS.filter(p=>p.k===k).length;return c?`<i style="flex:${c};background:${PCOL[k]};opacity:${k==='received'?.55:1}"></i>`:''}).join('');
+  const leg=Object.keys(PSI).map(k=>{const c=PARTS.filter(p=>p.k===k).length;return c?`<span>${PSI[k]}${PNAME[k]} ${c}</span>`:''}).join('');
+  const groups=[1,2,3].map(o=>{const ps=PARTS.filter(p=>p.op===o);return ps.length?`<div class="pm-sgrp"><b>Operation ${o}</b> · ${OPN[o]}</div>`+ps.map(p=>`<div class="pm-part"><div><b>${p.d}</b><small><span class="px-id">${p.pn}</span> · Qty ${p.q}</small></div>${pst(p.k)}</div>`).join(''):''}).join('');
+  return `<div class="pm-sheet__h"><h3>Parts on RO-37538</h3><p>${inh} of ${PARTS.length} in hand</p></div><div class="pm-pbar">${bar}</div><div class="pm-pleg">${leg}</div><div class="pm-sl">${groups}</div><button class="pm-done" data-done>Done</button>`;}
+function sheetTime(){const b=secs1/3600;return `<div class="pm-sheet__h"><h3>Time on RO-37538</h3><p>3 operations</p></div>
+  <div class="px-tsum"><div><span>Quoted</span><b>11.90<small>h</small></b></div><div><span>Burnt</span><b>${b.toFixed(2)}<small>h</small></b></div><div><span>Left</span><b>${(11.9-b).toFixed(2)}<small>h</small></b></div><div><span>Eff.</span><b class="px-good">${Math.round(8/b*100)}<small>%</small></b></div></div>
+  <div class="pm-sl">${[[1,b,8],[2,0,2.4],[3,0,1.5]].map(([o,x,q])=>`<div class="pm-part"><div><b><span class="pm-op__n">${o}</span>${OPN[o]}</b><small><span class="px-mini" style="display:inline-block;width:64px;vertical-align:middle"><i style="width:${Math.min(100,x/q*100)}%"></i></span></small></div><span class="pm-pst" style="font-variant-numeric:tabular-nums">${x.toFixed(2)} <span style="color:var(--ink-3);font-weight:400">/ ${q.toFixed(2)} h</span></span></div>`).join('')}</div><button class="pm-done" data-done>Done</button>`;}
+function sheetFiles(){const F=[['Whole RO',[['dash-photo.jpg','Dash photo · Oct 6'],['dtc-report.pdf','DTC upload · Oct 6'],['estimate-v1.pdf','Estimate · Oct 6']]],['Operation 1 · '+OPN[1],[['flywheel-scoring.jpg','Picture · Oct 19'],['clutch-disc.jpg','Picture · Oct 19']]],['Operation 2 · '+OPN[2],[['rr-seal-leak.jpg','Picture · Oct 20']]]];
+  return `<div class="pm-sheet__h"><h3>Files on RO-37538</h3><p>6 files</p></div><div class="pm-sl">${F.map(([g,fs])=>`<div class="pm-sgrp"><b>${g.split(' · ')[0]}</b>${g.includes(' · ')?' · '+g.split(' · ')[1]:''}</div>`+fs.map(([nm,m])=>`<div class="pm-part"><div><b>${nm}</b><small>${m}</small></div>${ICO.chevR.replace('px-ico','px-ico pm-op__go')}</div>`).join('')).join('')}</div><button class="pm-done" data-done>Done</button>`;}
+$$('[data-screen="ro"] [data-sheet]').forEach(b=>b.onclick=()=>openSheet('ro',{parts:sheetParts,time:sheetTime,files:sheetFiles}[b.dataset.sheet]()));
+
+/* part status sheet (screen 3, live) */
+function partSheet(pill){const p=PARTS.find(x=>x.id===pill.dataset.pp);
+  const rows=Object.keys(PSI).map(k=>`<button class="pm-srow${k===p.k?' is-on':''}" data-set="${k}">${PSI[k]}<span>${PNAME[k]}</span>${ICO.check.replace('px-ico','px-ico pm-srow__tick')}</button>`).join('');
+  openSheet('op',`<div class="pm-sheet__h"><h3>${p.d}</h3><p><span class="px-id">${p.pn}</span> · Qty ${p.q} · Operation ${p.op}</p></div>${rows}<div class="pm-ssep"></div><button class="pm-srow" data-copy>${ICO.copy}<span>Copy part number</span></button><button class="pm-srow">${ICO.swap}<span>Move to operation…</span></button><button class="pm-srow pm-srow--danger">${ICO.trash}<span>Remove part</span></button>`,
+    s=>{$$('[data-set]',s).forEach(r=>r.onclick=()=>{const prev=p.k;setPart(p,r.dataset.set);closeSheet('op');ptoast('op',PSI[p.k]+`${p.d} · ${PNAME[p.k]}`,()=>setPart(p,prev));});
+        $('[data-copy]',s).onclick=()=>{try{navigator.clipboard.writeText(p.pn)}catch(_){};closeSheet('op');ptoast('op',ICO.check+'Part number copied');};});}
+function setPart(p,k){p.k=k;$$(`[data-screen="op"] [data-pp="${p.id}"]`).forEach(b=>{b.dataset.k=k;b.innerHTML=PSI[k]+`<span>${PNAME[k]}</span>`+ICO.chevD.replace('px-ico','px-ico px-chev');pop($('.px-si',b));});counts();}
+$$('[data-screen="op"] [data-pp]').forEach(b=>b.onclick=()=>partSheet(b));
+/* static sheet on screen 4: rows still move the tick */
+$$('[data-screen="opsheet"] [data-set]').forEach(r=>r.onclick=()=>{$$('[data-screen="opsheet"] [data-set]').forEach(x=>x.classList.toggle('is-on',x===r));});
+
+/* ---------- sync ---------- */
+const sy=scr('sync');let qi=0,qn=7,qt=null;
+function runQR(){clearInterval(qt);qt=setInterval(()=>{qi=(qi+1)%QRS.length;qn=qn%18+1;$('[data-qrbox]',sy).innerHTML=QRS[qi];$('[data-qrn]',sy).textContent=`Code ${qn} of 18`;$('[data-ring]',sy).style.strokeDashoffset=(791.7*(1-qn/18)).toFixed(1);},600);}
+$$('[data-sync]',sy).forEach(b=>b.onclick=()=>{$$('[data-sync]',sy).forEach(x=>x.classList.toggle('is-on',x===b));$$('[data-syncpane]',sy).forEach(p=>p.hidden=p.dataset.syncpane!==b.dataset.sync);b.dataset.sync==='send'?runQR():clearInterval(qt);});
+if(!matchMedia('(prefers-reduced-motion: reduce)').matches)runQR();
+render();
+</script>
+</body>
+</html>
