@@ -1,5 +1,5 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 5 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 6 is the newest.
 
 
 v181
