@@ -1,5 +1,18 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 8 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 9 is the newest.
+
+Parsec 9 — every mock-up on the real data
+  · Inbox — its own page (was a bell popover): what needs you, morning summary, away / hand-off cover, done and snooze; the other pages send to it
+  · Console v2 — your day, the shop now, what to fix in the Time Log, the foreman's note and your order for today
+  · Time Log — the overhaul: day / week / timesheet, drag an edge to fix a punch, no-lunch prompt, sign and approve the pay period
+  · Parts — the parts desk: to order, on order, check-in, bins, returns and credits, the supplier list
+  · Fixes — the library from finished operations: past fixes on open ROs, Use fix (nothing fills in by itself now), standards, comebacks
+  · Career — one tech's own numbers: tiles, efficiency day by day, why it moved, goals with Inbox alerts, pay estimate (private), Work op by op, Growth (bests, quote feedback, coaching notes, certificates, fixes written), the Statement
+  · Manager — Overview (needs you, month pace, 12 pinned KPIs), KPIs (48, why it moved, trend, breakdown, the ROs behind it), Fleets, Flow (who holds what, stage rules, hold goals), Team (roles, pages, PINs, goals per tech), Activity; monthly report, data checks, off-target alerts
+  · RO list — layout C: one flat Open list oldest first, the RO in a pane beside it (Enter opens the full RO), groups for Mine / Working / Waiting / Hold / Done, Display (List or Board, group, sort), select rows to set status / transfer / print
+  · Each role signs in to its home page; every day clock records whose it is; Staged and Picked up are live part statuses
+  · Goals start at the shop's own last 90 days until the manager sets them; the labor rate drives $ per hour
+  · Sample data now has six weeks of finished work behind the 25 sample ROs, so the Time Log, Career and Manager have history
 
 
 v181
