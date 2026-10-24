@@ -1,5 +1,17 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 9.2 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 9.3 is the newest.
+
+Parsec 9.3 — the shop folder from anywhere, the shop Day report
+  · The folder error: "Couldn't connect that folder: SecurityError" came from opening Parsec inside a preview (like the file preview in the Claude app). A preview can't reach folders on the computer, so the browser refuses. Opened in Chrome or Edge on its own, picking works
+  · The folder screen now says so: inside a preview it tells you to open the file in Chrome or Edge, and lets you look around without a folder
+  · Picking starts on the Desktop. Any folder works — make one on the Desktop (like "Parsec Shop") and pick it. The Desktop, Documents and Downloads themselves can't be picked (the browser blocks whole system folders)
+  · Parsec checks it can save in the folder before using it. Everything goes there: Shop (people, settings, Inbox, timesheets, activity log), one folder per RO (the RO page with its punches, and its Attachments), and a daily backup
+  · Problems in plain words on the folder screen: no folder picked, the browser said no, the folder was moved or deleted, the folder is read-only — with the browser's own words underneath
+  · Parsec never opens the picker by itself anymore (a folder that's gone used to try, and the browser refused); it waits for your click
+  · The folder screen and the sign-in screen sit in the middle of the window (they were pushed right)
+  · Day report: the whole shop on one sheet (mock-up option C) — totals, a line per tech with their day, jobs worked by RO, what to look at, signatures. Arrows or the date to move between days; a tech sees only their own line
+  · Print: the Day report and the Timesheet print on a clean page of their own — only the sheet, the colours kept, a long sheet runs onto a second page. Save as PDF from the print window
+  · The End-of-day sheet pop-up is gone — the Time Log's Shop view and its print menu open the Day report
 
 Parsec 9.2 — the clean-out
   · Code nothing can reach is gone: 61 functions, 29 constants, 40 helpers inside functions, 53 button handlers with no button and 8 dead action tests (85 KB of script)
