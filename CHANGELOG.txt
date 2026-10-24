@@ -1,5 +1,14 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 9 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 9.1 is the newest.
+
+Parsec 9.1 — your answers to "things I need from you"
+  · The shop folder comes first: when Parsec opens it asks for the shared folder (or to open it again), and everything — ROs, people, Inbox, timesheets, Career notes, Manager settings, Parts returns — is saved there. "Just this computer for now" is there for a day the folder can't be reached
+  · Manager → Settings (the gear): labor rate ($210 an hour), pay period (weekly, every two weeks, monthly, and the day it starts), monthly overhead, the Admin PIN, the data folder
+  · Manager → Team: add and remove people, role, pages they can open, PIN, and hourly pay per person
+  · Career's pay estimate is hourly: hours on the clock × the rate the manager entered, time and a half over 40 h a week, on the manager's pay period
+  · Time Log timesheets follow the pay period setting — weekly, every two weeks or monthly, with a total at the end of each week
+  · Parts: part cost is typed at check-in, on a new part, or on the catalog item; gross profit, margins and absorption on the Manager page use what's entered (no more sample numbers)
+  · Fixed: setting a KPI target and the KPI search box on the Manager page
 
 Parsec 9 — every mock-up on the real data
   · Inbox — its own page (was a bell popover): what needs you, morning summary, away / hand-off cover, done and snooze; the other pages send to it
