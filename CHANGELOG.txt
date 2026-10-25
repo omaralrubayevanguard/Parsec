@@ -1,5 +1,16 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 9.6 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 9.7 is the newest.
+
+Parsec 9.7 — the truck on the RO
+  · The RO's header is a band: RO number, customer, truck, status and who has it on the left, a picture of the truck on the right. On a phone the truck sits on top and the title goes under it
+  · Which picture: the model picture for the truck's model and year (year from the VIN), if the shop has one. If not, the check-in photo, which is the first picture in the RO's Pictures (taken on Parsec Mobile and synced, or added on the computer). If neither, a plain truck outline that says no picture yet
+  · The RO list shows the same picture, small, next to each RO number (computer and phone)
+  · The ⋯ on the picture: add a picture for every truck of that model, replace or remove it, use the check-in photo on this one RO instead (and back), or All truck pictures…
+  · Your data › Truck pictures: every model picture with its make, model and years (like 2018-2024 or 2025-, or blank for any) and how many open ROs it's on. Replace, Remove, Add a picture… Pictures are made small (560 px) and kept with the shop's data, so they go in the folder and the backups
+  · Starts with four Volvo pictures: VNL 760 and VNL 860 (2018-2024), VNR 300 (2018 on), VHD (any year). Edit them if the shop's trucks are labelled differently
+  · A picture with a see-through background stands on the band; an ordinary photo shows in a rounded frame
+  · Undo works on every picture change. A check-in photo that isn't in this browser or the folder falls back to the outline
+  · Every other page is unchanged, checked picture by picture against 9.6 in both themes. The RO list's columns are a little tighter on screens 1440 px and narrower to make room
 
 Parsec 9.6 — the phone view: the whole site, one file
   · Your initials › Appearance › Screen: Automatic (a phone gets the phone view, everything else the computer view), Computer or Phone. Saved on each device, so the shop PC stays on the computer view. Same file, same pages, same data on that device
