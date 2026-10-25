@@ -1,5 +1,22 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 9.4 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 9.5 is the newest.
+
+Parsec 9.5 — the Manager page opens again
+  · The Manager page wouldn't open ("RangeError: Invalid string length" in the console) when nobody had clock time in the last 14 workdays: the hours chart's scale came out 0 and its grid lines never stopped. The scale now starts at 10 hours, and every chart on the page checks its steps
+  · Causes and corrections set by "Use fix" or from the phone were wiped each time Parsec opened again. They now go into the operation's work log and stay. Sample history that had lost them shows them again (Warranty shows more claims ready to file, the Console shows matching past fixes)
+  · Manager no longer stops on a team member saved without a name, or a broken line in the activity log
+  · The phone gets the cause and correction as the RO shows them (typed field plus the work log)
+
+Parsec Mobile 3 — the phone app for technicians (tabs at the bottom)
+  · Three places: Work, Inbox, Fixes. Triage, Foreman, Manager, Parts, the RO list and Settings stay on the computer
+  · Work: start of day (your order, the foreman's note), the day clock with air and efficiency, On it now / Next / Waiting / Done today
+  · A job: start, stop and switch the clock; status (Switched job, Waiting – Parts / Approval / Foreman / Tech Support, Complete — needs the correction); notes (type, or hold the mic and talk); parts (Picked up, Installed, Need a part); files by Dash pic / Pictures / DTCs / Other; cause and correction
+  · Clock out: Lunch, Appointment or break, End of day — End of day first shows a job still running, air with no job, and jobs with no note today. Works on a day clock started on the computer too
+  · Inbox: for you / done, open the job or mark it done. Fixes: for your jobs first, search, "Use on …" adds the cause, correction and missing parts — only when you tap it
+  · Sync by QR both ways. "Photos later" sends everything else in a few seconds and keeps the photos for another sync
+  · Photos: the full one stays on the phone (share it from your initials); a small copy goes by QR — 512 pixels, DTC pictures 900 so the codes stay readable
+  · Works with no signal once opened from its https address; nothing is sent anywhere except by QR
+  · Measured: changes alone 1–3 s. A plain photo about 3–5 s. A busy photo is about 120 codes — 36 s a loop, about 45–70 s on average when the webcam misses some codes
 
 Parsec 9.4 — Parsec Mobile 3 sync (still QR codes, no network)
   · Send to phone carries one technician's work: their ROs (assigned, sent to them, or worked in the last 7 days), today's clock and punches, their Inbox, the foreman's note and the Fixes for their jobs. "Whose phone" picks the tech
