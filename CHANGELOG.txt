@@ -1,5 +1,18 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 9.5 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 9.6 is the newest.
+
+Parsec 9.6 — the phone view: the whole site, one file
+  · Your initials › Appearance › Screen: Automatic (a phone gets the phone view, everything else the computer view), Computer or Phone. Saved on each device, so the shop PC stays on the computer view. Same file, same pages, same data on that device
+  · Your four pages sit in a bar at the bottom (they follow your role — a technician gets Console, ROs, Inbox, Fixes; the manager Manager, ROs, Inbox, Time Log; and so on); every other page, your profile, the clock, Search and settings are under More
+  · The bar slides away while you scroll down and comes back when you scroll up
+  · Lists open full screen with Back at the top — the Inbox, Triage, Foreman, Warranty, Parts, Fixes, the Time Log's days, Manager KPIs, Fleets and Team, Career work, settings. The phone's own back button closes what you opened before it leaves the page
+  · Boards open on the board: Triage Desk and Yard, Foreman Techs, Yard and Tomorrow, the Warranty Board, Money and failed Parts
+  · The RO list is one row per RO (RO, customer, what's wrong, tech, days open); tapping one opens the RO. The RO page is one column: the RO, its operations and clock, then its details
+  · Dashboards go one column with tiles two across; wide tables and boards slide sideways inside their card instead of squeezing
+  · Pop-ups open as sheets from the bottom; dialogs fit the screen; keyboard hints are hidden
+  · On a phone the first screen offers "Start on this phone" instead of the folder picker (a phone can't open the shop folder) and remembers it
+  · Computer view on a phone-size screen shows the whole page zoomed out, like a desktop site, so Screen › Phone stays in reach. Phone view in a wide window shows a phone-width column (to try it on the computer)
+  · The computer view is unchanged: every page and role, both themes, checked picture by picture against 9.5
 
 Parsec 9.5 — the Manager page opens again
   · The Manager page wouldn't open ("RangeError: Invalid string length" in the console) when nobody had clock time in the last 14 workdays: the hours chart's scale came out 0 and its grid lines never stopped. The scale now starts at 10 hours, and every chart on the page checks its steps
