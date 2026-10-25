@@ -1,5 +1,14 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 9.3 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 9.4 is the newest.
+
+Parsec 9.4 — Parsec Mobile 3 sync (still QR codes, no network)
+  · Send to phone carries one technician's work: their ROs (assigned, sent to them, or worked in the last 7 days), today's clock and punches, their Inbox, the foreman's note and the Fixes for their jobs. "Whose phone" picks the tech
+  · Get from phone takes the day clock (in, lunch, break, end of day), clock time — a job still running at the sync arrives up to that moment and grows on the next sync, never twice — Picked up and Installed, photos (filed on the RO under Dash pic, Pictures, DTCs or Other), Inbox items done, notes, part requests, cause, correction and status
+  · Spare codes: after every 6 codes comes a spare that fills in any one the webcam missed, so one miss no longer costs a whole loop. The webcam reads at full size. Older phone versions skip the spares and still work
+  · Phone time that overlaps time already on the computer for that tech is left out with a message (fix it in the Time Log); time on a closed RO is left out, like before
+  · A photo is only cleared from the phone once the computer has stored it
+  · After Get from phone the message says what came (clock time, the day clock, photos, notes …)
+  · Where it is: your initials (bottom left) › Your data › Parsec Mobile
 
 Parsec 9.3 — the shop folder from anywhere, the shop Day report
   · The folder error: "Couldn't connect that folder: SecurityError" came from opening Parsec inside a preview (like the file preview in the Claude app). A preview can't reach folders on the computer, so the browser refuses. Opened in Chrome or Edge on its own, picking works
