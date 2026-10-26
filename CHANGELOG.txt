@@ -1,5 +1,13 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 11.1 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 11.2 is the newest.
+
+Parsec 11.2 — pick several operations, or several parts, and act on them together
+  · On the Technician page's RO, a box shows when you point at an operation or at a part (on a phone the boxes are always there). Ctrl click picks a row, Shift click picks a run of rows, and the box on the Operations heading (or above an operation's parts) picks them all
+  · What you picked gets a bar along the bottom, with how many and the hours left (or how many are staged):
+    – Operations: Start (one at a time), Hold (Parts, Approval, Tech support, Foreman — whoever has it gets one note about all of them), Ask Parts, Ask the foreman, Note on all (each gets it, with the time), Add a code, Mark done (the ones that are ready; the rest say what's missing), Print job jacket (with the QR to scan), Copy the story (complaint, cause, correction, parts and time, ready to paste in ASIST)
+    – Parts on one operation: Picked up (the staged ones), Installed (the ones in hand), Ask Parts, Return, Move to another operation, Copy part numbers, Print pick list
+  · Every change has Undo; Clear lets go of the picks, and opening another RO lets go too
+  · No new keyboard shortcuts, as picked
 
 Parsec 11.1 — the Technician page's RO in your layout
   · The RO on the Technician page is in two columns now, as you arranged it on the RO page mock-up. In the middle: Operations, Parts on this RO, Activity & notes, Fault codes, Photos & codes, Messages about this RO, Truck history, Warranty claim, Customer, Estimate & approval, Ready to close. At the right: Truck & status, Stage bar, Who has it, People, Schedule, Vehicle, Money. Next step and Paperwork are off
