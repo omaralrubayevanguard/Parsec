@@ -1,5 +1,13 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 11.2 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 11.3 is the newest.
+
+Parsec 11.3 — the Technician page for the admin, RO numbers by their last 4, Activity in the RO header, the truck by its year and model
+  · The admin gets the Technician page too (it's in the admin's sidebar under Inbox). The name in the header picks whose page it is — every technician on the Team, and anyone an open RO is assigned to, with who's on the clock and how many open ROs each has. The pick is remembered on that computer
+  · On the admin's view the clock stays with the technician: Start, Stop, Done, Switch, clock in and out, shop time and Scan are off (and the keys for them). Notes, messages, holds that don't stop a clock, parts, codes, files and printing all work. "Admin view" in the header says so
+  · RO numbers show their last 4 digits everywhere — lists, rows, chips, pop-ups, toasts, the Time Log, Fixes, Manager, Career, Parts, Warranty, Inbox, Search. The full number shows where an RO is open: the RO page, the band on the Technician page, and the selected RO on Foreman, Triage, Warranty, Parts, Career and the RO list's preview. Prints and copies keep the full number (job jacket, pick list, warranty packet, the approval record, the RO list print, bin labels), and so do file names and the QR on the key tag
+  · Search, the job jacket scan and the RO list's number sort still go by the full number, and typing the last 4 finds an RO too. Pages that picked an RO by its number now pick it by the RO itself, so two ROs ending in the same 4 digits never get mixed up
+  · The RO page: Activity left the page's column and became a button in the header, left of the files button, with how many entries. It opens a pop-up with every note and change (All, Notes, Changes), and a note box that saves on Enter onto the operation you choose. Options › History opens the same pop-up on Changes
+  · The truck picture follows the year and the model: a model that names only the family (VNL, VNL64T, VHD) gets that family's body for the year, with its usual cab; a cab that wasn't built that year (a 2015 VNL 760) gets the nearest cab of that year's generation; no year, the newest generation. Your own photos and a body confirmed in Truck & photos still come first, and changing the year or the model picks again
 
 Parsec 11.2 — pick several operations, or several parts, and act on them together
   · On the Technician page's RO, a box shows when you point at an operation or at a part (on a phone the boxes are always there). Ctrl click picks a row, Shift click picks a run of rows, and the box on the Operations heading (or above an operation's parts) picks them all
