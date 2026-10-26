@@ -1,5 +1,10 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 10 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 10.1 is the newest.
+
+Parsec 10.1 — the Manager page's Team opens on a new computer
+  · Team did nothing when the computer had no ROs yet (a new computer or a new folder): every tab showed "No ROs yet". Team now opens anyway, and the empty page has a Set up the team button — people, roles, PINs and pay can go in before the first RO
+  · Team also did nothing when nobody was on the team yet (the page stopped on an empty list). It now says no one is on the team yet, with Add a person
+  · Everything else is unchanged from 10
 
 Parsec 10 — ChatGPT's changes, brought in
   · The 52-truck catalog: every Volvo body from 1997 to today (VN, VNL, VNR and VNR Electric, VNX, VHD, VAH, VNM, VT), each from the side and from above — ChatGPT's original pictures, in place of 9.9's pictures cut from screenshots. Your own photos (VNL 760, VNL 860, VNR 300, the red VHD) still come first. A 9.9 library swaps once: the cut-outs nobody changed go, the 52 come in. Your data › Truck pictures can browse the catalog and put back any you remove
