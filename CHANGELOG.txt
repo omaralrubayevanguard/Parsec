@@ -1,5 +1,15 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 11 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 11.1 is the newest.
+
+Parsec 11.1 — the Technician page's RO in your layout
+  · The RO on the Technician page is in two columns now, as you arranged it on the RO page mock-up. In the middle: Operations, Parts on this RO, Activity & notes, Fault codes, Photos & codes, Messages about this RO, Truck history, Warranty claim, Customer, Estimate & approval, Ready to close. At the right: Truck & status, Stage bar, Who has it, People, Schedule, Vehicle, Money. Next step and Paperwork are off
+  · The right column stays in view while the middle scrolls, so the truck, its status and Done, Stop, Hold, Switch and Ask the foreman are always there. On a narrow window or a phone it's one column: the truck first, then the work, then the facts
+  · An open operation is laid out as on the RO page: its codes, the past fix (Fixed N× before opens it, with Use fix) and its status; the clock card (the time on it, start or stop, quoted, burnt, left, efficiency); and the tabs Time, Parts and Files
+  · Notes moved into the Time tab: every punch shows its start, the notes written during it, then its stop and how long it ran. Cause, correction and notes written off the clock sit where their time is. The note box under it writes into the punch that's running
+  · Files tab: the files on that operation — add pictures or PDFs, and open one right on the page
+  · New blocks, on the shop's real data: Parts on this RO (every part on every operation, Picked up), Activity & notes (what happened, and a note on the operation), Fault codes (add one — 3226/2 or P0401 — or take one off), Messages about this RO (the Inbox notes about it, and send one to the foreman, Parts or the advisor), Truck history (earlier visits for the same VIN, flagged when it's the same problem), Warranty claim (only when the RO has warranty work), Customer (their other open ROs, the last contact), Estimate & approval (each operation's price, approved or not, Ask the advisor), Ready to close (the four close-out checks), Who has it (who it waits on, how long, Nudge)
+  · People, Schedule, Vehicle and Money fold up with their headings
+  · Your day is no longer on the RO pane (it wasn't in your layout) — the header still shows the clock and efficiency, and the Time Log has the day
 
 Parsec 11 — the Technician page
   · A new page right below Inbox, for technicians only: your repair orders in four groups — Working, Assigned (in the foreman's order, paused ones first), Waiting (with how long each has waited, red when it's past the follow-up time) and Done today
