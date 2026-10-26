@@ -1,5 +1,18 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 12 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 12.1 is the newest.
+
+Parsec 12.1 — Triage: transfer one step at a time, the road test and the truck checks
+  · Transfer… is one pop-over that goes a step at a time: Department → Employee → Why → Back by. The steps show along the top with what you picked; click one to go back to it. Keys: 1–9 pick, Enter goes on (and sends on the last step), Backspace steps back
+  · Departments: Service writers, Technicians, Parts, Foreman, Warranty, Manager, with how many are free. Employees show who's free, on the clock (and on which RO) or out (not clocked in, away, back at), and their load — open ROs for a tech, ROs with them for everyone else. "Anyone in Parts" (or any department) sends it to that department's queue
+  · Back by starts on the department's goal (Parts 4 h, Foreman 2 h…); In 1 hour, After lunch, End of day, Tomorrow 8 am, Pick a time or Not coming back
+  · It's theirs when you send it — no accepting. The person gets it in their Inbox. (Manager › hand-offs can turn accepting back on for the shop)
+  · Past back by, the RO moves to Held too long with a red countdown (+1.6h) on its row, and the RO shows "Back from Mike by 15:51 · +1.6h past" in its thread
+  · Road test: a Road test button on the selected RO (Inbox and Desk), a Road test group in Needs action (every operation done, no passed road test yet), and Road test… on the Ready to close card. Send someone (the tech who did the work comes first, then the techs, the foreman, you; Now, In 1 hour, After lunch, Before close or a time) — they get it in their Inbox, and the row shows who drives when. Or Log the result — anyone can: driver, miles, started, Pass or Fail, tap what was checked (Brakes, Steering, Shifts clean, Power and boost, No codes after, No leaks, No noise, Cruise and A/C) plus a note
+  · A failed road test (with why: same complaint, new fault code, noise, leak, warning light, or a note) goes back to the tech who did the work: the finished operations open again on Hold Tech · Road test failed, the RO is theirs, and they get it in their Inbox
+  · Truck checks are Triage's, on every RO: a Truck checks button on the selected RO and a Truck checks group in Needs action (road test passed, checks not done). Parsec checks what it can (operations closed, a story on every operation, parts installed, the road test passed, hours) and you tick the walk-around: tools out, covers and caps on, no leaks, cab clean, keys in the key box, paperwork in the cab. Edit the list adds or takes off checks for the whole shop
+  · Every check done → Ready to go. Release before that is allowed with a reason: the Release pop-up has a Truck checks line, and the open ones need a reason as before. A failed road test no longer counts as done there
+  · The Foreman's QC group is off, since Triage does the truck checks
+  · Who has it on the RO page shows "Anyone in Parts — the queue" for a queue
 
 Parsec 12 — the New RO import from ASIST, the RO page in your layout with picking, the screenshot reader built in
   · New RO opens the import (from the plan mock-up): paste the case page (Ctrl V), drop screenshots or the PDF — one or many, in any order. Each piece is read as it comes in and added to what's read so far; "Read so far" lists them, and taking one out reads the rest again without it. Every field is a row you can type in, so a New RO still works by hand
