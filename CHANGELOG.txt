@@ -1,5 +1,12 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 12.1 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 12.2 is the newest.
+
+Parsec 12.2 — no Inbox or Console page, the sidebar in one list, Road test and Truck checks on every RO, the truck picture at creation, Delete on the pickers
+  · The Inbox page and the Console page are gone — every page has its own list of what needs doing. A saved link or a sign-in that pointed at either one opens the RO list (or that person's home page). Notes people send each other still show on the RO, under Messages about this RO; the words that said "it's in their Inbox" say where it is now
+  · The sidebar is one list, with no lines or headings between: Career, Time Log, RO List, Technician, Triage, Foreman, Parts, Warranty, Manager, Fixes. On a phone the More sheet follows the same order, and the bottom bar's Inbox and Console tabs gave way to each role's next most used page
+  · Road test and Truck checks buttons on the RO on every page: the RO page (on the truck band beside Transfer), the Technician page, Triage (Inbox and Desk), Foreman, Parts, Warranty and the RO list's pane. Away from Triage they open the same pop-over over the page — send someone or log the result; tick the walk-around; Release from there. Esc or a click outside closes it, and leaving the page closes it too
+  · The truck picture is set when an RO is made — New RO or an import from ASIST — by the year and model ASIST gives. With a year and no model, it picks a body built that year at random from the main models (VNL, VNR, VHD, VAH, VNX) and keeps it on the RO; ROs already open with a year and no model get one the same way. A changed year or model picks again. A body you confirm in Truck & photos, and the RO's own photos, still come first
+  · Delete on the pickers: pick operations on the RO page or the Technician page and the bar has Delete — it says what goes with them (part lines, time punches, a running clock) before it deletes, and Undo brings them back. The RO list's selection bar has Delete… for the ROs you picked, the same way
 
 Parsec 12.1 — Triage: transfer one step at a time, the road test and the truck checks
   · Transfer… is one pop-over that goes a step at a time: Department → Employee → Why → Back by. The steps show along the top with what you picked; click one to go back to it. Keys: 1–9 pick, Enter goes on (and sends on the last step), Backspace steps back
