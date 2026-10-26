@@ -1,5 +1,15 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 9.8 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 9.9 is the newest.
+
+Parsec 9.9 — a picture for every Volvo model
+  · Truck pictures now come with 53 pictures: every VNL, VNR (and VNR Electric), VNX, VHD, VAH, VNM and VT generation from 1996 on, each with its years. Your own VNL 760, VNL 860, VNR 300 and red VHD photos stay. A library from 9.7 or 9.8 gets the new ones added once; remove any you don't want
+  · Matching reads the full model code too: VNL64T760, VHD64F300 or VN 610 find VNL 760, VHD 300 and VNL 610. A truck whose year falls outside every picture's years gets the nearest generation; an RO with no year gets the newest
+  · Search (Ctrl K): each result shows the truck, the customer, and the RO number with the year, make, model and unit
+  · Foreman and Triage: the selected RO's header shows its truck at the right (hidden on the phone, where the rows already show it)
+  · Foreman floor: bays are light again, with the truck small at the right of each tile — from above when its model has that view. Bays keep their size
+  · Notes on the truck: click the truck in the RO's header (or ⋯ › Notes on the truck). Add note, click where the issue is (Enter puts it in the middle), pick a type (Inspection, Damage, Leak, Wear, Missing part, Customer concern) and write what you see. Numbered marks show on the picture and in the header; Move and Remove; Ctrl Z undoes. On a model picture the marks show the area, not that exact unit
+  · Your data › Truck pictures: a Find box (model, make or a year) and a scrolling list
+  · Every other page is unchanged
 
 Parsec 9.8 — the truck on Foreman and Triage
   · Needs action rows on Foreman and Triage show the truck's picture where the row's icon was: the model picture, else the check-in photo, else the outline (same rules as the RO page). Tech rows keep their initials. Smaller on the phone
