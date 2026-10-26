@@ -1,5 +1,15 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 10.1 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 11 is the newest.
+
+Parsec 11 — the Technician page
+  · A new page right below Inbox, for technicians only: your repair orders in four groups — Working, Assigned (in the foreman's order, paused ones first), Waiting (with how long each has waited, red when it's past the follow-up time) and Done today
+  · The list on the left (the truck, the RO, the customer, the complaint, the clock or the hours), the RO on the right: the truck band with its status and, while you work, the running clock; Done, Stop, Hold, Switch, Ask the foreman; Start, Resume or Bring it in; Ask Parts; Open RO; the stage bar
+  · Every operation opens to its notes (type and press Enter — the time goes in), its time (quoted, burnt, left, efficiency, and every punch: the day, start and stop, how long, why it started and stopped) and its parts (Picked up, Ask Parts for a part). The past fix shows inside the operation, with View and Use fix. Open all / Fold all
+  · Search your ROs by number, customer, truck, year, unit or complaint (/ to jump there). J and K move, Enter starts, S stops, Space starts or stops, Ctrl Enter finishes, H holds
+  · Everything Console does for a technician is here — Start my day, clock in and out, Scan, shop time, the Time Log fixes, photos and codes, Your day — so the Technician page replaces Console for technicians: it's their home page, and Console leaves their sidebar (the Manager can switch Console back on for anyone, Manager › Team). Foremen, managers and the rest keep Console as it was
+  · Manager › Team shows the Technician page locked on for technicians, the way the Manager page is locked for managers
+  · On a phone, technicians get it as their first tab ("My ROs"); the list opens each RO full screen
+  · Notes sent from the Technician page still land in the Inbox the same way, and an Inbox note about Console opens the Technician page for a technician
 
 Parsec 10.1 — the Manager page's Team opens on a new computer
   · Team did nothing when the computer had no ROs yet (a new computer or a new folder): every tab showed "No ROs yet". Team now opens anyway, and the empty page has a Set up the team button — people, roles, PINs and pay can go in before the first RO
