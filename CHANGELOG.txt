@@ -1,5 +1,23 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 9.9 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 10 is the newest.
+
+Parsec 10 — ChatGPT's changes, brought in
+  · The 52-truck catalog: every Volvo body from 1997 to today (VN, VNL, VNR and VNR Electric, VNX, VHD, VAH, VNM, VT), each from the side and from above — ChatGPT's original pictures, in place of 9.9's pictures cut from screenshots. Your own photos (VNL 760, VNL 860, VNR 300, the red VHD) still come first. A 9.9 library swaps once: the cut-outs nobody changed go, the 52 come in. Your data › Truck pictures can browse the catalog and put back any you remove
+  · Truck & photos: the camera on the RO's truck picture (or ⋯ › Truck & photos…). Model year, model and cab, and how well they match a body — Matched, Confirmed, Check against truck (older bodies, and changeover years like a 2025 VNL), Choose the cab, Nearest body, Needs the year. Pick the body and the trim (Core, Edge, Edge Black, Ultimate on the 2025+ VNL; Core, Edge on the 2026+ VNR) or explore the catalog. Add this RO's own vehicle photo (side) and location photo (from above) — drag one in or choose a file. Nothing changes until Save truck: Saving…, then Saved (to the shop folder or this computer), or Retry. Undo works
+  · The model year: New RO asks for it, and the RO's Vehicle facts show Model and Model year ("· VIN" when it comes from the VIN). Without one, the VIN gives it — and when its year letter could mean two years 30 apart, the model's years decide
+  · The truck from above, cab up, in each Foreman bay and on every Triage yard spot. The Foreman and Triage header shows how many notes are on the truck
+  · Search finds a truck by its model and year ("2019", "VNL 760"), and its box says so
+  · White and Near black: two more themes beside Ivory and Graphite (Appearance, or the theme switch in your profile) — cool grays with a blue accent, on every page, the RO page and the phone
+  · Moving a truck: drag it to a free bay on the Foreman floor (free bays light up, busy ones dim, Esc cancels), or Move truck in the header — the open bays, the ones with the job's equipment first. The truck flies to its new bay; Undo flies it back
+  · Small motions: the header eases in when you switch ROs (Foreman, Triage, the RO page); a stage's segment fills when it's checked off, with "Diag checked off." and Undo; Search eases in, is read out as a list, keeps Tab in its box and puts focus back when it closes. Undo only shows while it's still the last thing done. Bays and yard spots open with Enter or Space; the page tabs say which is open. Every motion stops when Windows asks for less
+  · Quick peek on the Foreman floor: hover or Tab to a bay — the truck, complaint, tech, stage, next step, hours and notes. Pin keeps it open, Esc closes it, Open repair order goes there
+  · Blockers age: Needs action rows on Foreman and Triage get a time chip — amber near the follow-up time, red past it — and the hold bar turns amber before it turns red
+  · The bay that fits: with bay types set, the Foreman header says whether the bay has what the job needs, and Move truck lists the bays that fit first
+  · Assign shows each technician's day: hours booked, this job, and what's left — red when it runs over
+  · Saved views on the RO list: set the filter, search, grouping or sort, then Save this view; one click brings it back (yours, kept with the shop's data)
+  · Shift handover (Foreman, the page icon in the header): tick the ROs, add a note, build it — each RO with where it stands, who has it and its next step. Edit, copy, print, or keep it for the next shift
+  · Release on Triage shows how many checks are left, with a bar
+  · Not brought in: the sharper icons and the bay hover lift (Not now), and ChatGPT's preview-only parts (its sample trucks, Foreman as the start page, its separate saved data)
 
 Parsec 9.9 — a picture for every Volvo model
   · Truck pictures now come with 53 pictures: every VNL, VNR (and VNR Electric), VNX, VHD, VAH, VNM and VT generation from 1996 on, each with its years. Your own VNL 760, VNL 860, VNR 300 and red VHD photos stay. A library from 9.7 or 9.8 gets the new ones added once; remove any you don't want
