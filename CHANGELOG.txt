@@ -1,5 +1,12 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 9.7 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 9.8 is the newest.
+
+Parsec 9.8 — the truck on Foreman and Triage
+  · Needs action rows on Foreman and Triage show the truck's picture where the row's icon was: the model picture, else the check-in photo, else the outline (same rules as the RO page). Tech rows keep their initials. Smaller on the phone
+  · The Foreman floor: a bay with a truck in it shows the truck from above, with the bay, status, RO, customer, tech and time over it. Bays keep their size. A bay whose truck has no view from above looks as before
+  · Each model picture can have a view from above. The four starter pictures come with theirs. Add or replace one in Your data › Truck pictures (the small dark tile next to each picture), or from the ⋯ on the RO's picture
+  · A check-in photo whose file isn't in this browser or the folder shows the outline instead of an empty box, on every list (the RO list too); a folder that doesn't answer gives up after 8 seconds
+  · Every other page is unchanged, checked picture by picture against 9.7 in both themes
 
 Parsec 9.7 — the truck on the RO
   · The RO's header is a band: RO number, customer, truck, status and who has it on the left, a picture of the truck on the right. On a phone the truck sits on top and the title goes under it
