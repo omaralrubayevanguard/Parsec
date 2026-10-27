@@ -1,5 +1,28 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 12.6 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 12.7 is the newest.
+
+Parsec 12.7 —each person keeps their own clocks, the lists fold, change a clock while it runs
+  Each person keeps their own clocks:
+  · Your job clock and your day clock are yours: switching who's signed in, or signing out, never stops anyone else's clock — "Your clock keeps running on RO 4398"
+  · Starting a job stops only your own running job. Two people can be on the clock at once, on two operations or on the same one
+  · The clock card: Who's on the clock shows everyone, and the card breathes while anyone's on it; Start / Stop, hold to stop, splits, notes and fixing the start are about your own clock ("Start your clock on this operation too"). The RO page's band button and setting an operation's status stop only your own clock
+  · The sign-in screen lists every running clock — whose, which RO, since when
+  · Lunch ends the day clock of the person who stopped for it, and only theirs — right away (it used to wait for the next save); the lunch pause and the end of day stop only your own clock
+  · Setting an operation's status by hand on Triage (done, on hold) stops everyone's clock on it, not just the first one
+  · Overlaps are per person: your time can't overlap your own, but it can overlap someone else's
+  · Your day's numbers (the day ribbon, your totals, the warnings) count only your punches and day clocks. Older day clocks that never said whose belong to the one person whose punches are in them
+  The lists fold:
+  · Every page's list folds: the « button in the list's head (Needs action on Triage, Foreman, Parts and Warranty, the Technician page's repair orders, Fixes, the Manager's lists…) folds it into a thin strip with its title, its count and how many are late, and the page's main pane gets the whole width. A click on the strip, or ], opens it again
+  · Each group in a list (Late, Arrived, Road test, Free techs, Working…) opens and closes on its own with a click on its head; the count stays in sight, and the row you have open stays visible under a folded group
+  · Both are remembered per page on this computer. On a phone the list is its own screen, so only the groups fold there
+  Change a clock while it runs:
+  · Its start: on both Time tabs as before, and now in the Time Log — the running row has the pencil, E and double-click like every other row
+  · Stop it at an earlier time: the running punch's "now" is a button. Type when it really stopped and it asks why with the stop reasons; it stops then, its time goes on the job's burnt hours, and it's marked edited. Never in the future or before the start; past midnight works. In the Time Log, type a Stop for the running punch and Stopped as appears
+  · Its reason: the start reason changes while it runs (both Time tabs and the Time Log)
+  · Move it to another operation: the ⇄ tool on the running punch in both Time tabs, and the Operation picker in the Time Log — this RO's operations, the person's other open ROs, or shop time. It keeps its start; the clock card, the sidebar clock and Who's on the clock follow it
+  · The day clock's start while it's on: the pencil on the Time Log's Clocked in row and beside "On the clock since 07:02" in the clock pop-up. Not in the future, not after the first punch, not before the clock-out before it; changing someone else's time asks why
+  · Every change is one Undo (an automation that follows a change goes back with it, however many steps), saves, and redraws both pages
+  Also: on a phone, tapping a day in the Time Log opens it; the Time Log's "day, in order" fits a phone
 
 Parsec 12.6 — parts stages on the Parts and Foreman pages
   · The RO section on the Parts page and on the Foreman page has the parts stage below the details, in steps like the Warranty page: To order · Ordered · Received · Staged · Picked up · Installed, each step in its part status color
