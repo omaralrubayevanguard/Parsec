@@ -1,5 +1,41 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 12.4 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 12.5 is the newest.
+
+Parsec 12.5 — the clock card round 2, Complete waits on the parts only, move time to someone else, the Yard on the Technician page, the Inventory page
+  The clock card (the RO page and the Technician page), round 2:
+  · Lap marks: a flag beside Start / Stop marks a split — "Split 2 · 0:14:32" — saved as a time-stamped note on the punch. The last splits and the running one show under the card
+  · Focus mode: the expand icon grows the card into a big view for across the shop — the time, the ring, hold to stop and the stop reasons. Esc or a tap outside shrinks it back
+  · Similar jobs: a soft band on the bar shows how long the same job took before (the middle half of the finished ones in Fixes), the usual time dashed, you a dot; the line says whether you're under it, in range or past it
+  · Your usual pace: a tick where you'd finish at your usual efficiency (your finished jobs of the last 60 days) — "At your usual 112%: done about 12:40 pm". On someone else's job it says their name
+  · Fix the start: forgot to clock on? The pencil by "since 10:13" drags the start back, up to 60 min and never past the punch before. It trims the punch before if they'd overlap, moves your day clock's start if it has to, and leaves a note on the punch
+  · Note nudge: after 45 min on the clock with no note, a pill wiggles in once — tap, type, Enter, and the note lands on this punch with its time. The last note shows under the card
+  · Parts on this job: what's in hand and what isn't, with its ETA. When the last one lands: "All parts in", and Start shimmers
+  · Next up: stop or complete and the next operation slides up with its own Start — on the Technician page the next in the foreman's order, on the RO page the next open operation on the RO
+  · Done badge: complete under quoted and a badge pops — "Done in 5:12 · 154%"
+  · Lunch and end of day ahead: "Lunch in 0:42 — the clock pauses itself". At the shop's lunch (Foreman › shop settings) your running clock stops itself as Lunch and the card dims; when lunch ends it starts again on the same operation; at the end of the day it stops itself as End of day. Only your own clock, on weekdays, while Parsec is open; the message has Undo
+  · The RO page's start / stop reason pop-up closes when you use the card
+  Complete and the final check:
+  · Complete waits on the parts only: an operation (or the RO) can be marked or stopped Complete without tech notes or files. Parts not installed still stop it, as before
+  · Notes and files are the final check: Ready to close (Triage, the RO page, the Technician page), the release pop-up and the truck checks list "Notes written" and "Files on the RO". Releasing with either open asks for a reason, like any open check
+  Move time to someone else:
+  · From the Time Log header (for the person you're viewing) or Manager › Team, move a person's day clock and operation punches — for a day or a range of days — to another person. Notes and reasons go with the punches, and you can hand over the ROs they worked too
+  · The preview says what moves, what's joined and what stays, and why: a punch that overlaps the other person's own punch stays (nobody works two jobs at once); a day clock that overlaps theirs is joined into one; a running clock and approved, locked days stay
+  · Pick a reason (Clocked in under the wrong name, Covering for someone, Fixing a mistake, or your own). One Undo takes it all back, the Activity log keeps a line (and one on each RO), and the punches remember whose they were. Foreman, manager and admin only
+  The Yard on the Technician page:
+  · A My ROs / Yard switch in the Technician header (Y switches too, remembered on this computer)
+  · Yard shows the shop floor (bays with the trucks' top views), the check-in lanes and the parking lot rows — the same yard map as Triage and the Foreman's Yard, read-only here
+  · Your trucks light up in your list's colors — working, assigned, waiting, done today — and everyone else's are dimmed. The bay you're clocked into gets a "You" badge
+  · Point at a truck for its RO, customer, truck, status and spot. Click one of yours to open it (on a phone it opens straight to the RO); click someone else's and a bar says what it is
+  · Above the map, "Your trucks" lists each of yours and where it is. Next-up trucks of yours on the lot or in check-in have Bring it in, which asks Triage to bring it to a bay
+  The Inventory page:
+  · A new Inventory page in the sidebar right after Parts (and in the phone's More sheet; the Parts role's bottom bar has it second). Parts, the foreman and the manager have it; the Manager can turn it on for anyone else, and a technician who has it sees it view only
+  · Stock: every part with its bin, on hand, what open ROs still need from it, what's available after that, what's on order, min · max, price and when it was last used. Search; filters for Stocked, Short, Out, Low, Not stocked, No bin and Kits; a shelf picker; sort by any column
+  · Pick a part for its pane: the four numbers, a stock-level bar with min and max, how fast it's used (with a one-click min and max), the open ROs that need it, price · cost · margin, the ROs it went on, and its history
+  · Receive (+qty with a PO or slip), Adjust (set the count or add / take away, with a reason and a note), Edit, Delete with Undo. Every change goes in the part's history and the shop's audit log
+  · Reorder: everything below its min, back up to its max, counting what's already coming — copy it, download it as CSV, or Mark ordered. Count: one shelf at a time. Activity: everything received, counted, adjusted and pulled for an RO
+  · Kits: what you can build from the shelf and their parts with what's on hand. New part, New kit, Import a parts list (paste, a screenshot or a PDF), the whole stock list as CSV
+  · Parts › Catalog has Open Inventory, and its stock order now goes up to each part's max (twice the min until you set one)
+  · Keys: / search, J K move, N new part, R receive, 1–4 the views, Esc closes
 
 Parsec 12.4 — the operation clock card: the ring, rolling digits, the bar in the Time tab's colors, over quoted, time left, when quoted runs out, the card breathes, hold to stop, who's on the clock, milestones
   · One clock card on the RO page and on the Technician page's RO, the same card on both
