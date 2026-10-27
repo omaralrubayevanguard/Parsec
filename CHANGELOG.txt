@@ -1,5 +1,17 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 12.5 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 12.6 is the newest.
+
+Parsec 12.6 — parts stages on the Parts and Foreman pages
+  · The RO section on the Parts page and on the Foreman page has the parts stage below the details, in steps like the Warranty page: To order · Ordered · Received · Staged · Picked up · Installed, each step in its part status color
+  · The part that's furthest behind sets the stage. A backorder is part of Ordered — the step turns red and pulses. Parts on operations still waiting for the customer's approval don't count (the head says how many wait)
+  · Under each step: how many parts are there, their ETA, and how long the oldest has sat there — amber at 2 days, red at 5
+  · The head says the stage, how many parts are in hand, and when they'll all be in: "All in by Fri", "No date yet — not ordered", "Due Tue — late", "All in hand", "All installed"
+  · The part that holds the stage is named under the track ("Held by Sensor gasket (Op 1) · Ordered · ETA tomorrow · 3 d") and highlighted in the Parts page's parts list
+  · Click a step to show only its parts (the Parts page's list filters, Show all brings them back; the Foreman page lists them under the track). Point at a step for its parts
+  · The current step carries its action — on the Parts page Order… / Pull…, Chase…, It's in, Stage it, Tell the tech (a note to the RO's tech that the parts are ready, and the bin); on the Foreman page Ask Parts… / Chase with Parts…, and Tell the tech once they're in
+  · Each operation gets its own mini stage — on the Parts page's operation cards and in the Foreman's ops strip
+  · The Parts page's Needs action rows carry a small stage pill
+  · An RO with no parts says so in one quiet line
 
 Parsec 12.5 — the clock card round 2, Complete waits on the parts only, move time to someone else, the Yard on the Technician page, the Inventory page
   The clock card (the RO page and the Technician page), round 2:
