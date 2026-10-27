@@ -1,5 +1,14 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 12.2 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 12.3 is the newest.
+
+Parsec 12.3 — the RO page: the Time tab in colors with edits in place, icons, the operation header, tab actions, the theme strip, sample trucks
+  · Time tab (the RO page and the Technician page's RO): each punch's line and start dot take the color of why it started, the stop dot the color of why it stopped — one color per reason, the same on the Time Log, the reason chips and the day bar. A slim day bar sits at the top in those colors; no legend, each line says its reason
+  · Edits happen inside the Time tab: click a time to change it, click a reason for the list of reasons (with their colors); the trash on a punch deletes it at once, with Undo in the message. A "+ time entry" between punches, or the clock icon in the tab row, opens a new entry right there, filled in between its neighbours. A running punch's stop can't be changed. The separate Time punches section, and its Edit entries / Done editing, are gone
+  · The word links are icons now, with their name when you point at them — Add operation, Add part, From inventory…, Extract from a quote…, Add time entry, Add note and the rest. Outlined buttons, Start / Stop and Save keep their words
+  · The operation header: the complaint line and "+ code" left the body (fault codes stay in the Fault codes block); the status pill with its list and the ⋯ menu moved into the header row; the job type is a dropdown like part status — DIAG, REPAIR, PM, WARR, COMEBACK, SUBLET, RECALL — each with its own color. On the RO page a double-click on the title renames the operation
+  · Each tab's actions sit at the right of the tab row, only while that tab is open: Time — Add time entry; Parts — Add part, From inventory…, Extract from a quote…; Files — Upload, Take a photo, Paste a screenshot
+  · The theme is a strip of four color swatches above you in the sidebar (and out of your menu); with the sidebar folded it's one swatch — click it for the next theme
+  · Sample trucks come from the truck catalog: a real Volvo body built that year, with its make, model, configuration (axles and cab — 6x4 · High-roof sleeper), sleeper length (day cabs none) and engine with horsepower, so the picture always matches. They show on the line under the RO's name and in Vehicle, on the RO page and the Technician page
 
 Parsec 12.2 — no Inbox or Console page, the sidebar in one list, Road test and Truck checks on every RO, the truck picture at creation, Delete on the pickers
   · The Inbox page and the Console page are gone — every page has its own list of what needs doing. A saved link or a sign-in that pointed at either one opens the RO list (or that person's home page). Notes people send each other still show on the RO, under Messages about this RO; the words that said "it's in their Inbox" say where it is now
