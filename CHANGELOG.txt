@@ -1,5 +1,21 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 12.3 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 12.4 is the newest.
+
+Parsec 12.4 — the operation clock card: the ring, rolling digits, the bar in the Time tab's colors, over quoted, time left, when quoted runs out, the card breathes, hold to stop, who's on the clock, milestones
+  · One clock card on the RO page and on the Technician page's RO, the same card on both
+  · Ring around the button: Start / Stop sits in a ring that fills toward quoted — green, amber from 90%, red past it
+  · Rolling digits: the seconds roll like an odometer; the colons blink while the clock runs
+  · The bar is made of the operation's punches, each in its start reason's color (the Time tab's colors); the live one grows with a soft pulse at its edge. Time typed in by hand shows as a grey piece first
+  · Over quoted: past quoted the extra time is striped red, the card's edge turns red, the ring goes red and "+12:10 over" flips in; Left becomes Over
+  · Time left: tap the big number to switch between the time on the operation and the time left on the quote — it flips, and it's remembered on this computer for every card
+  · When quoted runs out: "Quoted runs out about 3:24 pm" while the clock runs, with a dotted ghost of the rest of the bar; "1:44 left on the quote" when it's stopped; "Quoted ran out at …" once it's past
+  · The card breathes: running — a slow green glow (red when over quoted); waiting — amber (the waiting reason's color) and still, with WAIT in the circle — click it to start the clock anyway; complete — the check draws itself, once, when it just happened
+  · Hold to stop: press and hold Stop — a ring fills, then the clock stops and the stop reasons slide in as colored chips (Lunch, End of day, the Waiting reasons, Complete); pick one, or ✕ to leave it. Let go early and nothing happens. With the keyboard, Enter or Space on Stop stops at once and asks why. Complete still needs the parts in and the notes written, as before. The other Stop buttons (and the S key) stop at once as they did
+  · Who's on the clock: everyone clocked on the operation, with a live dot and their time on this punch ("You" for you)
+  · Milestones: at halfway, the last quarter and quoted, the bar's tick pulses and a small label slides in for a few seconds
+  · Motion follows the computer's "reduce motion" setting: with it on nothing moves — the hold ring still fills, since it shows the hold counts
+  · Quoted on the RO page's card is still click-to-change. The start reason pop-up now opens by the card's button
+  · The card keeps its place through the page's 5-second redraw: nothing restarts or replays, and what loops keeps one beat
 
 Parsec 12.3 — the RO page: the Time tab in colors with edits in place, icons, the operation header, tab actions, the theme strip, sample trucks
   · Time tab (the RO page and the Technician page's RO): each punch's line and start dot take the color of why it started, the stop dot the color of why it stopped — one color per reason, the same on the Time Log, the reason chips and the day bar. A slim day bar sits at the top in those colors; no legend, each line says its reason
