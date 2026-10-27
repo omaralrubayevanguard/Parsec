@@ -1,5 +1,14 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 12.7 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 12.8 is the newest.
+
+Parsec 12.8 —a completed operation opens back up: its status and its clock
+  · The clock card (the RO page and the Technician page): the green check on a completed operation is a button — point at it and it turns into Start ("Start again"); a click (or Enter) reopens the operation and starts your clock, with the start reason as usual
+  · Reopen, beside the Done badge: back to Hold tech with the clock off, for when it isn't your turn on it yet
+  · The status pill: on the RO page, picking any status but Complete reopens it ("Op 1 reopened — Waiting – Customer"); on the Technician page a completed operation's pill opens too — Start the clock again, Reopen — back in Next, or straight onto a hold
+  · The Technician page: the operation row's clock button and the big time's play button stay on a completed operation (Start again), and the done RO's panel has Start again next to Reopen
+  · Starting a clock on a completed operation anywhere reopens it — Triage's done toggle and a failed road test too
+  · On the record: each reopening keeps when and who (the card shows "Reopened 3:32 pm · Mike" for three days), goes in the audit log, and an RO that was completed, released or closed opens again with it
+  · One Undo takes it all back
 
 Parsec 12.7 —each person keeps their own clocks, the lists fold, change a clock while it runs
   Each person keeps their own clocks:
