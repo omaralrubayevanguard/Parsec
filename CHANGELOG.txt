@@ -1,5 +1,13 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 12.8 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 12.9 is the newest.
+
+Parsec 12.9 —an RO status you pick holds; reopening a completed RO asks about its operations
+  · The fix: the Status sync (the RO follows its operations) overrode a status picked by hand at the next thing that happened on the RO — a part, a note, a road-test edit — so a completed RO set back to Hold tech, Working or Waiting snapped back to Complete. Now a status you pick holds until the operations add up to something new: a clock starts, an operation goes on hold, it's completed again
+  · Setting a completed, released or closed RO back to an open status — on the RO page, the RO List, Triage, or the Technician page — asks: "RO 1234 is open again — it still has 2 operations marked Complete." Reopen both operations (Enter) puts them back to Hold tech so the clock can start; Just the RO (Esc) leaves them complete. Several ROs set at once ask once
+  · The RO comes off the closed list when it's set back to open, whoever closed it
+  · The Technician page shows the RO's own status ("RO · Complete – Released ▾") with a menu of RO statuses, next to the operation's state
+  · An operation's status picked on the RO page stands like one picked anywhere else (Waiting – Parts no longer turns into Hold tech once the parts are in)
+  · Each step is its own Undo
 
 Parsec 12.8 —a completed operation opens back up: its status and its clock
   · The clock card (the RO page and the Technician page): the green check on a completed operation is a button — point at it and it turns into Start ("Start again"); a click (or Enter) reopens the operation and starts your clock, with the start reason as usual
