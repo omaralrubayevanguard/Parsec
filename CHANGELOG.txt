@@ -1,5 +1,12 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 14.1 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 14.2 is the newest.
+
+Parsec 14.2 — the truck card and quoted hours change in place · the Technician page’s Parts tab · Assets and Inventory below Fixes · the Time Log on your own times
+  · The truck card’s words change where they are — the customer, the year, make and model, and the unit (and the spot on the RO page) — on the Technician page, the RO list’s pane and the RO page: click one, type, Enter (Tab goes to the next, Esc leaves it). Same field table, Undo and Activity line as the RO details; what the body catalog adds (6x4, sleeper, 70-inch) stays as it is
+  · Quoted hours change in place wherever an operation’s quote shows: the RO page’s operation rows (the card stays shut), the clock card on the RO page and the Technician page, the RO list’s pane, and Foreman’s operation lists. An RO’s total (the RO list’s Time column, Foreman’s bar) changes when one operation carries the quote. One Undo; Activity says “Op 2 quoted 1.50 → 2.00 h”
+  · The Technician page’s Parts tab has the RO page’s three: Add part (a quick line — “4988201 x2 brake chamber $45.99”, Enter adds it and stays open for the next), From inventory… (search the Parts page, a quantity, Add or Add kit) and Extract from a quote… (paste a list, or read a screenshot or PDF, untick what you don’t want). Ask Parts for a part is still there. Files’ Upload / Take a photo / Paste and Time’s Add time entry show for anyone who can change the RO, not only the tech on it
+  · The sidebar: Career, Time Log, RO List, Technician, Triage, Foreman, Parts, Warranty, Manager, Fixes, Assets, Inventory, Admin. The phone’s More sheet follows
+  · The Time Log opens on your own times each time you pick it — a foreman or a writer too, not the whole shop. The Whole shop view is still in the person menu
 
 Parsec 14.1 — the RO flow: Done asks, comebacks reopen, one release list, Send from the Next bar · RO details editable on the RO list and Technician panes
   RO details, editable everywhere the RO opens:
