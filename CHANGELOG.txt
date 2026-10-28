@@ -1,5 +1,19 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 13 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 13.1 is the newest.
+
+Parsec 13.1 — the RO list: next step, columns you arrange, sort and add to · search behind an icon on every page
+  The RO list:
+  · The Complaint column is gone (Display can bring it back). The truck’s picture sits right of the RO number
+  · New Status column, and Next step in place of the complaint: what the RO is waiting for and who’s up — Send the estimate · Jenna, Order 2 parts · Ben, Chase the backorder (ETA) · parts, Write the story · Op 2 · the tech, Road test · Frank, Release the truck · the writer, Working · Op 1 · whoever’s on the clock. A dot shows how urgent it is
+  · The tabs (Open, Mine, Working, Waiting, Hold, Done) work again — they had stopped switching
+  · Click a column header to sort the whole list by it: groups fold into one list while a sort is on; click again for the other way, a third time to clear (or Clear on the bar above the list). Numbers sort as numbers, blanks go last
+  · Drag a column header left or right to move it — or drag it in Display → Columns. Each person keeps their own layout
+  · Display → Add a column: Complaint, Unit #, Truck, VIN, Mileage, Engine hrs, Engine, Key tag, Opened, Case #, Operations, Parts, Warranty. The × takes a column off; Back to the standard columns resets it
+  · Your own columns: Display → Your own columns, type a name, Add. Click a cell to type in it — Enter saves, Esc cancels, Tab saves and goes to the next RO. They sort like any column. Deleting one takes its values with it
+  · With an RO open beside the list, Stage, Time, Spot and Ready step aside so the rest fit
+  Search on every page:
+  · The search bar on each page (RO list, Technician, Triage, Foreman, Parts, Inventory, Warranty, Manager, Fixes, Admin) is now a search icon (or /) that opens a search window. Typing filters that page’s list behind it; Enter keeps the filter, Esc clears it. A chip by the icon shows a search that’s on — click it to change it, × to clear
+  · Ctrl K is still the search for everything
 
 Parsec 13 — the login page, switching who’s signed in, and the Admin page: people and permissions
   The login page:
