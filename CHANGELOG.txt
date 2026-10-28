@@ -1,5 +1,42 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 13.1 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 14 is the newest.
+
+Parsec 14 — Assets: every truck and its history · one status look on every page · the road test switch · every cost and the engine serial read · the RO flow fixes
+  Assets (a new page, right after RO List):
+  · Every truck the shop has worked on, one row per VIN (unit # and customer when there’s no VIN): picture, unit, year and model, customer, visits, last in. A flag with a count marks repeat repairs; a status icon marks a truck in the shop now
+  · Chips for All, In the shop and Repeat repairs; sort by Last in, Most visits, Most days down or Customer A–Z; filter by customer. The search icon (or /) finds a VIN, unit, customer, model, engine serial or RO #. J/K move, Enter opens the truck’s open or latest RO
+  · The truck: picture, year/make/model, VIN, unit, customer, engine, engine serial, miles, engine hours, last seen, and a button to its open RO. Lifetime tiles: visits, days down, labor and parts (money shows as — without “See costs and prices”)
+  · Repeat repairs: the same system, complaint or part back within 90 days, or an operation marked Comeback — one line per visit and system
+  · Miles and engine hours over time, with a monthly rate. Every visit, newest first: RO, status, miles and hours, techs, cost, and each operation with its job type, complaint, a Repeat tag, the fix and parts; a click opens the RO
+  · In the sidebar and the phone’s More sheet; a page permission on for every role (the Admin page can turn it off). The RO page’s and Technician page’s Truck history have Open in Assets
+  One status look:
+  · RO, operation, part and warranty-claim statuses share one icon, color and words on every page — the RO page, Technician, Triage, Foreman, Parts, Inventory, Warranty, the RO list, Assets, Manager, Career, the Day report, the search windows and Ctrl K
+  · To read: icon + word, no box (○ Hold tech, ◐ Working · Repairing, ◌ Waiting – Parts, ● Complete, ✓ Complete – Released). To change: an outlined pill with ▾, only where it opens a menu; without the permission you see the words
+  · Parts: ○ Not ordered, ◔ Ordered, ! Backordered, ✓ Received · Staged · Picked up · Installed. “To order” is only the queue heading now. “No parts” is plain text, not a chip; parts waiting on approval say so
+  · Gone: the tinted pills on Technician and Warranty, the square status dots on Triage and Foreman (the header shows the RO’s stage instead — “Approval · stage 3 of 7”, the same stage on every page), the grey part chips on Parts and Inventory
+  The road test switch:
+  · “Road test before release” under the truck card’s buttons on the RO page and the Technician page — on for every RO unless you turn it off (one Undo, an Activity line; it needs “Change an RO’s status”)
+  · Off: no Road test or Truck checks buttons on any page, no Road test or Truck checks group in Needs action, no road-test or truck-check line in Ready to close or Release, the stage track and the RO list’s ticks skip Road test, Next step goes straight to “Release the truck”, and when the last operation is done the RO reads Complete, ready to release. Turning it back on brings everything back
+  Reading from ASIST (New RO, Import, Extract operations, Inventory’s parts list):
+  · Engine serial: Engine Serial / Serial Number / S/N / SN / ESN / Eng Serial # / Engine No. — from the page text, a screenshot or the PDF — lands in the RO’s Engine serial
+  · Operation costs: labor hours, labor rate, labor $, parts $, shop supplies, sublet and the operation total — from the table’s columns, from “Labor Rate: / Parts: / Shop Supplies:” lines, or worked out from the sums. The preview shows the line (“Labor 6.2 h × $210.00/h = $1,302.00 · Parts · Shop supplies · Op total”) and whether it adds up; an operation’s own rate is kept
+  · Part costs: List, Disc, Net/Unit, Core (per unit) and Ext; the part keeps them and the Parts list learns the price. The RO page’s Parts tab shows each part’s price; Money shows Core, Shop supplies and ASIST’s total
+  · Totals: Labor, Parts, Core, Fees, Tax and Total are read and checked; tax is kept apart
+  · ASIST’s approval becomes Parsec’s: Approved writes the approval (by ASIST, who created the case, when), Declined records the decline, Pending still needs approval; something approved or declined by hand in Parsec wins (“Kept yours”). Parts can order, Triage lists the RO, the RO list says the right next step
+  · A “Parts” heading no longer sticks to the last operation’s name (old ones are fixed when the file opens); parts in a case-level block go to the operation ASIST names, or the one whose words match, never just the last one. The preview says where each went, with a dropdown to move the loose ones
+  · Screenshot misreads fixed: $2 14.50, 1.302.00, RA0001241 190, E5N, DI3
+  The RO flow, fixed:
+  · An RO closes at Release, not at the road test — it stayed on the Open tab, the yard, tech loads and Manager’s counts; dateClosed is set at release; ROs auto-closed by a road test reopen when the file loads
+  · With every operation done the RO reads Complete – Road test (or Complete), not Hold Tech “for want of a road test”; an approval on the operation counts as the customer’s approval
+  · One Undo takes back a release: status, release record and closed date together
+  · Notes, road test asks, go-aheads and parts-in sent to a technician show on their Technician page under Sent to you (with Done); the send toast says so
+  · Next step: Waiting – Customer, then Send the estimate for unapproved operations, before any Order; only parts on approved or warranty operations count as to order; an approved operation with no tech reads “Assign a tech · Frank”
+  · Check in finds parts that arrive early (every open order line; a folded “Not due yet — early” group; a scan says “early — due Fri”)
+  · Automation toasts name the RO (“Automation · RO 8877 → Hold tech”), join a message shown in the last 3 s instead of replacing it, and don’t fire at load, during undo or for shop time
+  · Days open counted the same way on the RO list, the RO page and Technician; the RO list’s Spot matches Foreman’s; Manager and Career count tiles show the plain change (▲ 23) instead of ▲ 1800%
+  · The Foreman Assign pop’s bar matches its “7.4 h free”; an imported Location maps to a spot (UpTime 2 → UP, AW2 → Awning 2); a hand-typed New RO says “Created RO 0123” (from ASIST only when it was); “No tech yet” instead of “with T Technician”; the release toast names what’s still open properly
+  · Without the permission: a Technician sees the RO status as words, and the Parts page is read-only (no Order…, Chase…, Check in, Stage it, Send to)
+  · Off-site requests: no more randomuser.me portraits (people show initials or their own photo) and the hidden assistant’s call to api.anthropic.com is gone. Google Fonts still loads at start; pdf.js is fetched only when someone reads a PDF (code only — the PDF stays here)
 
 Parsec 13.1 — the RO list: next step, columns you arrange, sort and add to · search behind an icon on every page
   The RO list:
