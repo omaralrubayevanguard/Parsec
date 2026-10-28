@@ -1,5 +1,18 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 14 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 14.1 is the newest.
+
+Parsec 14.1 — the RO flow: Done asks, comebacks reopen, one release list, Send from the Next bar · RO details editable on the RO list and Technician panes
+  RO details, editable everywhere the RO opens:
+  · The RO list’s pane and the Technician page’s right pane carry the same groups as the RO page — Vehicle (year, make, model, VIN, unit, mileage, engine hours, engine, engine serial, chassis, key tag, spot, department), Customer (name, cust #, contact, PO), People (writer, tech, foreman), Schedule (opened, promised, ready about, ETR) and Case (case #, auth, tech support case) — collapsible, click to change, Enter saves, Esc cancels, Tab moves to the next field
+  · One Undo per change, an Activity line (RO 9481: Mileage “97,000 mi” → “512,345 mi”), the VIN upper-cased with a warning when it isn’t 17 characters; read-only without the Repair Orders page. One table drives the RO page’s fields and both panes, so they can’t drift
+  The RO flow:
+  · Done asks instead of refusing: an operation with no story or 0:00 clocked gets “Op 2 isn’t finished — finish it anyway?” with Write the story / Finish anyway; parts not installed gets Mark them installed and finish / Not yet (the same part status change, one Undo). The clock still stops as Hold tech until you answer
+  · Release lists “Story on every operation” and “Hours · 0.0 h clocked of 2.7 h sold”; releasing with nothing clocked needs a note
+  · Start on an operation ASIST still shows as Pending (no approval in Parsec) asks once: Start anyway / Wait. Activity logs “started before its approval”
+  · Comebacks: a New RO — imported or typed — whose VIN (or unit + customer) was released within 90 days asks: Reopen RO 8877 as a comeback (recommended) / Open a new RO anyway. Reopen puts the new operations (marked COMEBACK) and parts on the old RO, reopens it on Hold tech and flags it as a comeback for Fixes, Manager and Assets; a new RO is tagged “comeback of 8877”. One Undo
+  · The RO reads “Hold tech · 1 op waiting on parts” while any open operation can be worked; Waiting – Parts only when every open operation waits
+  · One release list: the walk-around ticks sit inside the Release pop (the same ticks Truck checks shows), and Keys back / Truck clean aren’t asked again in Handover
+  · Send to Foreman from the RO page’s Next bar sends straight away when there’s nothing to choose; the pop opens only when a tech has to be picked
 
 Parsec 14 — Assets: every truck and its history · one status look on every page · the road test switch · every cost and the engine serial read · the RO flow fixes
   Assets (a new page, right after RO List):
