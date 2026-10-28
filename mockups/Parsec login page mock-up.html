@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="en" data-th="ivory">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parsec sign-in and Admin</title>
+<style>
+:root,[data-th="ivory"]{--canvas:#F2F0EA;--panel:#FBFAF7;--raised:#fff;--fill:#F0EDE6;--sel:#E8E4DA;--hair:#E6E2D8;--border:#D6D0C3;--ink:#1D1C1A;--ink2:#57534B;--ink3:#67625A;--ink4:#A8A398;--acc:#86643A;--acct:#F4EDE1;--accl:#D9C5A3;--acctx:#7A5A32;--primary:#1D1C1A;--onprimary:#FBFAF7;--good:#3A8C60;--good-t:#E7F1EA;--warn:#AD7210;--warn-t:#F8EEDC;--bad:#C0503F;--bad-t:#F8E9E5;--shadow:0 0 0 1px rgba(29,28,26,.06),0 1px 3px rgba(29,28,26,.04);--raise:0 0 0 1px rgba(29,28,26,.08),0 18px 44px -14px rgba(29,28,26,.28);color-scheme:light}
+[data-th="graphite"]{--canvas:#0E0E0D;--panel:#151514;--raised:#1D1D1B;--fill:#222220;--sel:#2A2A27;--hair:#262624;--border:#363532;--ink:#EDEBE6;--ink2:#B0ACA3;--ink3:#9A968D;--ink4:#5E5B55;--acc:#D1B184;--acct:#2A241B;--accl:#6B5A40;--acctx:#D6B88D;--primary:#EDEBE6;--onprimary:#151514;--good:#5BBE8B;--good-t:#16261E;--warn:#E2A84C;--warn-t:#2A2114;--bad:#EC7F6C;--bad-t:#2D1916;--shadow:0 0 0 1px rgba(255,255,255,.06);--raise:0 0 0 1px rgba(255,255,255,.08),0 20px 50px -14px rgba(0,0,0,.7);color-scheme:dark}
+[data-th="white"]{--canvas:#f5f6f8;--panel:#fff;--raised:#fff;--fill:#f0f2f5;--sel:#e7ecf4;--hair:#e5e8ed;--border:#cdd3dc;--ink:#171c24;--ink2:#4d5766;--ink3:#667182;--ink4:#86909e;--acc:#245cdb;--acct:#edf3ff;--accl:#a9c1f5;--acctx:#234fb1;--primary:#171c24;--onprimary:#fff;--good:#23764a;--good-t:#eaf5ee;--warn:#94610c;--warn-t:#faf1df;--bad:#b94238;--bad-t:#fbedeb;--shadow:0 0 0 1px var(--hair),0 1px 2px rgba(16,24,40,.04);--raise:0 0 0 1px var(--border),0 18px 44px -14px rgba(16,24,40,.28);color-scheme:light}
+[data-th="black"]{--canvas:#0b0d10;--panel:#111418;--raised:#191d23;--fill:#20252c;--sel:#293242;--hair:#252b34;--border:#3c4553;--ink:#edf1f7;--ink2:#bbc4d1;--ink3:#95a1b2;--ink4:#717e90;--acc:#8aafff;--acct:#1c2a44;--accl:#425f94;--acctx:#a9c4ff;--primary:#edf1f7;--onprimary:#111418;--good:#7ac79c;--good-t:#172d24;--warn:#e4b564;--warn-t:#30271a;--bad:#f38c80;--bad-t:#351e22;--shadow:0 0 0 1px var(--hair);--raise:0 0 0 1px var(--border),0 20px 50px -14px rgba(0,0,0,.7);color-scheme:dark}
+:root{--sans:"Geist","Inter","Segoe UI",system-ui,sans-serif;--serif:"Newsreader","Iowan Old Style",Georgia,serif;--mono:"Geist Mono","Cascadia Mono",Consolas,monospace;--ease:cubic-bezier(.2,.75,.25,1)}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--canvas);color:var(--ink);font:400 14px/1.45 var(--sans);-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+.ic{width:15px;height:15px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.sp{flex:1}
+/* the mock-up's bar */
+.mk{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 18px;background:var(--canvas);box-shadow:inset 0 -1px 0 var(--hair)}
+.mk h1{margin:0 auto 0 0;display:flex;align-items:center;gap:10px;font:500 19px/24px var(--serif);letter-spacing:-.01em}
+.mk h1 svg{width:20px;height:20px}
+.mk h1 small{font:500 11px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.lg circle{fill:var(--ink)} .lg .o{fill:var(--ink3)} .lg .c{fill:#22c55e}
+.seg{display:inline-flex;gap:2px;padding:2px;border-radius:9px;background:var(--fill)}
+.seg button{all:unset;cursor:pointer;height:26px;padding:0 10px;border-radius:7px;font-size:12.5px;font-weight:500;color:var(--ink2);display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--raised);color:var(--ink);box-shadow:var(--shadow)}
+.seg button:focus-visible{outline:2px solid var(--acc)}
+.btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:30px;padding:0 12px;border-radius:8px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--border);font:500 13px/1 var(--sans);color:var(--ink);white-space:nowrap}
+.btn:hover{background:var(--fill)} .btn:active{transform:scale(.98)} .btn:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.btn.pri{background:var(--primary);color:var(--onprimary);box-shadow:none} .btn.pri:hover{filter:brightness(1.15)}
+.btn.sm{height:26px;padding:0 9px;font-size:12px} .btn.gh{background:transparent;box-shadow:none;color:var(--ink2)} .btn.gh:hover{background:var(--fill)}
+.btn.bad{color:var(--bad)}
+.btn .ic{width:14px;height:14px}
+/* layout: preview + choices */
+.wrap{max-width:1500px;margin:0 auto;padding:18px}
+.two{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:18px;align-items:start}
+.cap{display:flex;align-items:baseline;gap:10px;margin:0 0 10px}
+.cap h2{margin:0;font:500 20px/26px var(--serif)}
+.cap small{color:var(--ink3);font-size:12.5px}
+.note{margin:10px 2px 0;font-size:12.5px;color:var(--ink3)}
+.note b{color:var(--ink2);font-weight:600}
+/* the choices */
+.chs{position:sticky;top:64px;display:flex;flex-direction:column;gap:10px;max-height:calc(100vh - 76px);overflow:auto;padding-bottom:6px}
+.chs .hd{margin:6px 2px 0;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3)}
+.ch{padding:10px 10px 8px;border-radius:12px;background:var(--panel);box-shadow:var(--shadow)}
+.ch > b{display:block;padding:0 4px;font-size:13px;font-weight:600}
+.ch > small{display:block;padding:0 4px;margin-top:1px;font-size:12px;color:var(--ink3)}
+.ol{display:flex;flex-direction:column;gap:1px;margin-top:6px}
+.opt{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:16px minmax(0,1fr);gap:8px;padding:6px 8px;border-radius:9px;font-size:12.5px;line-height:17px;color:var(--ink2)}
+.opt:hover{background:var(--fill)}
+.opt i{width:14px;height:14px;margin-top:1.5px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--border)}
+.opt b{display:block;font-weight:500;color:var(--ink)}
+.opt.sq i{border-radius:4px}
+.opt[aria-pressed="true"]{background:var(--acct)}
+.opt[aria-pressed="true"] i{box-shadow:inset 0 0 0 4.5px var(--acc)}
+.opt.sq[aria-pressed="true"] i{box-shadow:none;background:var(--acc)}
+.opt:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.opt em{font-style:normal;font-size:10px;font-weight:700;letter-spacing:.05em;color:var(--acctx);margin-left:4px}
+/* picks */
+#picks{position:fixed;z-index:85;right:16px;top:62px;width:420px;max-height:calc(100vh - 80px);overflow:auto;padding:12px 14px 14px;border-radius:16px;background:var(--raised);box-shadow:var(--raise);display:flex;flex-direction:column;gap:10px}
+#picks[hidden]{display:none}
+#picks pre{margin:0;padding:10px 12px;border-radius:10px;background:var(--fill);font:400 12px/1.55 var(--mono);color:var(--ink);white-space:pre-wrap}
+#picks textarea{min-height:60px;padding:8px 10px;border:0;border-radius:9px;background:var(--fill);font:400 13px/1.4 var(--sans);color:var(--ink);outline:none;resize:vertical}
+.pk-h{display:flex;align-items:center;font:500 18px/1 var(--serif)} .pk-h b{font-weight:500;flex:1}
+.pk-h .x{all:unset;cursor:pointer;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;color:var(--ink3)} .pk-h .x:hover{background:var(--fill)}
+.pk-r{display:flex;flex-direction:column;gap:6px} .pk-r > span{font-size:12px;font-weight:600;color:var(--ink2)}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:99;padding:10px 14px;border-radius:10px;background:var(--primary);color:var(--onprimary);font-size:13px;box-shadow:var(--raise);animation:tin .2s var(--ease)}
+@keyframes tin{from{opacity:0;transform:translate(-50%,8px)}}
+
+/* ============ the screens ============ */
+.stage{position:relative;border-radius:16px;overflow:hidden;background:var(--canvas);box-shadow:var(--shadow), 0 0 0 1px var(--hair);height:min(760px,calc(100vh - 150px));min-height:600px}
+.stage.phone{width:390px;height:780px;min-height:0;margin-bottom:22px !important;margin:0 auto;border-radius:34px;box-shadow:0 0 0 10px var(--ink),0 22px 60px -18px rgba(0,0,0,.45)}
+[data-th="graphite"] .stage.phone,[data-th="black"] .stage.phone{box-shadow:0 0 0 10px #3a3936,0 22px 60px -18px rgba(0,0,0,.6)}
+.av{flex:none;display:grid;place-items:center;border-radius:50%;color:#fff;font-weight:600;letter-spacing:.02em;position:relative}
+.av .dot{position:absolute;right:-1px;bottom:-1px;width:28%;height:28%;min-width:9px;min-height:9px;border-radius:50%;background:var(--good);box-shadow:0 0 0 2px var(--raised)}
+.av .dot.day{background:var(--warn)}
+/* login: shared */
+.ln{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);height:100%;min-height:0}
+.ln-brand{position:relative;display:flex;flex-direction:column;gap:18px;padding:34px 34px 28px;background:var(--panel);box-shadow:inset -1px 0 0 var(--hair)}
+.ln-brand .lg2{display:flex;align-items:center;gap:10px;font:500 20px/1 var(--serif)} .ln-brand .lg2 svg{width:28px;height:28px}
+.ln-brand .shop{font-size:12.5px;color:var(--ink3);margin-top:-12px;padding-left:38px}
+.ln-time{margin-top:auto}
+.ln-time b{display:block;font:400 64px/1 var(--serif);letter-spacing:-.02em}
+.ln-time span{display:block;margin-top:8px;font-size:14px;color:var(--ink2)}
+.ln-clk{display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:12px;background:var(--raised);box-shadow:var(--shadow)}
+.ln-clk > small{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)}
+.ln-clk div{display:flex;align-items:center;gap:8px;font-size:13px}
+.ln-clk div i{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 0 3px color-mix(in srgb,var(--good) 20%,transparent)}
+.ln-clk div em{font-style:normal;color:var(--ink3);margin-left:auto;font-variant-numeric:tabular-nums}
+.ln-main{position:relative;display:flex;flex-direction:column;padding:34px 36px 24px;min-width:0;overflow:auto}
+.ln-main h3{margin:0;font:500 30px/36px var(--serif);letter-spacing:-.01em}
+.ln-main > p{margin:6px 0 0;color:var(--ink2)}
+.ln-gl{margin:20px 0 8px;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);display:flex;align-items:center;gap:8px}
+.ln-gl em{font-style:normal;font-weight:500;letter-spacing:0;text-transform:none;color:var(--ink4)}
+.ln-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px}
+.tile{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:7px;padding:14px 8px 12px;border-radius:12px;background:var(--raised);box-shadow:var(--shadow);text-align:center;min-width:0;transition:transform .15s var(--ease),box-shadow .15s}
+.tile:hover{transform:translateY(-2px);box-shadow:var(--raise)} .tile:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.tile b{font-size:13.5px;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tile small{font-size:12px;color:var(--ink3);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tile small.on{color:var(--good);font-weight:500}
+.tile .lk{position:absolute;top:8px;right:8px;color:var(--ink4)} .tile{position:relative}
+.ln-foot{margin-top:auto;padding-top:20px;display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ink3)}
+.ln-foot a{color:var(--ink2);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+/* faces */
+.faces{display:flex;flex-wrap:wrap;gap:22px;margin-top:26px}
+.face{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:9px;width:116px;text-align:center}
+.face .av{transition:transform .18s var(--ease),box-shadow .18s} .face:hover .av{transform:scale(1.05);box-shadow:0 0 0 4px var(--acct)}
+.face b{font-size:14px;font-weight:600} .face small{font-size:12px;color:var(--ink3);margin-top:-6px}
+.face:focus-visible .av{outline:2px solid var(--acc);outline-offset:3px}
+.face.more .av{background:var(--fill);color:var(--ink2);box-shadow:inset 0 0 0 1.5px var(--border)}
+/* type your name */
+.form{display:flex;flex-direction:column;gap:12px;margin-top:24px;max-width:380px}
+.fl{display:flex;flex-direction:column;gap:6px}
+.fl > span{font-size:12.5px;font-weight:600;color:var(--ink2)}
+.inp{display:flex;align-items:center;gap:8px;height:42px;padding:0 12px;border-radius:10px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--border)}
+.inp:focus-within{box-shadow:inset 0 0 0 1.5px var(--acc),0 0 0 4px var(--acct)}
+.inp input{all:unset;flex:1;min-width:0;font-size:15px}
+.inp .ic{color:var(--ink3)}
+.sugg{display:flex;flex-direction:column;border-radius:10px;background:var(--raised);box-shadow:var(--raise);overflow:hidden;margin-top:-4px}
+.sugg button{all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;padding:8px 12px;font-size:13.5px} .sugg button:hover,.sugg button.on{background:var(--fill)}
+.sugg small{color:var(--ink3);margin-left:auto}
+/* badge */
+.scan{position:relative;margin-top:24px;width:min(360px,100%);aspect-ratio:4/3;border-radius:16px;background:linear-gradient(135deg,#2a2a27,#151514);overflow:hidden;display:grid;place-items:center}
+.scan .fr{width:56%;aspect-ratio:1;border-radius:14px;box-shadow:0 0 0 999px rgba(0,0,0,.35);position:relative}
+.scan .fr::before,.scan .fr::after{content:"";position:absolute;inset:0;border-radius:14px;border:2.5px solid rgba(255,255,255,.9);clip-path:polygon(0 0,28% 0,28% 6%,6% 6%,6% 28%,0 28%,0 72%,6% 72%,6% 94%,28% 94%,28% 100%,72% 100%,72% 94%,94% 94%,94% 72%,100% 72%,100% 28%,94% 28%,94% 6%,72% 6%,72% 0,100% 0,100% 100%,0 100%)}
+.scan .ln2{position:absolute;left:22%;right:22%;height:2px;background:#5BBE8B;box-shadow:0 0 12px #5BBE8B;animation:scan 2.2s ease-in-out infinite}
+@keyframes scan{0%,100%{top:24%}50%{top:74%}}
+.scan small{position:absolute;bottom:12px;left:0;right:0;text-align:center;color:rgba(255,255,255,.8);font-size:12.5px}
+.badge{display:flex;align-items:center;gap:12px;margin-top:14px;padding:10px 12px;border-radius:12px;background:var(--panel);box-shadow:var(--shadow);max-width:360px;font-size:12.5px;color:var(--ink2)}
+.badge .qr{width:44px;height:44px;flex:none;border-radius:6px;background:repeating-conic-gradient(var(--ink) 0 25%,transparent 0 50%) 0 0/11px 11px,var(--raised);box-shadow:inset 0 0 0 4px var(--raised)}
+/* the PIN pad (shared) */
+.pinw{position:absolute;inset:0;z-index:5;display:grid;place-items:center;background:color-mix(in srgb,var(--canvas) 72%,transparent);backdrop-filter:blur(6px)}
+.pinw.an{animation:fin .18s ease} .pinw.an .pin,.menu.an{animation:pup .22s var(--ease)} .lock.an{animation:fin .2s}
+@keyframes fin{from{opacity:0}}
+.pin{width:min(330px,calc(100% - 32px));padding:22px 22px 18px;border-radius:20px;background:var(--raised);box-shadow:var(--raise);display:flex;flex-direction:column;align-items:center;gap:12px}
+@keyframes pup{from{opacity:0;transform:translateY(10px) scale(.98)}}
+.pin h4{margin:4px 0 0;font:500 21px/26px var(--serif)} .pin p{margin:-6px 0 0;font-size:12.5px;color:var(--ink3);text-align:center}
+.pin .dots{display:flex;gap:12px;height:18px;align-items:center;margin:4px 0 2px}
+.pin .dots i{width:13px;height:13px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--border);transition:background .12s,transform .12s}
+.pin .dots i.f{background:var(--ink);box-shadow:none;transform:scale(1.05)}
+.pin .dots.bad{animation:shake .38s} .pin .dots.bad i.f{background:var(--bad)}
+.pin .dots.ok i.f{background:var(--good)}
+@keyframes shake{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.pin .msg{min-height:17px;font-size:12.5px;color:var(--ink3)} .pin .msg.bad{color:var(--bad)}
+.pad{display:grid;grid-template-columns:repeat(3,64px);gap:10px}
+.pad button{all:unset;cursor:pointer;height:56px;border-radius:14px;display:grid;place-items:center;font:500 22px/1 var(--sans);background:var(--fill);transition:background .1s,transform .08s}
+.pad button:hover{background:var(--sel)} .pad button:active{transform:scale(.94)} .pad button:focus-visible{outline:2px solid var(--acc)}
+.pad button.k{background:transparent;font-size:12.5px;font-weight:500;color:var(--ink2)} .pad button.k:hover{background:var(--fill)}
+.pin .pw{width:100%}
+.pin .row{display:flex;gap:8px;width:100%;justify-content:space-between;align-items:center;font-size:12px;color:var(--ink3)}
+.pin .row a{color:var(--ink2);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.pin .clkn{width:100%;display:flex;gap:8px;align-items:center;padding:8px 10px;border-radius:10px;background:var(--good-t);color:var(--good);font-size:12.5px;font-weight:500}
+.pin .clkn i{width:7px;height:7px;border-radius:50%;background:var(--good)}
+.pin .back{align-self:flex-start;margin:-6px 0 -4px -6px}
+/* switch: the app behind */
+.app{display:grid;grid-template-columns:220px minmax(0,1fr);height:100%;min-height:0}
+.sb{display:flex;flex-direction:column;gap:2px;padding:14px 10px;background:var(--panel);box-shadow:inset -1px 0 0 var(--hair)}
+.sb .lg2{display:flex;align-items:center;gap:8px;padding:2px 8px 12px;font:500 16px/1 var(--serif)} .sb .lg2 svg{width:18px;height:18px}
+.sb .it{display:flex;align-items:center;gap:10px;height:32px;padding:0 10px;border-radius:8px;font-size:13px;color:var(--ink2)} .sb .it.on{background:var(--sel);color:var(--ink);font-weight:500}
+.sb .clkr{margin:4px 0 8px;padding:8px 10px;border-radius:10px;display:flex;gap:9px;align-items:center;font-size:12.5px} .sb .clkr i{width:8px;height:8px;border-radius:50%;background:var(--good);box-shadow:0 0 0 3px color-mix(in srgb,var(--good) 20%,transparent)} .sb .clkr small{display:block;color:var(--ink3)}
+.me{all:unset;box-sizing:border-box;cursor:pointer;margin-top:auto;display:flex;align-items:center;gap:10px;padding:8px;border-radius:10px} .me:hover,.me.on{background:var(--fill)}
+.me b{display:block;font-size:13px;font-weight:600} .me small{display:block;font-size:11.5px;color:var(--ink3)}
+.pg{padding:26px 30px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.pg h3{margin:0;font:500 26px/32px var(--serif)}
+.sk{border-radius:12px;background:var(--panel);box-shadow:var(--shadow)}
+.menu{position:absolute;z-index:6;left:12px;bottom:66px;width:288px;padding:6px;border-radius:14px;background:var(--raised);box-shadow:var(--raise)}
+.menu .mh{display:flex;align-items:center;gap:10px;padding:8px 8px 10px;box-shadow:inset 0 -1px 0 var(--hair);margin-bottom:4px}
+.menu .mh b{display:block;font-size:13.5px} .menu .mh small{display:block;font-size:12px;color:var(--ink3)}
+.menu .mi{all:unset;box-sizing:border-box;cursor:pointer;width:100%;display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:8px;font-size:13px} .menu .mi:hover{background:var(--fill)}
+.menu .mi small{margin-left:auto;color:var(--ink4);font-family:var(--mono);font-size:11px}
+.menu .ml{padding:8px 8px 4px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)}
+.menu .pp{display:flex;gap:6px;padding:2px 6px 6px;flex-wrap:wrap}
+.menu .pp button{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;width:58px;padding:6px 0;border-radius:10px;font-size:11.5px;color:var(--ink2)} .menu .pp button:hover{background:var(--fill)}
+.menu .sep{height:1px;background:var(--hair);margin:4px 2px}
+.lock{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:color-mix(in srgb,var(--canvas) 80%,transparent);backdrop-filter:blur(10px)}
+.lock h4{margin:0;font:500 24px/30px var(--serif)} .lock p{margin:-8px 0 0;color:var(--ink3);font-size:13px}
+/* admin */
+.ad{display:flex;flex-direction:column;height:100%;min-height:0}
+.ad-h{display:flex;align-items:center;gap:14px;padding:20px 24px 0}
+.ad-h h3{margin:0;font:500 26px/32px var(--serif)}
+.ad-tabs{display:flex;gap:2px;padding:12px 24px 0;box-shadow:inset 0 -1px 0 var(--hair)}
+.ad-tabs button{all:unset;cursor:pointer;padding:8px 12px 10px;font-size:13px;font-weight:500;color:var(--ink3);box-shadow:inset 0 -2px 0 transparent} .ad-tabs button[aria-pressed="true"]{color:var(--ink);box-shadow:inset 0 -2px 0 var(--ink)}
+.ad-tabs button em{font-style:normal;font-size:11.5px;color:var(--ink4);margin-left:4px}
+.ad-b{display:grid;grid-template-columns:280px minmax(0,1fr);flex:1;min-height:0}
+.ad-sc{flex:1;min-height:0;overflow:auto}
+.ad-l{padding:12px 10px;box-shadow:inset -1px 0 0 var(--hair);display:flex;flex-direction:column;gap:2px;overflow:auto;min-height:0}
+.ad-l .srch{display:flex;align-items:center;gap:8px;height:32px;padding:0 10px;margin-bottom:6px;border-radius:9px;background:var(--fill);font-size:13px;color:var(--ink3)}
+.pr{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:9px;min-width:0} .pr:hover{background:var(--fill)} .pr[aria-pressed="true"]{background:var(--sel)}
+.pr b{display:block;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .pr small{display:block;font-size:11.5px;color:var(--ink3)}
+.pr > span:nth-child(2){min-width:0;flex:1}
+.pr .tg{font-size:10.5px;font-weight:600;padding:1px 6px;border-radius:999px;background:var(--fill);color:var(--ink3)} .pr .tg.w{background:var(--warn-t);color:var(--warn)} .pr .tg.off{background:var(--bad-t);color:var(--bad)}
+.ad-r{padding:18px 24px 24px;display:flex;flex-direction:column;gap:14px;min-width:0;overflow:auto;min-height:0}
+.ph{display:flex;align-items:center;gap:14px}
+.ph b{display:block;font:500 22px/28px var(--serif)} .ph small{display:block;color:var(--ink3);font-size:12.5px}
+.card{border-radius:12px;background:var(--panel);box-shadow:var(--shadow);padding:12px 14px}
+.card > h5{margin:0 0 8px;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)}
+.card > h5 em{font-style:normal;font-weight:500;letter-spacing:0;text-transform:none;color:var(--ink4)}
+.kv{display:grid;grid-template-columns:150px minmax(0,1fr);gap:8px 12px;align-items:center;font-size:13px}
+.kv > span{color:var(--ink3)}
+.sel{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px;border-radius:8px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--border);font-size:13px;font-weight:500;cursor:pointer;width:max-content}
+.pchips{display:flex;flex-wrap:wrap;gap:6px}
+.pc{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:999px;font-size:12.5px;font-weight:500;box-shadow:inset 0 0 0 1px var(--border);color:var(--ink3)}
+.pc[aria-pressed="true"]{background:var(--acct);color:var(--acctx);box-shadow:inset 0 0 0 1px var(--accl)}
+.pc .ic{width:13px;height:13px}
+.pc.ov{position:relative} .pc.ov::after{content:"";position:absolute;top:3px;right:3px;width:6px;height:6px;border-radius:50%;background:var(--warn)}
+.perm{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:4px 18px}
+.pg2 > b{display:block;margin:6px 0 2px;font-size:12.5px;font-weight:600}
+.sw{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:10px;width:100%;padding:5px 0;font-size:13px;color:var(--ink2)}
+.sw i{flex:none;position:relative;width:30px;height:18px;border-radius:999px;background:var(--border);transition:background .15s}
+.sw i::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:transform .15s var(--ease)}
+.sw[aria-pressed="true"] i{background:var(--good)} .sw[aria-pressed="true"] i::after{transform:translateX(12px)}
+.sw[aria-pressed="true"]{color:var(--ink)}
+.sw em{font-style:normal;margin-left:auto;font-size:11px;font-weight:600;color:var(--warn);background:var(--warn-t);padding:1px 7px;border-radius:999px}
+.sw:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:6px}
+.lvl{display:inline-flex;gap:2px;padding:2px;border-radius:8px;background:var(--fill);margin-left:auto}
+.lvl button{all:unset;cursor:pointer;height:22px;padding:0 8px;border-radius:6px;font-size:11.5px;font-weight:500;color:var(--ink3)} .lvl button[aria-pressed="true"]{background:var(--raised);color:var(--ink);box-shadow:var(--shadow)}
+.prow{display:flex;align-items:center;gap:10px;padding:5px 0;font-size:13px}
+.pinbx{display:inline-flex;gap:5px;align-items:center;font-family:var(--mono);letter-spacing:2px;color:var(--ink3)}
+.leg{display:flex;align-items:center;gap:14px;font-size:12px;color:var(--ink3);margin-left:auto}
+.leg span{display:inline-flex;align-items:center;gap:5px} .leg i{width:7px;height:7px;border-radius:50%;background:var(--warn)}
+.mx{width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px}
+.mx th{position:sticky;top:0;background:var(--panel);font-weight:600;text-align:center;padding:8px 6px;color:var(--ink2);font-size:11.5px;white-space:nowrap;box-shadow:inset 0 -1px 0 var(--hair)}
+.mx th:first-child,.mx td:first-child{text-align:left;padding-left:12px}
+.mx td{padding:6px;text-align:center;box-shadow:inset 0 -1px 0 var(--hair)}
+.mx tr.gr td{background:var(--fill);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)}
+.ck{all:unset;cursor:pointer;width:18px;height:18px;border-radius:5px;display:inline-grid;place-items:center;box-shadow:inset 0 0 0 1.5px var(--border)}
+.ck[aria-pressed="true"]{background:var(--acc);box-shadow:none;color:#fff} .ck[aria-pressed="true"]::after{content:"";width:9px;height:5px;border-left:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg) translate(1px,-1px)}
+.ck.v{background:var(--acct);box-shadow:inset 0 0 0 1.5px var(--accl)} .ck.v::after{content:"view";font-size:8.5px;font-weight:700;color:var(--acctx);border:0;transform:none;width:auto;height:auto;letter-spacing:.02em}
+.log{display:flex;flex-direction:column}
+.lr{display:grid;grid-template-columns:64px 28px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 4px;box-shadow:inset 0 -1px 0 var(--hair);font-size:13px}
+.lr .t{font-family:var(--mono);font-size:12px;color:var(--ink3)}
+.lr .k{font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--fill);color:var(--ink2)} .lr .k.bad{background:var(--bad-t);color:var(--bad)} .lr .k.ok{background:var(--good-t);color:var(--good)}
+.card .seg{flex-wrap:wrap;max-width:100%}
+.card > h5 .leg{text-transform:none;letter-spacing:0;font-weight:500}
+.scanb{all:unset;cursor:pointer;display:block;margin-top:20px;border-radius:16px;width:min(360px,100%)} .scanb:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+.lock .pin{width:min(360px,calc(100% - 32px))}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.ad-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;background:var(--acct);color:var(--acctx);font-size:12.5px}
+/* phone */
+.phone .ln{display:block;overflow:auto;height:100%}
+.phone .ln-main{overflow:visible}
+.phone .ln-brand{padding:44px 22px 14px;gap:10px;box-shadow:none;background:transparent}
+.phone .ln-brand .shop{padding-left:38px}
+.phone .ln-time b{font-size:42px} .phone .ln-time{margin-top:6px}
+.phone .ln-main{padding:8px 18px 22px}
+.phone .ln-main h3{font-size:24px;line-height:30px}
+.phone .ln-tiles{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.phone .tile{padding:10px 4px 9px;gap:5px} .phone .tile b{font-size:12px} .phone .tile small{font-size:11px}
+.phone .faces{gap:14px 8px;justify-content:space-between} .phone .face{width:100px}
+.phone .ln-clk{display:none}
+.phone .app{grid-template-columns:1fr} .phone .sb{display:none}
+.phone .ad-b{grid-template-columns:1fr} .phone .ad-l{display:none} .phone .ad-h,.phone .ad-tabs{padding-left:16px;padding-right:16px} .phone .ad-r{padding:14px 16px}
+.phone .kv{grid-template-columns:1fr} .phone .ad-tabs{overflow:auto}
+.ptab{position:absolute;left:0;right:0;bottom:0;height:64px;display:flex;justify-content:space-around;align-items:center;background:var(--panel);box-shadow:inset 0 1px 0 var(--hair);font-size:10.5px;color:var(--ink3)}
+.ptab span{display:flex;flex-direction:column;align-items:center;gap:3px} .ptab span.on{color:var(--ink)}
+@media (max-width:1180px){ .two{grid-template-columns:1fr} .chs{position:static;max-height:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))} .chs .hd{grid-column:1 / -1} }
+@media (max-width:760px){ .chs{grid-template-columns:1fr} .wrap{padding:10px} #picks{left:10px;right:10px;width:auto;top:auto;bottom:10px;max-height:72vh} .ln{grid-template-columns:1fr} .ln-brand{display:none} .app{grid-template-columns:1fr} .sb{display:none} .ad-b{grid-template-columns:1fr} .ad-l{display:none} .stage.phone{width:100%;box-shadow:var(--shadow);border-radius:16px} }
+@media (prefers-reduced-motion:reduce){ *{animation:none !important;transition:none !important} }
+</style>
+</head>
+<body>
+<div class="mk"><h1><svg class="lg" viewBox="-110 -110 220 220" aria-hidden="true"><circle class="c" r="14"/><circle cx="44" r="9.5"/><circle cx="-44" r="9.5"/><circle cx="22" cy="38" r="9.5"/><circle cx="-22" cy="38" r="9.5"/><circle cx="22" cy="-38" r="9.5"/><circle cx="-22" cy="-38" r="9.5"/><circle cy="-84" r="7" class="o"/><circle cy="84" r="7" class="o"/><circle cx="73" cy="42" r="7" class="o"/><circle cx="-73" cy="42" r="7" class="o"/><circle cx="73" cy="-42" r="7" class="o"/><circle cx="-73" cy="-42" r="7" class="o"/></svg><span>Parsec · Sign-in and Admin</span><small>mock-up</small></h1>
+<div class="seg" role="group" aria-label="Screen"><button data-scr="login">Login page</button><button data-scr="switch">Switch user</button><button data-scr="admin">Admin page</button></div>
+<div class="seg" role="group" aria-label="Width"><button data-dev="desk">Desktop</button><button data-dev="phone">Phone</button></div>
+<div class="seg" role="group" aria-label="Theme"><button data-th="ivory">Ivory</button><button data-th="graphite">Graphite</button><button data-th="white">White</button><button data-th="black">Near black</button></div>
+<button class="btn sm pri" id="pk-open">Your picks</button></div>
+<main id="pg"></main>
+<div id="picks" hidden></div>
+<script>
+/* Parsec · the login page, switching who's signed in, and an Admin page for people and permissions — mock-up */
+var D = document, $ = function(s, r){ return (r || D).querySelector(s); }, $$ = function(s, r){ return [].slice.call((r || D).querySelectorAll(s)); };
+var IP = {
+  lock: '<rect x="5" y="10.5" width="14" height="9.5" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/>',
+  user: '<circle cx="12" cy="8.5" r="3.75"/><path d="M4.75 20c.9-3.6 3.8-5.5 7.25-5.5s6.35 1.9 7.25 5.5"/>',
+  users: '<circle cx="9" cy="9" r="3.25"/><path d="M3 19c.7-3 3-4.75 6-4.75s5.3 1.75 6 4.75"/><path d="M15.5 6a3 3 0 0 1 0 6M17.5 14.5c1.9.6 3.1 2.1 3.5 4.5"/>',
+  search: '<circle cx="11" cy="11" r="6.25"/><path d="M15.75 15.75L20 20"/>',
+  x: '<path d="M6 6l12 12M18 6L6 18"/>',
+  copy: '<rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 8.5V6a1.5 1.5 0 0 0-1.5-1.5H6A1.5 1.5 0 0 0 4.5 6v8A1.5 1.5 0 0 0 6 15.5h2.5"/>',
+  clock: '<circle cx="12" cy="12" r="8.25"/><path d="M12 7.5V12l3 2"/>',
+  scan: '<path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16M4 12h16"/>',
+  key: '<circle cx="8" cy="15" r="3.75"/><path d="M10.75 12.25L19 4M15.5 7.5l2.5 2.5M17.5 5.5l2 2"/>',
+  shield: '<path d="M12 3.5l7 2.75v5.25c0 4.5-3 7.75-7 9-4-1.25-7-4.5-7-9V6.25z"/><path d="M9 12l2.25 2.25L15.5 10"/>',
+  list: '<path d="M8.5 6.5h11M8.5 12h11M8.5 17.5h11M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01"/>',
+  back: '<path d="M14.5 6l-6 6 6 6"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  moon: '<path d="M19.5 14.5A7.75 7.75 0 0 1 9.5 4.5a7.75 7.75 0 1 0 10 10z"/>',
+  out: '<path d="M14 4.5h3.5A1.5 1.5 0 0 1 19 6v12a1.5 1.5 0 0 1-1.5 1.5H14"/><path d="M10 8l-4 4 4 4M6 12h9"/>',
+  swap: '<path d="M7 7.5h12M15.5 4l3.5 3.5L15.5 11M17 16.5H5M8.5 13L5 16.5 8.5 20"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  chevD: '<path d="M7 10l5 5 5-5"/>',
+  del: '<path d="M9 5.5h10A1.5 1.5 0 0 1 20.5 7v10a1.5 1.5 0 0 1-1.5 1.5H9L3.5 12z"/><path d="M11.5 9.5l5 5M16.5 9.5l-5 5"/>',
+  undo: '<path d="M8.5 7.5L4.5 11.5l4 4"/><path d="M4.5 11.5h10a5 5 0 0 1 0 10h-3"/>',
+  ro: '<path d="M7 3.75h7.5L19 8.25v10.5a1.5 1.5 0 0 1-1.5 1.5H7a1.5 1.5 0 0 1-1.5-1.5V5.25A1.5 1.5 0 0 1 7 3.75z"/><path d="M14.5 3.75v4.5H19M9 12.5h6M9 16h4"/>',
+  wrench: '<path d="M14.5 5.5a4 4 0 0 0-5 5L4.5 15.5a2.1 2.1 0 0 0 3 3l5-5a4 4 0 0 0 5-5l-2.5 2.5-2.5-.5-.5-2.5z"/>',
+  box: '<path d="M12 3.5l7.5 4v9l-7.5 4-7.5-4v-9z"/><path d="M4.5 7.5l7.5 4 7.5-4M12 11.5v9"/>',
+  more: '<circle cx="6" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="18" cy="12" r="1"/>'
+};
+function ic(k, s){ return '<svg class="ic" viewBox="0 0 24 24"' + (s ? ' style="width:' + s + 'px;height:' + s + 'px"' : '') + ' aria-hidden="true">' + (IP[k] || '') + '</svg>'; }
+function esc(t){ return String(t == null ? '' : t).replace(/[&<>"]/g, function(c){ return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+var LOGO = '<svg class="lg" viewBox="-110 -110 220 220" aria-hidden="true"><circle class="c" r="14"/><circle cx="44" r="9.5"/><circle cx="-44" r="9.5"/><circle cx="22" cy="38" r="9.5"/><circle cx="-22" cy="38" r="9.5"/><circle cx="22" cy="-38" r="9.5"/><circle cx="-22" cy="-38" r="9.5"/><circle cy="-84" r="7" class="o"/><circle cy="84" r="7" class="o"/><circle cx="73" cy="42" r="7" class="o"/><circle cx="-73" cy="42" r="7" class="o"/><circle cx="73" cy="-42" r="7" class="o"/><circle cx="-73" cy="-42" r="7" class="o"/></svg>';
+
+/* ---------- the people ---------- */
+var P = [
+  { id: 'mike', n: 'Mike Rodriguez', r: 'Technician', on: 'job', ro: 'RO 1356', since: '6:58 am', sub: '3 open ROs' },
+  { id: 'dana', n: 'Dana Kowalski', r: 'Technician', on: 'day', sub: '3 open ROs' },
+  { id: 'luis', n: 'Luis Martinez', r: 'Technician', sub: '5 open ROs' },
+  { id: 'priya', n: 'Priya Shah', r: 'Technician', on: 'job', ro: 'RO 2210', since: '7:40 am', sub: '4 open ROs' },
+  { id: 'frank', n: 'Frank Delaney', r: 'Foreman', on: 'day' },
+  { id: 'tom', n: 'Tom Brandt', r: 'Manager' },
+  { id: 'jenna', n: 'Jenna Cho', r: 'Service writer' },
+  { id: 'derek', n: 'Derek Washington', r: 'Service writer' },
+  { id: 'sofia', n: 'Sofia Alvarez', r: 'Triage' },
+  { id: 'ben', n: 'Ben Okafor', r: 'Parts' },
+  { id: 'carla', n: 'Carla Reyes', r: 'Warranty admin', off: true },
+  { id: 'admin', n: 'Admin', r: 'Admin', admin: true }
+];
+var DEPT = [['Technician', 'Service technicians'], ['Foreman', 'Shop floor'], ['Manager', 'Management'], ['Service writer', 'Service advisors'], ['Triage', 'Triage & check-in'], ['Parts', 'Parts'], ['Warranty admin', 'Warranty']];
+var RECENT = ['dana', 'mike', 'frank', 'tom'];
+var COL = ['#3E6E8E', '#7A5A9A', '#2F8573', '#A0563B', '#5B6B2E', '#8C4F6E', '#40618F', '#9A6B1F', '#376E58', '#7D4A3A', '#566070', '#1D1C1A'];
+function pBy(id){ return P.filter(function(p){ return p.id === id; })[0]; }
+function ini(n){ return n === 'Admin' ? '' : n.split(' ').map(function(x){ return x[0]; }).join('').slice(0, 2); }
+function av(p, s, dot){ var i = P.indexOf(p); return '<span class="av" style="width:' + s + 'px;height:' + s + 'px;font-size:' + Math.round(s * .36) + 'px;background:' + COL[i % COL.length] + '">' + (p.admin ? ic('shield', Math.round(s * .46)) : esc(ini(p.n))) + (dot && p.on && V.side.dots ? '<span class="dot' + (p.on === 'day' ? ' day' : '') + '"></span>' : '') + '</span>'; }
+function subOf(p){ if(V.side.sub){ if(p.on === 'job') return '<small class="on">on the clock · ' + p.ro + '</small>'; if(p.on === 'day') return '<small>on the day clock</small>'; if(p.sub) return '<small>' + p.sub + '</small>'; } return '<small>' + esc(p.r) + '</small>'; }
+function needsPw(p){ return V.check === 'mixed' && (p.admin || p.r === 'Manager'); }
+
+/* ---------- pages and actions ---------- */
+var PAGES = [['ros', 'RO List'], ['tech', 'Technician'], ['triage', 'Triage'], ['foreman', 'Foreman'], ['parts', 'Parts'], ['inventory', 'Inventory'], ['warranty', 'Warranty'], ['manager', 'Manager'], ['fixes', 'Fixes'], ['timelog', 'Time Log'], ['career', 'Career'], ['admin', 'Admin']];
+var ACTS = [
+  ['Repair orders', [['ro.new', 'Open new ROs'], ['ro.status', 'Change an RO’s status'], ['ro.release', 'Release a truck'], ['ro.reopen', 'Reopen a completed RO'], ['ro.del', 'Delete ROs']]],
+  ['Time', [['t.own', 'Start and stop their own clock'], ['t.editown', 'Fix their own punches'], ['t.editall', 'Fix anyone’s punches'], ['t.move', 'Move time to someone else'], ['t.approve', 'Approve timesheets']]],
+  ['Parts and money', [['p.order', 'Order parts'], ['p.stock', 'Adjust stock counts'], ['p.cost', 'See costs and prices'], ['w.claim', 'File warranty claims']]],
+  ['Admin', [['a.people', 'Manage people and PINs'], ['a.settings', 'Change settings and automations'], ['a.data', 'Export or reset the data']]]
+];
+var ROLES = ['Technician', 'Foreman', 'Manager', 'Service writer', 'Warranty admin', 'Triage', 'Parts', 'Admin'];
+var RP = {
+  'Technician': 'tech ros fixes timelog parts career', 'Foreman': 'ros fixes foreman triage timelog parts inventory career',
+  'Manager': 'ros warranty fixes foreman manager triage timelog parts inventory career', 'Service writer': 'ros warranty fixes triage parts',
+  'Warranty admin': 'ros warranty fixes parts', 'Triage': 'ros triage', 'Parts': 'ros parts inventory', 'Admin': PAGES.map(function(x){ return x[0]; }).join(' ')
+};
+var RA = {
+  'Technician': 't.own t.editown', 'Foreman': 'ro.new ro.status ro.release ro.reopen t.own t.editown t.editall t.move t.approve p.order',
+  'Manager': 'ro.new ro.status ro.release ro.reopen ro.del t.own t.editown t.editall t.move t.approve p.order p.stock p.cost w.claim a.people',
+  'Service writer': 'ro.new ro.status ro.release ro.reopen t.own p.order p.cost w.claim', 'Warranty admin': 'ro.status t.own p.cost w.claim',
+  'Triage': 'ro.new ro.status ro.release t.own', 'Parts': 't.own p.order p.stock p.cost', 'Admin': ACTS.map(function(g){ return g[1].map(function(a){ return a[0]; }).join(' '); }).join(' ')
+};
+var VIEWONLY = { 'Technician': 'parts', 'Service writer': 'parts', 'Warranty admin': 'parts', 'Triage': '' };
+function roleHas(role, k){ return (' ' + RP[role] + ' ' + RA[role] + ' ').indexOf(' ' + k + ' ') >= 0; }
+function lvlOf(role, k){ if(!roleHas(role, k)) return 'none'; return (' ' + (VIEWONLY[role] || '') + ' ').indexOf(' ' + k + ' ') >= 0 ? 'view' : 'edit'; }
+
+/* ---------- the choices ---------- */
+var CH = [
+  ['LOGIN PAGE', 'lay', 'Layout', '', [['tiles', 'Name tiles, by department', 'Today’s screen, tidied — every name, grouped', 0, 1], ['faces', 'Recent faces', 'Who used this computer lately, big; everyone else behind “Someone else”'], ['type', 'Type your name', 'A name box that finds you, then your PIN — quick with a big staff'], ['badge', 'Scan a badge', 'Hold your badge to the camera; name and PIN if you forgot it']]],
+  ['', 'check', 'How you show it’s you', '', [['pin4', '4-digit PIN for everyone', 'A number pad — works on the shop floor and on a phone', 0, 1], ['pin6', '6-digit PIN for everyone', ''], ['mixed', 'Password for the Admin and managers, PIN for everyone else', ''], ['none', 'No PIN — pick your name', 'How it works today when no PIN is set']]],
+  ['', 'side', 'On the login page', '', [['clock', 'The time and date, big', ''], ['clocks', 'Clocks that are running', 'Who’s on the clock, which RO, since when — signing in or out never stops one'], ['dots', 'A dot on who’s on the clock', 'Green on a job, amber on the day clock'], ['recent', 'Recent on this computer first', ''], ['sub', 'A line under each name', 'Open ROs, on the clock — or just the role'], ['adm', 'Admin as a small link at the bottom', '']], 1],
+  ['', 'wrong', 'A wrong PIN', '', [['lock5', '5 tries, then wait a minute', '', 0, 1], ['tell', '5 tries, then the admin is told', 'It goes in the sign-in log and the admin’s Inbox'], ['nolim', 'No limit', '']]],
+  ['SWITCHING AND SIGNING OUT', 'sw', 'Switch user opens', '', [['quick', 'A quick switcher off your name', 'Recent people and their PIN, without leaving the page', 0, 1], ['full', 'The login page', '']]],
+  ['', 'idle', 'When nobody’s touched it', '', [['lock15', 'Lock after 15 minutes — your PIN brings you back', 'You stay signed in; your page is where you left it', 0, 1], ['out15', 'Sign out after 15 minutes', ''], ['out60', 'Sign out after an hour', ''], ['never', 'Never', '']]],
+  ['', 'away', 'Also', '', [['lockbtn', 'Step away — lock it yourself', 'A button off your name (and Ctrl L)'], ['eod', 'Sign everyone out at the end of the shop day', 'Running clocks keep running'], ['keep', 'Say “Your clock keeps running” when you sign out', '']], 1],
+  ['ADMIN PAGE', 'model', 'How permissions are set', '', [['role', 'Roles, with changes per person', 'A person gets their role’s pages and actions; change any for them alone', 0, 1], ['person', 'Each person, one by one', 'No roles — tick boxes per person'], ['roleonly', 'Roles only', 'Everyone in a role is the same; change the role']]],
+  ['', 'depth', 'How fine', '', [['pages', 'Pages only', 'Which pages they can open — like today'], ['actions', 'Pages and actions', 'Plus what they can do: delete an RO, fix anyone’s punches, see costs…', 0, 1], ['levels', 'Pages (view or edit) and actions', 'A page can be look-only']]],
+  ['', 'who', 'Who can open the Admin page', '', [['admin', 'The Admin only', ''], ['mgr', 'The Admin and managers', ''], ['flag', 'Anyone given “Manage people and PINs”', 'Set like any other permission', 0, 1]]],
+  ['', 'newp', 'Adding a person', '', [['temp', 'A temporary PIN they change at first sign-in', '', 0, 1], ['set', 'The admin sets their PIN', ''], ['self', 'They pick a PIN the first time they sign in', '']]],
+  ['', 'leave', 'When someone leaves', '', [['off', 'Turn off their sign-in — their history stays', 'Punches, notes and ROs keep their name', 0, 1], ['del', 'Delete them', '']]]
+];
+var V = { th: 'ivory', scr: 'login', dev: 'desk', picks: false, note: '', pinFor: null, pin: '', pinMsg: '', pinSt: '', tries: 0, waitTill: 0, typed: '', menu: true, locked: false, swLogin: false, adTab: 'people', adSel: 'dana', ov: { dana: { inventory: 1, 'p.order': 1 } }, lv: {}, roleX: {} };
+CH.forEach(function(c){ if(c[5]){ V[c[1]] = {}; c[4].forEach(function(o){ V[c[1]][o[0]] = 0; }); } else V[c[1]] = (c[4].filter(function(o){ return o[4]; })[0] || c[4][0])[0]; });
+V.side.clock = 1; V.side.clocks = 1; V.side.dots = 1; V.side.recent = 1; V.side.sub = 1; V.side.adm = 1; V.away.lockbtn = 1; V.away.eod = 1; V.away.keep = 1;
+var PINLEN = function(){ return V.check === 'pin6' ? 6 : 4; };
+</script>
+<script>
+/* ---------- permissions, as the Admin page sees them ---------- */
+function rHas(role, k){ var x = V.roleX[role + '|' + k]; return x != null ? !!x : roleHas(role, k); }
+function eff(p, k){ var o = (V.ov[p.id] || {})[k]; if(V.model !== 'roleonly' && o === 1) return true; if(V.model !== 'roleonly' && o === -1) return false; return rHas(p.r, k); }
+function changed(p, k){ return V.model === 'role' && (V.ov[p.id] || {})[k] != null; }
+function lvl(p, k){ var x = V.lv[p.id + '|' + k]; if(x && V.model !== 'roleonly') return x; var o = (V.ov[p.id] || {})[k]; if(V.model !== 'roleonly' && o === 1) return 'edit'; if(V.model !== 'roleonly' && o === -1) return 'none'; if(!rHas(p.r, k)) return 'none'; return (' ' + (VIEWONLY[p.r] || '') + ' ').indexOf(' ' + k + ' ') >= 0 ? 'view' : 'edit'; }
+function nChanged(p){ return V.model === 'role' ? Object.keys(V.ov[p.id] || {}).length + Object.keys(V.lv).filter(function(x){ return x.indexOf(p.id + '|') === 0; }).length : 0; }
+
+/* ---------- the login page ---------- */
+function nowTxt(){ var d = new Date(); return { t: d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(/\s?[AP]M$/i, ''), ap: d.getHours() < 12 ? 'am' : 'pm', d: d.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' }) }; }
+function brandHtml(){
+  var n = nowTxt(), run = P.filter(function(p){ return p.on === 'job'; });
+  return '<aside class="ln-brand"><div class="lg2">' + LOGO + 'Parsec</div><div class="shop">Vanguard Truck Center · Greensboro</div>'
+    + (V.side.clock ? '<div class="ln-time"><b>' + n.t + '<span style="display:inline;font-size:22px;margin-left:6px;color:var(--ink3)">' + n.ap + '</span></b><span>' + n.d + '</span></div>' : '<div class="ln-time"></div>')
+    + (V.side.clocks ? '<div class="ln-clk"><small>' + run.length + ' clocks running</small>' + run.map(function(p){ return '<div><i></i><b>' + esc(p.n.split(' ')[0]) + '</b> on ' + p.ro + '<em>since ' + p.since + '</em></div>'; }).join('') + '<div style="color:var(--ink3);font-size:12px">Signing in or out never stops one.</div></div>' : '') + '</aside>';
+}
+function tilesHtml(list, cls){ return '<div class="ln-tiles' + (cls || '') + '">' + list.map(function(p){ return '<button class="tile" data-who="' + p.id + '">' + av(p, 46, 1) + '<b>' + esc(p.n) + '</b>' + subOf(p) + (V.check !== 'none' ? '<span class="lk" title="' + (needsPw(p) ? 'Password' : 'PIN') + '">' + ic(needsPw(p) ? 'key' : 'lock', 12) + '</span>' : '') + '</button>'; }).join('') + '</div>'; }
+function people(){ return P.filter(function(p){ return !p.admin && !p.off; }); }
+function groupsHtml(){
+  var h = '';
+  if(V.side.recent) h += '<div class="ln-gl">Recent on this computer</div>' + tilesHtml(RECENT.map(pBy));
+  DEPT.forEach(function(d){ var g = people().filter(function(p){ return p.r === d[0] && !(V.side.recent && RECENT.indexOf(p.id) >= 0); }); if(g.length) h += '<div class="ln-gl">' + d[1] + '</div>' + tilesHtml(g); });
+  if(!V.side.adm) h += '<div class="ln-gl">Admin</div>' + tilesHtml([pBy('admin')]);
+  return h;
+}
+function footHtml(){ return '<div class="ln-foot">' + (V.side.adm ? '<a data-who="admin">' + ic('shield', 13) + ' Admin</a><span>·</span>' : '') + '<span>' + (V.check === 'none' ? 'Each person sees the pages the admin gave them.' : 'Forgot your PIN? The admin can reset it.') + '</span></div>'; }
+function loginMain(){
+  var lay = V.lay, h = '', pinw = V.check === 'none' ? '' : ', then your ' + (V.check === 'mixed' ? 'PIN or password' : 'PIN');
+  if(lay === 'tiles') h = '<h3>Who’s signing in?</h3><p>Pick your name' + pinw + '.</p>' + groupsHtml();
+  if(lay === 'faces'){
+    h = '<h3>Welcome back</h3><p>Tap your face' + pinw + '.</p><div class="faces">' + RECENT.map(function(id){ var p = pBy(id); return '<button class="face" data-who="' + id + '">' + av(p, V.dev === 'phone' ? 70 : 84, 1) + '<b>' + esc(p.n.split(' ')[0]) + '</b>' + subOf(p) + '</button>'; }).join('')
+      + '<button class="face more" data-faceall>' + '<span class="av" style="width:' + (V.dev === 'phone' ? 70 : 84) + 'px;height:' + (V.dev === 'phone' ? 70 : 84) + 'px">' + ic('users', 28) + '</span><b>Someone else</b><small>' + people().length + ' people</small></button></div>';
+    if(V.faceAll) h += '<div class="ln-gl">Everyone <em>· type to find</em></div>' + tilesHtml(people().filter(function(p){ return RECENT.indexOf(p.id) < 0; }));
+  }
+  if(lay === 'type'){
+    var q = V.typed.trim().toLowerCase(), L = q ? people().concat([pBy('admin')]).filter(function(p){ return p.n.toLowerCase().indexOf(q) >= 0 || ini(p.n).toLowerCase() === q; }) : RECENT.map(pBy);
+    h = '<h3>Sign in</h3><p>Start typing your name' + pinw + '.</p><div class="form"><label class="fl"><span>Your name</span><span class="inp">' + ic('user') + '<input id="nm" placeholder="e.g. Dana" autocomplete="off" value="' + esc(V.typed) + '"></span></label><div class="sugg" id="sugg">' + suggHtml(L, q) + '</div></div>';
+  }
+  if(lay === 'badge'){
+    h = '<h3>Scan your badge</h3><p>Hold it up to the camera' + (V.check === 'none' ? '.' : ' — then your PIN.') + '</p><button class="scanb" data-scanbox aria-label="Scan (demo)"><span class="scan" style="margin:0;width:100%"><span class="fr"></span><span class="ln2"></span><small>Looking for a badge… (click to try)</small></span></button>'
+      + '<div class="badge"><span class="qr"></span><span><b style="color:var(--ink)">Badges print from Admin → People</b><br>No camera, or no badge on you? <a data-faceall style="cursor:pointer;text-decoration:underline">Pick your name</a></span></div>';
+    if(V.faceAll) h += '<div class="ln-gl">Everyone</div>' + tilesHtml(people());
+  }
+  return '<section class="ln-main">' + h + footHtml() + '</section>';
+}
+function suggHtml(L, q){ if(!L.length) return '<button disabled><span style="color:var(--ink3)">No one by that name</span></button>'; return (q ? '' : '<div style="padding:8px 12px 2px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)">Recent on this computer</div>') + L.slice(0, 6).map(function(p, i){ return '<button data-who="' + p.id + '"' + (i === 0 && q ? ' class="on"' : '') + '>' + av(p, 26, 1) + esc(p.n) + '<small>' + esc(p.r) + '</small></button>'; }).join(''); }
+function loginHtml(){ return '<div class="ln">' + brandHtml() + loginMain() + '</div>' + pinOverlay(); }
+
+/* ---------- the PIN pad ---------- */
+function pinCore(p, opts){
+  opts = opts || {}; var pw = needsPw(p), n = PINLEN(), wait = V.waitTill > Date.now();
+  var h = (opts.back !== false ? '<button class="btn gh sm back" data-pinx>' + ic('back', 13) + (opts.backTxt || 'Not you?') + '</button>' : '') + av(p, 58) + '<h4>' + esc(p.n) + '</h4><p>' + (opts.sub || (pw ? 'Your password' : 'Your ' + n + '-digit PIN')) + '</p>';
+  if(p.on === 'job' && V.side.clocks && !opts.noClock) h += '<div class="clkn"><i></i>Your clock is running · ' + p.ro + ' since ' + p.since + '</div>';
+  if(pw) h += '<div class="pw"><span class="inp">' + ic('key') + '<input id="pwin" type="password" placeholder="Password" autocomplete="off"></span></div><div class="msg' + (V.pinSt === 'bad' ? ' bad' : '') + '">' + esc(V.pinMsg || 'Demo: parsec') + '</div><button class="btn pri" style="width:100%;height:38px" data-pw>Sign in</button>';
+  else {
+    h += '<div class="dots' + (V.pinSt ? ' ' + V.pinSt : '') + '">' + Array.apply(null, Array(n)).map(function(_, i){ return '<i' + (i < V.pin.length ? ' class="f"' : '') + '></i>'; }).join('') + '</div>'
+      + '<div class="msg' + (V.pinSt === 'bad' || wait ? ' bad' : '') + '">' + esc(V.pinMsg || ('Demo PIN: ' + (n === 6 ? '123456' : '1234'))) + '</div>'
+      + '<div class="pad">' + [1, 2, 3, 4, 5, 6, 7, 8, 9].map(function(d){ return '<button data-pad="' + d + '"' + (wait ? ' disabled style="opacity:.4"' : '') + '>' + d + '</button>'; }).join('') + '<button class="k" data-pad="forgot">Forgot?</button><button data-pad="0"' + (wait ? ' disabled style="opacity:.4"' : '') + '>0</button><button class="k" data-pad="del" aria-label="Delete">' + ic('del', 20) + '</button></div>';
+  }
+  return h;
+}
+function pinOverlay(){ if(!V.pinFor) return ''; var p = pBy(V.pinFor); return '<div class="pinw' + (V.an ? ' an' : '') + '" data-pinbg><div class="pin" role="dialog" aria-label="' + esc(p.n) + '">' + pinCore(p, { sub: V.scr === 'switch' && !V.swLogin ? (needsPw(p) ? 'Switch to ' + p.n.split(' ')[0] + ' — password' : 'Switch to ' + p.n.split(' ')[0] + ' — PIN') : null }) + '</div></div>'; }
+
+/* ---------- switching ---------- */
+var ME = 'mike';
+function appHtml(){
+  var me = pBy(ME), ph = V.dev === 'phone';
+  var sb = '<aside class="sb"><div class="lg2">' + LOGO + 'Parsec</div><div class="clkr"><i></i><span><b>On the clock · 0:53</b><small>' + me.ro + ' · Op 1</small></span></div>'
+    + [['ro', 'RO List'], ['wrench', 'Technician', 1], ['clock', 'Time Log'], ['list', 'Career'], ['box', 'Parts']].map(function(x){ return '<div class="it' + (x[2] ? ' on' : '') + '">' + ic(x[0], 15) + x[1] + '</div>'; }).join('')
+    + '<button class="me' + (V.menu ? ' on' : '') + '" data-me>' + av(me, 32) + '<span style="flex:1;min-width:0"><b>' + esc(me.n) + '</b><small>Technician</small></span>' + ic('chevD', 14) + '</button></aside>';
+  var pg = '<section class="pg">' + (ph ? '<div style="display:flex;align-items:center;gap:10px"><b style="font:500 22px/1 var(--serif)">Technician</b><span class="sp"></span><button class="me" data-me style="margin:0;padding:4px">' + av(me, 30) + '</button></div>' : '<h3>Technician</h3>')
+    + '<div class="sk" style="height:58px"></div><div style="display:grid;grid-template-columns:' + (ph ? '1fr' : '1fr 1.4fr') + ';gap:12px"><div class="sk" style="height:' + (ph ? 160 : 420) + 'px"></div><div class="sk" style="height:' + (ph ? 260 : 420) + 'px"></div></div></section>';
+  var menu = V.menu ? menuHtml(me, ph) : '';
+  return '<div class="app">' + sb + pg + '</div>' + (ph ? '<div class="ptab">' + [['ro', 'ROs'], ['wrench', 'My ROs', 1], ['clock', 'Time'], ['more', 'More']].map(function(x){ return '<span' + (x[2] ? ' class="on"' : '') + '>' + ic(x[0], 18) + x[1] + '</span>'; }).join('') + '</div>' : '') + menu + lockHtml() + pinOverlay();
+}
+function menuHtml(me, ph){
+  var others = RECENT.filter(function(id){ return id !== ME; }).map(pBy).concat([pBy('jenna')]);
+  var h = '<div class="menu' + (V.an ? ' an' : '') + '" style="' + (ph ? 'left:10px;right:10px;width:auto;bottom:74px' : '') + '"><div class="mh">' + av(me, 36) + '<span><b>' + esc(me.n) + '</b><small>On the clock · ' + me.ro + '</small></span></div>';
+  if(V.sw === 'quick') h += '<div class="ml">Switch to</div><div class="pp">' + others.map(function(p){ return '<button data-who="' + p.id + '">' + av(p, 34, 1) + esc(p.n.split(' ')[0]) + '</button>'; }).join('') + '<button data-swlogin><span class="av" style="width:34px;height:34px;background:var(--fill);color:var(--ink2);box-shadow:inset 0 0 0 1.5px var(--border)">' + ic('users', 16) + '</span>Someone else</button></div><div class="sep"></div>';
+  else h += '<button class="mi" data-swlogin>' + ic('swap') + 'Switch user…</button>';
+  if(V.away.lockbtn) h += '<button class="mi" data-step>' + ic('moon') + 'Step away — lock<small>Ctrl L</small></button>';
+  h += '<button class="mi" data-signout>' + ic('out') + 'Sign out</button>';
+  if(V.away.keep) h += '<div style="padding:6px 8px 4px;font-size:12px;color:var(--ink3)">Your clock keeps running on ' + me.ro + ' either way.</div>';
+  return h + '</div>';
+}
+function lockHtml(){
+  if(!V.locked) return ''; var me = pBy(ME);
+  return '<div class="lock' + (V.an ? ' an' : '') + '"><div class="pin" style="box-shadow:none;background:transparent">' + pinCore(me, { back: false, sub: (V.locked === 'idle' ? 'Locked after 15 minutes with no one on it' : 'Locked at 12:04 pm') + ' — your page is where you left it', noClock: false }) + '<div class="row" style="justify-content:center"><a data-unlockswitch>Not ' + me.n.split(' ')[0] + '? Switch user</a></div></div></div>';
+}
+
+/* ---------- the Admin page ---------- */
+function whoTxt(){ return V.who === 'admin' ? 'Only the Admin sees this page' : V.who === 'mgr' ? 'The Admin and managers see this page — Tom Brandt' : 'Anyone given “Manage people and PINs” sees this page — today: the Admin, Tom Brandt'; }
+function adminHtml(){
+  var ph = V.dev === 'phone', tabs = [['people', 'People', people().length + 1]];
+  if(V.model !== 'person') tabs.push(['roles', 'Roles', ROLES.length]);
+  tabs.push(['rules', 'Sign-in rules'], ['log', 'Sign-in log']);
+  if(V.adTab === 'roles' && V.model === 'person') V.adTab = 'people';
+  var h = '<div class="ad"><div class="ad-h"><h3>Admin</h3><small style="color:var(--ink3)">People and permissions</small><span class="sp"></span>' + (ph ? '' : '<button class="btn sm" data-go="Add a person">' + ic('plus', 13) + 'Add a person</button>') + '</div>'
+    + '<div class="ad-tabs">' + tabs.map(function(t){ return '<button data-adt="' + t[0] + '" aria-pressed="' + (V.adTab === t[0]) + '">' + t[1] + (t[2] ? '<em>' + t[2] + '</em>' : '') + '</button>'; }).join('') + '</div>';
+  if(V.adTab === 'people') h += '<div class="ad-b">' + peopleList() + '<section class="ad-r"><div class="ad-bar">' + ic('shield', 14) + whoTxt() + '</div>' + personHtml(pBy(V.adSel)) + '</section></div>';
+  if(V.adTab === 'roles') h += '<div class="ad-sc" style="padding:16px 24px 24px">' + rolesHtml() + '</div>';
+  if(V.adTab === 'rules') h += '<div class="ad-sc" style="padding:16px 24px 24px">' + rulesHtml() + '</div>';
+  if(V.adTab === 'log') h += '<div class="ad-sc" style="padding:12px 24px 24px">' + logHtml() + '</div>';
+  return h + '</div>';
+}
+function pinState(p){ return p.off ? ['Sign-in off', 'off'] : p.id === 'sofia' ? ['Temporary PIN', 'w'] : p.id === 'derek' ? ['No PIN yet', 'w'] : null; }
+function peopleList(){
+  return '<nav class="ad-l"><div class="srch">' + ic('search', 14) + 'Find a person</div>' + P.map(function(p){ var st = pinState(p), n = nChanged(p);
+    return '<button class="pr" data-adp="' + p.id + '" aria-pressed="' + (V.adSel === p.id) + '"' + (p.off ? ' style="opacity:.6"' : '') + '>' + av(p, 30) + '<span><b>' + esc(p.n) + '</b><small>' + esc(p.r) + (n ? ' · ' + n + ' changed' : '') + '</small></span>' + (st ? '<span class="tg ' + st[1] + '">' + st[0] + '</span>' : '') + '</button>'; }).join('') + '</nav>';
+}
+function sw(on, label, attrs, chg, dis){ return '<button class="sw" ' + attrs + ' aria-pressed="' + !!on + '"' + (dis ? ' style="opacity:.55;cursor:not-allowed"' : '') + '><i></i>' + label + (chg ? '<em>changed</em>' : '') + '</button>'; }
+function personHtml(p){
+  if(!p) return '';
+  var role = V.model !== 'person', lock = V.model === 'roleonly', n = nChanged(p), st = pinState(p);
+  var h = '<div class="ph">' + av(p, 54) + '<span style="flex:1;min-width:0"><b>' + esc(p.n) + '</b><small>' + esc(p.r) + ' · ' + (p.off ? 'sign-in turned off Oct 2 — history kept' : 'last signed in today, 7:02 am, on this computer') + '</small></span>' + (V.lay === 'badge' ? '<button class="btn sm" data-go="Print badge">' + ic('scan', 13) + 'Print badge</button>' : '') + '</div>';
+  /* sign-in */
+  h += '<div class="card"><h5>' + ic('lock', 13) + 'Sign-in</h5><div class="kv">'
+    + (role ? '<span>Role</span><span><span class="sel" data-go="Pick a role">' + esc(p.r) + ic('chevD', 13) + '</span></span>' : '')
+    + (V.check === 'none' ? '<span>PIN</span><span style="color:var(--ink3)">No PINs — they pick their name</span>' : '<span>' + (needsPw(p) ? 'Password' : 'PIN') + '</span><span style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">' + (st && st[1] === 'w' ? '<span style="color:var(--warn)">' + st[0] + (p.id === 'sofia' ? ' — changes it at first sign-in' : '') + '</span>' : '<span class="pinbx">' + (needsPw(p) ? '••••••••' : Array(PINLEN() + 1).join('•')) + '</span><span style="color:var(--ink3);font-size:12px">set Sep 12</span>') + '<button class="btn sm" data-go="Reset ' + (needsPw(p) ? 'password' : 'PIN') + ' — ' + (V.newp === 'temp' ? 'a temporary one, changed at their next sign-in' : V.newp === 'set' ? 'you type the new one' : 'they pick one at their next sign-in') + '">' + ic('key', 13) + 'Reset</button></span>')
+    + '<span>Can sign in</span><span>' + sw(!p.off, p.off ? 'Off — their punches, notes and ROs keep their name' : 'On', 'data-go="Turn sign-in on or off"') + '</span></div></div>';
+  /* pages */
+  h += '<div class="card"><h5>' + ic('ro', 13) + 'Pages' + (role && !lock ? '<em>· from ' + esc(p.r) + (V.model === 'role' ? ', change any for ' + esc(p.n.split(' ')[0]) + ' alone' : '') + '</em>' : lock ? '<em>· set by the role — change it on Roles</em>' : '') + (V.model === 'role' && n ? '<span class="leg"><span><i></i>changed for ' + esc(p.n.split(' ')[0]) + '</span></span>' : '') + '</h5>';
+  if(V.depth === 'levels') h += PAGES.map(function(pg){ var l = lvl(p, pg[0]), chg = V.model === 'role' && (V.lv[p.id + '|' + pg[0]] || (V.ov[p.id] || {})[pg[0]] != null); return '<div class="prow">' + pg[1] + (chg ? '<em style="font-style:normal;font-size:11px;font-weight:600;color:var(--warn);background:var(--warn-t);padding:1px 7px;border-radius:999px">changed</em>' : '') + '<span class="lvl">' + ['none', 'view', 'edit'].map(function(x){ return '<button data-lvl="' + pg[0] + '" data-v="' + x + '" aria-pressed="' + (l === x) + '">' + { none: 'No', view: 'View', edit: 'Edit' }[x] + '</button>'; }).join('') + '</span></div>'; }).join('');
+  else h += '<div class="pchips">' + PAGES.map(function(pg){ var on = eff(p, pg[0]); return '<button class="pc' + (changed(p, pg[0]) ? ' ov' : '') + '" data-pgk="' + pg[0] + '" aria-pressed="' + on + '"' + (lock ? ' style="cursor:not-allowed"' : '') + '>' + (on ? ic('check', 13) : '') + pg[1] + '</button>'; }).join('') + '</div>';
+  h += '</div>';
+  /* actions */
+  if(V.depth !== 'pages') h += '<div class="card"><h5>' + ic('shield', 13) + 'What they can do</h5><div class="perm">' + ACTS.map(function(g){ return '<div class="pg2"><b>' + g[0] + '</b>' + g[1].map(function(a){ return sw(eff(p, a[0]), a[1], 'data-act="' + a[0] + '"', changed(p, a[0]), lock); }).join('') + '</div>'; }).join('') + '</div></div>';
+  h += '<div style="display:flex;gap:8px;flex-wrap:wrap">' + (V.model === 'role' && n ? '<button class="btn sm" data-backrole>' + ic('undo', 13) + 'Back to the ' + esc(p.r) + ' role</button>' : '') + '<span class="sp"></span>' + (p.admin ? '' : V.leave === 'off' ? '<button class="btn sm bad" data-go="Turn off sign-in — their history stays">Turn off sign-in</button>' : '<button class="btn sm bad" data-go="Delete — asks first">Delete ' + esc(p.n.split(' ')[0]) + '</button>') + '</div>';
+  return h;
+}
+function rolesHtml(){
+  var rows = [['Pages', PAGES]]; if(V.depth !== 'pages') rows = rows.concat(ACTS);
+  return '<div class="card" style="padding:0;overflow:auto"><table class="mx"><thead><tr><th></th>' + ROLES.map(function(r){ return '<th>' + r + '<div style="font-weight:500;color:var(--ink4)">' + P.filter(function(p){ return p.r === r; }).length + '</div></th>'; }).join('') + '</tr></thead><tbody>'
+    + rows.map(function(g){ return '<tr class="gr"><td colspan="' + (ROLES.length + 1) + '">' + g[0] + '</td></tr>' + g[1].map(function(a){ return '<tr><td>' + a[1] + '</td>' + ROLES.map(function(r){ var on = rHas(r, a[0]), v = V.depth === 'levels' && g[0] === 'Pages' && on && (' ' + (VIEWONLY[r] || '') + ' ').indexOf(' ' + a[0] + ' ') >= 0;
+      return '<td><button class="ck' + (v ? ' v' : '') + '" data-rx="' + r + '|' + a[0] + '" aria-pressed="' + (on && !v) + '" aria-label="' + r + ': ' + a[1] + '"' + (r === 'Admin' ? ' disabled style="opacity:.5;cursor:default"' : '') + '></button></td>'; }).join('') + '</tr>'; }).join(''); }).join('') + '</tbody></table></div>'
+    + '<p class="note">Changing a role changes everyone in it' + (V.model === 'role' ? ', except what was changed for one person.' : '.') + ' The Admin always has everything.</p>';
+}
+function segFor(key, opts){ return '<span class="seg">' + opts.map(function(o){ return '<button data-rset="' + key + '" data-v="' + o[0] + '" aria-pressed="' + (V[key] === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</span>'; }
+function rulesHtml(){
+  return '<div class="rules">'
+    + '<div class="card"><h5>' + ic('lock', 13) + 'Showing it’s you</h5>' + segFor('check', [['pin4', '4-digit PIN'], ['pin6', '6-digit PIN'], ['mixed', 'Password + PIN'], ['none', 'No PIN']]) + '<p class="note">PINs are kept scrambled in the file, never as typed.</p></div>'
+    + '<div class="card"><h5>' + ic('x', 13) + 'A wrong PIN</h5>' + segFor('wrong', [['lock5', '5 tries, wait a minute'], ['tell', '5 tries, tell the admin'], ['nolim', 'No limit']]) + '</div>'
+    + '<div class="card"><h5>' + ic('moon', 13) + 'When nobody’s touched it</h5>' + segFor('idle', [['lock15', 'Lock · 15 min'], ['out15', 'Sign out · 15 min'], ['out60', 'Sign out · 1 h'], ['never', 'Never']]) + '</div>'
+    + '<div class="card"><h5>' + ic('clock', 13) + 'End of the shop day</h5>' + sw(V.away.eod, 'Sign everyone out at 4:30 pm — running clocks keep running', 'data-awayt="eod"') + '</div>'
+    + '<div class="card"><h5>' + ic('plus', 13) + 'A new person</h5>' + segFor('newp', [['temp', 'Temporary PIN'], ['set', 'Admin sets it'], ['self', 'They pick it']]) + '</div>'
+    + '<div class="card"><h5>' + ic('users', 13) + 'Who can open Admin</h5>' + segFor('who', [['admin', 'Admin only'], ['mgr', 'Admin + managers'], ['flag', 'By permission']]) + '</div></div>';
+}
+function logHtml(){
+  var L = [['7:02', 'dana', 'Signed in', 'ok'], ['7:05', 'mike', 'Signed in', 'ok'], ['9:41', 'luis', 'Wrong PIN ×2', 'bad'], ['9:42', 'luis', 'Signed in', 'ok'], ['11:30', 'frank', 'Switched to Tom Brandt', ''], ['12:15', 'jenna', V.idle === 'lock15' ? 'Locked — 15 min, no one on it' : V.idle === 'never' ? 'Signed out' : 'Signed out — idle', ''], ['12:20', 'admin', 'Reset Sofia Alvarez’s PIN (temporary)', ''], ['12:31', 'tom', 'Gave Dana Kowalski: Inventory, Order parts', ''], ['Yest.', 'admin', V.away.eod ? 'Everyone signed out — end of the day (2 clocks kept running)' : 'Admin signed out', '']];
+  return '<div class="card" style="padding:4px 12px"><div class="log">' + L.map(function(x){ var p = pBy(x[1]); return '<div class="lr"><span class="t">' + x[0] + '</span>' + av(p, 26) + '<span><b style="font-weight:600">' + esc(p.n) + '</b> · ' + esc(x[2]) + '</span><span class="k ' + x[3] + '">' + (x[3] === 'bad' ? 'Failed' : x[3] === 'ok' ? 'Sign-in' : 'Change') + '</span></div>'; }).join('') + '</div></div>';
+}
+
+/* ---------- the page ---------- */
+var CAPS = { login: ['Login page', 'when someone signs out, or the app opens'], switch: ['Switch user', 'off the name in the sidebar'], admin: ['Admin page', 'people and what each can do'] };
+var NOTES = {
+  login: '<b>Try it:</b> pick a name — PIN 1234 (6-digit: 123456; password: parsec). Five wrong tries shows the limit. Everything stays in the one Parsec file: PINs are stored scrambled, never as typed. It keeps each person on their own pages; it isn’t a lock against someone who opens the file itself.',
+  switch: '<b>Try it:</b> pick someone in the switcher, or Step away to see the lock screen. Mike’s clock keeps running whoever signs in.',
+  admin: '<b>Try it:</b> flip a page or an action for Dana — with roles, what’s changed for her alone gets a dot and “Back to the role” undoes it. The Roles tab sets everyone in a role at once.'
+};
+function screenHtml(){ return V.scr === 'login' ? loginHtml() : V.scr === 'switch' ? (V.swLogin ? loginHtml() : appHtml()) : adminHtml(); }
+function chsHtml(){
+  return '<div class="chs">' + CH.map(function(c){ var k = c[1], multi = c[5];
+    return (c[0] ? '<div class="hd" data-hd="' + c[1] + '">' + c[0] + '</div>' : '') + '<div class="ch"><b>' + c[2] + '</b>' + (c[3] ? '<small>' + c[3] + '</small>' : '') + '<div class="ol">' + c[4].map(function(o){ var on = multi ? !!V[k][o[0]] : V[k] === o[0];
+      return '<button class="opt' + (multi ? ' sq' : '') + '" data-ch="' + k + '" data-v="' + o[0] + '" aria-pressed="' + on + '"><i></i><span><b>' + o[1] + (o[4] ? '<em>SUGGESTED</em>' : '') + '</b>' + (o[2] || '') + '</span></button>'; }).join('') + '</div></div>'; }).join('') + '</div>';
+}
+function draw(){
+  var y = window.scrollY, cap = CAPS[V.scr], c0 = $('.chs'), cy = c0 ? c0.scrollTop : 0;
+  $('#pg').innerHTML = '<div class="wrap"><div class="two"><div><div class="cap"><h2>' + cap[0] + '</h2><small>' + cap[1] + '</small>' + (V.scr === 'switch' && V.swLogin ? '<span class="sp"></span><button class="btn sm gh" data-swback>' + ic('back', 13) + 'Back to Mike’s page</button>' : '') + '</div><div class="stage' + (V.dev === 'phone' ? ' phone' : '') + '" id="stage">' + screenHtml() + '</div><p class="note">' + NOTES[V.scr] + '</p></div>' + chsHtml() + '</div></div>';
+  window.scrollTo(0, y); var c1 = $('.chs'); if(c1) c1.scrollTop = cy; sync(); pkDraw(); V.an = false;
+  var pwin = $('#pwin'); if(pwin) pwin.focus();
+}
+function sync(){
+  [['th', 'th'], ['scr', 'scr'], ['dev', 'dev']].forEach(function(x){ $$('.mk button[data-' + x[0] + ']').forEach(function(b){ b.setAttribute('aria-pressed', String(b.getAttribute('data-' + x[0]) === V[x[1]])); }); });
+  D.documentElement.setAttribute('data-th', V.th);
+}
+function pkText(){
+  var L = ['Parsec · Login page and Admin page — my picks'];
+  CH.forEach(function(c){ var k = c[1], vals;
+    if(c[5]) vals = c[4].filter(function(o){ return V[k][o[0]]; }).map(function(o){ return o[1]; }).join(', ') || 'none';
+    else vals = c[4].filter(function(o){ return o[0] === V[k]; })[0][1];
+    if(c[0]) L.push(c[0].charAt(0) + c[0].slice(1).toLowerCase() + ':');
+    L.push('· ' + c[2] + ': ' + vals); });
+  if(V.note.trim()) L.push('Notes: ' + V.note.trim());
+  return L.join('\n');
+}
+function pkDraw(){ var w = $('#picks'); w.hidden = !V.picks; if(!V.picks) return;
+  var ta = $('#pk-note'); if(ta && D.activeElement === ta){ var pre = $('#picks pre'); if(pre) pre.textContent = pkText(); return; }
+  w.innerHTML = '<div class="pk-h"><b>Your picks</b><button class="x" data-pk="x" aria-label="Close">' + ic('x', 15) + '</button></div><pre>' + esc(pkText()) + '</pre><div class="pk-r"><span>Anything else</span><textarea id="pk-note" placeholder="e.g. Parts people get the Inventory page by default">' + esc(V.note) + '</textarea></div><button class="btn pri" data-pk="copy">' + ic('copy') + 'Copy for the chat</button>'; }
+function toast(m){ var t = $('.toast'); if(t) t.remove(); t = D.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = m; D.body.appendChild(t); clearTimeout(toast.h); toast.h = setTimeout(function(){ t.remove(); }, 2800); }
+
+/* ---------- the PIN, working ---------- */
+function openPin(id){
+  var p = pBy(id); V.pin = ''; V.pinMsg = ''; V.pinSt = ''; V.menu = false;
+  if(V.check === 'none'){ signedIn(p); return; }
+  V.pinFor = id; V.an = true; draw();
+}
+function signedIn(p){
+  var sw0 = V.scr === 'switch';
+  V.pinFor = null; V.pin = ''; V.pinMsg = ''; V.pinSt = ''; V.tries = 0; V.locked = false; V.swLogin = false; V.faceAll = false; V.typed = '';
+  if(sw0 && p.id !== ME) toast('Switched to ' + p.n + ' — their pages open.' + (V.away.keep ? ' Mike’s clock keeps running on RO 1356.' : ''));
+  else if(sw0) toast('Welcome back, Mike — right where you left it.');
+  else toast('Signed in as ' + p.n + (p.admin ? ' — every page' : ' — their pages open') + '.');
+  V.menu = sw0 ? false : V.menu; draw();
+}
+function padKey(k){
+  var who = V.locked ? ME : V.pinFor; if(!who) return; var p = pBy(who), n = PINLEN();
+  if(V.waitTill > Date.now()) return;
+  if(k === 'forgot'){ toast('The admin' + (V.who === 'admin' ? '' : ' (or Tom Brandt)') + ' resets it from Admin → People.'); return; }
+  if(V.pinSt){ V.pinSt = ''; V.pin = ''; }
+  if(k === 'del') V.pin = V.pin.slice(0, -1); else if(V.pin.length < n) V.pin += k;
+  V.pinMsg = '';
+  if(V.pin.length === n){
+    if(V.pin === (n === 6 ? '123456' : '1234')){ V.pinSt = 'ok'; draw(); setTimeout(function(){ signedIn(p); }, 450); return; }
+    V.tries++; V.pinSt = 'bad';
+    if(V.wrong !== 'nolim' && V.tries >= 5){ V.waitTill = Date.now() + 60000; V.pinMsg = V.wrong === 'tell' ? 'Five wrong tries — the admin has been told. Wait a minute.' : 'Five wrong tries — wait a minute, then try again.'; V.tries = 0; setTimeout(function(){ V.waitTill = 0; V.pinMsg = ''; V.pinSt = ''; V.pin = ''; draw(); }, 60000); }
+    else V.pinMsg = 'Not right — try again' + (V.wrong !== 'nolim' ? ' (' + (5 - V.tries) + ' left)' : '');
+  }
+  draw();
+}
+
+/* ---------- events ---------- */
+D.addEventListener('click', function(e){
+  var t = e.target, b;
+  if((b = t.closest('.mk button[data-th]'))){ V.th = b.getAttribute('data-th'); sync(); return; }
+  if((b = t.closest('.mk button[data-scr]'))){ V.scr = b.getAttribute('data-scr'); V.pinFor = null; V.locked = false; V.swLogin = false; V.menu = true; V.an = V.scr === 'switch'; draw();
+    var hd = $('.chs [data-hd="' + { login: 'lay', switch: 'sw', admin: 'model' }[V.scr] + '"]'), chs = $('.chs'); if(hd && chs && chs.scrollHeight > chs.clientHeight + 4) chs.scrollTop = hd.offsetTop - chs.offsetTop - 4; else if(hd && window.innerWidth <= 1180) hd.scrollIntoView({ block: 'start' }); return; }
+  if((b = t.closest('.mk button[data-dev]'))){ V.dev = b.getAttribute('data-dev'); draw(); return; }
+  if(t.closest('#pk-open')){ V.picks = !V.picks; pkDraw(); return; }
+  if((b = t.closest('[data-pk]'))){ var a = b.getAttribute('data-pk'); if(a === 'x'){ V.picks = false; pkDraw(); }
+    if(a === 'copy'){ var tx = pkText(); (navigator.clipboard ? navigator.clipboard.writeText(tx) : Promise.reject()).then(function(){ toast('Copied — paste it in the chat.'); }, function(){ var ta = D.createElement('textarea'); ta.value = tx; D.body.appendChild(ta); ta.select(); try{ D.execCommand('copy'); toast('Copied — paste it in the chat.'); }catch(er){} ta.remove(); }); }
+    return; }
+  if((b = t.closest('[data-ch]'))){ var k2 = b.getAttribute('data-ch'), v = b.getAttribute('data-v'), c = CH.filter(function(x){ return x[1] === k2; })[0];
+    if(c[5]) V[k2][v] = V[k2][v] ? 0 : 1; else V[k2] = v;
+    if(k2 === 'check'){ V.pin = ''; V.pinSt = ''; V.pinMsg = ''; }
+    if(k2 === 'sw'){ V.menu = true; V.swLogin = false; }
+    draw(); return; }
+  if((b = t.closest('[data-who]'))){ openPin(b.getAttribute('data-who')); return; }
+  if((b = t.closest('[data-pad]'))){ padKey(b.getAttribute('data-pad')); return; }
+  if(t.closest('[data-pinx]')){ V.pinFor = null; draw(); return; }
+  if(t.matches && t.matches('[data-pinbg]')){ V.pinFor = null; draw(); return; }
+  if(t.closest('[data-pw]')){ var pi = $('#pwin'), p0 = pBy(V.locked ? ME : V.pinFor); if(pi && pi.value === 'parsec') signedIn(p0); else { V.pinSt = 'bad'; V.pinMsg = 'That’s not it — try again'; draw(); } return; }
+  if(t.closest('[data-faceall]')){ V.faceAll = !V.faceAll; draw(); return; }
+  if(t.closest('[data-scanbox]')){ toast('Badge read — Dana Kowalski'); setTimeout(function(){ openPin('dana'); }, 500); return; }
+  if(t.closest('[data-me]')){ V.menu = !V.menu; V.an = V.menu; draw(); return; }
+  if(t.closest('[data-step]')){ V.menu = false; V.an = true; V.locked = 'step'; V.pin = ''; V.pinSt = ''; V.pinMsg = ''; draw(); return; }
+  if(t.closest('[data-unlockswitch]')){ V.locked = false; if(V.sw === 'quick'){ V.menu = true; } else V.swLogin = true; draw(); return; }
+  if(t.closest('[data-signout]')){ V.menu = false; V.swLogin = true; toast('Signed out.' + (V.away.keep ? ' Your clock keeps running on RO 1356.' : '')); draw(); return; }
+  if(t.closest('[data-swlogin]')){ V.menu = false; V.swLogin = true; draw(); return; }
+  if(t.closest('[data-swback]')){ V.swLogin = false; V.menu = true; V.pinFor = null; draw(); return; }
+  if((b = t.closest('[data-adt]'))){ V.adTab = b.getAttribute('data-adt'); draw(); return; }
+  if((b = t.closest('[data-adp]'))){ V.adSel = b.getAttribute('data-adp'); draw(); return; }
+  if((b = t.closest('[data-pgk]')) || (b = t.closest('[data-act]'))){
+    var k3 = b.getAttribute('data-pgk') || b.getAttribute('data-act'), p3 = pBy(V.adSel);
+    if(V.model === 'roleonly'){ toast('Set by the ' + p3.r + ' role — change it on the Roles tab.'); return; }
+    if(p3.admin){ toast('The Admin always has everything.'); return; }
+    var nv = !eff(p3, k3), o = V.ov[p3.id] = V.ov[p3.id] || {}; if(nv === rHas(p3.r, k3)) delete o[k3]; else o[k3] = nv ? 1 : -1; draw(); return; }
+  if((b = t.closest('[data-lvl]'))){ var p4 = pBy(V.adSel); if(V.model === 'roleonly'){ toast('Set by the role — change it on the Roles tab.'); return; } if(p4.admin){ toast('The Admin always has everything.'); return; } var kk = p4.id + '|' + b.getAttribute('data-lvl'), lv0 = b.getAttribute('data-v'); delete V.lv[kk]; if(V.ov[p4.id]) delete V.ov[p4.id][b.getAttribute('data-lvl')]; if(lvl(p4, b.getAttribute('data-lvl')) !== lv0) V.lv[kk] = lv0; draw(); return; }
+  if(t.closest('[data-backrole]')){ var p5 = pBy(V.adSel); delete V.ov[p5.id]; Object.keys(V.lv).forEach(function(x){ if(x.indexOf(p5.id + '|') === 0) delete V.lv[x]; }); toast(p5.n + ' is back to the ' + p5.r + ' role.'); draw(); return; }
+  if((b = t.closest('[data-rx]'))){ if(b.disabled) return; var rk = b.getAttribute('data-rx'), parts = rk.split('|'); V.roleX[rk] = !rHas(parts[0], parts[1]); draw(); return; }
+  if((b = t.closest('[data-rset]'))){ V[b.getAttribute('data-rset')] = b.getAttribute('data-v'); draw(); return; }
+  if((b = t.closest('[data-awayt]'))){ var ak = b.getAttribute('data-awayt'); V.away[ak] = V.away[ak] ? 0 : 1; draw(); return; }
+  if((b = t.closest('[data-go]'))){ toast(b.getAttribute('data-go')); return; }
+});
+D.addEventListener('input', function(e){
+  if(e.target.id === 'pk-note'){ V.note = e.target.value; var pre = $('#picks pre'); if(pre) pre.textContent = pkText(); return; }
+  if(e.target.id === 'nm'){ V.typed = e.target.value; var q = V.typed.trim().toLowerCase(), L = q ? people().concat([pBy('admin')]).filter(function(p){ return p.n.toLowerCase().indexOf(q) >= 0 || ini(p.n).toLowerCase() === q; }) : RECENT.map(pBy); $('#sugg').innerHTML = suggHtml(L, q); }
+});
+D.addEventListener('keydown', function(e){
+  if(e.target.id === 'nm' && e.key === 'Enter'){ var f = $('#sugg button[data-who]'); if(f) openPin(f.getAttribute('data-who')); return; }
+  if(e.target.id === 'pwin' && e.key === 'Enter'){ var pb = $('[data-pw]'); if(pb) pb.click(); return; }
+  var padOn = (V.pinFor || V.locked) && !(pBy(V.locked ? ME : V.pinFor) || {}).admin && !needsPw(pBy(V.locked ? ME : V.pinFor));
+  if(padOn && /^[0-9]$/.test(e.key) && !/^(INPUT|TEXTAREA)$/.test(e.target.tagName)){ e.preventDefault(); padKey(e.key); return; }
+  if(padOn && e.key === 'Backspace' && !/^(INPUT|TEXTAREA)$/.test(e.target.tagName)){ e.preventDefault(); padKey('del'); return; }
+  if(e.key === 'Escape'){ if(V.picks){ V.picks = false; pkDraw(); } else if(V.pinFor){ V.pinFor = null; draw(); } else if(V.menu && V.scr === 'switch'){ V.menu = false; draw(); } }
+  if((e.ctrlKey || e.metaKey) && (e.key === 'l' || e.key === 'L') && V.scr === 'switch' && V.away.lockbtn){ e.preventDefault(); V.menu = false; V.locked = 'step'; V.pin = ''; draw(); }
+});
+setInterval(function(){ if(V.scr !== 'admin' && !V.pinFor && V.side.clock){ var b = $('.ln-time b'); if(b){ var n = nowTxt(); b.firstChild.nodeValue = n.t; } } }, 20000);
+draw();
+</script>
+</body></html>

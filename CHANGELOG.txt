@@ -1,5 +1,29 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 12.9 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 13 is the newest.
+
+Parsec 13 — the login page, switching who’s signed in, and the Admin page: people and permissions
+  The login page:
+  · Shows when someone signs out, switches, or the app opens. On the left: Parsec, the shop, the time and date big, and the clocks that are running — whose, which RO, since when ("Signing in or out never stops one")
+  · On the right: Who’s signing in? — Recent on this computer first, then each department. Each name has a dot when they’re on the clock (green on a job, amber on the day clock) and a line under it (on the clock · RO 1356, on the day clock, 3 open ROs, or the role). Admin is a small link at the bottom; people whose sign-in is off aren’t shown
+  · A 4-digit PIN for everyone, on a number pad (keys work too). Someone with no PIN yet, or a temporary one, picks their own — typed twice — and they’re in. The Admin sets a PIN the first time
+  · A wrong PIN: five tries, then a minute’s wait, with a countdown
+  · PINs are kept scrambled in the file, never as typed; old plain PINs were scrambled when the file opened
+  Switching and stepping away:
+  · Switch user is a quick switcher off your name: recent people and Someone else; pick one and their PIN pad opens over the page. Your clock keeps running
+  · Step away — lock it yourself (in the same menu, or Ctrl L): your page stays where it was, behind your PIN; a refresh doesn’t get past it; "Not Mike? Switch user"
+  · Everyone signed in is signed out at the end of the shop day (running clocks keep running). No lock when nobody’s touched it, unless the Admin page sets one
+  The Admin page (for anyone given "Manage people and PINs" — the Admin always):
+  · People: each person’s role, PIN (set, temporary or not yet; Reset gives a new temporary PIN, shown once), Can sign in, their pages and what they can do. They get their role’s pages and actions; anything changed for one person alone gets a dot, and "Back to the role" undoes it
+  · Add a person: name and role — a temporary PIN they change at their first sign-in
+  · Someone leaves: turn off their sign-in — their punches, notes and ROs keep their name
+  · Roles: one table — every page and action for every role; changing a role changes everyone in it, except what was changed for one person
+  · Sign-in rules: the end-of-day sign-out, and a lock when nobody’s touched it (never, 15, 30 or 60 minutes)
+  · Sign-in log: sign-ins, switches, locks, wrong PINs and permission changes, by day
+  · Manager → Team goes through the same: role, pages, a PIN reset, adding and turning off people
+  What the permissions hold, everywhere:
+  · Open new ROs · Change an RO’s status · Release a truck · Reopen a completed RO · Delete ROs · Start and stop their own clock · Fix their own punches · Fix anyone’s punches · Move time to someone else · Approve timesheets · Order parts · Adjust stock counts · See costs and prices · File warranty claims · Manage people and PINs · Change settings and automations · Export or reset the data
+  · A button you can’t use is hidden; if you get to it anyway it says "You can’t delete ROs — Tom or the Admin can change that on the Admin page" and nothing changes. Automations and the Admin are never stopped
+  · Stopping your own clock is always allowed. Without "See costs and prices", money shows as —
 
 Parsec 12.9 —an RO status you pick holds; reopening a completed RO asks about its operations
   · The fix: the Status sync (the RO follows its operations) overrode a status picked by hand at the next thing that happened on the RO — a part, a note, a road-test edit — so a completed RO set back to Hold tech, Working or Waiting snapped back to Complete. Now a status you pick holds until the operations add up to something new: a clock starts, an operation goes on hold, it's completed again
