@@ -1,5 +1,24 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 14.2 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 14.3 is the newest.
+
+Parsec 14.3 — a ROs tab on Triage, Foreman, Parts, Manager and Technician · the Technician page shows the RO page itself
+  The ROs tab:
+  · Last among each page’s views, with the open-RO count: Triage (Inbox · Desk · Yard · ROs), Foreman (Floor · Techs · Yard · Tomorrow · ROs), Parts (Desk · On order · Shelf · Returns · Catalog · ROs), Manager (Overview · KPIs · Fleets · Flow · Team · Activity · ROs), Technician (Their ROs · Yard · ROs). Only for people allowed the RO list
+  · It is the RO list itself — every open RO, the Open / Mine / Working / Waiting / Hold / Done tabs, the search icon, Display, your own columns, click a header to sort, drag a column. Your layout follows you: a column added on the RO list shows in every page’s ROs tab
+  · A click (or Enter) opens the RO page; its crumb names the page you came from (“Foreman / RO-32488”) and takes you back there with the ROs tab still on. ⌃ ⌄ step through the tab’s list as it’s sorted
+  · While it’s on, the RO list’s keys work (J/K, Enter, /, Esc) and the page’s own single keys wait. On a phone it shows the RO list’s cards
+  One RO view:
+  · The Technician page’s middle and right are the RO page itself — the same operation rows, the open operation’s chips, clock card, Time · Parts · Files with their buttons, Parts on this RO, messages, the truck card with its editable words, status, the road test switch, the stage track, Who has it and the details groups. A change to the RO page shows on both
+  · The left list is the Technician page’s own: Sent to you (with Done), Working, Assigned in the foreman’s order, Waiting, Done today. The RO page’s bar reads “My ROs / RO-…” (“Mike’s ROs” in admin view) and ⌃ ⌄ step through that list; the list follows
+  · Kept, in the RO page’s style: Next up (a Next card above the RO, for 15 minutes after a stop), Ask Frank (on the truck card beside Transfer, Road test and Truck checks), Fixed N× before, the clock state / Start my day / Clock in / Scan / the admin’s person picker, Their ROs · Yard
+  · The tech’s rules hold on the mounted page: a tech starts only their own operations (“Op 1 isn’t yours. Ask Frank to give it to you.”), the admin looking at a tech’s page can’t run their clock, and the details are read-only without the Repair Orders page
+  · Phone: the list first; tap an RO for the stacked RO view, its crumb goes back to the list
+  · The Technician page’s old operation cards, band and side groups are gone (28 builders, and 14.2’s Technician-only add-part pops — the RO page’s own Add part / From inventory / Extract do it now)
+  Fixed along the way:
+  · 14.1’s “finish it anyway?” could pop up on its own — drawing a page that showed a finished operation asked the question, and a finished operation with no story read Hold tech. Now it asks only when someone presses Done or stops as Complete; a finished operation stays finished
+  · “Finish anyway” no longer lets a part that isn’t in through — the part still holds the operation (Mark it installed and finish)
+  · After an Undo, the question doesn’t come back for an operation that isn’t there any more (“Op 0 isn’t finished”)
+  · An operation ASIST still shows as Pending doesn’t count as work you can do, so the RO reads Waiting – Parts when the only other work waits on parts
 
 Parsec 14.2 — the truck card and quoted hours change in place · the Technician page’s Parts tab · Assets and Inventory below Fixes · the Time Log on your own times
   · The truck card’s words change where they are — the customer, the year, make and model, and the unit (and the spot on the RO page) — on the Technician page, the RO list’s pane and the RO page: click one, type, Enter (Tab goes to the next, Esc leaves it). Same field table, Undo and Activity line as the RO details; what the body catalog adds (6x4, sleeper, 70-inch) stays as it is
