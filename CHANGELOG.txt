@@ -1,5 +1,15 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 14.3 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 14.4 is the newest.
+
+Parsec 14.4 — the RO page: Messages where Parts on this RO was · every section folds, and opens while you point at it
+  (“The RO page” is the one shared page — the same from the RO list, the Technician page and every ROs tab.)
+  · Messages about this RO now sits where Parts on this RO was (right under Operations), and Parts on this RO where Messages was (after Photos & codes)
+  · Every section folds: Operations, Messages about this RO, Fault codes, Photos & codes, Parts on this RO, Truck history, Warranty claim, Customer, Estimate & approval, Ready to close, and on the right the truck card, the stage, Who has it and the detail groups (Schedule, People, Vehicle, Money)
+  · The chevron on a heading folds it, and opens it again. A folded section opens while you point at its heading and folds again when you move off — a click on the heading (or the chevron) keeps it open
+  · The detail groups keep their own heading click and open on hover the same way
+  · What’s folded is remembered on this computer, for every RO and on both pages. On a phone the chevron does it (no hover)
+  The site map (Parsec site map.html):
+  · Every page and view — 52 screens, from the sign-in page to the phone — with its sections and components boxed and numbered: page structure, sections, components. Point at a box or a row for what it does; search every callout by name; ← → step through the views; Ivory and Graphite
 
 Parsec 14.3 — a ROs tab on Triage, Foreman, Parts, Manager and Technician · the Technician page shows the RO page itself
   The ROs tab:
