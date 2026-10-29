@@ -1,5 +1,10 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 14.4 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 14.5 is the newest.
+
+Parsec 14.5 — the RO page: every section folds from its heading
+  · A click on a section’s heading folds it, and a click opens it again — Operations, Messages about this RO, Fault codes, Photos & codes, Parts on this RO, Truck history, Warranty claim, Customer, Estimate & approval, Ready to close, the stage and Who has it. Buttons in the heading (Open in Assets, Ask Parts, +, the pick box) still do their own thing
+  · The chevron now sits at the far right of every heading, after the section’s own buttons, and is easy to see (it was faint, and on Customer and Estimate & approval it sat beside the title like a menu)
+  · Pointing at a folded heading still opens it for a look; the truck card folds from its chevron only (its words and buttons are for clicking)
 
 Parsec 14.4 — the RO page: Messages where Parts on this RO was · every section folds, and opens while you point at it
   (“The RO page” is the one shared page — the same from the RO list, the Technician page and every ROs tab.)
