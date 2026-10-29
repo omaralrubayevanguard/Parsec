@@ -1,5 +1,12 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 14.7 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 14.8 is the newest.
+
+Parsec 14.8 — the RO page: Declined on the operation’s status · the complaint changes in place · Extract operations
+  · Declined is the last choice on an operation’s status menu (after a line, with the Declined icon; number keys pick in that menu). It stops any clock running on the operation (as Hold tech) and declines it the way the app always has — it leaves the totals, the money and the RO’s status. The card shows the Declined pill and who declined it; any other status brings the operation back. One Undo; an Activity line
+  · A declined operation can’t be started: the clock card’s play button, the row and Time-tab play buttons are greyed out (“Op 1 is declined — pick another status to work on it”), keyboard starts refuse, and the truck card’s Start skips it
+  · The complaint changes in place again, clock running or not: click an open operation’s title (double-click a closed one, or F2 on the row), type, Enter or click away saves, Esc cancels, Undo puts it back. Why it broke: the first click redrew the row under the double-click, and while a clock ran the page redrew every 5 seconds and threw the typing away — it now waits while you type
+  · Extract, in the Operations header right of +: paste text, or paste / drop / pick a screenshot or PDF (read on this computer — nothing leaves it). It reads only each operation’s complaint, status, quoted hours and approval, and shows them in a table to check and change: each row says Update Op 2 (matched by the complaint, or the paperwork’s op number) or Add as new, and the pick can be changed by hand. Apply updates and adds in one go — one Undo, an Activity line, “2 operations updated, 1 added.” A running clock is never stopped
+  The tooltips ideas mock-up (Parsec tooltips ideas mock-up.html): how they look now (about 560 browser boxes, 7 tip styles) and 15 ideas to pick from
 
 Parsec 14.7 — Receive / Install for picked parts · the Vehicle dates · menus stay on screen · Release without checks · Completed ROs on the Technician page · Lunch · 1 hour
   The RO page:
