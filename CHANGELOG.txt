@@ -1,5 +1,29 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 14.5 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 14.6 is the newest.
+
+Parsec 14.6 — the Time Log: clock in / out fixes · Waiting – Sublet · Copy notes on the Time tab
+  Find what’s wrong:
+  · Fix these, on top of the Day view: every clock problem for the person — the open day, this pay period, and the last one until it’s approved — one line each with the likely fix as a button. No clock out (Clock out 14:52 · Pick a time…), Punches overlap (7156 ends 10:15 · 2253 starts 10:40 · Split the 25 min), Job before the clock-in (Move clock-in to 07:01 · Trim the punch), Job after the clock-out (Move clock-out · Trim the punch), No lunch taken (Lunch 11:58–12:28 · Worked through lunch), punches without a work note (Add them…). The day opens from its date; the heading folds the list
+  · Forgot to clock out: the No clock out pop-over offers the times Parsec can prove — the last job stopped, the last note, the last thing done on an RO, the shift end — or another time. The reason is already Forgot to clock out
+  · A job started before the clock-in, or one that ran past the clock-out, is now a problem to fix instead of quietly stretching the day
+  · Overlapping punches: three ways — the first ends, the second starts later, or the minutes are split down the middle
+  Fix it fast:
+  · Click a punch: Split…, Merge with the next (the same job, up to 30 min apart) and Fill the air sit right under the timeline. Split at a time; the part after can go to another job or shop time
+  · Every time box takes 715, 7, 3:45p, or +10 / -5 from the time that was there; ↑ ↓ move it a minute, with ⇧ five. Alt ← → moves the selected punch’s stop (⇧ the start) like a drag — Enter saves, Esc puts it back
+  · The Shop view (foreman, manager): tick people, then Clock out…, Lunch… or Shop time… for all of them at once with one reason. Anyone it can’t do is named in the message
+  Who fixes, and the record:
+  · Ask for a fix → the foreman approves: someone without the permission to fix their own time gets Send to Frank instead of Save. The change waits (the row and Fix these say so), Frank gets it in his Inbox and approves or declines on top of the tech’s day; the tech can take it back
+  · A reason on every change, your own too: Forgot to clock out, Forgot to clock in, Forgot to stop the clock, Wrong job or RO, Worked through lunch, Parsec was down, or Other… in your own words (Tech asked me to and Matches the RO paperwork when it’s someone else’s time). Drags and nudges ask once when you let go; the one-tap fixes say why by themselves. The row shows who · why · the time before, and the timesheet counts the edited punches
+  · Signing with problems still open: Fix them, or Sign with a note… — the note shows on the sign bar with what’s still open, for the approver
+  Stop it happening:
+  · Still on the clock? — 20 minutes after your shift ends, on every page (the Time Log keeps its own reminder): Clock out at <your last stop> · Clock out now · I’m still here — 1 h
+  · A clock-out check, only when something’s open — a job still running, no lunch after 6 hours, punches without a note: the day in three numbers and a line for each, then Fix and clock out or Clock out anyway. Lunch and break clock-outs never ask
+  · Starting a job already clocks you in; when a job is running with no clock-in, or the clock-in is later than the job’s start, it asks right away: Clock in at 07:01?
+  · Lunch: nothing is taken off by itself — a missing lunch is flagged in Fix these
+  · Payroll stays exact (no rounding) and Parsec is the clock
+  The RO page and the statuses:
+  · New status Waiting – Sublet, right below Waiting – Parts everywhere a status is picked, shown, sorted or counted — the hold menus on the RO page, the Technician page and the Manager console, the RO list (its own group, next step “Out at the sublet · age”), the status look (amber, an arrow-out icon), the phone and the sheets. Like a parts hold, it isn’t work the tech can do: the RO reads Hold Tech with “N ops out at the sublet” while other operations can be worked, and Waiting – Sublet once none can. New RO imports read “sublet”, “sent out” and “outside vendor” as Waiting – Sublet
+  · Copy notes on an operation’s Time tab, beside Add time entry: every work note from its punches, oldest first, as one paragraph — blanks and repeats dropped, a period where a note had none — ready to paste outside Parsec. Greyed out when there are no notes yet
 
 Parsec 14.5 — the RO page: every section folds from its heading
   · A click on a section’s heading folds it, and a click opens it again — Operations, Messages about this RO, Fault codes, Photos & codes, Parts on this RO, Truck history, Warranty claim, Customer, Estimate & approval, Ready to close, the stage and Who has it. Buttons in the heading (Open in Assets, Ask Parts, +, the pick box) still do their own thing
