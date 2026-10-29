@@ -1,5 +1,16 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 14.6 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 14.7 is the newest.
+
+Parsec 14.7 — Receive / Install for picked parts · the Vehicle dates · menus stay on screen · Release without checks · Completed ROs on the Technician page · Lunch · 1 hour
+  The RO page:
+  · Parts: pick parts (an operation’s Parts tab, or Parts on this RO — it has pick boxes now, one per row and one in the heading, across operations) and the bar offers Receive N and Install N. Receive changes the parts not in hand yet; Install receives and installs in one go. Greyed out, with the reason, when nothing picked can change. One Undo for the batch, an Activity line, “3 parts received.”
+  · Vehicle (the right pane’s details): Build date, Warranty start, Opened and Closed — editable like the other details (Closed reads Open until the RO is closed). The New RO import reads Build date and Warranty start from the text
+  · Menus stay on screen: the truck picture’s ⋯ menu no longer opens past the left edge of the pane, and the status picker’s side menus (Waiting – Customer ›, Move to operation ›) flip to the left when there’s no room on the right. Every RO page menu now lines up with its button, keeps 8 px from the window edge and scrolls when it’s taller than the window
+  · Release without checks, on the truck card after Truck checks (for people allowed to release, until the RO is released): it lists what it skips — the open truck checks, the road test — asks why (Customer is waiting · Checked on paper · Not needed for this job · Other…), then completes and releases the truck. The card shows “Released without checks · who · why”; one Undo takes it all back
+  The Technician page:
+  · Completed, a new group in the left list after Waiting: every RO you completed work on, grouped Today / Yesterday / date, newest first, the last 30 days (Show all for older). Each row has the RO, customer, unit, the operations and your hours. It stays after the RO is transferred (“now with Mike”) or deleted (“deleted” — it opens a read-only record of the truck, the operations and the hours). Done today is now its Today group; a reopened operation drops off until it’s completed again
+  The clock:
+  · Lunch · 1 hour in the clock-out choices (the Technician page and console, the sidebar clock pop-over; the clock-off dialog had it already). It doesn’t clock you back in — when the hour is up, a “Lunch is over” card shows on every page with Clock in now and 5 more minutes. The 30-minute lunch gets the same card; neither lunch clocks back in by itself
 
 Parsec 14.6 — the Time Log: clock in / out fixes · Waiting – Sublet · Copy notes on the Time tab
   Find what’s wrong:
