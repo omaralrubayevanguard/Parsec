@@ -1,5 +1,25 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 14.8 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 14.9 is the newest.
+
+Parsec 14.9 — one tooltip everywhere · status, people and blocked actions explain themselves · air out of efficiency · no clock stops at shift end · the key tag
+  Tooltips (your picks from the mock-up):
+  · One look everywhere — Ink (dark on light, light on dark in Graphite) with an arrow at its control, below it, flipping above or sideways at a window edge so it’s never cut off. It replaces the browser’s grey box and the old custom tips (the Time Log card, the Manager’s KPI rows, Warranty, the day report) — the same box on every page and inside the RO page
+  · It shows after 400 ms; once one is up, the next one shows at once as you move along a row. It hides on leave, scroll, click and Esc
+  · Every tooltip is rewritten the same way — what it does, then the key: sentence case, no “Click to…”, up to 60 characters with the rest on a second line, no full stop on one line, keys as chips on icon buttons only (and dropped when the tip would just repeat the button’s word). 214 hand rewrites (“Burnt” → “Burnt · hours clocked on this RO”, “On the clock — click to stop” → “Stop the clock”, “Snooze (S)” → “Snooze until tomorrow 07:00” S) and patterns for the ones built from names and numbers
+  · The build checks every tooltip against those rules and lists any that breaks one (build log + app/_tiplint.txt) — 334 checked, 0 flagged
+  · Status pills say status · since when · why · who: “Waiting – Parts · since 10:42 / 2 parts on order · ETA Fri / Set by Frank · 2 h ago” — on the RO page, the RO list, Parts, Inventory, Assets and the Technician list. Who set a status is now kept (by a person, or “Parsec” for an automation); statuses set before 14.9 don’t say who
+  · Initials say who: “Luis Martinez · Technician” on every avatar
+  · Greyed-out main actions say why — Start, Clock in, Hold, Mark done, Transfer, Road test, Release / Release anyway, Send to tech, and the Time Log’s Save / Send / Fix / Split / Sign: “Not yet — 3 checks open / Fix them, or release anyway”
+  · Cut-off text shows in full — a complaint, customer or part name cut short with … shows the whole text
+  · The keyboard shows them too: Tab to a control and its tip shows; Esc hides it
+  · Phone and tablet: press and hold anything for its tip, and a small ⓘ on the numbers that matter (the RO page clock card, the Time Log and Technician numbers, Release without checks, the truck card status)
+  · Tooltips: All · Fewer · Off — in your person pop-over (bottom of the sidebar, under Size), kept per person on this computer. Fewer shows only the keys on icon buttons, why a button is greyed out, and cut-off text
+  Time:
+  · Air and efficiency: every efficiency figure was already quoted hours ÷ hours on jobs — air never counted. What said otherwise is fixed: the Console / Technician nudges that said air “counts against your efficiency” now say it doesn’t; Career and Manager say “Hours on jobs” (they said Hours clocked); the Manager’s Overall (sold ÷ on the clock) is called productivity, not efficiency; the Time Log and day report air legends say “not in efficiency”
+  · No clock stops at the end of the shift: the RO page clock card used to stop your running clock (and close the day clock) at the shop’s end of day — now it only says “The shift ended at 15:30 — your clock keeps running.” The lunch pause and restart are as before; the reminders stay
+  The RO card:
+  · Key tag beside the spot: “Unit T-388 · Bay 11 · Key 77” on the truck card — click it to change it (Add key when there’s none; Enter, Tab, Esc, Undo, an Activity line) — and beside the spot in the RO list (its pane and the Spot column) and the Technician list. The New RO import also reads Key #, Key no. and Key tag number
+  Fixed: the Time Log’s day list said “Job after the clock-out · NaN min” — it gives the time now
 
 Parsec 14.8 — the RO page: Declined on the operation’s status · the complaint changes in place · Extract operations
   · Declined is the last choice on an operation’s status menu (after a line, with the Declined icon; number keys pick in that menu). It stops any clock running on the operation (as Hold tech) and declines it the way the app always has — it leaves the totals, the money and the RO’s status. The card shows the Declined pill and who declined it; any other status brings the operation back. One Undo; an Activity line
