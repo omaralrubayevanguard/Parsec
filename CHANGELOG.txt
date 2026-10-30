@@ -1,5 +1,22 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 14.9 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 15 is the newest.
+
+Parsec 15 — the RO page trimmed to Operations, Messages and Customer · the clock only reminds · delete a time entry and it stays as air · a reason for air · edit or delete a note that isn’t on a punch
+  (Your picks from “Parsec RO page, clock and notes ideas mock-up.html”.)
+  The RO page:
+  · Below Operations only Messages about this RO and Customer are left. Fault codes, Photos & codes, Parts on this RO, Truck history, Warranty claim, Estimate & approval and Ready to close are gone from the RO page — what they did stays where it lives: each operation’s Parts tab (with Receive / Install), the Parts and Warranty pages, Assets (now “Truck history in Assets…” on the truck card’s ⋯ menu), the truck card’s Truck checks and Release, Triage’s Ready to close
+  · No more opening while you point at a heading — one switch above Messages reads Collapse all while anything is open and Expand all once everything is folded; a heading or its chevron still folds one section; remembered as before
+  · The right pane the same: its own switch (under the stage, above Who has it) for Who has it, Schedule, People, Vehicle and Money; no hover. The truck card and the stage stay as they are
+  The clock — it only reminds now:
+  · Nothing stops or clocks you out by itself any more: the clock card’s lunch pause and restart are gone, and stopping a job as Lunch or End of day no longer closes the day clock
+  · Lunch time: after 4 hours on the clock with no lunch clock-out (and not marked worked through lunch), a card on every page — time on the clock and the running job — with Stop · lunch 30 min, 1 hour and Not now. The lunch buttons stop the job as Lunch and clock out; “Lunch is over” asks you back, nothing clocks in by itself
+  · Clock out for the day?: right when a job stops as End of day — Clock out now / Not yet (five minutes on, it also offers Clock out at the time the job stopped). A Lunch stop asks Clock out for lunch? The 20-minute “Still on the clock?” card after the shift stays
+  · Not now / Not yet asks again 15 minutes later
+  Time entries:
+  · A trash on every stopped entry in the Time Log (and the selected-entry bar; the RO page Time tab had one) — one click, Undo in the message, no question. The minutes stay on the clock as air and say what was there: “Air — deleted 6629 · 09:30–11:58” with who deleted it, on the day’s air row, the timeline, the RO page Time tab and the day report. Someone who has to ask for time changes sends the delete as an ask
+  · + Reason on every air row: Waiting on parts, No work assigned, Waiting on the foreman, Cleaning up, Meeting, or your own words — shown on the row (with a note tag), the timeline tip, the Shop view and the day report; a reason also clears that air’s warning
+  Operation notes:
+  · On the RO page Time tab, a note that isn’t on a punch (Cause, Correction, notes added off the clock) gets a pencil and a trash when you point at it (a ⋯ on a phone): edit in place (Enter saves, Esc cancels, marked edited), delete with Undo. Allowed for the note’s writer, the foreman, the manager and the admin (a note with no writer counts as the operation’s tech’s); others see them greyed with the reason. New notes now record who wrote them
 
 Parsec 14.9 — one tooltip everywhere · status, people and blocked actions explain themselves · air out of efficiency · no clock stops at shift end · the key tag
   Tooltips (your picks from the mock-up):
