@@ -1,5 +1,26 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 16.1 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 16.2 is the newest.
+
+Parsec 16.2 — one Settings page · six new automations and a What ran log · rules as sentences
+  (Your picks from "Parsec settings and automations ideas mock-up.html".)
+  Automations (all on by default, each with its switch):
+  · Parts in → the tech on that operation and the foreman get a note
+  · Waiting on the customer 4 h with no update → a reminder to the advisor
+  · Ready to release (Complete – Road test) → the advisor and the foreman
+  · Starting an operation whose part isn't in asks first ("Op 2's NOx sensor isn't in yet (Ordered · ETA Fri). Start anyway?"), once per operation; part locks still stop a repair
+  · A running clock at 100% of the quote → the foreman
+  · Warranty claims near their filing/resubmit days, unanswered or approved-but-unpaid → the warranty admin and the advisor
+  · Each reminder is sent once and re-arms when its condition clears
+  · What ran: every automated change (built-ins and your rules) is logged on the Automations page — newest first, filter by rule, Undo on each (puts the status back, withdraws the message, restores the field; greyed with the reason once something changed it again). 500 entries / 30 days
+  · Rules read as a sentence: "When [event] [as …] and [detail is …] then [action] to [value]" — chips open the same choices, + and / + then, keyboard works; old rules show as sentences, unchanged underneath. Test run replays the last 7 days without changing anything; Save waits for a whole sentence; new rules start off
+  Settings:
+  · One Settings page for every setting (71), grouped by who it's for — Me · The shop · People & access · Data · Automations · Shortcuts — with a menu down the side (a top list on a phone)
+  · Search finds any setting by name, help or value and jumps to it with a highlight
+  · Every setting says who can change it and where it applies; others see it read-only ("Only the manager can change this")
+  · A dot marks what's changed from the default; Reset on each, Reset a whole group
+  · Recently changed: who changed what and when, Undo on each
+  · The person pop-over keeps Size, Tooltips and Theme, plus All settings…
+  · Moved in: Profile & settings, the app menu, Manager (shop settings, stage rules, hold goals, hand-offs), Foreman (shop day, lunch, QC, badge, bay types), Warranty (13), Parts setup (13), Admin (Admin PIN, sign-in rules, roles, each person's role/pages/actions — adding people, PIN resets and turning sign-in off stay on Admin), Triage (text templates, shop name and phone). The old places link into Settings
 
 Parsec 16.1 — Work tools trimmed: the Assistant and the note time stamps are gone
   · The Assistant is removed completely — its chat panel and button, the menu item, its actions and shortcut, the Work tools card, the tooltip and all its code. On first open, the API key, model and chat history it kept in this browser are deleted, so no key is left behind
