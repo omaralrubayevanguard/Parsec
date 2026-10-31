@@ -1,5 +1,35 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 15 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 16 is the newest.
+
+Parsec 16 — the data store: everything saved, two computers merged, a cleaner folder, ready for the server
+  (Your picks from “Parsec data storage ideas mock-up.html”.)
+  Fixed first:
+  · Every kind of data now reaches the folder. Nine never did — permissions, time-fix asks, air reasons, the Completed ROs record, RO list layouts / views / columns, the handover and the page setup lived only in the browser and were lost when another computer saved. Every kind now has a home in the folder, anything new without one is still saved (Shop/other.json), and the build stops if a new kind has no home: “data check: 72 kinds · 72 saved · 0 left out”
+  · Two computers, both changes kept: when the folder changed on another computer, Parsec merges record by record instead of asking “keep mine or load theirs”. A record changed on one side keeps that change; different parts of one record changed on both sides are both kept; a delete beats an older edit. Only when the same thing changed on both does it ask — “Two computers changed the same thing”, both values with who and when, the newer picked for you. Undo puts a merge back; an Activity line says what was merged
+  · Backups hold the whole day: one compressed copy at the end of each working day (the shop’s end time, or when the last person clocks out for the End of day), in Parsec Data/Backups/<year-month>/, kept 30 days. If Parsec was closed before the end, the day is backed up the next time it opens. Back up now still works, any time. Restore reads the new and the old backups
+  · Clean data, converted once (a backup first; nothing dropped): dates with a time are all one form, date-only values (build date, warranty start, ETAs) are year-month-day, money is a number instead of text. They show exactly as before. A value Parsec couldn’t read is left as it was and listed
+  A better layout (the one-time move checks itself: backup, write, read it all back and compare — only then are the old files removed; on any difference the old files stay and Parsec keeps saving the old way):
+      Parsec Data/
+        layout.json
+        ROs/Open/<RO number - Customer>/ro.json · <RO> Repair Order.html · Attachments/
+        ROs/Closed/<year>/<RO number - Customer>/ro.json.gz · <RO> Repair Order.html · Attachments/
+        Shop/people · settings · inventory · inbox · library · time · completed · lists · deleted · other (.json)
+        Shop/clock/<year-month>.json · Shop/activity/<year-month>.json · Shop/timesheets/<year>.json
+        Backups/ · Exports/
+  · An RO moves to Closed/<year> when it’s released or declined (attachments with it) and back to Open if it’s reopened. Folder names stay as before
+  · ro.json is the RO’s data; the Repair Order page beside it is for reading and printing
+  · The shop is split by topic, and the busy ones by month — a clock-in rewrites one small file, not everything
+  Ready for the server:
+  · Every record has a permanent ID, a changed-at time and who changed it; a deleted record leaves a deleted mark (kept until the server has it)
+  · Export for the server (Your data page, manager and admin): Parsec Data/Exports/<date time>/ with the data as linked tables (ROs, operations, parts, notes, punches, day clocks, people, inventory, activity, inbox, time fixes, air reasons, completed, deleted marks, attachments, settings), every photo and file, money in cents, a schema.json describing every table and column, a plain README, and manifest.json — counts and a sha-256 checksum for every file. Zip the folder with Send to → Compressed folder if you need one file
+  · Round-trip check: verifies every checksum and count (refuses and names what’s missing or different), rebuilds the data from the tables alone and compares — “Identical — 0 differences”. Clear deleted marks the server has is a separate button
+  Smaller files:
+  · Backups and closed ROs are compressed (about 9–12× smaller — 703 KB → 77 KB on the 148-RO sample); open ROs stay plain
+  · The Completed ROs record keeps only what it needs (about half the size on the sample); a deleted RO still keeps its full copy
+  · New photos wider than 1600 px or over 2 MB are saved at 1600 px; PDFs, small pictures and existing files are untouched
+  Good to know:
+  · Update every computer to Parsec 16 together. If a computer still on Parsec 15 saves into the folder, Parsec 16 merges its changes, removes the old files and says so once — but update it
+  · Two small display changes from the money clean-up: a zero price shows “no charge”, and a price like 12.40 shows as 12.4 in the Edit part box
 
 Parsec 15 — the RO page trimmed to Operations, Messages and Customer · the clock only reminds · delete a time entry and it stays as air · a reason for air · edit or delete a note that isn’t on a punch
   (Your picks from “Parsec RO page, clock and notes ideas mock-up.html”.)
