@@ -1,5 +1,12 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 16 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 16.1 is the newest.
+
+Parsec 16.1 — Work tools trimmed: the Assistant and the note time stamps are gone
+  · The Assistant is removed completely — its chat panel and button, the menu item, its actions and shortcut, the Work tools card, the tooltip and all its code. On first open, the API key, model and chat history it kept in this browser are deleted, so no key is left behind
+  · The “Stamp the time in your notes” automation (Work log stamps) is removed — the built-in, its Work tools line and Automations panel row, the time Enter/Save used to add to punch notes and Work performed, and any stamp suggestion still waiting. Notes are saved exactly as typed. Old notes that already have stamps stay as they were (Copy notes leaves the stamps out); custom rules can still use the “Stamp work log” action
+  · A new note has no time of its own now, so the RO page Time tab shows it at its punch’s start
+  · The file is 41,877 bytes (40.9 KB, 0.5%) smaller — about 10 KB smaller compressed; 642 lines, 42 style rules and 26 functions gone
+  The settings and automations ideas mock-up (Parsec settings and automations ideas mock-up.html): 9 places settings live today, and 16 ideas — 8 better automations, 8 for one Settings page
 
 Parsec 16 — the data store: everything saved, two computers merged, a cleaner folder, ready for the server
   (Your picks from “Parsec data storage ideas mock-up.html”.)

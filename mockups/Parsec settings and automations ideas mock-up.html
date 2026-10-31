@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en" data-th="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parsec · Settings and automations</title>
+<style>
+/* ---------- tokens: two themes (rename to the app's own, e.g. Ivory / Graphite) ---------- */
+:root,[data-th="light"]{--canvas:#F2F0EA;--panel:#FBFAF7;--raised:#fff;--fill:#F0EDE6;--hair:#E6E2D8;--border:#D6D0C3;--ink:#1D1C1A;--ink2:#57534B;--ink3:#67625A;--acc:#86643A;--acct:#F4EDE1;--accl:#D9C5A3;--primary:#1D1C1A;--onprimary:#FBFAF7;--good:#3A8C60;--warn:#AD7210;--bad:#C0503F;--shadow:0 0 0 1px rgba(29,28,26,.06),0 1px 3px rgba(29,28,26,.04);--raise:0 0 0 1px rgba(29,28,26,.08),0 18px 44px -14px rgba(29,28,26,.28);color-scheme:light}
+[data-th="dark"]{--canvas:#0E0E0D;--panel:#151514;--raised:#1D1D1B;--fill:#222220;--hair:#262624;--border:#363532;--ink:#EDEBE6;--ink2:#B0ACA3;--ink3:#9A968D;--acc:#D1B184;--acct:#2A241B;--accl:#6B5A40;--primary:#EDEBE6;--onprimary:#151514;--good:#5BBE8B;--warn:#E2A84C;--bad:#EC7F6C;--shadow:0 0 0 1px rgba(255,255,255,.06);--raise:0 0 0 1px rgba(255,255,255,.08),0 20px 50px -14px rgba(0,0,0,.7);color-scheme:dark}
+:root{--sans:"Inter","Segoe UI",system-ui,sans-serif;--serif:"Iowan Old Style",Georgia,serif;--mono:"Cascadia Mono",Consolas,monospace}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--canvas);color:var(--ink);font:400 14px/1.45 var(--sans);-webkit-font-smoothing:antialiased}
+button,input,textarea{font:inherit;color:inherit}
+/* ---------- the frame (prefix ip- so the drawn visuals' classes can't collide) ---------- */
+.ip-bar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 16px;background:var(--canvas);box-shadow:inset 0 -1px 0 var(--hair)}
+.ip-bar h1{margin:0 auto 0 0;display:flex;align-items:baseline;gap:10px;font:500 19px/24px var(--serif)}
+.ip-bar h1 small{font:500 11px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.ip-jump{display:flex;gap:2px;flex-wrap:wrap} .ip-jump a{padding:4px 9px;border-radius:7px;font-size:12.5px;color:var(--ink2);text-decoration:none} .ip-jump a:hover{background:var(--fill)}
+.ip-seg{display:inline-flex;gap:2px;padding:2px;border-radius:9px;background:var(--fill)}
+.ip-seg button{all:unset;cursor:pointer;height:26px;padding:0 10px;border-radius:7px;font-size:12.5px;font-weight:500;color:var(--ink2)} .ip-seg button[aria-pressed="true"]{background:var(--raised);color:var(--ink);box-shadow:var(--shadow)}
+.ip-btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 11px;border-radius:8px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--border);font:500 12.5px/1 var(--sans)}
+.ip-btn.pri{background:var(--primary);color:var(--onprimary);box-shadow:none} .ip-btn em{font-style:normal;opacity:.7;font-size:11px}
+.ip-btn:focus-visible,.ip-opt:focus-visible,.ip-seg button:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.ip-wrap{max-width:1500px;margin:0 auto;padding:18px 16px 120px}
+.ip-now{margin:0 0 20px;padding:14px 16px;border-radius:14px;background:var(--panel);box-shadow:var(--shadow)} .ip-now h2{margin:0 0 8px;font:500 15px/1 var(--serif)}
+.ip-lead{margin:0 2px 18px;color:var(--ink2)}
+.ip-sec{margin:0 0 26px;scroll-margin-top:64px} .ip-sec h2{display:flex;align-items:baseline;gap:10px;margin:0 2px 10px;font:500 22px/28px var(--serif)} .ip-sec h2 small{font:400 12.5px var(--sans);color:var(--ink3)}
+.ip-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(440px,1fr));gap:14px} @media (max-width:980px){.ip-grid{grid-template-columns:1fr}}
+.ip-idea{min-width:0;display:flex;flex-direction:column;gap:10px;padding:14px 14px 10px;border-radius:14px;background:var(--panel);box-shadow:var(--shadow)}
+.ip-idea.picked{box-shadow:0 0 0 1.5px var(--accl),var(--shadow)}
+.ip-idea h3{margin:0;font:600 15px/20px var(--sans)} .ip-idea header p{margin:3px 0 0;font-size:12.5px;line-height:17px;color:var(--ink3)}
+.ip-vis{position:relative;min-height:96px;padding:12px;border-radius:11px;background:var(--canvas);box-shadow:inset 0 0 0 1px var(--hair);font-size:12.5px;overflow:hidden}
+.ip-replay{all:unset;cursor:pointer;position:absolute;right:8px;bottom:8px;z-index:5;width:24px;height:24px;border-radius:7px;display:grid;place-items:center;background:var(--raised);box-shadow:var(--shadow);color:var(--ink3);font-size:11px}
+.ip-ol{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:2px}
+.ip-opt{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:14px minmax(0,1fr);gap:8px;padding:6px 8px;border-radius:9px;font-size:12.5px;line-height:16px;color:var(--ink2)}
+.ip-opt:hover{background:var(--fill)} .ip-opt i{width:14px;height:14px;margin-top:1px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--border)}
+.ip-opt b{display:block;font-weight:500;color:var(--ink)} .ip-opt small{display:block;font-size:11.5px;color:var(--ink3)}
+.ip-opt[aria-pressed="true"]{background:var(--acct)} .ip-opt[aria-pressed="true"] i{box-shadow:inset 0 0 0 4.5px var(--acc)}
+#ip-picks{position:fixed;z-index:85;right:16px;top:62px;width:440px;max-width:calc(100vw - 32px);max-height:calc(100vh - 80px);overflow:auto;padding:12px 14px 14px;border-radius:16px;background:var(--raised);box-shadow:var(--raise);display:flex;flex-direction:column;gap:10px}
+#ip-picks[hidden]{display:none}
+#ip-picks pre{margin:0;padding:10px 12px;border-radius:10px;background:var(--fill);font:400 12px/1.55 var(--mono);white-space:pre-wrap}
+#ip-picks textarea{min-height:60px;padding:8px 10px;border:0;border-radius:9px;background:var(--fill);font-size:13px;resize:vertical;outline:none}
+.ip-ph{display:flex;align-items:center;font:500 18px/1 var(--serif)} .ip-ph b{flex:1;font-weight:500} .ip-ph button{all:unset;cursor:pointer;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;color:var(--ink3)}
+.ip-toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:99;padding:10px 14px;border-radius:10px;background:var(--primary);color:var(--onprimary);font-size:13px;box-shadow:var(--raise)}
+@media (max-width:640px){ .ip-grid{grid-template-columns:1fr} #ip-picks{left:16px;right:16px;width:auto} .ip-bar h1 small{display:none} }
+
+/* ---------- the drawn visuals (v-) · each stage animates with [data-step] on .ip-vis ---------- */
+.ip-vis{padding:0}
+.v-st{position:relative;height:230px;padding:12px;overflow:hidden;font-size:12px}
+.v-st.h-s{height:190px} .v-st.h-l{height:270px}
+.v-cur{position:absolute;left:calc(100% - 30px);top:calc(100% - 26px);width:14px;height:14px;z-index:20;pointer-events:none;transition:left .55s cubic-bezier(.2,.75,.25,1),top .55s cubic-bezier(.2,.75,.25,1)}
+.v-cur::before{content:"";position:absolute;inset:0;clip-path:polygon(0 0,0 100%,30% 72%,52% 100%,64% 94%,44% 66%,80% 66%);background:var(--ink);filter:drop-shadow(0 0 1px var(--raised))}
+.v-cur::after{content:"";position:absolute;left:-8px;top:-8px;width:30px;height:30px;border-radius:50%;background:var(--acc);opacity:0;transform:scale(.3)}
+[data-step^="c-"] .v-cur::after{animation:v-ripple .45s ease-out}
+@keyframes v-ripple{0%{opacity:.4;transform:scale(.3)}100%{opacity:0;transform:scale(1.4)}}
+.v-b{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 9px;border-radius:7px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--border);font:500 11.5px/1 var(--sans);color:var(--ink);white-space:nowrap;transition:background .2s,color .2s}
+.v-b.pri{background:var(--primary);color:var(--onprimary);box-shadow:none}
+.v-ic{width:13px;height:13px;flex:none}
+.v-t2,.v-t3,.v-t4{display:none}
+.v-pill{display:inline-flex;align-items:center;gap:5px;height:20px;padding:0 8px;border-radius:999px;font-size:11px;font-weight:600;white-space:nowrap;background:var(--fill);color:var(--ink2);transition:background .3s,color .3s}
+.v-pill::before{content:"";width:7px;height:7px;border-radius:50%;border:1.5px solid currentColor;box-sizing:border-box}
+.v-pill.wait{background:color-mix(in srgb,var(--warn) 14%,var(--panel));color:var(--warn)} .v-pill.good{background:color-mix(in srgb,var(--good) 14%,var(--panel));color:var(--good)} .v-pill.cust{background:color-mix(in srgb,#2F8795 14%,var(--panel));color:#2F8795}
+.v-row{display:flex;align-items:center;gap:8px;min-height:30px;padding:0 10px;border-radius:9px;background:var(--panel);box-shadow:var(--shadow);margin-bottom:6px;font-size:12px}
+.v-row .sp{flex:1} .v-row .m{font:500 11px var(--mono);color:var(--ink3)} .v-row b{font-weight:600}
+/* the inbox ping — slides in bottom right */
+.v-ping{position:absolute;right:12px;bottom:12px;z-index:10;width:270px;max-width:calc(100% - 24px);padding:9px 11px;border-radius:12px;background:var(--primary);color:var(--onprimary);box-shadow:var(--raise);opacity:0;transform:translateX(22px);transition:opacity .3s,transform .3s}
+.v-ping b{display:block;font-size:12px} .v-ping small{display:block;margin-top:1px;font-size:11px;opacity:.75;line-height:15px} .v-ping .v-to{position:absolute;right:10px;top:8px;font-size:10px;opacity:.6}
+[data-step="ping"] .v-ping{opacity:1;transform:none}
+/* parts (a1) */
+[data-step="in"] .v-pst .v-t1,[data-step="move"] .v-pst .v-t1,[data-step="ping"] .v-pst .v-t1{display:none} [data-step="in"] .v-pst .v-t2,[data-step="move"] .v-pst .v-t2,[data-step="ping"] .v-pst .v-t2{display:inline}
+[data-step="in"] .v-pst,[data-step="move"] .v-pst,[data-step="ping"] .v-pst{background:color-mix(in srgb,var(--good) 14%,var(--panel));color:var(--good)}
+[data-step="move"] .v-ost .v-t1,[data-step="ping"] .v-ost .v-t1{display:none} [data-step="move"] .v-ost .v-t2,[data-step="ping"] .v-ost .v-t2{display:inline}
+[data-step="move"] .v-ost,[data-step="ping"] .v-ost{background:var(--fill);color:var(--ink2)}
+/* waiting on the customer (a2) */
+.v-w{font:500 11px var(--mono);color:var(--ink3)} .v-w span{display:none}
+[data-step="w1"] .v-w .q1,[data-step="w2"] .v-w .q2,[data-step="w3"] .v-w .q3,[data-step="ping"] .v-w .q3{display:inline}
+[data-step="w3"] .v-w,[data-step="ping"] .v-w{color:var(--bad);font-weight:700}
+.v-clock{display:inline-block;width:14px;height:14px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--ink3);position:relative;vertical-align:-3px;margin-right:4px}
+.v-clock::after{content:"";position:absolute;left:6px;top:2px;width:1.5px;height:5px;background:var(--ink3);transform-origin:50% 100%;animation:v-tick 1.2s linear infinite}
+@keyframes v-tick{to{transform:rotate(360deg)}}
+/* ready to release (a3) */
+.v-board{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.v-col{min-height:120px;padding:6px;border-radius:10px;background:var(--fill)} .v-col h6{margin:0 0 6px;font:600 10.5px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--ink3)}
+.v-card{padding:7px 9px;border-radius:9px;background:var(--panel);box-shadow:var(--shadow);font-size:11.5px;transition:opacity .35s,transform .35s}
+.v-card b{display:block;font-weight:600} .v-ck{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap} .v-ck span{font-size:10.5px;color:var(--ink3)} .v-ck span i{font-style:normal;color:var(--ink4,var(--ink3));margin-right:2px}
+[data-step="c1"] .v-ck .k1 i,[data-step="c2"] .v-ck .k1 i,[data-step="c2"] .v-ck .k2 i,[data-step="rt"] .v-ck i,[data-step="move"] .v-ck i,[data-step="ping"] .v-ck i{color:var(--good)}
+[data-step="c1"] .v-ck .k1,[data-step="c2"] .v-ck .k1,[data-step="c2"] .v-ck .k2,[data-step="rt"] .v-ck span,[data-step="move"] .v-ck span,[data-step="ping"] .v-ck span{color:var(--good)}
+.v-card.dst{opacity:0;transform:translateX(-14px)} [data-step="move"] .v-card.src,[data-step="ping"] .v-card.src{opacity:0;transform:translateX(14px)} [data-step="move"] .v-card.dst,[data-step="ping"] .v-card.dst{opacity:1;transform:none}
+/* parts not in (a4) */
+.v-ask{position:absolute;left:12px;right:12px;top:84px;z-index:9;padding:10px 12px;border-radius:12px;background:var(--raised);box-shadow:var(--raise);opacity:0;transform:translateY(-4px);transition:opacity .25s,transform .25s}
+.v-ask b{display:block;font-size:12.5px} .v-ask small{display:block;margin:2px 0 8px;font-size:11px;color:var(--ink3)} .v-ask .v-r{display:flex;gap:6px;flex-wrap:wrap}
+[data-step="ask"] .v-ask{opacity:1;transform:none}
+.ip-idea[data-k="noparts"] [data-step="p-st"] .v-cur,.ip-idea[data-k="noparts"] [data-step="c-st"] .v-cur{left:calc(100% - 46px);top:24px}
+[data-step="c-st"] .v-start{filter:brightness(1.3)}
+/* over the quote (a5) */
+.v-bar{position:relative;height:16px;margin:28px 0 10px;border-radius:6px;background:var(--fill)}
+.v-bar i{position:absolute;left:0;top:0;bottom:0;width:20%;border-radius:6px;background:var(--good);transition:width .9s linear,background .3s}
+.v-bar .v-q{position:absolute;left:80%;top:-8px;bottom:-8px;border-left:2px dashed var(--ink2)} .v-bar .v-q em{position:absolute;bottom:100%;left:-2px;font-size:10.5px;font-style:normal;white-space:nowrap;color:var(--ink2);background:var(--canvas);padding:0 3px}
+[data-step="g1"] .v-bar i{width:55%} [data-step="g2"] .v-bar i{width:78%} [data-step="g3"] .v-bar i,[data-step="ping"] .v-bar i{width:94%;background:var(--warn)}
+.v-num{font:500 20px/1 var(--serif)} .v-num span{display:none} [data-step="idle"] .v-num .n0,[data-step="g1"] .v-num .n1,[data-step="g2"] .v-num .n2,[data-step="g3"] .v-num .n3,[data-step="ping"] .v-num .n3{display:inline}
+[data-step="g3"] .v-num,[data-step="ping"] .v-num{color:var(--warn)}
+/* warranty (a6) */
+.v-days{position:relative;height:64px;margin:22px 4px 8px}
+.v-days .ln{position:absolute;left:0;right:0;top:20px;height:3px;border-radius:2px;background:var(--fill)}
+.v-days .pr{position:absolute;left:0;top:20px;height:3px;width:0;border-radius:2px;background:var(--acc);transition:width .9s linear}
+.v-dm{position:absolute;top:12px;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:var(--panel);box-shadow:inset 0 0 0 2px var(--border);transition:box-shadow .3s,background .3s}
+.v-dm em{position:absolute;top:22px;left:50%;transform:translateX(-50%);font-size:10.5px;font-style:normal;white-space:nowrap;color:var(--ink3)}
+[data-step="sub"] .v-dm.d0,[data-step="d3"] .v-dm.d0,[data-step="d7"] .v-dm.d0,[data-step="ping"] .v-dm.d0{box-shadow:inset 0 0 0 5px var(--acc)}
+[data-step="d3"] .v-days .pr{width:40%} [data-step="d7"] .v-days .pr,[data-step="ping"] .v-days .pr{width:86%}
+[data-step="d3"] .v-dm.d3,[data-step="d7"] .v-dm.d3,[data-step="ping"] .v-dm.d3{box-shadow:inset 0 0 0 5px var(--acc)}
+[data-step="d7"] .v-dm.d7,[data-step="ping"] .v-dm.d7{box-shadow:inset 0 0 0 5px var(--bad)} [data-step="d7"] .v-dm.d7 em,[data-step="ping"] .v-dm.d7 em{color:var(--bad);font-weight:600}
+/* the sentence builder (a7) */
+.v-sent{display:flex;flex-wrap:wrap;gap:6px;align-items:center;line-height:26px;font-size:12.5px}
+.v-sent .w{color:var(--ink3);font-weight:600} .v-sent .c{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:7px;background:var(--acct);color:var(--acc);font-weight:600;opacity:0;transform:translateY(4px);transition:opacity .25s,transform .25s}
+[data-step="s1"] .c1,[data-step="s2"] .c1,[data-step="s2"] .c2,[data-step="s3"] .c1,[data-step="s3"] .c2,[data-step="s3"] .c3,[data-step="s4"] .c,[data-step="p-test"] .c,[data-step="c-test"] .c,[data-step="res"] .c{opacity:1;transform:none}
+.v-sent .w{opacity:.35;transition:opacity .25s} [data-step="s1"] .w1,[data-step="s2"] .w1,[data-step="s2"] .w2,[data-step="s3"] .w1,[data-step="s3"] .w2,[data-step="s3"] .w3,[data-step="s4"] .w,[data-step="p-test"] .w,[data-step="c-test"] .w,[data-step="res"] .w{opacity:1}
+.v-test{margin-top:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.v-res{margin-top:8px;padding:7px 10px;border-radius:9px;background:var(--panel);box-shadow:var(--shadow);font-size:11.5px;line-height:17px;opacity:0;transition:opacity .3s}
+[data-step="res"] .v-res{opacity:1}
+.ip-idea[data-k="builder"] [data-step="p-test"] .v-cur,.ip-idea[data-k="builder"] [data-step="c-test"] .v-cur,.ip-idea[data-k="builder"] [data-step="res"] .v-cur{left:96px;top:132px}
+/* the log (a8, s8) */
+.v-log{display:flex;flex-direction:column;border-radius:9px;background:var(--panel);box-shadow:var(--shadow);overflow:hidden}
+.v-log h6{margin:0;padding:6px 10px;font:600 10.5px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--ink3);box-shadow:inset 0 -1px 0 var(--hair)}
+.v-lr{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:8px;align-items:center;min-height:32px;padding:0 10px;box-shadow:inset 0 -1px 0 var(--hair);font-size:11.5px;opacity:0;transform:translateY(4px);transition:opacity .25s,transform .25s,background .3s}
+.v-lr:last-child{box-shadow:none} .v-lr .t{font:500 10.5px var(--mono);color:var(--ink3)} .v-lr .x{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .v-lr .u{font-size:11px;font-weight:600;color:var(--acc)}
+.v-lr .u .v-t2{color:var(--ink3);font-weight:500}
+[data-step="rows"] .v-lr,[data-step="p-un"] .v-lr,[data-step="c-un"] .v-lr,[data-step="done"] .v-lr{opacity:1;transform:none}
+[data-step="rows"] .v-lr:nth-child(3){transition-delay:.12s} [data-step="rows"] .v-lr:nth-child(4){transition-delay:.24s}
+[data-step="done"] .v-lr.un{background:var(--fill)} [data-step="done"] .v-lr.un .x{text-decoration:line-through;color:var(--ink3)} [data-step="done"] .v-lr.un .u .v-t1{display:none} [data-step="done"] .v-lr.un .u .v-t2{display:inline}
+.ip-idea[data-k="log"] [data-step="p-un"] .v-cur,.ip-idea[data-k="log"] [data-step="c-un"] .v-cur{left:calc(100% - 40px);top:94px}
+.ip-idea[data-k="history"] [data-step="p-un"] .v-cur,.ip-idea[data-k="history"] [data-step="c-un"] .v-cur{left:calc(100% - 40px);top:62px}
+/* one settings page (s1) */
+.v-tile{position:absolute;padding:5px 9px;border-radius:8px;background:var(--panel);box-shadow:var(--shadow);font-size:11px;white-space:nowrap;transition:left .6s cubic-bezier(.2,.75,.25,1),top .6s cubic-bezier(.2,.75,.25,1),opacity .4s,transform .6s}
+[data-step="conv"] .v-tile,[data-step="page"] .v-tile{left:44%!important;top:42%!important;opacity:.0;transform:scale(.6)}
+.v-pg{position:absolute;left:12px;right:12px;top:12px;bottom:12px;border-radius:12px;background:var(--panel);box-shadow:var(--raise);padding:10px 12px;opacity:0;transform:scale(.96);transition:opacity .35s,transform .35s}
+[data-step="page"] .v-pg{opacity:1;transform:none}
+.v-pg h5{margin:0 0 8px;font:500 15px var(--serif)} .v-gr{display:grid;grid-template-columns:110px minmax(0,1fr);gap:8px;align-items:baseline;padding:4px 0;box-shadow:inset 0 -1px 0 var(--hair);font-size:11.5px}
+.v-gr:last-child{box-shadow:none} .v-gr b{font-weight:600} .v-gr span{color:var(--ink3);font-size:11px;line-height:15px}
+/* groups (s2) */
+.v-acc{display:flex;flex-direction:column;gap:5px}
+.v-ah{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:9px;background:var(--panel);box-shadow:var(--shadow);font-size:12px;transition:box-shadow .25s}
+.v-ah b{font-weight:600;flex:none;width:118px} .v-ah span{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink3);font-size:11px;opacity:.45;transition:opacity .25s}
+[data-step="g1"] .v-ah.a1,[data-step="g2"] .v-ah.a2,[data-step="g3"] .v-ah.a3,[data-step="g4"] .v-ah.a4,[data-step="g5"] .v-ah.a5{box-shadow:var(--shadow),inset 3px 0 0 var(--acc)}
+[data-step="g1"] .v-ah.a1 span,[data-step="g2"] .v-ah.a2 span,[data-step="g3"] .v-ah.a3 span,[data-step="g4"] .v-ah.a4 span,[data-step="g5"] .v-ah.a5 span,[data-step="all"] .v-ah span{opacity:1;color:var(--ink2)}
+/* left menu (s3) */
+.v-lay{display:grid;grid-template-columns:118px minmax(0,1fr);gap:10px;height:100%}
+.v-menu{display:flex;flex-direction:column;gap:2px;padding:6px;border-radius:10px;background:var(--panel);box-shadow:var(--shadow)}
+.v-mi{padding:5px 8px;border-radius:7px;font-size:11.5px;color:var(--ink2);transition:background .2s,color .2s}
+.v-mi.on{background:var(--fill);color:var(--ink);font-weight:600}
+[data-step="c-sh"] .v-mi.on,[data-step="shop"] .v-mi.on{background:transparent;color:var(--ink2);font-weight:400} [data-step="c-sh"] .v-mi.m2,[data-step="shop"] .v-mi.m2{background:var(--fill);color:var(--ink);font-weight:600}
+.v-pane{padding:8px 10px;border-radius:10px;background:var(--panel);box-shadow:var(--shadow);font-size:11.5px}
+.v-pane h6{margin:0 0 6px;font:600 12px var(--sans)} .v-kv{display:flex;justify-content:space-between;gap:8px;padding:4px 0;box-shadow:inset 0 -1px 0 var(--hair);color:var(--ink2)} .v-kv:last-child{box-shadow:none} .v-kv b{font-weight:500;color:var(--ink)}
+.v-pane .p2{display:none} [data-step="c-sh"] .v-pane .p1,[data-step="shop"] .v-pane .p1{display:none} [data-step="c-sh"] .v-pane .p2,[data-step="shop"] .v-pane .p2{display:block}
+.ip-idea[data-k="nav"] [data-step="p-sh"] .v-cur,.ip-idea[data-k="nav"] [data-step="c-sh"] .v-cur,.ip-idea[data-k="nav"] [data-step="shop"] .v-cur{left:70px;top:52px}
+/* search (s4) */
+.v-sb{display:flex;align-items:center;gap:8px;height:30px;padding:0 10px;border-radius:9px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--border);font-size:12px;color:var(--ink3);transition:box-shadow .2s}
+[data-step="t1"] .v-sb,[data-step="t2"] .v-sb,[data-step="res"] .v-sb,[data-step="p-r"] .v-sb,[data-step="c-r"] .v-sb{box-shadow:inset 0 0 0 2px var(--acc);color:var(--ink)}
+.v-sb .q span{display:none} [data-step="idle"] .v-sb .q .q0,[data-step="t1"] .v-sb .q .q1,[data-step="t2"] .v-sb .q .q2,[data-step="res"] .v-sb .q .q2,[data-step="p-r"] .v-sb .q .q2,[data-step="c-r"] .v-sb .q .q2,[data-step="jump"] .v-sb .q .q0{display:inline}
+.v-drop{position:absolute;left:12px;right:12px;top:46px;z-index:8;padding:4px;border-radius:10px;background:var(--raised);box-shadow:var(--raise);opacity:0;transform:translateY(-4px);transition:opacity .2s,transform .2s}
+.v-drop div{display:flex;justify-content:space-between;gap:8px;padding:6px 8px;border-radius:7px;font-size:11.5px} .v-drop div small{color:var(--ink3)} .v-drop div:first-child{background:var(--fill)}
+[data-step="res"] .v-drop,[data-step="p-r"] .v-drop,[data-step="c-r"] .v-drop{opacity:1;transform:none}
+.v-target{margin-top:12px;transition:box-shadow .3s}
+[data-step="jump"] .v-target{box-shadow:var(--shadow),0 0 0 2px var(--acc);animation:v-pulse 1s ease 2}
+@keyframes v-pulse{50%{box-shadow:var(--shadow),0 0 0 5px color-mix(in srgb,var(--acc) 35%,transparent)}}
+.ip-idea[data-k="search"] [data-step="p-r"] .v-cur,.ip-idea[data-k="search"] [data-step="c-r"] .v-cur{left:120px;top:60px}
+/* who can change (s5) */
+.v-set{padding:9px 11px;border-radius:10px;background:var(--panel);box-shadow:var(--shadow);transition:opacity .3s}
+.v-set .hd{display:flex;align-items:center;gap:8px;font-size:12.5px} .v-set .hd b{font-weight:600;flex:1} .v-set .val{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:7px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--border);font-size:11.5px}
+.v-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px} .v-tags span{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 7px;border-radius:999px;background:var(--fill);font-size:10.5px;color:var(--ink2)}
+.v-who2 .lbl{font:600 10.5px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--ink3);margin:0 0 5px}
+.v-lock{display:none;margin-left:6px;font-size:11px;color:var(--ink3)}
+[data-step="tech"] .v-set .val{opacity:.55} [data-step="tech"] .v-lock{display:inline}
+.v-wtip{position:absolute;right:12px;top:96px;z-index:8;max-width:250px;padding:6px 9px;border-radius:7px;background:var(--primary);color:var(--onprimary);font-size:11px;line-height:15px;opacity:0;transition:opacity .25s}
+.v-wtip::before{content:"";position:absolute;right:20px;top:-4px;width:8px;height:8px;background:var(--primary);transform:rotate(45deg)}
+[data-step="tech"] .v-wtip{opacity:1}
+.v-who2 .lbl .v-t2{display:none} [data-step="tech"] .v-who2 .lbl .v-t1{display:none} [data-step="tech"] .v-who2 .lbl .v-t2{display:inline}
+.ip-idea[data-k="who"] [data-step="tech"] .v-cur{left:calc(100% - 70px);top:50px}
+/* changed dots (s6) */
+.v-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--acc);margin-left:6px;transition:opacity .3s}
+.v-val .v-t2{display:none}
+[data-step="done"] .v-ch1 .v-dot{opacity:0} [data-step="done"] .v-ch1 .v-val .v-t1{display:none} [data-step="done"] .v-ch1 .v-val .v-t2{display:inline}
+.v-dtip{position:absolute;left:12px;right:12px;top:52px;z-index:8;display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:9px;background:var(--primary);color:var(--onprimary);font-size:11px;opacity:0;transition:opacity .25s}
+.v-dtip .sp{flex:1} .v-dtip .v-b{background:transparent;color:var(--onprimary);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--onprimary) 40%,transparent)}
+[data-step="tip"] .v-dtip,[data-step="c-reset"] .v-dtip{opacity:1}
+.ip-idea[data-k="dots"] [data-step="p-dot"] .v-cur,.ip-idea[data-k="dots"] [data-step="tip"] .v-cur{left:calc(100% - 26px);top:24px}
+.ip-idea[data-k="dots"] [data-step="c-reset"] .v-cur{left:calc(100% - 56px);top:66px}
+/* the person pop-over (s7) */
+.v-pop{position:absolute;left:12px;top:12px;width:210px;padding:9px 10px;border-radius:12px;background:var(--raised);box-shadow:var(--raise);font-size:11.5px;transition:opacity .3s}
+.v-pop .who{display:flex;gap:8px;align-items:center;margin-bottom:8px} .v-av{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--fill);font-size:10px;font-weight:700;color:var(--ink2)}
+.v-pop .who b{display:block;font-weight:600} .v-pop .who small{color:var(--ink3)}
+.v-seg{display:inline-flex;gap:2px;padding:2px;border-radius:7px;background:var(--fill);margin:2px 0 6px} .v-seg span{padding:2px 7px;border-radius:5px;font-size:10.5px;color:var(--ink2)} .v-seg span.on{background:var(--raised);color:var(--ink);box-shadow:var(--shadow)}
+.v-pop .lk{display:block;margin-top:4px;padding-top:6px;box-shadow:inset 0 1px 0 var(--hair);font-weight:600;color:var(--acc)}
+.v-me{position:absolute;right:12px;top:12px;bottom:12px;width:calc(100% - 140px);padding:9px 11px;border-radius:12px;background:var(--panel);box-shadow:var(--raise);opacity:0;transform:translateX(16px);transition:opacity .35s,transform .35s}
+.v-me h6{margin:0 0 6px;font:500 14px var(--serif)}
+[data-step="me"] .v-me{opacity:1;transform:none} [data-step="me"] .v-pop{opacity:.35}
+.ip-idea[data-k="quick"] [data-step="p-all"] .v-cur,.ip-idea[data-k="quick"] [data-step="c-all"] .v-cur{left:60px;top:150px}
+/* the strip */
+.v-now{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px}
+.v-now div{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:10px;background:var(--canvas);font-size:12px;line-height:16px;color:var(--ink2)} .v-now b{font:500 18px/1 var(--serif);color:var(--ink);flex:none;min-width:24px} .v-now div.bad b{color:var(--bad)}
+@media (max-width:520px){ .v-board{gap:6px} .v-gr{grid-template-columns:88px minmax(0,1fr)} .v-lay{grid-template-columns:96px minmax(0,1fr)} .v-me{width:calc(100% - 100px)} .v-pop{width:180px} .v-ah b{width:96px} }
+@media (prefers-reduced-motion:reduce){.v-cur,.v-tile,.v-card,.v-bar i,.v-days .pr,.v-lr,.v-ping{transition:none}.v-cur::after,.v-clock::after,.v-target{animation:none!important}}
+.v-qr{display:flex;align-items:center;justify-content:space-between;gap:8px;height:27px} .v-qr .v-seg{margin:0}
+.v-ping{right:40px;max-width:calc(100% - 52px)}
+/* review fixes */
+.v-cur{left:calc(100% - 64px);top:calc(100% - 34px)}
+.v-ping b{padding-right:44px}
+.v-dm.d0 em{left:-4px;transform:none}
+.v-test{position:absolute;left:12px;top:150px;margin:0} .v-res{position:absolute;left:12px;right:12px;top:184px;margin:0}
+.v-sent .c{opacity:1;transform:none;color:transparent;background:transparent;outline:1px dashed var(--border);outline-offset:-1px;transition:color .25s,background .25s,outline-color .25s}
+[data-step="s1"] .c1,[data-step="s2"] .c1,[data-step="s2"] .c2,[data-step="s3"] .c1,[data-step="s3"] .c2,[data-step="s3"] .c3,[data-step="s4"] .c,[data-step="p-test"] .c,[data-step="c-test"] .c,[data-step="res"] .c{color:var(--acc);background:var(--acct);outline-color:transparent}
+.ip-idea[data-k="builder"] [data-step="p-test"] .v-cur,.ip-idea[data-k="builder"] [data-step="c-test"] .v-cur,.ip-idea[data-k="builder"] [data-step="res"] .v-cur{left:96px;top:158px}
+.ip-idea[data-k="log"] [data-step="p-un"] .v-cur,.ip-idea[data-k="log"] [data-step="c-un"] .v-cur{top:80px}
+.ip-idea[data-k="history"] [data-step="p-un"] .v-cur,.ip-idea[data-k="history"] [data-step="c-un"] .v-cur{top:48px}
+[data-step="conv"] .v-tile{opacity:.95;transform:scale(.85)} [data-step="page"] .v-tile{opacity:0}
+.v-target{display:none} [data-step="jump"] .v-target{display:flex} [data-step="jump"] .v-other{display:none}
+.v-other{margin-top:12px} .v-other + .v-other{margin-top:0}
+.v-dtip{top:124px}
+.ip-idea[data-k="dots"] [data-step="c-reset"] .v-cur{top:134px}
+.v-me{bottom:40px}
+.ip-idea[data-k="quick"] [data-step="me"] .v-cur{left:60px;top:150px}
+.ip-idea[data-k="noparts"] [data-step="ask"] .v-cur{left:calc(100% - 46px);top:24px}
+.v-w{white-space:nowrap} .v-ask{top:76px} .v-wtip{top:118px}
+@media (max-width:520px){ .v-col h6{min-height:26px} }
+</style>
+</head>
+<body>
+<div class="ip-bar"><h1>Parsec <small>Settings · automations</small></h1><nav class="ip-jump" id="ip-jump"></nav>
+<div class="ip-seg" role="group" aria-label="Theme"><button data-th="light" aria-pressed="true">Ivory</button><button data-th="dark" aria-pressed="false">Graphite</button></div>
+<button class="ip-btn pri" id="ip-open">Your picks <em id="ip-n"></em></button></div>
+<main class="ip-wrap">
+<section class="ip-now"><h2>How it looks now</h2><div id="ip-nowx"></div></section>
+<p class="ip-lead" id="ip-lead"></p>
+<div id="ip-secs"></div>
+</main>
+<div id="ip-picks" hidden></div>
+<script>
+/* ---------- the content: groups → ideas → options (Skip is added to each) ---------- */
+var APP = 'Parsec', TOPIC = 'Settings and automations', KEY = 'ip-parsec-161';
+var I_LOCK = '<svg class="v-ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg>';
+var I_SRCH = '<svg class="v-ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>';
+var I_PLAY = '<svg class="v-ic" viewBox="0 0 16 16" fill="currentColor"><path d="M4.5 3v10l8-5z"/></svg>';
+var CUR = '<span class="v-cur"></span>';
+function ping(b, s, to) { return '<div class="v-ping"><span class="v-to">' + to + '</span><b>' + b + '</b><small>' + s + '</small></div>'; }
+function lr(t, x, cls) { return '<div class="v-lr' + (cls ? ' ' + cls : '') + '"><span class="t">' + t + '</span><span class="x">' + x + '</span><span class="u"><span class="v-t1">Undo</span><span class="v-t2">undone</span></span></div>'; }
+function kv(a, b) { return '<div class="v-kv"><span>' + a + '</span><b>' + b + '</b></div>'; }
+function tile(t, l, tp) { return '<span class="v-tile" style="left:' + l + '%;top:' + tp + '%">' + t + '</span>'; }
+function gr(a, b) { return '<div class="v-gr"><b>' + a + '</b><span>' + b + '</span></div>'; }
+var IDEAS = [
+  { group: 'Better automations', items: [
+    { k: 'parts', t: 'Parts in → tell the tech', why: 'Today “Parts → status” moves the operation back to Hold Tech when its parts are in — but nobody is told.',
+      vis: '<div class="v-st h-s"><div class="v-row"><b>RO-24211</b><span class="m">Op 2 · Replace NOx sensor</span><span class="sp"></span></div>' +
+        '<div class="v-row"><span>Part</span><span class="m">NOx sensor · bin B4</span><span class="sp"></span><span class="v-pill wait v-pst"><span class="v-t1">Ordered</span><span class="v-t2">Received</span></span></div>' +
+        '<div class="v-row"><span>Operation</span><span class="sp"></span><span class="v-pill wait v-ost"><span class="v-t1">Waiting – Parts</span><span class="v-t2">Hold Tech</span></span></div>' +
+        ping('Your part is in — RO-24211', 'Op 2 · NOx sensor · bin B4 · back in your queue', 'to Luis') + '</div>',
+      steps: [['idle', 1000], ['in', 1100], ['move', 1100], ['ping', 2000]],
+      opts: [['tech', 'Tell the tech and move the op back', 'the built-in, plus a message to the tech'], ['fm', 'Tell the tech and the foreman', ''], ['as', 'Move it back only (as now)', '']] },
+    { k: 'cust', t: 'Waiting on the customer too long', why: 'An RO can sit in Waiting – Customer all day without anyone noticing.',
+      vis: '<div class="v-st h-s"><div class="v-row"><b>RO-24198</b><span class="m">Mr. Patel · estimate sent 10:15</span><span class="sp"></span></div>' +
+        '<div class="v-row"><span class="v-pill cust">Waiting – Customer</span><span class="sp"></span><span class="v-w"><i class="v-clock"></i><span class="q1">40 min</span><span class="q2">1 h 30 min</span><span class="q3">2 h 05 min</span></span></div>' +
+        ping('RO-24198 · waiting on the customer 2 h', 'Estimate sent 10:15 · call Mr. Patel?', 'to Dana') + '</div>',
+      steps: [['w1', 1000], ['w2', 1000], ['w3', 1100], ['ping', 2000]],
+      opts: [['2h', 'Remind the advisor after 2 h', ''], ['4h', 'After 4 h', ''], ['am', 'The next morning', 'one list of every RO still waiting']] },
+    { k: 'ready', t: 'Ready to release → tell the advisor', why: 'Status sync moves the RO to Complete – Road test on its own; the advisor finds out by looking.',
+      vis: '<div class="v-st"><div class="v-board"><div class="v-col"><h6>Working</h6><div class="v-card src"><b>RO-24211</b>Ford F-150<div class="v-ck"><span class="k1"><i>✓</i>Parts in</span><span class="k2"><i>✓</i>Notes</span><span class="k3"><i>✓</i>Road test</span></div></div></div>' +
+        '<div class="v-col"><h6>Complete – Road test</h6><div class="v-card dst"><b>RO-24211</b>Ford F-150<div class="v-ck"><span><i>✓</i>All checks done</span></div></div></div></div>' +
+        ping('RO-24211 is ready to release', 'Ford F-150 · every check done 15:40', 'to Dana') + '</div>',
+      steps: [['idle', 900], ['c1', 700], ['c2', 700], ['rt', 800], ['move', 1100], ['ping', 2000]],
+      opts: [['adv', 'Tell the advisor', ''], ['advfm', 'Tell the advisor and the foreman', '']] },
+    { k: 'noparts', t: 'Starting an op whose part isn’t in', why: 'A tech can start the clock on an operation that’s still Waiting – Parts.',
+      vis: '<div class="v-st"><div class="v-row"><b>Op 2</b><span class="m">Replace NOx sensor</span><span class="sp"></span><span class="v-b pri v-start">' + I_PLAY + 'Start</span></div>' +
+        '<div class="v-row"><span class="m">Part</span><span class="sp"></span><span class="v-pill wait">Waiting – Parts · Ordered</span></div>' +
+        '<div class="v-ask"><b>Op 2’s part isn’t in yet</b><small>NOx sensor · Ordered · ETA Fri</small><div class="v-r"><span class="v-b">Start anyway</span><span class="v-b pri">Pick another op</span></div></div>' + CUR + '</div>',
+      steps: [['idle', 900], ['p-st', 700], ['c-st', 500], ['ask', 2200]],
+      opts: [['ask', 'Ask before it starts', '“Start anyway” is noted on the punch'], ['note', 'Just show a note', 'the clock starts as now']] },
+    { k: 'over', t: 'Past the quoted time, while the clock runs', why: 'The “over quoted” check only happens when a punch stops — after the time is spent.',
+      vis: '<div class="v-st h-s"><div class="v-row"><b>RO-24211 · Op 1</b><span class="m">Luis · on the clock</span><span class="sp"></span><span class="v-num"><span class="n0">0.3 h</span><span class="n1">0.8 h</span><span class="n2">1.2 h</span><span class="n3">1.6 h</span></span></div>' +
+        '<div class="v-bar"><i></i><span class="v-q"><em>Quote 1.5 h</em></span></div>' +
+        ping('RO-24211 · Op 1 is past its 1.5 h quote', '1.6 h on the clock · Luis', 'to Frank') + '</div>',
+      steps: [['idle', 800], ['g1', 1000], ['g2', 1000], ['g3', 1000], ['ping', 2000]],
+      opts: [['100', 'Tell the foreman at 100% of the quote', ''], ['120', 'At 120%', ''], ['both', 'At 100% and again at 150%', '']] },
+    { k: 'warr', t: 'Chase warranty claims on time', why: 'Warranty settings hold the chase-after times, but nothing reminds anyone when they pass.',
+      vis: '<div class="v-st h-s"><div class="v-row"><b>Claim RO-24177</b><span class="m">sent Oct 21</span><span class="sp"></span><span class="v-pill wait">No answer</span></div>' +
+        '<div class="v-days"><span class="ln"></span><span class="pr"></span><span class="v-dm d0" style="left:2%"><em>Submitted</em></span><span class="v-dm d3" style="left:42%"><em>Day 3 · chase</em></span><span class="v-dm d7" style="left:88%"><em>Day 7</em></span></div>' +
+        ping('Claim RO-24177 · day 7, no answer', 'Chase-after time from Warranty settings', 'to Sam') + '</div>',
+      steps: [['sub', 900], ['d3', 1100], ['d7', 1100], ['ping', 2000]],
+      opts: [['days', 'Remind at each chase-after day', 'to the warranty admin'], ['two', 'Remind the warranty admin and the advisor', ''], ['week', 'One weekly list instead', '']] },
+    { k: 'builder', t: 'Build a rule as a sentence, then test it', why: 'Today a rule is a list of drop-downs (10 triggers · 9 conditions · 4 actions), and you find out it works when it runs.',
+      vis: '<div class="v-st h-l"><div class="v-sent"><span class="w w1">When</span><span class="c c1">a part’s status changes</span><span class="w w2">and</span><span class="c c2">it becomes Received</span><span class="w w3">then</span><span class="c c3">set the operation to Hold Tech</span><span class="w w4">and</span><span class="c c4">add a reminder for the tech</span></div>' +
+        '<div class="v-test"><span class="v-b pri">' + I_PLAY + 'Test on the last 7 days</span></div>' +
+        '<div class="v-res"><b>Would have run 6 times</b> · RO-24211, RO-24198, RO-24177 and 3 more<br><span style="color:var(--ink3)">A test changes nothing.</span></div>' + CUR + '</div>',
+      steps: [['idle', 700], ['s1', 700], ['s2', 700], ['s3', 700], ['s4', 900], ['p-test', 700], ['c-test', 500], ['res', 2200]],
+      opts: [['both', 'Sentence builder + a test run', ''], ['sent', 'Sentence builder only', ''], ['as', 'Keep the current rule list', '']] },
+    { k: 'log', t: 'See what ran, and undo it', why: 'Today an automation shows a toast and is gone — no record of what it changed.',
+      vis: '<div class="v-st"><div class="v-log"><h6>What ran today</h6>' + lr('09:12', 'Status sync · RO-24211 → Working') +
+        lr('10:40', 'Parts → status · RO-24198 → Waiting – Parts', 'un') + lr('11:05', 'Parts → status · RO-24177 → Hold Tech') + lr('13:30', 'My rule · reminder on RO-24211') + '</div>' + CUR + '</div>',
+      steps: [['idle', 700], ['rows', 1300], ['p-un', 700], ['c-un', 500], ['done', 2000]],
+      opts: [['log', 'A log on the Automations page, with Undo on each', 'kept 30 days'], ['as', 'Toasts only (as now)', '']] }
+  ]},
+  { group: 'Settings redesign', items: [
+    { k: 'one', t: 'One Settings page for everything', why: 'Settings live in 9 places today; some appear in two or three.',
+      vis: '<div class="v-st h-l">' + tile('Profile & settings', 3, 6) + tile('Person pop-over', 52, 4) + tile('App menu', 30, 24) + tile('Automations', 66, 26) + tile('Shop settings', 4, 44) +
+        tile('Foreman settings', 44, 48) + tile('Warranty settings', 10, 68) + tile('Admin page', 62, 70) + tile('Edit templates', 36, 86) +
+        '<div class="v-pg"><h5>Settings</h5>' + gr('Me', 'Photo, name, PIN, size, theme, tooltips, keys') + gr('The shop', 'Labor rate, pay period, shop day, bays, QC, warranty times') +
+        gr('People & access', 'People, PINs, permissions, view as') + gr('Data', 'Folder, backups, phone, test data') + gr('Automations', 'Status sync, Parts → status, your rules') + '</div></div>',
+      steps: [['scat', 1800], ['conv', 900], ['page', 2400]],
+      opts: [['one', 'One page, every setting', 'the pop-overs on Manager, Foreman and Warranty go'], ['links', 'One page — the pop-overs stay as shortcuts', 'they open the same setting on the page']] },
+    { k: 'groups', t: 'Group settings by who they’re for', why: 'Today’s sections (you, sign, look, data, tools, keys, admin) mix personal and shop-wide settings.',
+      vis: '<div class="v-st"><div class="v-acc"><div class="v-ah a1"><b>Me</b><span>Photo, name, PIN, size, theme, tooltips, keys</span></div><div class="v-ah a2"><b>The shop</b><span>Labor rate, pay period, shop day, bays, QC</span></div>' +
+        '<div class="v-ah a3"><b>People & access</b><span>People, PINs, permissions, view as</span></div><div class="v-ah a4"><b>Data</b><span>Folder, backups, phone, test data</span></div><div class="v-ah a5"><b>Automations</b><span>Status sync, Parts → status, your rules</span></div></div></div>',
+      steps: [['g1', 700], ['g2', 700], ['g3', 700], ['g4', 700], ['g5', 700], ['all', 1800]],
+      opts: [['who', 'By who it’s for', 'Me · The shop · People & access · Data · Automations'], ['page', 'By page', 'Time Log, RO, Manager, Foreman, Warranty…'], ['az', 'One A–Z list', '']] },
+    { k: 'nav', t: 'A menu down the side', why: 'Today’s page is one long scroll with a row of jump links.',
+      vis: '<div class="v-st"><div class="v-lay"><div class="v-menu"><span class="v-mi on">Me</span><span class="v-mi m2">The shop</span><span class="v-mi">People & access</span><span class="v-mi">Data</span><span class="v-mi">Automations</span><span class="v-mi">Keys</span></div>' +
+        '<div class="v-pane"><div class="p1"><h6>Me</h6>' + kv('Name', 'Luis Martinez') + kv('Size', 'Medium') + kv('Theme', 'Ivory') + kv('Tooltips', 'On') + '</div>' +
+        '<div class="p2"><h6>The shop</h6>' + kv('Labor rate', '$165 / h') + kv('Pay period', 'Every 2 weeks') + kv('Shop day', '07:00–17:30') + kv('Bays', '8') + '</div></div></div>' + CUR + '</div>',
+      steps: [['idle', 900], ['p-sh', 700], ['c-sh', 500], ['shop', 2000]],
+      opts: [['side', 'Menu down the side', 'a list first on a phone'], ['tabs', 'Tabs across the top', ''], ['long', 'One long page with a jump list (as now)', '']] },
+    { k: 'search', t: 'Search settings', why: 'With settings in 9 places, finding one means knowing where it lives.',
+      vis: '<div class="v-st h-s"><div class="v-sb">' + I_SRCH + '<span class="q"><span class="q0">Search settings</span><span class="q1">da</span><span class="q2">day</span></span></div>' +
+        '<div class="v-drop"><div><span>Shop day</span><small>The shop</small></div><div><span>Day ribbon</span><small>Me</small></div><div><span>Backups · end of each day</span><small>Data</small></div></div>' +
+        '<div class="v-row v-other"><b>Name</b><span class="m">Me</span><span class="sp"></span><span>Luis Martinez</span></div><div class="v-row v-other"><b>Size</b><span class="m">Me</span><span class="sp"></span><span>Medium</span></div>' +
+        '<div class="v-row v-target"><b>Shop day</b><span class="m">The shop</span><span class="sp"></span><span>07:00–17:30</span></div>' + CUR + '</div>',
+      steps: [['idle', 800], ['t1', 500], ['t2', 600], ['res', 900], ['p-r', 600], ['c-r', 500], ['jump', 2000]],
+      opts: [['jump', 'Search, then jump to it with a highlight', ''], ['filter', 'Search filters the page', 'only matching settings stay']] },
+    { k: 'who', t: 'Say who can change each setting, and where it shows', why: 'No setting says who can change it, so a tech can’t tell why one is greyed out.',
+      vis: '<div class="v-st h-s"><div class="v-who2"><div class="lbl"><span class="v-t1">Seen as Frank · Manager</span><span class="v-t2">Seen as Luis · Technician</span></div>' +
+        '<div class="v-set"><div class="hd"><b>Pay period</b><span class="val">Every 2 weeks</span><span class="v-lock">' + I_LOCK + '</span></div><div class="v-tags"><span>' + I_LOCK + 'Manager changes it</span><span>Applies to everyone</span><span>Shows on Time Log, Timesheet</span></div></div></div>' +
+        '<div class="v-wtip">Only a manager can change this · ask Frank</div>' + CUR + '</div>',
+      steps: [['mgr', 1800], ['tech', 2400]],
+      opts: [['all', 'Who + where on every setting', ''], ['lock', 'Only explain the ones you can’t change', '']] },
+    { k: 'dots', t: 'Mark what’s been changed, with Reset', why: 'There’s no way to see which settings differ from the start, or to put one back.',
+      vis: '<div class="v-st h-s"><div class="v-row v-ch1"><b>Size</b><span class="sp"></span><span class="v-val"><span class="v-t1">Large</span><span class="v-t2">Medium</span></span><span class="v-dot"></span></div>' +
+        '<div class="v-row"><b>Theme</b><span class="sp"></span><span>Graphite</span><span class="v-dot"></span></div><div class="v-row"><b>Tooltips</b><span class="sp"></span><span>On</span></div>' +
+        '<div class="v-dtip"><span class="sp">Size · changed from Medium · Oct 12</span><span class="v-b">Reset</span></div>' + CUR + '</div>',
+      steps: [['idle', 900], ['p-dot', 700], ['tip', 900], ['c-reset', 500], ['done', 1800]],
+      opts: [['grp', 'Dots, Reset on each, and Reset a whole group', ''], ['dot', 'Dots only', '']] },
+    { k: 'quick', t: 'The person pop-over: quick settings + a way in', why: 'Size is in 3 places today — the pop-over, the app menu and Appearance.',
+      vis: '<div class="v-st h-l"><div class="v-pop"><div class="who"><span class="v-av">LM</span><span><b>Luis Martinez</b><small>Technician</small></span></div>' +
+        '<div class="v-qr"><span>Size</span><span class="v-seg"><span>S</span><span class="on">M</span><span>L</span></span></div><div class="v-qr"><span>Tooltips</span><span class="v-seg"><span class="on">On</span><span>Off</span></span></div>' +
+        '<div class="v-qr"><span>Theme</span><span class="v-seg"><span class="on">Ivory</span><span>Graphite</span></span></div><span class="lk">All settings…</span></div>' +
+        '<div class="v-me"><h6>Me</h6>' + kv('Photo', 'LM') + kv('Name', 'Luis Martinez') + kv('PIN', '••••') + kv('Size', 'Medium') + kv('Theme', 'Ivory') + kv('Day ribbon', 'On') + '</div>' + CUR + '</div>',
+      steps: [['pop', 1200], ['p-all', 700], ['c-all', 500], ['me', 2200]],
+      opts: [['pop', 'Pop-over keeps Size, Tooltips, Theme + “All settings…”', 'Size leaves the app menu'], ['me', 'Move them into Me only', 'the pop-over just opens Settings']] },
+    { k: 'history', t: 'Recently changed, with Undo', why: 'A shop-wide change (pay period, labor rate) is only in the Activity log, with no way back.',
+      vis: '<div class="v-st h-s"><div class="v-log"><h6>Recently changed · 30 days</h6>' + lr('Oct 28', 'Frank · Pay period → Every 2 weeks', 'un') + lr('Oct 27', 'Sam · Warranty chase-after → 5 days') + lr('Oct 24', 'Luis · Size → Large') + '</div>' + CUR + '</div>',
+      steps: [['rows', 1300], ['p-un', 700], ['c-un', 500], ['done', 2000]],
+      opts: [['list', 'Recently changed list with Undo', 'at the top of Settings, last 30 days'], ['as', 'Activity log only (as now)', '']] }
+  ]}
+];
+var NOW = '<div class="v-now"><div class="bad"><b>9</b>places with settings — Profile &amp; settings, the person pop-over, the app menu, Automations, Shop, Foreman and Warranty pop-overs, Admin, Edit templates</div>' +
+  '<div class="bad"><b>3</b>places to change Size — Appearance, the app menu, the person pop-over</div>' +
+  '<div><b>4</b>more things in 2 places each — Day ribbon, View as, folder &amp; backups, Automations</div>' +
+  '<div class="bad"><b>0</b>search · 0 settings say who can change them</div>' +
+  '<div><b>1</b>card left in Work tools — Automations (the Assistant is gone)</div>' +
+  '<div><b>2</b>built-in automations left — Status sync, Parts → status · plus rules: 10 triggers · 9 conditions · 4 actions</div></div>';
+
+document.getElementById('ip-nowx').innerHTML = NOW;
+
+/* ---------- the page ---------- */
+var D = document, $ = function (s, r) { return (r || D).querySelector(s); }, $$ = function (s, r) { return [].slice.call((r || D).querySelectorAll(s)); };
+function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+var V = { th: 'light', open: false, v: {}, note: '' };
+try { var sv = JSON.parse(localStorage.getItem(KEY) || '{}'); if (sv.v) V.v = sv.v; if (sv.note) V.note = sv.note; if (sv.th) V.th = sv.th; } catch (e) {}
+function save() { try { localStorage.setItem(KEY, JSON.stringify({ v: V.v, note: V.note, th: V.th })); } catch (e) {} }
+var total = IDEAS.reduce(function (a, g) { return a + g.items.length; }, 0);
+$('#ip-lead').textContent = total + ' idea' + (total === 1 ? '' : 's') + ' for the automations and the Settings page — the Assistant and the time-stamp automation are gone. Pick an option on each, or Skip, then copy Your picks into the chat.';
+$('#ip-jump').innerHTML = IDEAS.map(function (g, i) { return '<a href="#ip-s' + i + '">' + esc(g.group) + '</a>'; }).join('');
+$('#ip-secs').innerHTML = IDEAS.map(function (g, i) {
+  return '<section class="ip-sec" id="ip-s' + i + '"><h2>' + esc(g.group) + ' <small>' + g.items.length + ' idea' + (g.items.length > 1 ? 's' : '') + '</small></h2><div class="ip-grid">' + g.items.map(function (it) {
+    var o = it.opts.concat([['skip', 'Skip', '']]);
+    return '<article class="ip-idea" data-k="' + it.k + '"><header><h3>' + esc(it.t) + '</h3><p>' + esc(it.why) + '</p></header><div class="ip-vis" data-step="' + (it.steps ? it.steps[0][0] : '') + '">' + it.vis + (it.steps ? '<button class="ip-replay" aria-label="Play it again" title="Play it again">↻</button>' : '') + '</div><div class="ip-ol">' +
+      o.map(function (x) { return '<button class="ip-opt" data-k="' + it.k + '" data-v="' + x[0] + '" aria-pressed="false"><i></i><span><b>' + esc(x[1]) + '</b>' + (x[2] ? '<small>' + esc(x[2]) + '</small>' : '') + '</span></button>'; }).join('') + '</div></article>';
+  }).join('') + '</div></section>';
+}).join('');
+/* ---------- the animations: each visual plays its action, step by step, then loops ---------- */
+var RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+function find(k) { var r = null; IDEAS.forEach(function (g) { g.items.forEach(function (it) { if (it.k === k) r = it; }); }); return r; }
+function play(vis, it) {
+  clearTimeout(vis._t); if (!it.steps) return;
+  if (RM) { vis.dataset.step = it.steps[it.steps.length - 1][0]; return; }   /* reduced motion: the end state, still */
+  var i = 0; (function next() { var s = it.steps[i]; vis.dataset.step = s[0]; i = (i + 1) % it.steps.length; vis._t = setTimeout(next, s[1]); })();
+}
+var IO = 'IntersectionObserver' in window ? new IntersectionObserver(function (es) { es.forEach(function (en) { var vis = en.target, it = find(vis.closest('.ip-idea').dataset.k); if (en.isIntersecting) play(vis, it); else clearTimeout(vis._t); }); }, { threshold: .2 }) : null;
+$$('.ip-vis').forEach(function (vis) { var it = find(vis.closest('.ip-idea').dataset.k); if (IO) IO.observe(vis); else play(vis, it); });
+/* ---------- Your picks ---------- */
+function pkText() {
+  var L = [APP + ' · ' + TOPIC + ' — my picks'];
+  IDEAS.forEach(function (g) { var rows = []; g.items.forEach(function (it) { var v = V.v[it.k]; if (!v) return; var o = it.opts.filter(function (x) { return x[0] === v; })[0]; rows.push('· ' + it.t + ': ' + (v === 'skip' ? 'skip' : o ? o[1] : v)); }); if (rows.length) { L.push(g.group + ':'); L = L.concat(rows); } });
+  var left = total - Object.keys(V.v).length; if (left) L.push('(not picked yet: ' + left + ')');
+  if (V.note.trim()) L.push('Notes: ' + V.note.trim());
+  return L.join('\n');
+}
+function sync() {
+  D.documentElement.setAttribute('data-th', V.th);
+  $$('.ip-seg button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.th === V.th)); });
+  $$('.ip-opt').forEach(function (b) { b.setAttribute('aria-pressed', String(V.v[b.dataset.k] === b.dataset.v)); });
+  $$('.ip-idea').forEach(function (a) { a.classList.toggle('picked', !!V.v[a.dataset.k]); });
+  var n = Object.keys(V.v).length; $('#ip-n').textContent = n ? n + '/' + total : '';
+}
+function draw() {
+  var w = $('#ip-picks'); w.hidden = !V.open; if (!V.open) return;
+  var ta = $('#ip-note'); if (ta && D.activeElement === ta) { $('#ip-picks pre').textContent = pkText(); return; }
+  w.innerHTML = '<div class="ip-ph"><b>Your picks</b><button data-pk="x" aria-label="Close">✕</button></div><pre>' + esc(pkText()) + '</pre><label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:var(--ink2)">Anything else<textarea id="ip-note" placeholder="Anything to add or change">' + esc(V.note) + '</textarea></label><button class="ip-btn pri" data-pk="copy" style="justify-content:center;height:34px">Copy for the chat</button>';
+}
+function toast(m) { var t = $('.ip-toast'); if (t) t.remove(); t = D.createElement('div'); t.className = 'ip-toast'; t.textContent = m; D.body.appendChild(t); clearTimeout(toast.h); toast.h = setTimeout(function () { t.remove(); }, 2600); }
+function copy(tx) {
+  var fb = function () { var ta = D.createElement('textarea'); ta.value = tx; D.body.appendChild(ta); ta.select(); try { D.execCommand('copy'); toast('Copied — paste it in the chat.'); } catch (e) { toast('Select the text and copy it.'); } ta.remove(); };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(tx).then(function () { toast('Copied — paste it in the chat.'); }, fb); else fb();
+}
+D.addEventListener('click', function (ev) {
+  var t = ev.target, b;
+  if ((b = t.closest('.ip-seg button'))) { V.th = b.dataset.th; save(); sync(); return; }
+  if (t.closest('#ip-open')) { V.open = !V.open; draw(); return; }
+  if ((b = t.closest('[data-pk]'))) { if (b.dataset.pk === 'x') { V.open = false; draw(); } else copy(pkText()); return; }
+  if ((b = t.closest('.ip-replay'))) { var vis = b.closest('.ip-vis'); play(vis, find(vis.closest('.ip-idea').dataset.k)); return; }
+  if ((b = t.closest('.ip-opt'))) { var k = b.dataset.k, v = b.dataset.v; if (V.v[k] === v) delete V.v[k]; else V.v[k] = v; save(); sync(); draw(); }
+});
+D.addEventListener('input', function (ev) { if (ev.target.id === 'ip-note') { V.note = ev.target.value; save(); var p = $('#ip-picks pre'); if (p) p.textContent = pkText(); } });
+D.addEventListener('keydown', function (ev) { if (ev.key === 'Escape' && V.open) { V.open = false; draw(); } });
+sync();
+</script>
+</body>
+</html>
