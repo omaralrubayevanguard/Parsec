@@ -78,7 +78,8 @@ function navAllowed(page){
   if(page === "admin") return can("a.people");   /* Parsec 13: the Admin page — anyone given “Manage people and PINs” */
   if(page === "tech"){ var s0 = viewAsStaff(); return s0 ? permHas(s0, "pages", "tech") : true; }   /* Parsec 11: technicians — 11.3: and the admin, for any technician */
   var s = viewAsStaff(); if(!s) return true;
-  if(page === "report") page = "timelog";
+  if(page === "report" || page === "timelog") return true;   /* 17.1: everyone has their own Time Log */
+  if(page === "career") return dpCareerOk();   /* 17.1: the people who clock on ROs, and whoever may see other people's time */
   if(page === "rolist") page = "ros";   /* the RO List goes with the Repair Orders page */
   return permHas(s, "pages", page);
 }

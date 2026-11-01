@@ -24,7 +24,7 @@ PREP = """((who, other)=>{ const S=__tg.STATE(), p2=n=>String(n).padStart(2,'0')
   o1.log=[{id:'lgx', at:at('10:05'), kind:'cause', text:'SPN 3226 FMI 2 active, outlet reading erratic.'}];
   o1.offNotes=[{id:'onx', at:at('10:20'), text:'Customer says it smokes when cold.', by: other}];
   __tg.render(); return { K, ro:r.id, o0:o0.id, o1:o1.id, num: String(r.roNumber||'') }; })"""
-GO = """((k)=>{ const b=document.querySelector('nav [data-view=timelog], .sidebar [data-view=timelog]'); if(b) b.click(); const U=__tg.TL.U(); U.view='day'; U.day=k; U.sel=null; U.pop=null; __tg.render(); })"""
+GO = """((k)=>{ const b=document.querySelector('nav [data-view=timelog], .sidebar [data-view=timelog], .dp-tabs [data-view=timelog]'); if(b) b.click(); else { const V=__tg.UI(); V.tlMe=1; V.view='timelog'; __tg.render(); }   /* 17.1: Time Log is a tab of the department page */ const U=__tg.TL.U(); U.view='day'; U.day=k; U.sel=null; U.pop=null; __tg.render(); })"""
 async def toast(pg): return await pg.evaluate("((document.querySelector('.toast')||{}).textContent||'')")
 async def jtoast(pg): return await pg.evaluate(J("const t=R.getElementById('toast'); return t ? t.textContent : ''"))
 async def click(pg, sel):

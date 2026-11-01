@@ -32,9 +32,9 @@ function rlOptHtml(ro){
 
 /* ---- staff and page access ---- */
 var STAFF_ROLES = {
-  "Technician": ["tech","ros","fixes","timelog","parts","career"],
-  "Foreman": ["ros","fixes","foreman","triage","timelog","parts","inventory","career"],
-  "Manager": ["ros","warranty","fixes","foreman","manager","triage","timelog","parts","inventory","career"],
+  "Technician": ["tech","ros","fixes","parts"],
+  "Foreman": ["ros","fixes","foreman","triage","parts","inventory"],
+  "Manager": ["ros","warranty","fixes","foreman","manager","triage","parts","inventory"],
   "Service writer": ["ros","warranty","fixes","triage","parts"],
   "Warranty admin": ["ros","warranty","fixes","parts"],
   "Triage": ["ros","triage"],
@@ -48,22 +48,22 @@ var STAFF_ROLES = {
                       sf.off / sf.offAt (sign-in turned off — history stays)
               admin:  STATE.shop.adminPinH / adminPinS
    On this computer: tec_recent (who signed in here, newest first) · tec_pinfail (wrong tries) · tec_locked (stepped away). */
-var PERM_PAGES = [["ros", "Repair Orders"], ["assets", "Assets"], ["fleets", "Fleets"], ["library", "Library"], ["tech", "Technician"], ["triage", "Triage"], ["foreman", "Foreman"], ["parts", "Parts"], ["inventory", "Inventory"], ["warranty", "Warranty"], ["manager", "Manager"], ["fixes", "Fixes"], ["timelog", "Time Log"], ["career", "Career"]];
+var PERM_PAGES = [["ros", "Repair Orders"], ["assets", "Assets"], ["fleets", "Fleets"], ["library", "Library"], ["tech", "Technician"], ["triage", "Triage"], ["foreman", "Foreman"], ["parts", "Parts"], ["inventory", "Inventory"], ["warranty", "Warranty"], ["manager", "Manager"], ["fixes", "Fixes"]];   /* 17.1: Time Log and Career left this list — everyone has their own, on their department page */
 var PERM_ACTS = [
   ["Repair orders", [["ro.new", "Open new ROs"], ["ro.status", "Change an RO’s status"], ["ro.release", "Release a truck"], ["ro.reopen", "Reopen a completed RO"], ["ro.del", "Delete ROs"]]],
-  ["Time", [["t.own", "Start and stop their own clock"], ["t.editown", "Fix their own punches"], ["t.editall", "Fix anyone’s punches"], ["t.move", "Move time to someone else"], ["t.approve", "Approve timesheets"]]],
+  ["Time", [["t.own", "Start and stop their own clock"], ["t.editown", "Fix their own punches"], ["t.editall", "Fix anyone’s punches"], ["t.move", "Move time to someone else"], ["t.approve", "Approve timesheets"], ["t.others", "See other people’s time"]]],
   ["Parts and money", [["p.order", "Order parts"], ["p.stock", "Adjust stock counts"], ["p.cost", "See costs and prices"], ["w.claim", "File warranty claims"]]],
   ["Admin", [["a.people", "Manage people and PINs"], ["a.settings", "Change settings and automations"], ["a.data", "Export or reset the data"]]]
 ];
 /* what each action stops, said plainly — "You can’t delete ROs" */
 var PERM_VERB = { "ro.new": "open new ROs", "ro.status": "change an RO’s status", "ro.release": "release a truck", "ro.reopen": "reopen a completed RO", "ro.del": "delete ROs",
-  "t.own": "start the clock", "t.editown": "fix your punches", "t.editall": "fix someone else’s punches", "t.move": "move time to someone else", "t.approve": "approve timesheets",
+  "t.own": "start the clock", "t.editown": "fix your punches", "t.editall": "fix someone else’s punches", "t.move": "move time to someone else", "t.approve": "approve timesheets", "t.others": "see other people’s time",
   "p.order": "order parts", "p.stock": "adjust stock counts", "p.cost": "see costs and prices", "w.claim": "file warranty claims",
   "a.people": "manage people and PINs", "a.settings": "change settings and automations", "a.data": "export or reset the data" };
 var PERM_ROLE_ACTS = {
   "Technician": "t.own t.editown",
-  "Foreman": "ro.new ro.status ro.release ro.reopen t.own t.editown t.editall t.move t.approve p.order",
-  "Manager": "ro.new ro.status ro.release ro.reopen ro.del t.own t.editown t.editall t.move t.approve p.order p.stock p.cost w.claim a.people a.settings",
+  "Foreman": "ro.new ro.status ro.release ro.reopen t.own t.editown t.editall t.move t.approve t.others p.order",
+  "Manager": "ro.new ro.status ro.release ro.reopen ro.del t.own t.editown t.editall t.move t.approve t.others p.order p.stock p.cost w.claim a.people a.settings",
   "Service writer": "ro.new ro.status ro.release ro.reopen t.own p.order p.cost w.claim",
   "Warranty admin": "ro.status t.own p.cost w.claim",
   "Triage": "ro.new ro.status ro.release t.own",

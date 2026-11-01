@@ -1,0 +1,12 @@
+/* ---- Time Log and Career as tabs on the department pages (Parsec 17.1 · shell/dept-tabs.js) ----
+   The page title becomes the tabs: the one you're on is the title, the others sit beside it, quieter. */
+.dp-tabs{display:flex;align-items:baseline;gap:16px;flex:none;min-width:0;}
+.dp-tabs .dp-t{all:unset;cursor:pointer;font:500 17px/28px var(--tg-serif);letter-spacing:-.01em;color:var(--tg-ink4);white-space:nowrap;border-radius:6px;transition:color .12s;}
+.dp-tabs .dp-t:hover{color:var(--tg-ink2);}
+.dp-tabs .dp-t:focus-visible{outline:2px solid var(--tg-acc, currentColor);outline-offset:3px;}
+.dp-tabs .tg-h1.dp-on{position:relative;}
+.dp-tabs .tg-h1.dp-on::after{content:"";position:absolute;left:0;right:0;bottom:-14px;height:2px;border-radius:2px;background:var(--tg-ink);}
+@media (max-width:1280px){ .dp-tabs{gap:12px;} .dp-tabs .dp-t{font-size:15px;} }
+:root[data-device="phone"] .dp-tabs{gap:10px;} :root[data-device="phone"] .dp-tabs .dp-t{font-size:14px;} :root[data-device="phone"] .dp-tabs .tg-h1.dp-on::after{display:none;}
+/* Manager › Team: a person's time */
+.mq-tmb{display:flex;flex-wrap:wrap;gap:8px;}

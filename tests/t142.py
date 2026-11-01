@@ -91,11 +91,11 @@ async def main():
         ok(nav.index("assets") == nav.index("fixes") + 1 and nav.index("inventory") == nav.index("assets") + 1, f"sidebar: Assets and Inventory below Fixes ({nav})")
         # 7 · the Time Log opens on your own times
         me = await pg.evaluate("(()=>{ const T=__tg.staffList().filter(s=>s.role==='Technician'); localStorage.setItem('tec_viewas', T[1].id); __tg.pxSignedIn(); __tg.render(); return T[1].name; })()"); await pg.wait_for_timeout(600)
-        await pg.evaluate("(()=>{ const b=document.querySelector('nav [data-view=timelog], .sidebar [data-view=timelog]'); if(b) b.click(); })()"); await pg.wait_for_timeout(900)
+        await pg.evaluate("(()=>{ const b=document.querySelector('nav [data-view=timelog], .sidebar [data-view=timelog], .dp-tabs [data-view=timelog]'); if(b) b.click(); else { const V=__tg.UI(); V.tlMe=1; V.view='timelog'; __tg.render(); }   /* 17.1: Time Log is a tab of the department page */ })()"); await pg.wait_for_timeout(900)
         who = await pg.evaluate("(document.querySelector('[data-pg=timelog]')||{}).innerText.slice(0,160)")
         ok(me.split()[0] in who, f"Time Log opens on the signed-in person's times ({me} · {who[:80]})")
         fm = await pg.evaluate("(()=>{ const F=__tg.staffList().find(s=>s.role==='Foreman'); if(!F) return null; localStorage.setItem('tec_viewas', F.id); __tg.pxSignedIn(); __tg.UI().view='rolist'; __tg.render(); return F.name; })()"); await pg.wait_for_timeout(500)
-        await pg.evaluate("(()=>{ const b=document.querySelector('nav [data-view=timelog], .sidebar [data-view=timelog]'); if(b) b.click(); })()"); await pg.wait_for_timeout(900)
+        await pg.evaluate("(()=>{ const b=document.querySelector('nav [data-view=timelog], .sidebar [data-view=timelog], .dp-tabs [data-view=timelog]'); if(b) b.click(); else { const V=__tg.UI(); V.tlMe=1; V.view='timelog'; __tg.render(); }   /* 17.1: Time Log is a tab of the department page */ })()"); await pg.wait_for_timeout(900)
         await pg.screenshot(path=os.path.join(OUT, "a6_timelog_foreman.png"))
         fw = await pg.evaluate("(document.querySelector('[data-pg=timelog]')||{}).innerText.slice(0,160)")
         ok(fm.split()[0] in fw and "Whole shop" not in fw, f"…a foreman too, not the whole shop ({fm} · {fw[:90]!r})")

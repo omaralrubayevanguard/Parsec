@@ -18,8 +18,8 @@
   const longD = k => { const d = PG.dOf(k); return DNL[d.getDay()] + ', ' + MNL[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear(); };
   const shortD = k => { const d = PG.dOf(k); return DN[d.getDay()] + ', ' + MN[d.getMonth()] + ' ' + d.getDate(); };
   function me(){ return PG.me(); }
-  const isTech = () => { const m = me(); return !!m.tech && !m.lead && !m.admin; };
-  function techs(){ const m = me(); if(isTech()) return [m.tech]; return (typeof rtTechs === 'function' ? rtTechs() : []) || []; }
+  const isTech = () => { const m = me(); return !m.admin && !(typeof can === 'function' && can('t.others')); };   /* 17.1: only your own day, unless you may see other people's time */
+  function techs(){ const m = me(); if(isTech()) return [m.tech || m.name]; return (typeof rtTechs === 'function' ? rtTechs() : []) || []; }
   const first = t => PG.first(t);
   const sign = () => STATE.tlSign && typeof STATE.tlSign === 'object' ? STATE.tlSign : {};
   const approved = (t, k) => { const s = sign()[t + '|' + PG.perStart(k)]; return !!(s && s.fm); };

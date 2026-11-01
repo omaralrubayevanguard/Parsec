@@ -21,7 +21,7 @@ PREP = """((who)=>{ const S=__tg.STATE(), p2=n=>String(n).padStart(2,'0'), kOf=d
   S.shifts.push({id:'s3a', in:at(K[2],'07:00'), out:at(K[2],'12:00'), outReason:'Lunch', by:who}); S.shifts.push({id:'s3b', in:at(K[2],'12:30'), out:at(K[2],'15:30'), outReason:'End of day', by:who});
   P('c1',K[2],'07:00','10:00',o0,'one'); P('c2',K[2],'10:10','12:00',o0,'two'); P('c3',K[2],'12:30','15:00',o1,'three');
   S.tlReq=[]; S.tlSign={}; __tg.render(); return { K, ro:r.id, o0, o1 }; })"""
-GO = """((k)=>{ const b=document.querySelector('nav [data-view=timelog], .sidebar [data-view=timelog]'); if(b) b.click(); const U=__tg.TL.U(); U.view='day'; U.day=k; U.sel=null; U.pop=null; __tg.render(); })"""
+GO = """((k)=>{ const b=document.querySelector('nav [data-view=timelog], .sidebar [data-view=timelog], .dp-tabs [data-view=timelog]'); if(b) b.click(); else { const V=__tg.UI(); V.tlMe=1; V.view='timelog'; __tg.render(); }   /* 17.1: Time Log is a tab of the department page */ const U=__tg.TL.U(); U.view='day'; U.day=k; U.sel=null; U.pop=null; __tg.render(); })"""
 HMS = "((iso)=>{ const d=new Date(iso); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); })"
 async def pf(pg, id, f): return await pg.evaluate(f"(()=>{{ const p=__tg.STATE().punches.find(x=>x.id==={json.dumps(id)}); return p ? p[{json.dumps(f)}] : null; }})()")
 async def phm(pg, id, f): return await pg.evaluate(f"(()=>{{ const p=__tg.STATE().punches.find(x=>x.id==={json.dumps(id)}); return p && p[{json.dumps(f)}] ? {HMS}(p[{json.dumps(f)}]) : null; }})()")

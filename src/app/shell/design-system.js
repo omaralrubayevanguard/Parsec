@@ -16,7 +16,7 @@
    pages as grouped tabs on the second. The page you are on is the light tab that runs
    down into the page itself. The first line scrolls away; the tabs stay. */
 var PZ_CLK = '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>';
-var PZ_GROUPS = [["Shop floor", ["console", "ros", "triage", "rolist", "foreman"]], ["Office", ["warranty", "manager", "parts"]], ["Me", ["timelog", "fixes", "career"]]];
+var PZ_GROUPS = [["Shop floor", ["console", "ros", "triage", "rolist", "foreman"]], ["Office", ["warranty", "manager", "parts"]], ["Me", ["fixes"]]];
 /* ============================== Ivory / Graphite — the Parsec design system ==============================
    The Parsec stroke icons, the sidebar (collapses to icons with the sidebar button or [), its clock-in card with
    the running job, sentence-case status names, ⌘/Ctrl ↵ in dialogs. Everything here runs only in Ivory / Graphite. */
@@ -88,7 +88,7 @@ function pzHeaderHtml(badgeCount){
   if(allowed.ros && allowed.rolist){ delete allowed.ros; if(cur && cur[0] === "ros") cur = allowed.rolist; }   /* the RO page lives inside the RO List */
   try{ wcNeed = wcNeedCount(); }catch(e){}
   var badge = { warranty: wcNeed, triage: UI.view !== "triage" ? (UI.tgBadgeN || 0) : 0, foreman: UI.view !== "foreman" ? (UI.fmBadgeN || 0) : 0 };
-  var seen = {}, groups = PZ_GROUPS.map(function(g){ return [g[0], g[1].filter(function(k){ seen[k] = 1; return allowed[k]; })]; });
+  var seen = { timelog: 1, career: 1 }, groups = PZ_GROUPS.map(function(g){ return [g[0], g[1].filter(function(k){ seen[k] = 1; return allowed[k]; })]; });
   var extra = Object.keys(allowed).filter(function(k){ return !seen[k]; });
   if(extra.length) groups.push(["More", extra]);
   groups = groups.filter(function(g){ return g[1].length; });

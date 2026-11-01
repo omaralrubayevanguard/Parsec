@@ -44,7 +44,7 @@ Prefixes are how this codebase finds its way; keep them:
 
 **A new automation.** A built-in: add it next to the six in `automations/built-ins.js` (a condition in `v162Conds`, a message in `v162Msgs`, its switch), and the What ran log + Undo come free. A new event or field for sentence rules: `automations/sentence-builder.js` (`V162B_TRIG` / `V162B_FIELD`).
 
-**A new page.** A folder under `pages/` with `_open.js` (`var XX = (function(){`), `model.js`, `draw.js`, `actions.js`, `_close.js` (`return { view, after, … }; })();`) and `view.js`; register in `pages/frame.js` (`PG.reg`), add the nav entry (`shell/nav-rail.js` PX_GROUPS, `access/permissions.js` pages per role), a `styles/app/NN-<page>.css`, and a test.
+**A new page.** A folder under `pages/` with `_open.js` (`var XX = (function(){`), `model.js`, `draw.js`, `actions.js`, `_close.js` (`return { view, after, … }; })();`) and `view.js`; register in `pages/frame.js` (`PG.reg`), add the nav entry (`shell/nav-rail.js` PX_GROUPS — the default order; people's own orders and the shop's (`shell/nav-arrange.js`) take a new page in after its neighbour — and `access/permissions.js` pages per role), a `styles/app/NN-<page>.css`, and a test.
 
 **A new test.** `tests/t<version><letter>.py`, copied from a recent one: load `t12.html` (the runner passes it), `__tg.loadSample25()`, sign in a role, drive the UI, print `ok …` / `FAIL …`, exit non-zero on a failure. Run it with `python3 tests/run.py t<name>`.
 

@@ -172,6 +172,7 @@
 "shell/nav-arrange.js \u00b7 document.addEventListener() \u00b7 on document contextmenu (capture)",
 "shell/nav-arrange.js \u00b7 document.addEventListener() \u00b7 on document touchmove (capture)",
 "shell/nav-arrange.js \u00b7 document.addEventListener() \u00b7 on document keydown (capture)",
+"shell/dept-tabs.js \u00b7 var DP_PAGES",
 "shell/rail-popovers.js \u00b7 var PTIP_MODES",
 "kit/tooltip-engine.js \u00b7 var PTIP \u00b7 on document pointermove (capture), on window mouseout, on document pointerdown (capture), on document keydown (capture), on document scroll (capture), on document wheel (capture), on window blur, on document visibilitychange, on document focusin (capture), on document focusout (capture), on document pointermove (capture), on document pointerup (capture), on document pointercancel (capture), on document contextmenu (capture), on window click (capture), on document DOMContentLoaded",
 "kit/tooltip-engine.js \u00b7 window.addEventListener() \u00b7 on window resize",

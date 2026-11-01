@@ -56,6 +56,7 @@ function render(){
      note button needs to know. */
   var viewHtml = "";
   if(!navAllowed(UI.view)) UI.view = (function(){ var sf = viewAsStaff(); return sf ? PG.homeOf(sf.role) : (navAllowed("rolist") ? "rolist" : navPages()[0][0]); })();
+  if(dpIs(UI.view)) UI.dHome = UI.view;   /* 17.1: Time Log and Career sit on this department page (shell/dept-tabs.js) */
   if(UI.view==="tech") viewHtml = CX.viewTech();
   
   else if(UI.view==="foreman") viewHtml = viewForeman();
@@ -76,6 +77,7 @@ function render(){
   else if(UI.view==="report") viewHtml = viewDayReport();
   
   else if(UI.view==="profile") viewHtml = pxProfileView();
+  viewHtml = dpTitle(viewHtml);   /* 17.1: “Technician · Time Log · Career” */
   if(RT_PAGE[UI.view] && UI.view !== "triage" && UI.view !== "foreman" && UI.view !== "warranty"){ var rtIn = rtInboxHtml(RT_PAGE[UI.view]); if(rtIn){ var hi = viewHtml.indexOf('</header>'); viewHtml = hi > -1 && hi < 4000 ? viewHtml.slice(0, hi + 9) + rtIn + viewHtml.slice(hi + 9) : rtIn + viewHtml; } }
 
   html += dayRibbonHtml();

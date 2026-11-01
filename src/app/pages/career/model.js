@@ -30,7 +30,7 @@ const fst=n=>String(n||'').split(' ')[0];
 const MGR=()=>PG.person('Manager')||'your manager', FMP=()=>PG.person('Foreman')||PG.person('Manager')||'', FMN=()=>FMP()||'your foreman';
 const SHOPN=()=>String(STATE.shopName||(STATE.settings&&STATE.settings.shopName)||'').trim();
 const roleOf=k=>{ let sf=null; try{ sf=staffForTech(PPL[k]); }catch(e){} return sf&&sf.role||'Technician'; };
-const canPick=()=>{ const m=PG.me(); return !!(m.admin||m.role==='Manager'||m.role==='Foreman'); };
+const canPick=()=>{ const m=PG.me(); return !!(m.admin||(typeof can==='function'&&can('t.others'))); };   /* 17.1: See other people's time */
 const isSelf=()=>!!U.who&&SD&&SD.keyOf(PG.me().name)===U.who;
 const canPay=()=>{ const m=PG.me(); return isSelf()||!!m.admin||m.role==='Manager'; };
 /* certificates and classes */
@@ -55,6 +55,7 @@ function sync(){ data(); const me=PG.me();
   const mk=SD.keyOf(me.name);
   if(!canPick()) U.who=TECHS.includes(mk)?mk:null;
   else if(!U.who||!TECHS.includes(U.who)) U.who=TECHS.includes(mk)?mk:(TECHS[0]||null);
+  if(UI.crWho){ if(canPick()&&TECHS.includes(UI.crWho)) U.who=UI.crWho; UI.crWho=null; }   /* 17.1: from Manager › Team */
   if(U.who){ const c=CRS(); U.prior[U.who]=c.prior||null; U.usePrior=!!(c.usePrior&&c.prior); U.al=c.al; GLC=GL(U.who); } }
 const FT=()=>({k:'tech',v:U.who});
 const W=()=>win(U.p);

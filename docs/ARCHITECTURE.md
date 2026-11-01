@@ -52,6 +52,10 @@ function viewTimeLog(){ return TL.view(); }
 
 `render()` finds the module for `UI.view` (`PG.mods`) and calls `view()` for the HTML, then `after()` to place pop-overs. Each page folder has the same shape: `model.js` (what the page knows, from STATE), `draw.js` (HTML), `popovers.js`, `actions.js` (clicks, typing, keys), `view.js` (the entry). The first and last file of a closure are `_open.js` / `_close.js`.
 
+**The side bar** (`shell/nav-rail.js`) draws the pages in `pxaOrder()` (`shell/nav-arrange.js`): the person's own order (`sf.nav.order`; the Admin's in `STATE.mgSet.navMe`), else the shop's (`STATE.mgSet.nav.order`, set by anyone who can change settings), else `PX_GROUPS`. Press and hold a page to drag it; a switch per page hides it (`sf.nav.hide`), and the name menu lists the hidden ones.
+
+**Department pages** (Technician, Triage, Foreman, Parts, Warranty, Manager) carry **Time Log** and **Career** as tabs: `dpTitle()` (`shell/dept-tabs.js`) turns the page's `<h1 class="tg-h1">` into “Technician · Time Log · Career”. The two keep their own modules (`UI.view` `timelog` / `career`); `UI.dHome` is the department they sit on, so the side bar keeps it lit. Everyone has their own Time Log; Career is for technicians and foremen; seeing anyone else's needs `t.others` (“See other people’s time” — the foreman and the manager), and Manager › Team opens a person's Time Log, timesheet or Career.
+
 Pages that predate the frame — Foreman, Triage, Warranty, the RO rail — are plain functions in their folders (`fmView`, `tgView`, `waView`) called from `render()` the same way.
 
 **The RO page** (`ro-page/`, the `JC` closure) is different: it renders into a **shadow root** so its stylesheet (`styles/ro-page/`, the `JC_CSS` string) cannot leak. `ro-page/state.js` holds `R` (the root), `RO` (the open RO), `S` (its UI state); `ro-page/render.js` draws it; `ro-page/layout.js` + `build-and-fold.js` lay out the one-panel page (operations in the middle, the truck card and sections on the right). The Technician page embeds the same RO page (`one-ro-view.js`). Tests reach it through `document.querySelector('.jc-host').shadowRoot`.
@@ -82,7 +86,7 @@ Library/<kind>/<number> - <title> (rel NN).pdf   the Library's documents (CBR, T
 ## 6. People, access, guards
 
 - `access/sign-in.js` — who is using this computer (`tec_viewas`); `pin-pad.js`, `lock-screen.js`, `pins.js` (salted SHA-256).
-- `access/permissions.js` — roles → pages and actions, per-person changes; `can(action)`, `canPage(page)`.
+- `access/permissions.js` — roles → pages and actions, per-person changes; `can(action)`, `canPage(page)`. Time Log and Career are not on the page list (17.1): everyone has their own (`navAllowed`), and `t.others` lets someone see other people's.
 - `access/guards.js` — the shared functions are *wrapped* at load so a role that may not act is refused before any page sees the click; `permRootSync` puts a class per missing action on `<html>` so the button isn't drawn.
 - `access/admin-page/` — the Admin page; `admin-helpers.js` is shared with Manager → Team.
 

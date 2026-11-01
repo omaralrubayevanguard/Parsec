@@ -2,7 +2,7 @@
    The Time Log's model: the day built from punches and day clocks (dayOf / calc), the pay period, evidence for an end time (14.6), fix requests → the foreman approves, Fix these items, deleted punches as air (15).
    ── facts (generated; run tools/headers.py to refresh) ──
    declares   ME role techs shiftEndOf shOwn flush opTot punchOf dayOf calc allDays groups … (21 functions, 53 constants)
-   state      audit holes punches shiftEnd techName tlAirWhy tlOk tlReq tlSign
+   state      audit holes punches shiftEnd shifts techName tlAirWhy tlOk tlReq tlSign
    uses       access/ clock/ data/ kit/ pages/ pages/triage/ pages/warranty/ ro/ state/
 */
   const ic = PG.ic, kbd = PG.kbd, esc = PG.e;
@@ -32,8 +32,12 @@
   let CACHE = {}, OPT = null;
   /* ---------- who ---------- */
   function ME(){ return PG.me(); }
-  function role(){ const m = ME(); return m.tech && !m.lead && !m.admin ? 'tech' : 'foreman'; }
-  function techs(){ const m = ME(); if(role() === 'tech') return [m.tech]; const T = rtTechs(); return m.staff && m.name && !T.some(t => techSame(t, m.name)) ? [m.name].concat(T) : T; }   /* Parsec 14.2: the signed-in person has a day of their own */
+  function role(){ const m = ME(); return m.admin || (typeof can === 'function' && can('t.others')) ? 'foreman' : 'tech'; }   /* 17.1: 'tech' = only your own time */
+  function techs(){ const m = ME(); if(role() === 'tech') return [m.tech || m.name]; const T = rtTechs(), L = m.staff && m.name && !T.some(t => techSame(t, m.name)) ? [m.name].concat(T) : T.slice();
+    /* 17.1: everyone has a Time Log — the people who aren't technicians come after them, once they've clocked in */
+    const SH = STATE.shifts || [];
+    staffList().forEach(sf => { if(sf && sf.name && !sf.off && sf.role !== 'Technician' && !L.some(t => techSame(t, sf.name)) && SH.some(s => sameOwner(shiftOwner(s), sf.name))) L.push(sf.name); });
+    return L; }   /* Parsec 14.2: the signed-in person has a day of their own */
   const TF = t => PG.first(t === 'ALL' ? (techs()[0] || '') : t);
   const isMine = t => !!t && techSame(t, ME().name);
   const lead = () => PG.person('Foreman') || PG.person('Manager') || 'the foreman';

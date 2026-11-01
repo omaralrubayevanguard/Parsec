@@ -12,6 +12,8 @@ function onClick(t,e){ const a=t.dataset.a, p=U.pop;
   if(a==='noop') return;
   if(a==='sel'){ if(t.dataset.go||U.view!=='kpi'){ goKpi(t.dataset.k); return; } U.sel=t.dataset.k; U.bf=null; U.bk=null; U.kb=false; U.pop=null; rd(); }
   else if(a==='view'){ U.view=t.dataset.v; U.pop=null; rd(); }
+  else if(a==='ptime'){ UI.dHome='manager'; UI.tlWho=PPL[t.dataset.k]; UI.tlView=t.dataset.v; PG.go('timelog'); }   /* 17.1: Team › a person's time */
+  else if(a==='pcar'){ UI.dHome='manager'; UI.crWho=t.dataset.k; PG.go('career'); }
   else if(a==='pop'){ if(p&&p.type===t.dataset.p){ U.pop=null; rd(); return; } const ex={}; if(t.dataset.k) ex.k=t.dataset.k; if(t.dataset.i!=null) ex.i=t.dataset.i; openPop(t.dataset.p,ex,t); }
   else if(a==='popx'){ U.pop=null; rd(); }
   else if(a==='toast'){ U.pop=null; toast(t.dataset.t,false); rd(); }

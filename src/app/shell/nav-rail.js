@@ -8,7 +8,7 @@
 /* ---------- the nav rail: one column, every icon in the same 36 × 36 box on one line ----------
    Logo (opens and closes it), search, the clock, Inbox and the pages in three groups, and you at the
    bottom — your menu holds the theme, the size, settings and signing out. */
-var PX_GROUPS = [["", ["career", "timelog", "rolist", "ros", "tech", "triage", "foreman", "parts", "warranty", "manager", "fixes", "assets", "inventory", "fleets", "library", "admin"]]];
+var PX_GROUPS = [["", ["rolist", "ros", "tech", "triage", "foreman", "parts", "warranty", "manager", "fixes", "assets", "inventory", "fleets", "library", "admin"]]];
 var PX_NARROW = 1100;
 function pxNarrow(){ var z = ({ large: 1.15, floor: 1.35 })[sizeMode()] || 1; return window.innerWidth / z < PX_NARROW; }
 function pxSyncNarrow(){ var de = document.documentElement, n = pxNarrow(); if(de.classList.contains("px-narrow") !== n) de.classList.toggle("px-narrow", n); de.classList.toggle("px-peek", n && !!UI.pxPeek); }
@@ -54,7 +54,7 @@ function pxRailHtml(badgeCount){
   try{ wcNeed = wcNeedCount(); }catch(e){}
   try{ nOpen = STATE.ros.filter(function(r){ return r.id !== SHOP_RO_ID && !r.shop && !roIsDone(r); }).length; }catch(e){}
   var badge = { warranty: wcNeed, rolist: nOpen, ros: nOpen, triage: UI.view !== "triage" ? (UI.tgBadgeN || 0) : 0, foreman: UI.view !== "foreman" ? (UI.fmBadgeN || 0) : 0 };
-  var arr = PXA.on, seen = { inbox: 1 }, groups = [["", pxaOrder()]].map(function(g){ return [g[0], g[1].filter(function(k){ seen[k] = 1; return allowed[k] && (arr || !pxaIsHidden(k)); })]; });   /* 17.1: your order, your hidden pages (nav-arrange.js) */
+  var arr = PXA.on, seen = { inbox: 1, timelog: 1, career: 1 }, groups = [["", pxaOrder()]].map(function(g){ return [g[0], g[1].filter(function(k){ seen[k] = 1; return allowed[k] && (arr || !pxaIsHidden(k)); })]; });   /* 17.1: your order, your hidden pages (nav-arrange.js) */
   var extra = Object.keys(allowed).filter(function(k){ return !seen[k]; });
   if(extra.length) groups.push(["More", extra]);
   var row = function(k){

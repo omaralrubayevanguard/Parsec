@@ -219,7 +219,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `_close.js` | Closes the Manager closure. | 0 | 0 | 0 |
 | `_open.js` | Opens the Manager closure (MG): the shop's KPIs from the ROs, the Time Log and Parts. | 0 | 0 | 1 |
 | `actions.js` | Doing things on Manager: pop-overs, go to a KPI, clicks and keys. | 11 | 8 | 0 |
-| `draw.js` | Manager's drawing: overview, the KPI list and one KPI, flow (who holds what), team, activity. | 43 | 20 | 4 |
+| `draw.js` | Manager's drawing: overview, the KPI list and one KPI, flow (who holds what), team, activity. | 43 | 21 | 4 |
 | `engine.js` | Manager's engine: periods, windows, buckets, targets and deltas over pgShopData. | 22 | 10 | 75 |
 | `fleets-page.js` | The Fleets page (its own page since 17.1, on the Manager’s engine): every fleet in a list, a pane with Overview, Trucks and ROs, the period, printing for an account review. | 8 | 4 | 3 |
 | `ideas.js` | The ten ideas (Manager v3): pace to month end, drivers, streaks, alerts, the monthly report. | 32 | 31 | 22 |
@@ -281,7 +281,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `actions.js` | Typing, dragging and keys on the Time Log; the delete question. | 9 | 7 | 2 |
 | `draw.js` | The Time Log's drawing: the day strip, the track, the drag layer, Fix these on top of the Day view, the sign bar, the pay-period and Shop views. | 51 | 21 | 4 |
 | `fixes.js` | The fixes in one place (14.6): ACT (every fix action), runFix, ask (a request to the foreman), the reasons, drag to change a time. | 32 | 8 | 7 |
-| `model.js` | The Time Log's model: the day built from punches and day clocks (dayOf / calc), the pay period, evidence for an end time (14.6), fix requests → the foreman approves, Fix these items, deleted punches as air (15). | 19 | 21 | 53 |
+| `model.js` | The Time Log's model: the day built from punches and day clocks (dayOf / calc), the pay period, evidence for an end time (14.6), fix requests → the foreman approves, Fix these items, deleted punches as air (15). | 20 | 21 | 53 |
 | `popovers.js` | The Time Log's pop-overs: a punch, a day clock, split / merge, the air reason, Move time. | 22 | 12 | 4 |
 | `view.js` | viewTimeLog(): the page module's entry, called by render(). | 0 | 1 | 0 |
 
@@ -406,6 +406,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | file | what it is | KB | functions | constants |
 |---|---|---:|---:|---:|
 | `day-ribbon.js` | The slim live strip across the top of every page: today's punches, air and the clock state. | 2 | 2 | 0 |
+| `dept-tabs.js` | Time Log and Career as tabs on each department page: the title becomes the tabs; the department they sit on (UI.dHome); who gets Career. | 2 | 5 | 1 |
 | `design-system.js` | The Ivory / Graphite shell: the sidebar (ivSideHtml), its mini form, the case rules, the page header (pzHeaderHtml), the IVI stroke icon set. | 17 | 9 | 6 |
 | `device-mode.js` | Computer or phone view: Automatic picks from the device, or the person sets it (DEVICE_SETTING); applyDevice sets data-device on <html>. | 2 | 4 | 2 |
 | `event-wiring.js` | The app's main click / change / input / drop handlers on document: data-action buttons are dispatched here to the function that does the work (the big switch), plus drag-and-drop of files and the keyboard shortcuts that are the same everywhere. | 47 | 1 | 0 |
@@ -419,7 +420,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `nav-rail.js` | The nav rail: one column, every icon in the same box; PX_GROUPS orders the pages; the narrow (folded) state, the clock row, and who is signed in. | 7 | 12 | 2 |
 | `page-search.js` | The page search window (Ctrl K and each page's search icon): PSM finds ROs, people and parts, draws the results, and jumps to one (psmPick). | 9 | 9 | 1 |
 | `rail-popovers.js` | The two pop-overs off the rail (the clock, the person) and the tooltip mode row (PTIP_MODES / ptipSetMode). | 4 | 6 | 1 |
-| `render-root.js` | render(): the one place the page is drawn. It picks the view, builds its HTML, morphs it into #app, then runs each area's after-render hooks. histSync keeps the browser history in step. | 7 | 2 | 2 |
+| `render-root.js` | render(): the one place the page is drawn. It picks the view, builds its HTML, morphs it into #app, then runs each area's after-render hooks. histSync keeps the browser history in step. | 8 | 2 | 2 |
 | `ro-rail.js` | The RO list rail beside the RO page (shown / hidden, widths) and, since 16.3, roLnk(): every RO number anywhere becomes a link that opens its RO, with the picture and the ⋯ shop menu on RO rows (rl163Deco runs on every render). | 22 | 29 | 10 |
 
 ## state/  — STATE and UI, the folder handle, drafts, undo, data safety

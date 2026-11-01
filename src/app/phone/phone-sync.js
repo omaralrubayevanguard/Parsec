@@ -296,6 +296,7 @@ function v128StaffPages(){
 
 function navCurrent(){
   var v = UI.view === "report" ? "timelog" : UI.view;
+  if((v === "timelog" || v === "career") && typeof dpHome === "function"){ var dh = dpHome(); if(dh) v = dh; }   /* 17.1: they're tabs of a department page */
   for (var i=0;i<NAV_PAGES.length;i++) if (NAV_PAGES[i][0] === v) return NAV_PAGES[i];
   return navPages()[0];
 }
