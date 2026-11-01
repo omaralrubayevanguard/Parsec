@@ -1,0 +1,6 @@
+/* Parsec · styles/app · 40-ros-tab.css
+   the ROs tab count in page headers.
+   All styles/app files go into one <style id="v190pg"> block, in file-name order; the number keeps that order. */
+/* Parsec 14.3 — the ROs tab's count, in each page's header (Triage, Foreman, Parts, Manager, Technician) */
+.tg-views .rle-n{margin-left:5px;font-style:normal;font-size:11px;font-weight:500;color:var(--tg-ink3);font-variant-numeric:tabular-nums;}
+.tg-views .on .rle-n{color:var(--tg-ink2);}

@@ -1,0 +1,230 @@
+/* Parsec · styles/ro-page · 03-v164-bottom-dock-ro-tools-money.css
+   Part of the RO page's own stylesheet (JC_CSS): the RO page renders in a shadow root, so these files are joined into a string by the build.
+   The parts are the page's history, oldest first (Parsec 8's rounds, then each version's layer); the last rule wins. */
+/* ===== v164: bottom dock — RO tools + money ===== */
+.opDock { order: 99; position: sticky; bottom: 10px; z-index: 30; display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+.opDock > .opBar { order: 2; position: static !important; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 8px 10px 8px 10px !important; margin: 0 !important;
+  background: var(--k2f2c28) !important; color: var(--kf3f0ea); border-radius: 16px !important; box-shadow: 0 10px 30px -14px rgba(0,0,0,.55) !important; }
+.opDock > .opBar > .grow { display: none; }
+.opDock .opBar .rtTabs { margin-left: 0; gap: 6px; }
+.opDock .rtTab { background: rgba(255,255,255,.08) !important; border-color: transparent !important; box-shadow: none !important; translate: none !important; min-height: 36px; }
+.opDock .rtTab:hover { background: rgba(255,255,255,.15) !important; }
+.opDock .rtTab:has(.rtTabMain[aria-expanded=true]), .opDock .rtTab.on { background: var(--kf3f0ea) !important; }
+.opDock .rtTab:has(.rtTabMain[aria-expanded=true]) .rtTabMain, .opDock .rtTab:has(.rtTabMain[aria-expanded=true]) .rtPlus, .opDock .rtTab.on .rtTabMain, .opDock .rtTab.on .rtPlus { color: var(--k2f2c28) !important; }
+.opDock .rtTabMain, .opDock .rtPlus { color: var(--kf3f0ea) !important; }
+.opDock .rtTabMain:hover, .opDock .rtPlus:hover { background: transparent !important; }
+.opDock .rtPlus { border-left-color: rgba(255,255,255,.14) !important; opacity: .75; }
+.opDock .rtBadge, .opDock .rtBadge.round, .opDock .rtBadge.good, .opDock .rtBadge.bad { background: rgba(255,255,255,.16) !important; color: #fff !important; border-color: transparent !important; }
+.opDock .rtTab:has(.rtTabMain[aria-expanded=true]) .rtBadge { background: var(--k2f2c28) !important; }
+.opDock .opBar .obRail, .opDock .opBar .obAdd { width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,.08) !important; border: 0 !important; color: var(--kf3f0ea) !important; }
+.opDock .opBar .obRail:hover, .opDock .opBar .obAdd:hover { background: rgba(255,255,255,.16) !important; }
+.dkMoney { margin-left: auto; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; font-size: 12px; padding: 0 6px; }
+.dkMoney:empty { display: none; }
+.dkMoney span { opacity: .78; white-space: nowrap; }
+.dkMoney b { font-size: 13px; margin-left: 4px; opacity: 1; color: #fff; }
+.dkMoney .ra-tot { opacity: 1; } .dkMoney .ra-tot b { font-size: 15px; }
+.dkMoney .ra-over b { color: #ff9a8a; }
+.dkMoney .ra-bb { width: 90px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.18); overflow: hidden; opacity: 1; }
+.dkMoney .ra-bb i { display: block; height: 100%; background: var(--kf3f0ea); border-radius: 3px; }
+.dkPanel { order: 1; max-height: min(62vh, 620px); overflow: auto; border-radius: 16px; background: var(--surface) !important; box-shadow: 0 18px 44px -18px rgba(0,0,0,.45), 0 0 0 1px rgba(var(--kr-ink),.08) !important; }
+
+/* v166: check a stage off by hand from its pop-over */
+.stMark { all: unset; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 8px; width: 100%; padding: 8px 10px; border-radius: 10px; font-size: 12.5px; font-weight: 700; background: var(--ink); color: var(--surface); }
+.stMark.un { background: var(--surface-2); color: var(--ink); }
+.stMark:hover { filter: brightness(1.12); }
+.rsS.hand .rsDot { outline: 2px dashed currentColor; outline-offset: 2px; }
+
+/* v167: Night inside the console */
+:host(.dark-ui) .btn:hover, :host(.dark-ui) .mbtn:hover { background: #2a2a2e !important; }
+:host(.dark-ui) .jtmKnob { color: #08130d !important; }
+:host(.dark-ui) .card { box-shadow: 0 14px 32px -22px rgba(0,0,0,.9) !important; }
+
+/* v167: move an operation */
+.modalBox:has(.mvWrap) { width: min(640px, 92vw) !important; max-width: none !important; }
+.mvWrap { display: flex; flex-direction: column; gap: 10px; min-width: 0; width: 100%; }
+.mvNote { margin: 0; font-size: 13px; color: var(--ink-dim); }
+.mvFind { font: inherit; font-size: 14px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line-2); background: var(--surface-2); color: var(--ink); }
+.mvList { display: flex; flex-direction: column; gap: 2px; max-height: 34vh; overflow: auto; }
+.modalWrap { z-index: 120 !important; }
+.mvRow { all: unset; box-sizing: border-box; cursor: pointer; display: grid; grid-template-columns: 96px minmax(0,1fr) auto; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 10px; font-size: 13px; color: var(--ink); }
+.mvRow:hover, .mvRow:focus-visible { background: var(--tint-hover); }
+.mvRow span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mvRow small { color: var(--ink-faint); font-size: 12px; }
+
+/* ===== v168: list + work — calm, few surfaces, lots of space ===== */
+.page.roB { display: grid !important; grid-template-columns: 290px minmax(0, 1fr) !important; column-gap: 72px !important; row-gap: 32px !important; align-items: start !important; padding: 24px 8px 0; }
+.page.roB > .opDock { grid-column: 1 / -1 !important; }
+.page.roB > .roL { grid-column: 1 !important; grid-row: 1 !important; }
+.page.roB > .roR { grid-column: 2 !important; grid-row: 1 !important; }
+.page.roB > .roCol, .page.roB > .hdWrap { display: none !important; }
+.roL { position: sticky; top: calc(var(--jcTop, 0px) + 16px); display: flex; flex-direction: column; gap: 0; min-width: 0; }
+.roR { display: flex; flex-direction: column; gap: 28px; min-width: 0; }
+.roR > slot { display: block; }
+/* (win over the older column rules) */
+:host(:not([data-device="phone"])) .page.roB.roB.roB { grid-template-columns: 290px minmax(0, 1fr) !important; }
+:host(:not([data-device="phone"])) .page.roB.roB.roB > .roL { grid-column: 1 !important; grid-row: 1 !important; }
+:host(:not([data-device="phone"])) .page.roB.roB.roB > .roR { grid-column: 2 !important; grid-row: 1 !important; }
+:host(:not([data-device="phone"])) .page.roB.roB.roB > .opDock { grid-column: 1 / -1 !important; grid-row: 2 !important; }
+/* the RO, as text */
+.roL .hdWrap { position: relative; background: none !important; box-shadow: none !important; border: 0 !important; padding: 0 !important; margin: 0 !important; order: 0 !important; }
+.roL .hdBand { display: flex; flex-direction: column; gap: 18px; background: none !important; box-shadow: none !important; border: 0 !important; padding: 0 !important; }
+.roL .hbTop { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding: 0 !important; }
+.roL .hbId { width: 100%; }
+.roL .hbRow { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; flex-wrap: nowrap; }
+.roL .hbRo { font-size: 24px !important; font-weight: 700; background: none !important; color: var(--ink) !important; padding: 0 !important; box-shadow: none !important; height: auto !important; letter-spacing: 0; }
+.roL .hbCustIn { font-size: 14px !important; font-weight: 600; max-width: 100%; }
+.roL .hbEu { font-size: 13px !important; color: var(--ink-dim) !important; white-space: normal !important; }
+.roL .hbAct { display: flex; flex-direction: row; gap: 8px; }
+.roL .hbAct .hbBtn { background: none !important; box-shadow: none !important; padding: 0 !important; height: auto !important; color: var(--accent) !important; font-weight: 700; }
+.roL .hbAct .hbBtn svg { display: none; }
+.roL .hbFcRow { display: flex !important; flex-direction: column; align-items: stretch; gap: 8px; padding: 0 !important; background: none !important; border: 0 !important; }
+.roL .hbPct { display: none !important; }
+.roL .hdFc { width: 100%; }
+.roL .rsCard { background: none !important; box-shadow: none !important; padding: 0 !important; border: 0 !important; }
+.roL .rsCard .pgHead, .roL .rsCard .pgByJob, .roL .rsCard .rsTl { display: none !important; }
+.roL .rsStep { display: flex !important; gap: 4px; padding: 0 !important; margin: 0 !important; }
+.roL .rsS { flex: 1 1 0; min-width: 0; display: block !important; position: relative; padding: 0 !important; }
+.roL .rsS::before, .roL .rsS::after { display: none !important; }
+.roL .rsS b, .roL .rsS small { display: none !important; }
+.roL .rsDot { width: 100% !important; height: 6px !important; min-height: 0 !important; border-radius: 3px !important; font-size: 0 !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; background: var(--surface-3) !important; color: transparent !important; cursor: pointer; }
+.roL .rsDot svg { display: none; }
+.roL .rsS.d .rsDot { background: var(--ink) !important; }
+.roL .rsS.c .rsDot, .roL .rsS.n .rsDot { background: var(--good) !important; }
+.roL .rsS.w .rsDot { background: var(--warn) !important; }
+.roL .rsS.x .rsDot { background: transparent !important; box-shadow: inset 0 0 0 1px var(--line-2) !important; }
+.roL .rsS.hand .rsDot { outline: 0; box-shadow: inset 0 -2px 0 var(--accent) !important; }
+.roL .rsS .stTip { left: 0 !important; min-width: 260px; }
+.roL .hbEta { display: flex !important; flex-direction: row; gap: 6px; align-items: baseline; padding: 0 !important; background: none !important; }
+.roL .hbEta small { font-size: 12px; color: var(--ink-faint); text-transform: none; letter-spacing: 0; }
+.roL .hbEta b { font-size: 13px !important; }
+.roL .hdRail { display: grid !important; grid-template-columns: 1fr 1fr; gap: 12px; background: none !important; padding: 12px 0 0 !important; }
+.roL .hdCell { width: auto !important; min-width: 0; background: none !important; border: 0 !important; padding: 0 !important; }
+.roL .detailsPop.open { position: absolute; left: 0; top: 100%; margin-top: 10px; width: min(880px, calc(100vw - 120px)); z-index: 60; background: var(--surface) !important; border-radius: 18px; box-shadow: var(--drop), 0 0 0 1px var(--line) !important; padding: 18px; }
+.roL .hbTop { height: auto !important; min-height: 0 !important; gap: 16px !important; }
+.roL .hbId { display: block !important; height: auto !important; min-height: 0 !important; flex: 0 0 auto !important; }
+.roL .hbTop > *, .roL .hbFcRow > * { flex: 0 0 auto !important; }
+.roL .hbAct { align-self: flex-start !important; margin: 0 !important; }
+.roL .hbRow > .hxi, .roL .hbId > .hx { display: none !important; }
+.roL .hdWrap, .roL .hdBand, .roL .hbTop, .roL .hbId, .roL .hbRow { overflow: visible !important; }
+.roL .hbRo::before, .roL .hbRo::after, .roL .hbEta::before, .roL .hbEta::after, .roL .hbFcRow::before, .roL .hbFcRow::after { display: none !important; }
+.roL .hbRo, .roL .hbEta, .roL .hbEta small { text-indent: 0 !important; clip-path: none !important; mask: none !important; -webkit-mask: none !important; }
+.roR .jbento { align-items: stretch !important; }
+.roR .jbento > * { width: auto !important; max-width: none !important; align-self: stretch !important; }
+.roR .jbx-clock { display: block !important; }
+.roR .jtm { width: 100% !important; }
+/* the operations, as a list */
+.opSide { display: flex; flex-direction: column; margin-top: 44px; }
+.osLbl { font-size: 10.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 10px; }
+.osRow { all: unset; box-sizing: border-box; cursor: pointer; display: flex; flex-direction: column; gap: 4px; padding: 11px 14px; margin: 0 -14px; border-radius: 12px; }
+.osRow:hover { background: var(--tint-hover); }
+.osRow.on { background: var(--surface-2); }
+.osT { display: flex; align-items: center; gap: 10px; font-size: 13.5px; }
+.osT b { flex: 1; min-width: 0; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.osRow.on .osT b { font-weight: 700; }
+.osDot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.osRow.live .osDot { box-shadow: 0 0 0 4px color-mix(in srgb, var(--good) 22%, transparent); }
+.osS { font-size: 11.5px; color: var(--ink-faint); }
+.osAdd, .osLink { all: unset; box-sizing: border-box; cursor: pointer; font-size: 13px; font-weight: 600; padding: 10px 0; color: var(--ink-faint); }
+.osAdd:hover { color: var(--ink); }
+.osLink { color: var(--accent); font-weight: 700; padding-top: 6px; }
+.osWith { font-size: 13px; } .osWith span { color: var(--ink-dim); }
+.osPend { font-size: 12px; color: var(--warn); margin-top: 4px; }
+/* the open operation: no boxes */
+.roR .cardCol { gap: 0 !important; }
+.roR .card.open { background: none !important; box-shadow: none !important; border: 0 !important; padding: 0 !important; translate: none !important; }
+.roR .card.open:hover { box-shadow: none !important; translate: none !important; }
+.roR .cardHead { padding: 0 0 10px !important; background: none !important; }
+.roR .complaintField { font-size: 24px !important; font-weight: 700 !important; max-width: 70%; }
+.roR .cardBody { padding: 0 !important; }
+.roR .jbento { display: flex !important; flex-direction: column; gap: 22px !important; padding: 0 !important; background: none !important; }
+.roR .jbx, .roR .jsec { background: none !important; box-shadow: none !important; border: 0 !important; padding: 0 !important; margin: 0 !important; }
+.roR .jbx-clock { padding-top: 18px !important; }
+.roR .jtm { background: none !important; padding: 0 !important; }
+.roR .jcost, .roR .jbx-log { display: none !important; }
+.roR .jbento.sec-time .jbx-parts, .roR .jbento.sec-parts .jbx-punch { display: none !important; }
+.secTabs { display: flex; gap: 28px; margin-top: 18px; box-shadow: inset 0 -1px 0 var(--line); }
+.secTab { all: unset; cursor: pointer; font-size: 13.5px; font-weight: 700; color: var(--ink-faint); padding: 0 0 11px; display: inline-flex; gap: 6px; align-items: baseline; }
+.secTab:hover { color: var(--ink-dim); }
+.secTab.on { color: var(--ink); box-shadow: inset 0 -2px 0 var(--ink); }
+.secN { font-size: 11.5px; font-weight: 600; color: var(--ink-faint); }
+/* punches here are read-only: times, reasons and deleting happen in the Time Log */
+.roR .jp-del, .roR .jpn-x { display: none !important; }
+.roR .jev-gut .jp-t { pointer-events: none; background: none !important; border-color: transparent !important; }
+.roR .jpc-wrap { pointer-events: none; }
+.roR .jpc-wrap svg { display: none; }
+.roR .jbx-punch > .jsec-h { display: none !important; }
+.roR .jpc-wrap button, .roR .jpc-wrap .chip { background: none !important; box-shadow: none !important; padding: 0 !important; }
+.roL .hbAct .hbBtn { border: 0 !important; }
+.tlLink { all: unset; cursor: pointer; font-size: 12.5px; font-weight: 600; color: var(--ink-faint); margin-top: 6px; }
+.tlLink:hover { color: var(--accent); }
+.opDock .dkMore .iconMenuBtn { width: auto !important; padding: 0 12px !important; height: 36px !important; border-radius: 10px !important; background: rgba(255,255,255,.08) !important; color: #f3f0ea !important; font-size: 12.5px; font-weight: 700; }
+
+/* v169: the RO pane is a card like the rest of the app */
+.roL { position: static !important; background: var(--surface); border-radius: 20px; padding: 22px 22px 18px; box-shadow: var(--shadow); }
+.page.roB { padding-bottom: 28px !important; }
+.roL .hbAct { margin-top: 2px !important; }
+.roL .hbFcRow { padding-top: 16px !important; border-top: 1px solid var(--line) !important; }
+.opSide { margin-top: 18px !important; }
+.opSide .osLbl { padding-top: 16px; border-top: 1px solid var(--line); margin-top: 0 !important; }
+.opSide .osLbl + .osRow { margin-top: 0; }
+.opSide .osWith { margin-bottom: 2px; }
+.osRow { margin: 0 -10px !important; padding: 10px !important; }
+.osRow.on { background: var(--surface-2) !important; }
+.osRow:hover:not(.on) { background: var(--tint-hover) !important; }
+.opSide > .osLbl:not(:first-child) { margin-top: 18px !important; }
+
+/* v170: the status chip wraps inside itself; the RO menu sits top right of the pane; no code / fixes in the operation header */
+.roL { position: relative !important; }
+.roL .tsCtl, .roL .tsCtl .chipwrap { max-width: 100%; min-width: 0; height: auto !important; }
+.roL .tsCtl .chip, .roL .tsCtl button { white-space: normal !important; height: auto !important; min-height: 24px; line-height: 1.3 !important; text-align: left; overflow: visible !important; text-overflow: clip !important; padding-top: 4px !important; padding-bottom: 4px !important; }
+.roL .tsCtl .chip.l { flex: 1 1 auto; min-width: 0; }
+.roL .tsCtl .chip.r { align-self: stretch; }
+.roL .hbRow { padding-right: 44px; }
+.roL .optsWrap { position: absolute !important; top: 18px; right: 18px; margin: 0 !important; }
+.roR .cardHead .fltBar { display: none !important; }
+.roL .hdWrap, .roL .hdBand, .roL .hbTop, .roL .hbAct { position: static !important; }
+.roL .tsCtl .chipTxt, .roL .tsCtl .chipMain, .roL .tsCtl .chipSub { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; max-width: none !important; min-width: 0; }
+.roL .tsCtl .chipTxt { display: inline !important; }
+.roL .tsCtl .chip.l { display: flex !important; align-items: center; gap: 6px; }
+.roL .tsStatusCtl { display: flex !important; max-width: 100%; }
+
+/* v171: key fields + show all inside the pane */
+.roL .hbAct .hbBtn, .roL .hdRailFold { display: none !important; }
+.kf { display: flex; flex-direction: column; gap: 10px; padding-top: 14px; border-top: 1px solid var(--line); margin-top: 2px; }
+.kfGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 14px; }
+.kfC { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.kfK { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); }
+.kfV { font-size: 13.5px; font-weight: 700; color: var(--ink); overflow-wrap: anywhere; }
+.kfMore { all: unset; cursor: pointer; align-self: flex-start; font-size: 12.5px; font-weight: 700; color: var(--accent); }
+.roL .kf .detailsPop { display: none; }
+.roL .kf .detailsPop.open { display: block !important; position: static !important; width: auto !important; margin: 4px 0 0 !important; padding: 12px 0 0 !important; box-shadow: none !important; background: none !important; border-radius: 0 !important; border-top: 1px solid var(--line) !important; max-height: none !important; overflow: visible !important; transform: none !important; opacity: 1 !important; }
+.roL .kf .detailsGrid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 10px 12px !important; }
+.roL .kf .detailsGrid > * { min-width: 0 !important; grid-column: auto !important; width: auto !important; }
+.roL .kf .detailsGrid input, .roL .kf .detailsGrid select, .roL .kf .detailsGrid textarea { width: 100% !important; min-width: 0 !important; box-sizing: border-box; }
+.roL .kf .detOps { display: flex !important; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.roL .kf .detOpR { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.roL .kf .bandNums { display: grid !important; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+/* v171: the operation card — menu top right, no lock line, no counters beside the day bar / day details */
+.roR .card.open { position: relative !important; }
+.roR .cardHead { padding-right: 46px !important; }
+.roR .cardHead > .chipwrap:last-child { position: absolute !important; top: 0; right: 0; margin: 0 !important; }
+.roR .jtmLock, .roR .jtl-sub-n { display: none !important; }
+
+/* v172: pane without rules; tabs in the pane; tight to the window */
+.page.roB { padding: 0 !important; column-gap: 28px !important; }
+:host(:not([data-device="phone"])) .page.roB.roB.roB { grid-template-columns: 290px minmax(0, 1fr) !important; }
+.roL { margin-top: 0 !important; top: auto !important; }
+.roL .hbFcRow, .kf, .opSide .osLbl, .roL .kf .detailsPop.open { border-top: 0 !important; }
+.roL .kf .detailsGrid *, .roL .kf .detailsPop * { border-color: transparent !important; box-shadow: none !important; }
+.roL .kf .detailsGrid input, .roL .kf .detailsGrid select, .roL .kf .detailsGrid textarea { background: var(--surface-2) !important; border-radius: 8px !important; }
+.kfVin { grid-column: 1 / -1; } .kfVin .kfV { font-size: 13px; letter-spacing: .02em; }
+.paneTabs { margin-top: 14px; }
+.paneTabs .rtTabs { display: flex !important; flex-wrap: wrap; gap: 6px; margin: 0 !important; }
+.paneTabs .rtTab { background: var(--surface-2) !important; border: 0 !important; box-shadow: none !important; translate: none !important; min-height: 34px; border-radius: 10px !important; }
+.paneTabs .rtTab:hover { background: var(--surface-3) !important; }
+.paneTabs .rtTab:has(.rtTabMain[aria-expanded=true]) { background: var(--ink) !important; }
+.paneTabs .rtTab:has(.rtTabMain[aria-expanded=true]) .rtTabMain, .paneTabs .rtTab:has(.rtTabMain[aria-expanded=true]) .rtPlus { color: var(--surface) !important; }
+.paneTabs .rtTabMain, .paneTabs .rtPlus { color: var(--ink) !important; }
+.paneTabs .rtPlus { border-left-color: var(--line) !important; }
+.roR > .dkPanel { order: -1 !important; max-height: none !important; overflow: visible !important; border-radius: 18px; }
+.roR .jEmpty { display: none !important; }

@@ -1,0 +1,48 @@
+/* Parsec · styles/base · 12-themes.css
+   theme switches (Parsec 8).
+   Base blocks are the stylesheets Parsec 8 shipped with, one <style id> each (build/styles.txt); later areas style themselves in styles/app. */
+/* ===== two looks — Night (near-black) and Light — colour kept for the things that mean something ===== */
+
+
+
+
+   
+ 
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+ 
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+.st-work,.rtBadge,.dr-s{filter:none !important;}

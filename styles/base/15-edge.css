@@ -1,0 +1,7 @@
+/* Parsec · styles/base · 15-edge.css
+   edge cases (Parsec 8).
+   Base blocks are the stylesheets Parsec 8 shipped with, one <style id> each (build/styles.txt); later areas style themselves in styles/app. */
+/* sections sit close to the window edge */
+html body div.main.main.main{padding-left:12px !important;padding-right:12px !important;}
+html body div.main.main.v-ros{padding-top:12px !important;}
+.ro-detail-pane.jc-pane{padding:0 !important;margin:0 !important;}

@@ -1,0 +1,97 @@
+/* Parsec · styles/app · 19-triage-transfer.css
+   transfer step by step, the road test and the truck checks (TRX).
+   All styles/app files go into one <style id="v190pg"> block, in file-name order; the number keeps that order. */
+/* Parsec 12.1 — Triage: transfer step by step, the road test, the truck checks (b9/tri1.js) */
+.tg-pop.trx-x,.tg-pop.trx-r,.tg-pop.trx-q{width:430px;}
+.trx-steps{display:flex;align-items:center;gap:2px;flex-wrap:wrap;margin:-2px 0 4px;font-size:12px;color:var(--tg-ink3);}
+.trx-steps > i{font-style:normal;color:var(--tg-ink4);padding:0 1px;}
+.trx-steps button{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 9px !important;border-radius:999px;color:var(--tg-ink3);white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis;}
+.trx-steps button em{font-style:normal;font-weight:600;}
+.trx-steps button:hover:not(:disabled){background:var(--tg-fill);color:var(--tg-ink);}
+.trx-steps button.on{background:var(--tg-acct);color:var(--tg-acctx);font-weight:600;}
+.trx-steps button.dn{color:var(--tg-ink);}
+.trx-steps button.dn .tg-ic{color:var(--tg-good);flex:none;}
+.trx-steps button:disabled{opacity:.45;cursor:default;}
+.trx-os{display:flex;flex-direction:column;gap:3px;}
+.trx-o{position:relative;display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:10px;align-items:center;min-height:42px;padding:6px 30px 6px 10px !important;border-radius:10px;font-size:13px;text-align:left;width:100%;}
+.trx-o:hover{background:var(--tg-fill);}
+.trx-o.on{background:var(--tg-acct);box-shadow:inset 0 0 0 1px var(--tg-accl);}
+.trx-o .tg-role,.trx-o .tg-av{width:30px;height:30px;border-radius:9px;font-size:10.5px;}
+.trx-o .tg-av{border-radius:999px;}
+.trx-o .tg-role .tg-ic{color:var(--tg-ink2);}
+.trx-o .t{min-width:0;}
+.trx-o .t b{display:block;font-weight:500;color:var(--tg-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.trx-o .t small{display:block;font-size:12px;color:var(--tg-ink3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.trx-o .r{font-size:11.5px;color:var(--tg-ink3);white-space:nowrap;display:flex;align-items:center;gap:6px;}
+.trx-o .tg-kbd{position:absolute;right:8px;top:50%;transform:translateY(-50%);min-width:15px;height:15px;font-size:10px;padding:0 3px;background:transparent;box-shadow:inset 0 0 0 1px var(--tg-border);}
+.trx-dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex:none;background:var(--tg-ink4);}
+.trx-dot.g{background:var(--tg-st-working);} .trx-dot.w{background:var(--tg-st-waiting);} .trx-dot.o{background:var(--tg-ink4);opacity:.7;}
+.trx-cs{flex-wrap:wrap;gap:6px;}
+.trx-cs .tg-chip small{font-size:11px;color:var(--tg-ink3);}
+.trx-cs .tg-chip.on small{color:var(--tg-ink2);}
+.tg-pop input.trx-dt{margin-top:8px;}
+.trx-sl{text-transform:none;}
+.tg-pop .trx-seg{display:flex;width:100%;margin:10px 0 2px;}
+.tg-pop .trx-seg button{flex:1;padding:5px 9px !important;}
+.trx-g2{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,.7fr) minmax(0,.9fr);gap:8px;margin-top:10px;}
+.trx-g2 label{display:flex;flex-direction:column;gap:4px;min-width:0;}
+.trx-g2 .tg-lbl{width:auto;margin:0;}
+.trx-g2 input,.trx-g2 select{width:100%;height:32px;font-size:13px;min-width:0;}
+.tg-chip.trx-ok.on{color:var(--tg-good);box-shadow:inset 0 0 0 1.5px var(--tg-good);background:var(--tg-good-t);}
+.tg-chip.trx-no.on{color:var(--tg-bad);box-shadow:inset 0 0 0 1.5px var(--tg-bad);background:var(--tg-bad-t);}
+.trx-qs{display:flex;align-items:baseline;gap:8px;margin:0 0 4px;font-size:12.5px;color:var(--tg-ink3);}
+.trx-qs b{font-size:18px;font-weight:600;color:var(--tg-warn);font-variant-numeric:tabular-nums;}
+.trx-qs.ok b{color:var(--tg-good);}
+.trx-cl{display:flex;flex-direction:column;border-radius:12px;box-shadow:inset 0 0 0 1px var(--tg-hair);padding:3px 12px;}
+.trx-ck{display:flex;align-items:center;gap:9px;min-height:31px;font-size:13px;min-width:0;}
+.trx-ck + .trx-ck{box-shadow:inset 0 1px 0 var(--tg-hair);}
+.trx-ck .tg-ic{flex:none;}
+.trx-ck.ok .tg-ic{color:var(--tg-good);} .trx-ck.no .tg-ic{color:var(--tg-warn);} .trx-ck.info .tg-ic{color:var(--tg-ink3);}
+.trx-ck > span{flex:none;}
+.trx-ck.no > span{color:var(--tg-ink);font-weight:500;}
+.trx-ck small{margin-left:auto;font-size:12px;color:var(--tg-ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
+.trx-ck .tg-link{flex:none;}
+.trx-wh{display:flex;align-items:center;gap:6px;margin-top:8px;}
+.trx-wh .tg-lbl.top{margin:0;}
+.trx-wh .tg-link{display:inline-flex;align-items:center;gap:4px;}
+.trx-wl{display:flex;flex-direction:column;gap:1px;margin-top:6px;}
+.trx-tk{display:flex;align-items:center;gap:4px;}
+.trx-tb{display:grid;grid-template-columns:18px minmax(0,1fr);gap:9px;align-items:center;flex:1;min-width:0;min-height:31px;padding:0 6px !important;border-radius:8px;font-size:13px;color:var(--tg-ink2);text-align:left;}
+.trx-tb:hover{background:var(--tg-fill);}
+.trx-tb i{width:16px;height:16px;border-radius:5px;box-shadow:inset 0 0 0 1.5px var(--tg-bs, var(--tg-border));display:grid;place-items:center;}
+.trx-tk.on .trx-tb{color:var(--tg-ink);}
+.trx-tk.on .trx-tb i{background:var(--tg-st-working);box-shadow:none;color:#fff;}
+.trx-tb i .tg-ic{width:11px;height:11px;stroke:currentColor;}
+.trx-add{display:flex;gap:6px;margin-top:8px;}
+.trx-add input{flex:1;min-width:0;height:30px;font-size:13px;}
+.trx-late{display:inline-flex;align-items:center;height:18px;padding:0 6px;border-radius:999px;background:var(--tg-bad-t);color:var(--tg-bad);font:600 11px/1 var(--tg-sans);font-variant-numeric:tabular-nums;white-space:nowrap;flex:none;}
+.tg-it .trx-late{margin-right:2px;}
+.tg-m.sys.trx-st .hd .tg-link{margin-left:8px;}
+.tg-m.sys.trx-st.late .gi{box-shadow:inset 0 0 0 1px var(--tg-bad);color:var(--tg-bad);}
+.tg-cl .tg-link{margin-left:8px;flex:none;}
+.tg-dkh .trx-b{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+@media (max-width:760px){
+  .tg-pop.trx-x,.tg-pop.trx-r,.tg-pop.trx-q{width:auto;}
+  .trx-g2{grid-template-columns:1fr 1fr;}
+  .trx-g2 label:first-child{grid-column:1 / -1;}
+  .trx-steps button{max-width:120px;}
+}
+/* Parsec 12.2: the road test / truck checks / release pop-over over any page */
+.tg.tg-tm.trx-layer{position:fixed;inset:0;z-index:1150;display:block;height:auto;min-height:0;background:transparent;box-shadow:none;border:0;padding:0;margin:0;}
+.trx-layer .trx-scrim{position:absolute;inset:0;background:rgba(20,18,15,.28);animation:trx-fade .15s ease both;}
+:root[data-theme$="d"] .trx-layer .trx-scrim{background:rgba(0,0,0,.5);}
+@keyframes trx-fade{from{opacity:0}}
+.trx-layer .tg-pop{position:fixed !important;left:50% !important;top:7vh !important;right:auto !important;bottom:auto !important;transform:translateX(-50%);max-height:86vh;z-index:1;margin:0;}
+.trx-layer .tg-pop.rl{width:400px;}
+
+.btn.rq-danger,.btn.tch-danger{color:var(--tg-bad);box-shadow:inset 0 0 0 1px var(--tg-bad);}
+.btn.rq-danger:hover,.btn.tch-danger:hover{background:var(--tg-bad-t);}
+.rq-delp{margin:2px 0 8px;padding:8px 10px;border-radius:10px;background:var(--tg-fill);font-size:12.5px;line-height:18px;white-space:pre-line;color:var(--tg-ink2);}
+@media (max-width:760px){
+  .trx-layer .tg-pop{left:0 !important;right:0 !important;top:auto !important;bottom:0 !important;transform:none;width:auto !important;max-height:88vh;border-radius:16px 16px 0 0;}
+}
+:root[data-device="phone"] .trx-layer .tg-pop{left:0 !important;right:0 !important;top:auto !important;bottom:0 !important;transform:none;width:auto !important;max-height:88vh;border-radius:16px 16px 0 0;}
+.tg-top .trx-b{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 4px;}
+.rq-open2{margin-top:8px;}
+.tg .btn.tch-danger,.tg .btn.rq-danger{color:var(--tg-bad) !important;}
+.tg-pop .btn.tch-danger,.tg-pop .btn.rq-danger{box-shadow:inset 0 0 0 1px var(--tg-bad) !important;}

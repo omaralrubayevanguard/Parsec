@@ -1,0 +1,5 @@
+/* Parsec · styles/app · 35-assign-capacity.css
+   the Assign pop's capacity bar.
+   All styles/app files go into one <style id="v190pg"> block, in file-name order; the number keeps that order. */
+/* Parsec 14 (B) — the Assign pop's capacity bar reads what this job adds */
+.v10-cap .t{white-space:nowrap;}

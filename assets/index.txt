@@ -1,0 +1,2 @@
+# name: file  mime  — @@ASSET:name@@ in src/page.html becomes a data URL
+apple-touch-icon: icons/apple-touch-icon.png image/png

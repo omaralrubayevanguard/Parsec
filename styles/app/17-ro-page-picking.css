@@ -1,0 +1,4 @@
+/* Parsec · styles/app · 17-ro-page-picking.css
+   picking on the RO page (body-level).
+   All styles/app files go into one <style id="v190pg"> block, in file-name order; the number keeps that order. */
+body:has(.jc-host.rop-picking) .toast-wrap{bottom:calc(var(--rop-sbh, 52px) + 94px) !important;} body:has(.jc-host.rop-picking[data-device=phone]) .toast-wrap{bottom:calc(var(--rop-sbh, 150px) + 96px) !important;}

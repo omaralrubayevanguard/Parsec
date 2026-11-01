@@ -1,0 +1,18 @@
+/* Parsec · styles/base · 20-v180.css
+   zoom levels (block id v180; the print code reads it by id).
+   Base blocks are the stylesheets Parsec 8 shipped with, one <style id> each (build/styles.txt); later areas style themselves in styles/app. */
+/* Large and Shop floor zoom the whole page, and the zoom scales 100vh too — so a panel
+   sized to the window came out taller than the window. These divide by the zoom. */
+:root{--zf:1;}
+html[data-size=large]{--zf:1.15;}
+html[data-size=floor]{--zf:1.35;}
+#app{min-height:calc(100vh / var(--zf));}
+html[data-size=large],html[data-size=floor]{--page-min-h:calc(100dvh / var(--zf));}
+:root:is([data-theme="ivl"],[data-theme="ivd"]):not([data-device="phone"]) .main{min-height:calc(100vh / var(--zf) - 16px);}
+:root:is([data-theme="ivl"],[data-theme="ivd"]):not([data-device="phone"]) .main.v-triage,
+:root:is([data-theme="ivl"],[data-theme="ivd"]):not([data-device="phone"]) .main.v-foreman{height:calc(100vh / var(--zf) - 16px) !important;}
+:root:is([data-theme="ivl"],[data-theme="ivd"]):not([data-device="phone"]) .pz-hdr .pnav-set-pop{max-height:calc(100vh / var(--zf) - 24px) !important;}
+:root:is([data-theme="ivl"],[data-theme="ivd"]):not([data-device="phone"]) .iv-side :is(.notif-pop,.profile-pop){max-height:calc(100vh / var(--zf) - 24px) !important;}
+.ro-list{max-height:calc(100vh / var(--zf) - var(--tb-h,64px) - 28px);}
+.ro-page > .ro-list{height:calc(100dvh / var(--zf) - var(--tb-h,64px) - 36px);}
+.tg-srpop{max-height:calc(100vh / var(--zf) - 160px);}

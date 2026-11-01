@@ -1,0 +1,73 @@
+/* Parsec · styles/base · 16-at3k.css
+   the 3K-wide layout (Parsec 8).
+   Base blocks are the stylesheets Parsec 8 shipped with, one <style id> each (build/styles.txt); later areas style themselves in styles/app. */
+/* ===== the AssistTerminator3000 design system — Inter, teal work colour, blue selection, hairline cards, sweep + press ===== */
+
+
+
+
+
+
+
+
+
+
+@keyframes atPulse{50%{opacity:.35}}
+/* ---- top strip: translucent surface, hairline under it ---- */
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ---- type ---- */
+
+
+/* ---- buttons: secondary by default, primary in the work colour, a small press ---- */
+
+
+
+
+
+
+
+
+/* ---- segmented controls ---- */
+
+
+
+
+
+/* ---- surfaces: one card look — white, hairline, 14px corners, a whisper of shadow ---- */
+
+
+
+
+
+/* the sweep: a soft band of light crosses a row on hover */
+
+
+
+
+/* ---- status pills: a soft tint and the status colour ---- */
+
+/* ---- fields ---- */
+
+
+
+
+
+/* ---- toasts, menus and dialogs ---- */

@@ -1,0 +1,24 @@
+# Each <style id> block in src/page.html, and the file(s) that fill it, in order. A folder means every .css in it, sorted.
+app-style: styles/base/01-app.css
+v140-fixes: styles/base/02-fixes-140.css
+v158css: styles/base/03-v158.css
+v159css: styles/base/04-v159.css
+v160css: styles/base/05-v160.css
+v161css: styles/base/06-v161.css
+v162stone: styles/base/07-stone.css
+v163white: styles/base/08-white.css
+v164dock: styles/base/09-dock.css
+v165tyc: styles/base/10-tyc.css
+v166tri: styles/base/11-tri.css
+v167themes: styles/base/12-themes.css
+v167more: styles/base/13-more.css
+v168lw: styles/base/14-lw.css
+v172edge: styles/base/15-edge.css
+v174at3k: styles/base/16-at3k.css
+v175iv: styles/base/17-ivory.css
+v178tg: styles/base/18-triage-foreman.css
+v179fm: styles/base/19-foreman.css
+v180: styles/base/20-v180.css
+v181wa: styles/base/21-warranty.css
+v182px: styles/base/22-px-sidebar.css
+v190pg: styles/app/

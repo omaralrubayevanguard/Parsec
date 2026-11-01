@@ -1,0 +1,56 @@
+/* Parsec · styles/app · 32-page-search.css
+   page search (Ctrl K) and the query chip.
+   All styles/app files go into one <style id="v190pg"> block, in file-name order; the number keeps that order. */
+/* Parsec 13.1 — page search: the icon in each page's header, the query chip, and the search window over the page (b9/v131s.js) */
+.psm-w{display:inline-flex;align-items:center;gap:4px;flex:none;min-width:0;}
+.psm-w .psm-b.on{color:var(--tg-acc,#86643A) !important;background:var(--tg-fill,#F0EDE6);}
+.psm-chip{display:inline-flex;align-items:center;height:28px;max-width:200px;border-radius:999px;background:var(--tg-fill,#F0EDE6);box-shadow:inset 0 0 0 1px var(--tg-border,#E6E2D8);color:var(--tg-ink,#1D1C1A);font:500 12.5px/1 var(--tg-sans,"Geist","Inter","Segoe UI",system-ui,sans-serif);}
+.psm-chip button{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;height:28px;}
+.psm-chip .psm-cq{padding:0 4px 0 11px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:170px;display:block !important;line-height:28px !important;}
+.psm-chip .psm-cx{width:26px;justify-content:center;border-radius:0 999px 999px 0;color:var(--tg-ink3,#67625A);}
+.psm-chip .psm-cx:hover{color:var(--tg-ink,#1D1C1A);background:var(--tg-hover,rgba(29,28,26,.06));}
+.psm-chip button:focus-visible{outline:2px solid var(--tg-acc,#86643A);outline-offset:-2px;border-radius:999px;}
+.psm-ic{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none;}
+[data-pg="tech"] .tg-head > .psm-w{margin-left:auto;}
+:root[data-device="phone"] .psm-chip{max-width:120px;}
+:root[data-device="phone"] .psm-chip .psm-cq{max-width:92px;}
+
+/* the window */
+.psm{--r-bg:#FFFFFF;--r-ink:#1D1C1A;--r-ink2:#57534B;--r-ink3:#67625A;--r-hair:#E6E2D8;--r-fill:#F0EDE6;--r-acc:#86643A;--r-acct:#F4EDE1;
+  position:fixed;inset:0;z-index:10050;display:flex;justify-content:center;align-items:flex-start;padding:max(56px,10vh) 16px 16px;box-sizing:border-box;
+  background:rgba(29,28,26,.28);font-family:"Geist","Inter","Segoe UI",system-ui,sans-serif;font-size:14px;line-height:20px;color:var(--r-ink);-webkit-font-smoothing:antialiased;animation:psm-in .14s ease both;}
+:root[data-theme="ivd"] .psm,:root[data-theme="vvd"] .psm,:root[data-theme="dark"] .psm{--r-bg:#1D1D1B;--r-ink:#EDEBE6;--r-ink2:#B0ACA3;--r-ink3:#9A968D;--r-hair:#2E2D2A;--r-fill:#262624;--r-acc:#D1B184;--r-acct:#2A241B;background:rgba(0,0,0,.5);}
+.psm-c{width:min(560px,100%);max-height:calc(100vh - max(56px,10vh) - 16px);display:flex;flex-direction:column;border-radius:14px;background:var(--r-bg);box-shadow:0 0 0 1px rgba(29,28,26,.08),0 18px 48px -10px rgba(29,28,26,.35);overflow:hidden;animation:psm-up .18s ease both;}
+:root[data-theme="ivd"] .psm-c,:root[data-theme="vvd"] .psm-c,:root[data-theme="dark"] .psm-c{box-shadow:0 0 0 1px rgba(255,255,255,.08),0 18px 48px -10px rgba(0,0,0,.6);}
+.psm-in{display:flex;align-items:center;gap:10px;height:52px;padding:0 14px 0 16px;flex:none;border-bottom:1px solid var(--r-hair);color:var(--r-ink3);cursor:text;}
+.psm-in input{all:unset;box-sizing:border-box;flex:1 1 auto;min-width:0;height:100%;font-size:16px;line-height:22px;color:var(--r-ink);caret-color:var(--r-acc);}
+/* above the themes' input rules (they carry !important) */
+.psm .psm-in input:not(#psm-0),.psm .psm-in input:not(#psm-0):hover,.psm .psm-in input:not(#psm-0):focus,.psm .psm-in input:not(#psm-0):focus-visible{border:0 !important;box-shadow:none !important;outline:none !important;background:transparent !important;padding:0 !important;margin:0 !important;width:auto !important;height:100% !important;min-height:0 !important;border-radius:0 !important;font-size:16px !important;line-height:22px !important;color:var(--r-ink) !important;}
+.psm-in input::placeholder{color:var(--r-ink3);opacity:1;}
+.psm-k{flex:none;padding:2px 6px;border-radius:5px;font-size:11px;line-height:14px;font-weight:500;color:var(--r-ink3);box-shadow:inset 0 0 0 1px var(--r-hair);}
+.psm-h{flex:none;padding:9px 16px;font-size:12.5px;line-height:18px;color:var(--r-ink2);}
+.psm-h b{font-weight:600;color:var(--r-ink);font-variant-numeric:tabular-nums;}
+.psm.has-res .psm-h{border-bottom:1px solid var(--r-hair);}
+.psm-res{overflow:auto;padding:0 6px;}
+.psm.has-res .psm-res{padding:6px;}
+.psm-r{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:10px;width:100%;min-height:44px;padding:6px 10px;border-radius:9px;color:var(--r-ink);}
+.psm-r.k{background:var(--r-fill);}
+.psm-r:focus-visible{outline:2px solid var(--r-acc);outline-offset:-2px;}
+.psm-ri{flex:none;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:var(--r-acct);color:var(--r-acc);}
+.psm-ri svg{width:14px;height:14px;}
+.psm-rt{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;}
+.psm-rt b,.psm-rt small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.psm-rt b{font-size:13.5px;line-height:19px;font-weight:500;}
+.psm-rt small{font-size:12px;line-height:16px;color:var(--r-ink3);}
+.psm-rk{flex:none;color:var(--r-ink3);opacity:0;}
+.psm-r.k .psm-rk{opacity:1;}
+@keyframes psm-in{from{opacity:0}}
+@keyframes psm-up{from{opacity:0;transform:translateY(-6px) scale(.985)}}
+@media (max-width:560px){
+  .psm{padding:12px 16px 16px;}
+  .psm-c{max-height:calc(100vh - 28px);}
+  .psm-k{display:none;}
+}
+@media (prefers-reduced-motion:reduce){ .psm,.psm-c{animation:none;} }
+/* Parsec 14 — a result's status, drawn with pgSt (b9/st14.js) */
+.psm-rt small .pgst{vertical-align:-2px;color:var(--r-ink2,inherit);}

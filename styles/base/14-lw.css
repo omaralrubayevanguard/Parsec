@@ -1,0 +1,12 @@
+/* Parsec · styles/base · 14-lw.css
+   light-weight rows (Parsec 8).
+   Base blocks are the stylesheets Parsec 8 shipped with, one <style id> each (build/styles.txt); later areas style themselves in styles/app. */
+/* list + work — the light-DOM pieces */
+
+.ra-host{display:flex;flex-direction:column;gap:18px;padding-top:8px;}
+.ra-host .ra-next{overflow:visible !important;background:none !important;box-shadow:none !important;border:0 !important;padding:0 !important;min-height:0 !important;}
+.ra-host .ra-next > i{display:none !important;}
+.ra-host .ra-next .ra-nl{font-size:10.5px;letter-spacing:.14em;}
+.ra-more{background:var(--surface);border-radius:18px;padding:16px 18px;box-shadow:var(--shadow);}
+.ra-more-h{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:14px;} .ra-sp{flex:1;}
+.ra-more .ra-close{all:unset;cursor:pointer;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;color:var(--ink-faint);} .ra-more .ra-close:hover{background:var(--tint-hover);color:var(--ink);}

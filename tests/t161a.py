@@ -1,0 +1,103 @@
+# Parsec 16.1 (A) — the Assistant and "Stamp the time in your notes" are gone from Settings → Work tools and from the app.
+# No assistant button, panel, menu item, shortcut, text or API key anywhere (the page, the RO page's shadow root, the source);
+# its old browser keys are deleted on load. Work tools lists only the automations that are left, the Automations panel has
+# no stamps row and the saved switch is dropped. A note typed when a punch stops (or added on the RO page) is saved as
+# typed — no stamp offered or added. A note that already has a stamp still shows, stays as it is, and copies (14.6 Copy notes).
+import asyncio, os, sys, json, re
+sys.argv = sys.argv[:2] if len(sys.argv) > 1 else ['x', 't12_a.html']
+_src = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "t127p.py")).read().split("async def main():")[0]
+exec(_src)
+OUT = os.path.join(H, "shots161a"); os.makedirs(OUT, exist_ok=True)
+REAL = os.path.join(H, PAGE.replace("t12", "Parsec_12", 1))
+BAD = re.compile(r"assistant|api[ -]?key|anthropic", re.I)
+async def ro_tab(pg, rid, op):   # as in _t150c: open the RO, the operation, and its Time tab
+    await pg.evaluate(f"(()=>{{ const U=__tg.UI(); U.view='ros'; U.selectedRo='{rid}'; __tg.render(); }})()"); await pg.wait_for_timeout(900)
+    on = await pg.evaluate(J(f"const r=R.querySelector('.px-row[data-op=\"{op}\"]'); return r ? r.classList.contains('is-on') : null"))
+    if not on: await pg.evaluate(J(f"const t=R.querySelector('.px-row[data-op=\"{op}\"] .px-row__t'); t && t.click()")); await pg.wait_for_timeout(600)
+    await pg.evaluate(J(f"const o=R.querySelector('.px-row[data-op=\"{op}\"]'); const box=o && (o.closest('.px-op') || o.parentNode); const t=[...(box||R).querySelectorAll('.px-tab')].find(x=>x.dataset.tab==='time'); t && t.click();")); await pg.wait_for_timeout(500)
+def BOX(op): return f"const o=R.querySelector('.px-row[data-op=\"{op}\"]'), B=(o && (o.closest('.px-op') || o.parentNode)) || R;"
+async def main():
+    # the source of the real page
+    src = open(REAL, encoding="utf-8").read()
+    ok(not BAD.search(src), f"the page's source never says assistant / API key / Anthropic ({[src[max(0, m.start() - 40):m.end() + 40] for m in BAD.finditer(src)][:3]})")
+    ok(not re.search(r"assist-|asst[A-Z]|ASST_|initAssistant|assistBounce", src), f"no assistant code, actions or styles are left ({re.findall(r'.{30}(?:assist-|asst[A-Z]|ASST_|initAssistant).{30}', src)[:3]})")
+    ok(src.count("tec_asst_") == 3 and len(re.findall(r'"tec_asst_\w+"', src)) == 3, "its three old browser keys are named once, in the clean-up that deletes them")
+    for s in ["Stamp the time in your notes", "Work log stamps", "Work log stamp", "noteStampFor", "stampLine", "stampNow", "Press Enter to stamp", "adds it with a time stamp", "stamped with how long", "written before notes were stamped"]:
+        ok(s not in src, f"gone from the source: {s!r}")
+    ok("NOTE_STAMP_RE" in src and "function noteEntries" in src, "noteEntries still reads old stamped notes")
+    async with async_playwright() as p:
+        b, pg, errs = await setup(p)
+        # old browser keys go on load
+        await pg.evaluate("(()=>{ localStorage.setItem('tec_asst_key','sk-test'); localStorage.setItem('tec_asst_model','m'); localStorage.setItem('tec_asst_hist_v1','[]'); })()")
+        await pg.reload(); await pg.wait_for_timeout(1500)
+        await pg.evaluate("__tg.loadSample25()"); await pg.evaluate("__tg.ensureDemoTeam()"); await pg.wait_for_timeout(300)
+        left = await pg.evaluate("['tec_asst_key','tec_asst_model','tec_asst_hist_v1'].filter(k=>localStorage.getItem(k)!==null)")
+        ok(left == [], f"the assistant's API key, model and history are deleted on load ({left})")
+        ok(await pg.evaluate("Object.keys(localStorage).filter(k=>/asst|assist/i.test(k)).length") == 0, "no key in this browser belongs to the assistant")
+        X = await pg.evaluate(PREP); await pg.wait_for_timeout(500)
+        # nothing of it on the page
+        dom = await pg.evaluate("""(()=>{ const q=s=>document.querySelectorAll(s).length;
+          return { fab: q('.assist-fab'), panel: q('.assist-panel, #assist-root, #assist-input, #assist-key-input'), acts: q('[data-action^="assist"]'), hook: typeof __tg.asstCallAPI, text: /assistant|api key/i.test(document.documentElement.textContent) }; })()""")
+        ok(dom == {"fab": 0, "panel": 0, "acts": 0, "hook": "undefined", "text": False}, f"no assistant button, panel, action or text on the page ({dom})")
+        # the old app menu (not shown in this layout) counts only what is left, and has no chat item
+        ok(not re.search(r'"status", ?"stamps"', src) and 'stamps:true' not in src and 'data-action="assist' not in src, "no menu counts the stamps rule, and none has a chat item (16.2: the old app menu and Work tools are in Settings)")
+        keys = await pg.evaluate("JSON.stringify(__tg.pxKeyGroups('console'))")
+        ok(not BAD.search(keys) and "chat" not in keys.lower(), "the shortcut list has no assistant shortcut")
+        # Settings → Automations (16.2: the old Work tools section is the Automations group of the one Settings page)
+        await pg.evaluate("(()=>{ const S=__tg.STATE(); S.automations=S.automations||{}; S.automations.builtin={status:true, stamps:true, parts:true}; const U=__tg.UI(); U.pxPrev=U.view; U.view='profile'; U.pxSec='tools'; __tg.render(); })()"); await pg.wait_for_timeout(700)
+        tools = await pg.evaluate("(()=>{ const n=[...document.querySelectorAll('[data-s=\"auto\"]')].map(x=>x.textContent).join(' | '); const c=document.querySelector('.px-main, .px-page, main') || document.body; return { nav: n, text: c.textContent, sec: __tg.UI().pxSec }; })()")
+        ok(("Status sync" in tools["text"] and "Parts → status" in tools["text"]) or ("Status follows the clock" in tools["text"] and "Part statuses move the job" in tools["text"]), "Settings › Automations lists the two built-ins that were left")
+        ok("Stamp the time" not in tools["text"] and "Enter adds the time" not in tools["text"] and "Work log stamps" not in tools["text"] and not BAD.search(tools["text"]), "Settings › Automations has no stamps line and no Assistant card")
+        ok("assistant" not in tools["nav"].lower() and "automations" in tools["nav"].lower(), f"the Automations menu entry has no assistant ({tools['nav'][:80]})")
+        sv = await pg.evaluate("JSON.stringify(__tg.STATE().automations.builtin)")
+        ok("stamps" not in sv and '"status":true' in sv and '"parts":true' in sv, f"the saved stamps switch is dropped ({sv})")
+        await pg.screenshot(path=os.path.join(OUT, "a1_work_tools.png"))
+        # the Automations panel (16.2: inside Settings › Automations)
+        am = await pg.evaluate("(()=>{ const a=document.querySelector('.am'); return a ? { rows: [...a.querySelectorAll('.am-rule .am-t b')].map(x=>x.textContent), sw: [...a.querySelectorAll('[data-action=\"am-builtin\"]')].map(x=>x.dataset.k) } : null; })()")
+        ok(am and "status" in am["sw"] and "parts" in am["sw"] and "stamps" not in am["sw"] and "Work log stamps" not in am["rows"], f"the Automations panel has no stamps row ({am})")
+        await pg.screenshot(path=os.path.join(OUT, "a2_automations.png"))
+        await pg.keyboard.press("Escape"); await pg.wait_for_timeout(300)
+        # stopping a punch with a note: saved as typed, no stamp offered
+        await pg.evaluate(SIGN(X["A"])); await pg.wait_for_timeout(300)
+        await pg.evaluate(f"(()=>{{ const U=__tg.UI(); U.view='ros'; U.selectedRo='{X['ro']}'; __tg.render(); __tg.doStartPunch('{X['ro']}', '{X['a']}', 'Repairing'); }})()"); await pg.wait_for_timeout(700)
+        await pg.evaluate("__tg.doStopPunch('Switched job', 'Checked the brakes.')"); await pg.wait_for_timeout(400)
+        try: await pg.evaluate("__tg.autoFlush && __tg.autoFlush()")
+        except Exception: pass
+        await pg.wait_for_timeout(600)
+        st = await pg.evaluate(f"""(()=>{{ const S=__tg.STATE(), ps=S.punches.filter(p=>p.opId==='{X['a']}' && p.stop).sort((a,b)=>+new Date(a.stop)-+new Date(b.stop)), p=ps[ps.length-1], r=__tg.getRO('{X['ro']}');
+          return {{ notes: p ? p.notes : null, pid: p ? p.id : null, sg: (r.suggest||[]).map(s=>s.rule + ': ' + s.text), stampAct: (r.suggest||[]).some(s=>(s.acts||[]).some(a=>a.a==='stamp')) }}; }})()""")
+        ok(st["notes"] == "Checked the brakes.", f"the stop note is saved as typed ({st['notes']!r})")
+        ok(not st["stampAct"] and not any("stamp" in x.lower() for x in st["sg"]), f"no work-log stamp is offered ({st['sg']})")
+        # adding a note on the RO page: as typed too
+        await ro_tab(pg, X["ro"], X["a"])
+        clicked = await pg.evaluate(J(BOX(X["a"]) + "const b=[...B.querySelectorAll('button[aria-label=\"Add a note here\"]')]; if(!b.length) return 0; b[b.length-1].click(); return b.length"))
+        await pg.wait_for_timeout(500)
+        typed = await pg.evaluate(J("const i=R.querySelector('.rop-nin'); if(!i) return false; i.value='Tested the circuit.'; i.dispatchEvent(new KeyboardEvent('keydown', {key:'Enter', bubbles:true})); return true"))
+        await pg.wait_for_timeout(600)
+        nn = await pg.evaluate(f"(()=>{{ const p=__tg.STATE().punches.filter(p=>p.opId==='{X['a']}' && /Tested the circuit/.test(p.notes||''))[0]; return p ? p.notes : null; }})()")
+        ok(clicked and typed and nn is not None and nn.split("\n")[-1] == "Tested the circuit.", f"a note added on the RO page is saved as typed ({clicked}, {typed}, {nn!r})")
+        # an old stamped note: still shows, unchanged, and copies
+        OLD = "[10:05 · 0:26] Found a loose ground.\n[0:40] Fixed the ground."
+        await pg.evaluate(f"""(()=>{{ const S=__tg.STATE(), r=__tg.getRO('{X['ro']}'), now=Date.now();
+          S.punches=S.punches.filter(p=>p.opId!=='{X['b']}');
+          S.punches.push({{ id:'t161old', roId:r.id, opId:'{X['b']}', start:new Date(now-7200000).toISOString(), stop:new Date(now-3600000).toISOString(), startReason:'Repairing', stopReason:'Switched job', notes:{json.dumps(OLD)}, by:'{X['An']}' }});
+          S.savedAt=new Date().toISOString(); __tg.render(); }})()"""); await pg.wait_for_timeout(800)
+        await ro_tab(pg, X["ro"], X["b"])
+        shown = await pg.evaluate(J(BOX(X["b"]) + "return B.textContent"))
+        ok("Found a loose ground." in shown and "Fixed the ground." in shown and "[0:40]" not in shown, "an old stamped note still shows, words only")
+        await pg.evaluate("(()=>{ window.__cp=null; Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: t => { window.__cp = t; return Promise.resolve(); } } }); })()")
+        cpb = await pg.evaluate(J(BOX(X["b"]) + "const b=[...B.querySelectorAll('.rop-cpn')].filter(b=>!b.disabled); if(!b.length) return null; b[b.length-1].click(); return b[b.length-1].title"))
+        await pg.wait_for_timeout(400)
+        cp = await pg.evaluate("window.__cp")
+        ok(cp == "Found a loose ground. Fixed the ground.", f"Copy notes copies it as one paragraph, without the old stamps ({cpb!r} → {cp!r})")
+        kept = await pg.evaluate("__tg.STATE().punches.filter(p=>p.id==='t161old')[0].notes")
+        ok(kept == OLD, "the old note itself is left exactly as it was")
+        await pg.screenshot(path=os.path.join(OUT, "a3_old_note.png"))
+        # the RO page's shadow root and the whole document: no assistant, no API key
+        sr = await pg.evaluate(J("return { t: /assistant|api key/i.test(R.textContent), fab: R.querySelectorAll('.assist-fab, .assist-panel, [data-action^=\"assist\"]').length }"))
+        ok(sr == {"t": False, "fab": 0}, f"the RO page's shadow root has no assistant ({sr})")
+        ok(not await pg.evaluate("/assistant|api key/i.test(document.documentElement.textContent)"), "the document has no assistant text after all that")
+        ok(not errs, f"no console errors ({errs[:3]})")
+        await b.close()
+    print("FAILS", len(FAILS))
+asyncio.run(main())

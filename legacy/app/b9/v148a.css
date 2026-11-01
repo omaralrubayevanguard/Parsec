@@ -1,5 +1,0 @@
-/* Parsec 14.8 (A): the open operation's complaint changes with a click */
-.rop-orow.is-on .px-row__t { cursor: text; border-radius: 5px; }
-.rop-orow.is-on .px-row__t:hover { text-decoration: underline dotted; text-decoration-color: var(--muted-2); text-underline-offset: 4px; }
-/* Parsec 14.8 (A): a declined operation's Start, greyed out (a click says why) */
-.jtmBtn.is-dec, .timer.is-dec, .otClock.is-dec { opacity: .42; cursor: not-allowed; box-shadow: none; }

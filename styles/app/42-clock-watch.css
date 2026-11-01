@@ -1,0 +1,36 @@
+/* Parsec · styles/app · 42-clock-watch.css
+   the corner cards (Still on the clock?, not clocked in).
+   All styles/app files go into one <style id="v190pg"> block, in file-name order; the number keeps that order. */
+/* Parsec 14.6 (G) — the corner cards ("Still on the clock?", "not clocked in") and the clock-out check */
+.v146{--n-bg:#1D1C1A;--n-ink:#FBFAF7;--n-ink2:rgba(251,250,247,.72);--n-line:rgba(251,250,247,.34);--n-hov:rgba(251,250,247,.1);--n-acc:#D1B184;
+  position:fixed;right:16px;bottom:16px;z-index:9000;display:flex;flex-direction:column;gap:8px;align-items:flex-end;width:min(380px,calc(100vw - 32px));
+  font-family:"Geist","Inter","Segoe UI",system-ui,sans-serif;font-size:13.5px;line-height:19px;-webkit-font-smoothing:antialiased;pointer-events:none;}
+.v146[hidden]{display:none;}
+:root[data-theme="ivd"] .v146,:root[data-theme="vvd"] .v146,:root[data-theme="dark"] .v146{--n-bg:#EDEBE6;--n-ink:#151514;--n-ink2:rgba(21,21,20,.68);--n-line:rgba(21,21,20,.3);--n-hov:rgba(21,21,20,.07);--n-acc:#86643A;}
+.v146-card{pointer-events:auto;width:100%;box-sizing:border-box;padding:12px 14px;border-radius:12px;background:var(--n-bg);color:var(--n-ink);
+  box-shadow:0 0 0 1px rgba(29,28,26,.08),0 14px 36px -10px rgba(29,28,26,.45);animation:v146-up .22s ease both;}
+.v146-card b{display:block;font-weight:600;font-size:14px;line-height:20px;}
+.v146-card small{display:block;margin-top:1px;font-size:12.5px;color:var(--n-ink2);}
+.v146-card .r{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.v146-in{box-shadow:0 0 0 1px rgba(29,28,26,.08),inset 3px 0 0 var(--n-acc),0 14px 36px -10px rgba(29,28,26,.45);}
+.v146-b{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;height:30px;padding:0 11px;border-radius:8px;font-size:12.5px;font-weight:500;color:var(--n-ink);box-shadow:inset 0 0 0 1px var(--n-line);white-space:nowrap;}
+.v146-b:hover{background:var(--n-hov);}
+.v146-b.pri{background:var(--n-ink);color:var(--n-bg);box-shadow:none;}
+.v146-b.pri:hover{opacity:.9;}
+.v146-b:focus-visible{outline:2px solid var(--n-acc);outline-offset:2px;}
+@keyframes v146-up{from{opacity:0;transform:translateY(8px)}}
+@media (max-width:640px){.v146{right:12px;left:12px;width:auto;bottom:calc(76px + env(safe-area-inset-bottom,0px));}}
+@media print{.v146{display:none !important;}}
+/* the clock-out check (the pgAsk look) */
+.v146ck .v146-nums{display:flex;gap:22px;margin:12px 0 0 44px;}
+.v146ck .v146-nums span{display:flex;flex-direction:column;}
+.v146ck .v146-nums b{font:500 20px/1 "Newsreader","Georgia",serif;font-variant-numeric:tabular-nums;color:var(--r-ink);}
+.v146ck .v146-nums small{margin-top:4px;font-size:11.5px;color:var(--r-ink3);}
+.v146ck .v146-ck{list-style:none;margin:12px 0 0 44px;padding:0;display:grid;gap:2px;}
+.v146ck .v146-ck li{display:flex;align-items:center;gap:8px;min-height:30px;padding:2px 0;border-top:1px solid var(--r-hair);font-size:13px;color:var(--r-ink);}
+.v146ck .v146-ck li:first-child{border-top:0;}
+.v146ck .v146-ck label{display:flex;align-items:flex-start;gap:8px;cursor:pointer;}
+.v146ck .v146-ck input{margin:3px 0 0;accent-color:var(--r-pri);width:15px;height:15px;flex:none;}
+.v146ck .v146-nt{justify-content:space-between;color:var(--r-ink2);}
+.v146ck .v146-lk{all:unset;cursor:pointer;flex:none;font-size:12.5px;font-weight:500;color:var(--r-acc);text-decoration:underline;text-underline-offset:2px;}
+.v146ck .v146-lk:focus-visible{outline:2px solid var(--r-acc);outline-offset:2px;border-radius:3px;}

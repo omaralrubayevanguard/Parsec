@@ -1,0 +1,11 @@
+/* Parsec · styles/app · 39-truck-card-words.css
+   the truck card's inline edits and quoted hours.
+   All styles/app files go into one <style id="v190pg"> block, in file-name order; the number keeps that order. */
+/* Parsec 14.2 — words and quoted hours that change in place (b9/v142.js), the Technician page's add-a-part pops */
+.rif,.qte{cursor:text;border-radius:4px;transition:background-color .12s ease,box-shadow .12s ease;outline:none;}
+.rif:hover,.qte:hover,.rif:focus-visible,.qte:focus-visible{background:var(--tg-fill,var(--fill,rgba(127,120,110,.12)));box-shadow:inset 0 -1px 0 var(--tg-ink4,var(--ink-4,#A8A398));}
+.rif.rif-e{color:var(--tg-ink4,var(--ink-4,#A8A398));}
+.rif.on,.qte.on{background:none;box-shadow:none;}
+.rif-in,.qte-in{box-sizing:content-box;font:inherit;color:inherit;letter-spacing:inherit;line-height:inherit;background:var(--tg-raised,var(--raised,#fff));border:1px solid var(--tg-acc,var(--accent,#86643A));border-radius:5px;padding:0 4px;margin:-2px -5px;outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--tg-acc,var(--accent,#86643A)) 18%,transparent);min-width:3ch;max-width:100%;vertical-align:baseline;}
+.qte-in{width:5.5ch;text-align:right;font-variant-numeric:tabular-nums;}
+@media (prefers-reduced-motion:reduce){.rif,.qte{transition:none;}}

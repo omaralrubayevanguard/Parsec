@@ -1,0 +1,6 @@
+/* Parsec · styles/app · 45-reminders.css
+   the lunch and end-of-day reminders.
+   All styles/app files go into one <style id="v190pg"> block, in file-name order; the number keeps that order. */
+/* Parsec 15 (B) — the lunch and end-of-day reminders sit in 14.6's corner, the same card; a thin accent says it's a reminder */
+.v150-lun,.v150-eod{box-shadow:0 0 0 1px rgba(29,28,26,.08),inset 3px 0 0 var(--n-acc),0 14px 36px -10px rgba(29,28,26,.45);}
+.v146-card.v150-lun,.v146-card.v150-eod{animation:none;}   /* their minutes tick — no slide-in on every redraw */

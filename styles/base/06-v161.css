@@ -1,0 +1,44 @@
+/* Parsec · styles/base · 06-v161.css
+   Parsec 8 round 161.
+   Base blocks are the stylesheets Parsec 8 shipped with, one <style id> each (build/styles.txt); later areas style themselves in styles/app. */
+/* ===== RO List page ===== */
+.rl{display:flex;flex-direction:column;gap:6px;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.rl-cu{display:flex;flex-direction:column;min-width:0;}
+.rl-cu b,.rl-cu small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rl-cu small{font-size:12px;color:var(--ink-faint);}
+
+
+
+
+
+.rl-st .pill{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+
+
+
+
+.ro-edge-tab{display:none !important;}
+.ro-page.rail-hidden{grid-template-columns:minmax(0,1fr) !important;}
+
+
+.ro-page.rail-hidden > .ro-detail-pane{grid-row:2 !important;grid-column:1 / -1 !important;}

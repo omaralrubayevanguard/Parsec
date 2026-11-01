@@ -1,0 +1,12 @@
+/* Parsec · styles/base · 13-more.css
+   small additions (Parsec 8).
+   Base blocks are the stylesheets Parsec 8 shipped with, one <style id> each (build/styles.txt); later areas style themselves in styles/app. */
+/* RO List options, Ready to close in the Triage side column */
+
+
+.rl-opt{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:36px;height:36px;border:0;border-radius:10px;background:transparent;color:var(--ink-dim);display:grid;place-items:center;cursor:pointer;}
+.rl-opt:hover,.rl-opt.on{background:var(--tint-hover-2);color:var(--ink);}
+.rl-menu{position:absolute;right:12px;top:calc(50% + 22px);z-index:40;min-width:230px;background:var(--menu-bg);border-radius:14px;padding:6px;box-shadow:var(--drop),0 0 0 1px var(--line);display:flex;flex-direction:column;}
+.rl-menu button{all:unset;box-sizing:border-box;cursor:pointer;padding:9px 12px;border-radius:9px;font-size:13px;font-weight:600;color:var(--ink);}
+.rl-menu button:hover{background:var(--menu-hover);} .rl-menu button.danger{color:var(--danger);}
+.rl-msep{height:1px;background:var(--line);margin:4px 6px;}

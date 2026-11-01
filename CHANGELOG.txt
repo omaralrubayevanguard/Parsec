@@ -1,5 +1,19 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 16.3 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 17 is the newest.
+
+
+Parsec 17 — the same Parsec, from organized source (nothing changes on screen)
+  Why: the one 8 MB file had become too big to change safely — 61 patch files making 723 text edits over Parsec 8, a four-minute build, and no way to work on two things at once.
+  For the developer (the app behaves exactly as 16.3):
+  · The source is a tree ("Parsec 17 workspace.zip"): src/app/<area>/… — 261 files by area (kit, state, data, shell, access, ro, ro-page, import, trucks, pages/<page>, clock, automations, settings, phone, sample, boot); styles/ (base, app, ro-page); assets/ (the 112 truck pictures as .webp files); vendor/; src/engine/
+  · Every file starts with a header: what it is, how it flows, what it declares, which STATE keys it touches, who it calls, what it does at load. The facts are generated (tools/headers.py); docs/AREAS.md is the index
+  · One command builds: python3 build.py → dist/Parsec.html in about two seconds (and dist/Parsec.test.html with the test hook). The load order is explicit in build/manifest.txt and guarded — the app is one closure, so where a function lives never matters, the order of what runs at load does
+  · Guards on every build: it parses (file and line on an error); every file is in the manifest once; no name declared twice; nothing reads a constant before it exists; the load order matches the baseline (a deliberate change: --accept-order); every STATE key has a home in the data store; the tooltips keep their writing rules; every file has its header; files over 60 KB are named
+  · One command tests: python3 tests/run.py — the 113 Playwright tests against the test build, three at a time, in a time zone where it is daytime; results per run in tests/_run/
+  · Docs: README, docs/ARCHITECTURE (how it works: state, the render loop, pages as closures, the RO page's shadow root, the data store, access), CONVENTIONS (where code goes, names, comments, recipes for a setting / a STATE key / an automation / a page / a test, releasing), SERVER (what is already server-shaped, the seams — transport, attachments, identity, permissions, audit, real-time — a staged path, admin controls), NEXT (recommendations), MIGRATION-16-to-17 (how the tree was made and proven)
+  · Proof: tools/migration/compare.js shows the new build has the same 2,084 functions and the same 690 load-time statements in the same order as Parsec 16.3, the same stylesheets and libraries — only comments and whitespace differ. The whole test suite was run on both builds (tests/RESULTS-17.md)
+  · The version line moved to src/app/kit/version.js (the one deliberate load-order change)
+  · The old workspace (app/, b9/, build12.py, the mock-ups) is retired. "Parsec workspace - source files.zip" stays as the 16.3 record; from now on the source is "Parsec 17 workspace.zip"
 
 Parsec 16.3 — every RO number opens its RO · one picture per RO · shop buttons by department · the customer contact
   (Your picks from "Parsec RO global settings ideas mock-up.html".)
@@ -602,7 +616,6 @@ Parsec 9 — every mock-up on the real data
   · Each role signs in to its home page; every day clock records whose it is; Staged and Picked up are live part statuses
   · Goals start at the shop's own last 90 days until the manager sets them; the labor rate drives $ per hour
   · Sample data now has six weeks of finished work behind the 25 sample ROs, so the Time Log, Career and Manager have history
-
 
 v181
   · in loadSample25 — changed here

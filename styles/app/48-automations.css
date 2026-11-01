@@ -1,0 +1,38 @@
+/* Parsec · styles/app · 48-automations.css
+   the built-ins' thresholds and What ran.
+   All styles/app files go into one <style id="v190pg"> block, in file-name order; the number keeps that order. */
+/* Parsec 16.2 (A) — the new built-ins' thresholds, and What ran (b9/v162a.js) */
+.am-t .v162-x{display:flex;flex-direction:column;align-items:flex-start;gap:4px;margin-top:4px;}
+.am-t .v162-thr{display:block;color:var(--ink-dim);line-height:2;}
+.am-t .v162-thr em{display:block;font-style:normal;color:var(--ink-faint);line-height:1.45;}
+.am-in.v162-n{display:inline-block;width:48px;margin:0 2px;padding:2px 6px;text-align:right;font-variant-numeric:tabular-nums;font-size:12px;line-height:1.4;}
+.am-t .v162-to{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--accent);}
+.am-t .v162-to::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.7;}
+.v162-log{margin-top:18px;display:flex;flex-direction:column;}
+.v162-lf{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px;}
+.v162-lf button{border:1px solid var(--border);background:var(--surface);color:var(--ink-dim);border-radius:var(--pill, 999px);padding:3px 10px;font:inherit;font-size:12px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+.v162-lf button em{font-style:normal;font-size:11px;color:var(--ink-faint);font-variant-numeric:tabular-nums;}
+.v162-lf button.on{background:var(--accent-soft,#e8f0fb);border-color:transparent;color:var(--accent);}
+.v162-lf button.on em{color:var(--accent);}
+.v162-lf button:focus-visible,.v162-ro:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+.v162-lg{display:flex;align-items:center;gap:6px;margin:10px 0 2px;font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);}
+.v162-lg span{font-weight:600;}
+.v162-le{display:grid;grid-template-columns:minmax(64px,auto) 1fr auto;align-items:start;gap:4px 12px;padding:8px 0;border-top:1px solid var(--border);}
+.v162-lg + .v162-le{border-top:0;}
+.v162-le time{font-size:12px;color:var(--ink-faint);font-variant-numeric:tabular-nums;padding-top:1px;white-space:nowrap;}
+.v162-tx{min-width:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;font-size:13px;line-height:1.45;}
+.v162-rk{font-size:11px;font-weight:700;letter-spacing:.02em;color:var(--ink-dim);background:var(--surface-2);border-radius:6px;padding:1px 6px;white-space:nowrap;}
+.v162-w{color:var(--ink);min-width:0;overflow-wrap:anywhere;}
+.v162-ro{border:0;background:none;padding:0;font:inherit;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;white-space:nowrap;}
+.v162-ro:hover{text-decoration:underline;}
+.v162-u{display:flex;justify-content:flex-end;}
+.v162-ug{display:flex;flex-direction:column;align-items:flex-end;gap:2px;max-width:220px;text-align:right;}
+.v162-ug small,.v162-un{font-size:11px;color:var(--ink-faint);line-height:1.35;}
+.v162-un{max-width:180px;text-align:right;}
+.v162-ub[disabled]{opacity:.45;cursor:not-allowed;}
+.v162-le.is-undone .v162-w{text-decoration:line-through;text-decoration-color:var(--ink-faint);color:var(--ink-dim);}
+.v162-more{align-self:flex-start;margin-top:8px;}
+@media (max-width:560px){
+  .v162-le{grid-template-columns:1fr auto;}
+  .v162-le time{grid-column:1 / -1;}
+}

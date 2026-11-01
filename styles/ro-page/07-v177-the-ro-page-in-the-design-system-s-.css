@@ -1,0 +1,198 @@
+/* Parsec · styles/ro-page · 07-v177-the-ro-page-in-the-design-system-s-.css
+   Part of the RO page's own stylesheet (JC_CSS): the RO page renders in a shadow root, so these files are joined into a string by the build.
+   The parts are the page's history, oldest first (Parsec 8's rounds, then each version's layer); the last rule wins. */
+/* ===== v177: the RO page in the design system's own components ===== */
+:host(.th-iv) .page.roB.roB.roB.ivB.pxB { display: block !important; padding: 0 !important; margin: 0 !important; min-height: 0 !important; grid-template-columns: none !important; }
+.pxStash { display: none !important; }
+.pxr { display: flex; flex-direction: column; height: calc(100vh - 16px); font: 400 14px/21px var(--font-sans); color: var(--ink); -webkit-font-smoothing: antialiased; text-align: left; }
+.pxr *, .px-scrim *, .px-pop * { letter-spacing: inherit; }
+.pxr .px-head { flex: none; }
+.pxr .px-ro { flex: 1 1 auto; min-height: 0; }
+.pxr .px-ro__main { overscroll-behavior: contain; }
+.pxr .px-ro__rail > slot { display: block; flex: none; margin-bottom: 0; }
+.pxr .px-ro__rail { gap: 0; }
+.pxr .px-crumb a { cursor: pointer; }
+.pxr .px-btn[disabled] { pointer-events: none; }
+.px-ro__eyebrow > span:not(.px-id) { color: var(--ink-3); }
+.px-titleblock { display: flex; flex-direction: column; }
+.px-si.px-breathe { animation: px-breathe 2.4s ease-in-out infinite; }
+.px-row .px-si { margin-left: 0; }
+.px-row__t { flex: 1 1 auto; }
+.px-op { animation: px-unfold .22s cubic-bezier(.2,.8,.2,1) both; }
+/* the operation's own controls on one quiet line above the TimeCard */
+.px-ophead { display: flex !important; align-items: center !important; gap: 8px !important; padding: 0 !important; margin: -4px 0 -4px !important; border: 0 !important; background: none !important; min-height: 32px; flex-wrap: wrap; }
+.px-ophead .complaintField { all: unset; box-sizing: border-box; flex: 1 1 200px; min-width: 120px; max-width: none !important; height: 28px; padding: 0 8px; margin-left: -8px; border-radius: 8px; font: 400 14px/28px var(--font-sans) !important; color: var(--ink-2) !important; field-sizing: fixed; transition: background-color .15s ease-out, box-shadow .15s ease-out; }
+.px-ophead .complaintField:hover { background: var(--fill); }
+.px-ophead .complaintField:focus { background: var(--raised); box-shadow: inset 0 0 0 1px var(--accent), 0 0 0 3px var(--accent-tint) !important; color: var(--ink) !important; }
+.px-ophead .grow { display: none; }
+.px-ophead .fltBar { display: flex; align-items: center; gap: 6px; }
+.px-ophead .fltAdd, .px-ophead .flt { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 6px; font: 500 11.5px/1 var(--font-mono); letter-spacing: .04em; color: var(--ink-3); box-shadow: inset 0 0 0 1px var(--border); cursor: pointer; }
+.px-ophead .fltAdd:hover { background: var(--fill); color: var(--ink); }
+.px-ophead .jobStBtn { all: unset; box-sizing: border-box; display: inline-flex !important; align-items: center; gap: 8px; height: 28px; padding: 0 10px 0 9px; border-radius: 8px; font: 500 13px/1 var(--font-sans) !important; color: var(--ink) !important; background: var(--raised) !important; box-shadow: inset 0 0 0 1px var(--border) !important; cursor: pointer; }
+.px-ophead .jobStBtn:hover { background: var(--fill) !important; }
+.px-ophead .iconMenuBtn { all: unset; box-sizing: border-box; display: inline-grid !important; place-items: center; width: 28px; height: 28px; border-radius: 7px; color: var(--ink-2); cursor: pointer; }
+.px-ophead .iconMenuBtn:hover { background: var(--fill); color: var(--ink); }
+/* TimeCard extras */
+.px-time .px-hit { display: flex; flex-direction: column; gap: 2px; cursor: pointer; border-radius: 6px; margin: -4px; padding: 4px; transition: background-color .15s ease-out; }
+.px-time .px-hit:hover { background: var(--fill); }
+.px-time .px-hit > span { font-size: 12px; font-weight: 500; color: var(--ink-3); }
+.px-time__stats b small { font-size: 12px; color: var(--ink-3); font-weight: 400; margin-left: 3px; }
+.px-time__go.is-disabled { background: var(--fill); color: var(--ink-4); }
+.px-time__lock { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--warn); }
+.px-time.is-live .px-time__go { background: var(--accent); color: var(--on-accent); }
+.px-bar__fill { transition: width .4s ease-out; }
+/* tabs and their lists */
+.px-optabs { display: flex; flex-direction: column; }
+.px-panes { margin-top: 4px; }
+.px-li__t { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: flex; align-items: center; gap: 10px; }
+.px-li__t small { color: var(--ink-3); }
+.px-li__t .px-ico { color: var(--ink-3); }
+.px-li--file { grid-template-columns: 1fr 120px 32px 80px; }
+.px-li.is-live .r { color: var(--accent-text); font-weight: 500; }
+.px-adds { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.px-add .px-ico { width: 14px; height: 14px; }
+.px-notecomp { display: flex; align-items: flex-end; gap: 8px; margin-top: 12px; }
+.px-panes .px-feed { margin-top: 8px; }
+.px-legacy { margin-top: 12px; padding-top: 12px; box-shadow: inset 0 1px 0 var(--hairline); }
+/* activity */
+.px-composer .px-ico { color: var(--ink-3); }
+.px-composer__in { all: unset; flex: 1 1 auto; min-width: 0; font: 400 13.5px/1 var(--font-sans); color: var(--ink); }
+.px-composer__in::placeholder { color: var(--ink-3); }
+.px-composer:focus-within { box-shadow: inset 0 0 0 1px var(--accent), 0 0 0 3px var(--accent-tint); }
+.px-ev .px-av { margin-top: 0; }
+.px-feed > .px-link { font-size: 12.5px; }
+/* rail */
+.px-prop.is-edit { cursor: text; }
+.px-prop > b .px-av { flex: none; }
+.px-prop > b > span { display: inline-flex; align-items: center; gap: 8px; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.px-props { margin-top: 20px; }
+/* popovers and menus */
+.px-pop { font: 400 13.5px/1.3 var(--font-sans); color: var(--ink); }
+.px-smenu { display: flex; align-items: flex-start; gap: 6px; }
+.px-smenu > .px-smain { width: 268px; }
+.px-smenu .px-sub { margin-top: 0; }
+.px-menu__search .px-msearch { all: unset; flex: 1 1 auto; min-width: 0; font: 400 13.5px/1 var(--font-sans); color: var(--ink); }
+.px-menu__search .px-msearch::placeholder { color: var(--ink-3); }
+.px-menu__search > span:first-child { display: inline-grid; color: var(--ink-3); }
+.px-menu__item > span:not(.px-kbd):not(.px-menu__tick):not([style]) { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.px-menu__item .px-kbd, .px-menu__item .px-menu__tick { margin-left: auto; flex: none; }
+.px-menu__item .px-smenu__more { flex: none; margin-left: 4px; }
+.px-menu__item .px-mrow__n { flex: none !important; width: 16px; color: var(--ink-3); }
+.px-pmenu { position: relative; }
+.px-stagepop { display: flex; flex-direction: column; }
+.px-stagepop .px-check { padding: 5px 0; }
+/* dialogs inside the console */
+.px-scrim { z-index: 200; font: 400 14px/21px var(--font-sans); color: var(--ink); }
+.px-modal { overflow: hidden; }
+.px-modal .px-input--full { width: 100%; }
+.px-modal input[type="date"].px-input, .px-prop input[type="datetime-local"] { font-family: var(--font-sans); }
+.px-btn.is-disabled { color: var(--ink-4); background: var(--fill); box-shadow: none; cursor: default; }
+.px-tsum b.px-bad, .px-time__stats b.px-bad { color: var(--bad); }
+.px-tsum b.px-warn, .px-time__stats b.px-warn { color: var(--warn); }
+.px-mgrp .px-ico { width: 14px; height: 14px; }
+
+.px-menu__search .px-msearch, .px-menu__search .px-msearch:focus, .px-menu__search .px-msearch:focus-visible { box-shadow: none !important; border: 0 !important; background: transparent !important; outline: none !important; height: auto !important; padding: 0 !important; }
+.pxr .px-input:focus, .pxr .px-input:focus-visible, .px-scrim .px-input:focus, .px-scrim .px-input:focus-visible { box-shadow: inset 0 0 0 1px var(--accent), 0 0 0 3px var(--accent-tint) !important; outline: none !important; }
+.pxr .px-input, .px-scrim .px-input { border: 0 !important; background: var(--raised) !important; color: var(--ink) !important; }
+.px-modal { max-height: 86vh; }
+.px-composer__in, .px-composer__in:focus { box-shadow: none !important; border: 0 !important; background: transparent !important; outline: none !important; height: auto !important; padding: 0 !important; }
+
+.px-ophead .fltRow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.px-ophead .fltLink, .px-ophead .wcl { all: unset; box-sizing: border-box; display: inline-flex !important; align-items: center; gap: 6px; height: 24px; padding: 0 8px; border-radius: 6px; background: var(--fill) !important; color: var(--ink-2) !important; font: 500 12px/1 var(--font-sans) !important; cursor: pointer; box-shadow: none !important; border: 0 !important; }
+.px-ophead .fltLink:hover, .px-ophead .wcl:hover { background: var(--selected) !important; color: var(--ink) !important; }
+.px-ophead .fltLink::before, .px-ophead .wcl::before { content: ""; width: 6px; height: 6px; border-radius: 2px; background: var(--accent); flex: none; }
+.px-ophead .chipwrap:last-child .iconMenuBtn svg { display: none; }
+.px-ophead .chipwrap:last-child .iconMenuBtn::after { content: ""; display: block; width: 16px; height: 16px; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='5.5' cy='12' r='1.4'/%3E%3Ccircle cx='12' cy='12' r='1.4'/%3E%3Ccircle cx='18.5' cy='12' r='1.4'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='5.5' cy='12' r='1.4'/%3E%3Ccircle cx='12' cy='12' r='1.4'/%3E%3Ccircle cx='18.5' cy='12' r='1.4'/%3E%3C/svg%3E") center / contain no-repeat; }
+.px-ophead .jobStBtn .stIc { width: 14px !important; height: 14px !important; }
+
+/* ===== Parsec 9.7: the truck in the RO's header — a band, the title on the left, the truck on the right ===== */
+.px-trk { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 280px; align-items: end; column-gap: 24px; margin: -16px -24px 0; padding: 22px 24px 0; min-height: 176px; border-radius: 16px; background: linear-gradient(180deg, var(--panel) 0%, var(--fill) 100%); box-shadow: inset 0 0 0 1px var(--hairline); }
+.px-trk > .px-titleblock { padding-bottom: 20px; min-width: 0; }
+.px-trk .px-ro__status { flex-wrap: wrap; row-gap: 8px; }
+.px-trk .px-ro__status > .px-status--button, .px-trk .px-ro__status > .px-with { flex: none; white-space: nowrap; }
+.px-trk__pic { position: relative; align-self: end; justify-self: end; width: 280px; line-height: 0; }
+.px-trk__pic img { display: block; width: 100%; height: auto; position: relative; z-index: 1; }
+.px-trk__pic.is-model { margin-bottom: -4px; }
+.px-trk__pic.is-model::after { content: ""; position: absolute; left: 8%; right: 8%; bottom: 2px; height: 12px; border-radius: 50%; background: radial-gradient(closest-side, rgba(0,0,0,.26), rgba(0,0,0,0)); z-index: 0; }
+.px-trk__pic.is-model.is-framed { margin-bottom: 18px; border-radius: 12px; overflow: hidden; box-shadow: inset 0 0 0 1px var(--hairline); }
+.px-trk__pic.is-model.is-framed::after { display: none; }
+.px-trk__pic.is-photo { width: 256px; height: 150px; margin-bottom: 18px; border-radius: 12px; overflow: hidden; background: var(--fill); box-shadow: 0 0 0 1px var(--hairline), 0 10px 24px -14px rgba(0,0,0,.4); }
+.px-trk__pic.is-photo img { width: 100%; height: 100%; object-fit: cover; }
+.px-trk__cap { position: absolute; left: 8px; bottom: 8px; z-index: 3; padding: 3px 7px; border-radius: 6px; background: rgba(0,0,0,.58); color: #fff; font: 500 11px/14px var(--font-sans); }
+.px-trk__pic.is-none { width: 240px; margin-bottom: 14px; color: var(--ink-4); display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.px-trk__pic.is-none > svg { width: 200px; height: auto; display: block; }
+.px-trk__none { font: 400 12px/16px var(--font-sans); color: var(--ink-3); text-align: center; }
+.px-trk__act { all: unset; box-sizing: border-box; position: absolute; top: 6px; right: 6px; z-index: 4; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--raised); color: var(--ink-2); box-shadow: inset 0 0 0 1px var(--border), 0 2px 6px -2px rgba(0,0,0,.25); cursor: pointer; opacity: .0; transition: opacity .15s ease-out; }
+.px-trk__pic.is-model:not(.is-framed) .px-trk__act { top: -8px; right: -8px; }
+.px-trk__pic.is-none .px-trk__act { top: -6px; right: -6px; }
+.px-trk:hover .px-trk__act, .px-trk__act:focus-visible, .px-trk.has-menu .px-trk__act { opacity: 1; }
+.px-trk__act:hover { color: var(--ink); background: var(--panel); }
+.px-trk__act:focus-visible { box-shadow: 0 0 0 2px var(--focus, var(--accent)); }
+@media (hover: none) { .px-trk__act { opacity: 1; } }
+.px-trk__menu { position: absolute; z-index: 30; top: 30px; right: 14px; width: 300px; padding: 6px; border-radius: var(--radius-lg); background: var(--raised); box-shadow: var(--shadow-raised); font: 400 13.5px/1.3 var(--font-sans); color: var(--ink); animation: px-up .18s cubic-bezier(.2,.8,.2,1) both; }
+.px-trk__menu button { all: unset; box-sizing: border-box; display: block; width: 100%; padding: 7px 10px; border-radius: var(--radius-md); cursor: pointer; }
+.px-trk__menu button:hover, .px-trk__menu button:focus-visible { background: var(--fill); }
+.px-trk__menu b { display: block; font-weight: 500; }
+.px-trk__menu small { display: block; margin-top: 1px; font-size: 12px; color: var(--ink-3); }
+.px-trk__menu button + button.is-sep { margin-top: 6px; box-shadow: 0 -1px 0 var(--hairline); border-radius: 0 0 var(--radius-md) var(--radius-md); }
+/* a narrower page: the truck gets smaller before the title gets crowded */
+.px-ro__col { container-type: inline-size; }
+@container (max-width: 700px) { .px-trk { grid-template-columns: minmax(0, 1fr) 220px; } .px-trk__pic { width: 220px; } .px-trk__pic.is-photo { width: 210px; height: 124px; } .px-trk__pic.is-none { width: 200px; } .px-trk__pic.is-none > svg { width: 160px; } }
+/* the phone: the truck on top, the title under it */
+:host([data-device=phone]) .px-trk { grid-template-columns: minmax(0, 1fr) !important; margin: -16px -16px 0 !important; padding: 14px 16px 0 !important; border-radius: 0 !important; box-shadow: inset 0 -1px 0 var(--hairline) !important; min-height: 0 !important; }
+:host([data-device=phone]) .px-trk__pic { order: -1; justify-self: center; width: min(300px, 82%) !important; height: auto !important; margin: 0 0 10px !important; }
+:host([data-device=phone]) .px-trk__pic.is-model { margin-bottom: 4px !important; }
+:host([data-device=phone]) .px-trk__pic.is-photo { width: 100% !important; aspect-ratio: 16 / 9; height: auto !important; }
+:host([data-device=phone]) .px-trk__pic.is-none > svg { width: 150px; }
+:host([data-device=phone]) .px-trk__act { opacity: 1; top: 0; right: 0; }
+:host([data-device=phone]) .px-trk__pic.is-model:not(.is-framed) .px-trk__act { top: 0; right: -12%; }
+:host([data-device=phone]) .px-trk > .px-titleblock { padding-bottom: 14px; }
+:host([data-device=phone]) .px-trk__menu { left: 12px; right: 12px; width: auto; top: 40px; }
+
+/* 9.9: notes on the truck — its marks on the model picture, and the way in */
+.px-trk__mk { position: absolute; z-index: 3; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: var(--panel); font: 600 10px/1 var(--font-sans); box-shadow: 0 0 0 2px var(--panel), 0 3px 8px -2px rgba(0,0,0,.4); pointer-events: none; }
+.px-trk__nb { all: unset; box-sizing: border-box; position: absolute; z-index: 4; right: 6px; bottom: 6px; padding: 3px 8px; border-radius: 7px; background: color-mix(in srgb, var(--raised) 88%, transparent); backdrop-filter: blur(4px); box-shadow: inset 0 0 0 1px var(--border); color: var(--ink); font: 500 11.5px/16px var(--font-sans); cursor: pointer; line-height: 16px; }
+.px-trk__nb:hover { background: var(--raised); }
+.px-trk__nb:focus-visible { box-shadow: 0 0 0 2px var(--accent); }
+.px-trk__pic.is-model .px-trk__nb { bottom: 12px; }
+
+/* Parsec 10: the camera badge on the truck picture — opens Truck & photos */
+.px-trk__cam { all: unset; box-sizing: border-box; position: absolute; right: 2px; bottom: 6px; z-index: 5; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--raised); color: var(--ink-2); box-shadow: inset 0 0 0 1px var(--border), 0 2px 8px -2px rgba(0,0,0,.3); cursor: pointer; transition: transform .16s cubic-bezier(.2,.75,.25,1), color .16s; }
+.px-trk__cam:hover { color: var(--ink); transform: scale(1.08); }
+.px-trk__cam:focus-visible { box-shadow: 0 0 0 2px var(--focus, var(--accent)); }
+.px-trk__pic.is-model:not(.is-framed) .px-trk__cam { bottom: 14px; right: -6px; }
+.px-trk__pic.is-photo .px-trk__cam, .px-trk__pic.is-framed .px-trk__cam { right: 8px; bottom: 8px; }
+.px-trk__pic.is-none .px-trk__cam { right: 6px; bottom: 26px; }
+.px-trk__pic:has(.px-trk__nb) .px-trk__nb { right: 40px; }
+:host([data-device=phone]) .px-trk__cam { width: 34px; height: 34px; }
+@media (prefers-reduced-motion: reduce) { .px-trk__cam { transition: none; } }
+
+/* ===== Parsec 9.6: the RO page on a phone — one column, the page scrolls ===== */
+:host([data-device=phone]) .page.roB.ivB{margin:0 !important;padding:0 !important;min-height:0 !important}
+:host([data-device=phone]) .pxr{height:auto !important;min-height:0 !important}
+:host([data-device=phone]) .px-head{height:auto !important;min-height:48px;flex-wrap:wrap !important;row-gap:4px !important;padding:6px 12px !important}
+:host([data-device=phone]) .px-head__acts{margin-left:0 !important;flex:1 1 100% !important;min-width:0;overflow-x:auto;scrollbar-width:none}
+:host([data-device=phone]) .px-ro{flex-direction:column !important;min-height:0 !important;flex:none !important}
+:host([data-device=phone]) .px-ro__main{overflow:visible !important;flex:none !important;width:auto !important}
+:host([data-device=phone]) .px-ro__col{padding:16px 16px 20px !important;max-width:none !important;margin:0 !important}
+:host([data-device=phone]) .px-ro__rail{width:auto !important;overflow:visible !important;flex:none !important;padding:16px !important;box-shadow:inset 0 1px 0 var(--hairline) !important}
+:host([data-device=phone]) .px-kbd{display:none !important}
+
+/* ===== Parsec 10 — White and Near black on the RO page ===== */
+:host(.th-iv.pal-vv),:host(.th-iv.pal-vv.dark-ui){--bg:var(--vv-canvas)!important;--bg-2:var(--vv-canvas)!important;--canvas:var(--vv-canvas)!important;--surface:var(--vv-panel)!important;--work-bg:var(--vv-panel)!important;--brand:var(--vv-panel)!important;--brand-2:var(--vv-panel)!important;--band:var(--vv-panel)!important;--chrome-grad:var(--vv-panel)!important;--menu-bg:var(--vv-panel)!important;--popover-bg:var(--vv-panel)!important;--panel:var(--vv-panel)!important;--surface-2:var(--vv-raised)!important;--inset:var(--vv-raised)!important;--raised:var(--vv-raised)!important;--surface-3:var(--vv-fill)!important;--menu-hover:var(--vv-fill)!important;--hover-bg:var(--vv-fill)!important;--tint-hover:var(--vv-fill)!important;--fill:var(--vv-fill)!important;--tint-hover-2:var(--vv-sel)!important;--selected:var(--vv-sel)!important;--ink:var(--vv-ink)!important;--ink-soft:var(--vv-ink)!important;--ink-strong:var(--vv-ink)!important;--brand-ink:var(--vv-ink)!important;--band-ink:var(--vv-ink)!important;--ink-dim:var(--vv-ink2)!important;--ink-2:var(--vv-ink2)!important;--ink-icon:var(--vv-ink2)!important;--band-dim:var(--vv-ink2)!important;--muted-2:var(--vv-ink2)!important;--muted:var(--vv-ink3)!important;--muted-3:var(--vv-ink3)!important;--hint:var(--vv-ink3)!important;--ink-faint:var(--vv-ink3)!important;--ink-3:var(--vv-ink3)!important;--ink-4:var(--vv-ink4)!important;--border:var(--vv-hair)!important;--line:var(--vv-hair)!important;--band-line:var(--vv-hair)!important;--hairline:var(--vv-hair)!important;--border-strong:var(--vv-border)!important;--line-2:var(--vv-border)!important;--line-3:var(--vv-border)!important;--tint-edge:var(--vv-border)!important;--accent:var(--vv-acc)!important;--accent-strong:var(--vv-acc)!important;--blue:var(--vv-acc)!important;--blue-ink:var(--vv-acc)!important;--link:var(--vv-acc)!important;--at-sel:var(--vv-acc)!important;--accent-soft:var(--vv-acct)!important;--accent-tint:var(--vv-acct)!important;--at-selt:var(--vv-acct)!important;--accent-text:var(--vv-acctx)!important;--accent-line:var(--vv-accl)!important;--accent-ink:var(--vv-onprimary)!important;--on-accent:var(--vv-onprimary)!important;--primary:var(--vv-primary)!important;--on-primary:var(--vv-onprimary)!important;--good:var(--vv-good)!important;--good-ink:var(--vv-good)!important;--good-soft:var(--vv-good-t)!important;--good-tint:var(--vv-good-t)!important;--warn:var(--vv-warn)!important;--warn-ink:var(--vv-warn)!important;--warn-soft:var(--vv-warn-t)!important;--warn-tint:var(--vv-warn-t)!important;--danger:var(--vv-bad)!important;--danger-ink:var(--vv-bad)!important;--bad:var(--vv-bad)!important;--danger-soft:var(--vv-bad-t)!important;--danger-wash:var(--vv-bad-t)!important;--bad-tint:var(--vv-bad-t)!important;--shadow-focus:var(--vv-focus);--shadow-panel:var(--vv-shadow);--shadow-raised:var(--vv-shadow-raised);;--iv-canvas:var(--vv-canvas)!important;--iv-panel:var(--vv-panel)!important;--iv-raised:var(--vv-raised)!important;--iv-fill:var(--vv-fill)!important;--iv-sel:var(--vv-sel)!important;--iv-hair:var(--vv-hair)!important;--iv-border:var(--vv-border)!important;--iv-ink:var(--vv-ink)!important;--iv-ink2:var(--vv-ink2)!important;--iv-ink3:var(--vv-ink3)!important;--iv-ink4:var(--vv-ink4)!important;--iv-acc:var(--vv-acc)!important;--iv-acct:var(--vv-acct)!important;--iv-accl:var(--vv-accl)!important;--iv-acctx:var(--vv-acctx)!important;--iv-primary:var(--vv-primary)!important;--iv-onprimary:var(--vv-onprimary)!important;--iv-good:var(--vv-good)!important;--iv-good-t:var(--vv-good-t)!important;--iv-warn:var(--vv-warn)!important;--iv-warn-t:var(--vv-warn-t)!important;--iv-bad:var(--vv-bad)!important;--iv-bad-t:var(--vv-bad-t)!important;--iv-accent:var(--vv-acc)!important;--iv-focus:var(--vv-focus)!important;--iv-sh-panel:var(--vv-shadow)!important;--iv-sh-raised:var(--vv-shadow-raised)!important;--iv-raisedsh:var(--vv-shadow-raised)!important;--iv-bs:var(--vv-border)!important}
+/* Parsec 10: a stage's segment fills when it's checked off (the animation itself runs from the script) */
+.px-stage__seg i { transform-origin: left center; }
+@media (prefers-reduced-motion: reduce) { .px-stage__seg i { animation: none !important; transition: none !important; } }
+
+/* Parsec 11.3: Activity in a pop-up from the RO header */
+.px-modal--md:has(.px-actm__feed) { width: 640px; }
+.px-actm__bar { display: flex; align-items: center; gap: 12px; }
+.px-actm__n { margin-left: auto; font-size: 12.5px; color: var(--ink-3); white-space: nowrap; }
+.px-actm__feed { margin-top: 0; max-height: min(56vh, 520px); min-height: 160px; overflow: auto; padding-right: 6px; overscroll-behavior: contain; }
+.px-actm__comp { margin-top: 0; flex: none; padding-right: 4px; gap: 10px; position: sticky; bottom: 0; }
+.px-actm__op { all: unset; box-sizing: border-box; flex: 0 1 190px; min-width: 0; height: 28px; padding: 0 22px 0 10px; border-radius: var(--radius-md); background: var(--fill) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23888' stroke-width='1.4' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 8px center; font: 500 12.5px/28px var(--font-sans); color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+.px-actm__op:focus-visible { box-shadow: var(--shadow-focus); }
+.px-actm__comp .px-btn { margin-left: 0; }
+@media (max-width: 640px) { .px-actm__op { display: none; } }
+.px-scrim .px-actm__comp .px-composer__in:focus, .px-scrim .px-actm__comp .px-composer__in:focus-visible { box-shadow: none !important; outline: none !important; }
+@media (max-width: 640px) { .px-modal:has(.px-actm__feed) .px-modal__hint { display: none; } }

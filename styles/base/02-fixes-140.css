@@ -1,0 +1,73 @@
+/* Parsec · styles/base · 02-fixes-140.css
+   fixes from Parsec 8 round 140.
+   Base blocks are the stylesheets Parsec 8 shipped with, one <style id> each (build/styles.txt); later areas style themselves in styles/app. */
+/* page action buttons wrap instead of running off the right edge on narrower windows */
+
+/* "Needs the foreman" rows fit a half-width card: drop the complaint and days columns when narrow */
+.fm-need{container-type:inline-size;}
+
+/* the "running" pill in the Time Log table no longer runs into the Start reason column */
+
+
+
+/* RO route */
+.rt-card{background:var(--surface);border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:12px;}
+.rt-top{display:flex;align-items:center;gap:10px;}
+.rt-lbl{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);flex:1;}
+.rt-chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 11px;font-size:12px;font-weight:600;background:var(--surface-2);color:var(--ink);}
+.rt-chip i{width:8px;height:8px;border-radius:50%;background:var(--st-teal-ink,#0f766e);}
+.rt-chip.idle{color:var(--ink-faint);}
+.rt-steps{display:flex;align-items:flex-start;}
+.rt-s{flex:1;text-align:center;position:relative;font-size:12px;min-width:0;}
+.rt-s:not(:last-child)::after{content:"";position:absolute;top:15px;left:50%;width:100%;height:3px;background:var(--border);}
+.rt-s.d:not(:last-child)::after{background:var(--st-teal-ink,#0f766e);}
+.rt-s i{display:flex;width:32px;height:32px;margin:0 auto 6px;border-radius:50%;background:var(--surface);border:2px solid var(--ink-faint);position:relative;z-index:1;align-items:center;justify-content:center;font-style:normal;font-size:11px;font-weight:700;color:var(--ink-faint);}
+.rt-s.d i{background:var(--st-teal-ink,#0f766e);border-color:var(--st-teal-ink,#0f766e);color:#fff;}
+.rt-s.c i{border-color:var(--st-teal-ink,#0f766e);color:var(--st-teal-ink,#0f766e);box-shadow:0 0 0 5px var(--st-teal-soft,#ccfbf1);}
+.rt-s.s{opacity:.45;} .rt-s.s i{border-style:dashed;}
+.rt-s b{display:block;font-weight:600;color:var(--ink);} .rt-s small{display:block;color:var(--ink-faint);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rt-note{font-size:13px;color:var(--ink);} .rt-note span{color:var(--ink-faint);}
+.rt-acts{display:flex;align-items:center;gap:8px;flex-wrap:wrap;} .rt-nx{flex:1;font-size:13px;color:var(--ink-faint);} .rt-nx b{color:var(--ink);}
+.rt-hist{display:flex;flex-direction:column;gap:5px;border-top:1px solid var(--border);padding-top:10px;}
+.rt-h{display:grid;grid-template-columns:110px 150px minmax(0,1fr);gap:10px;font-size:12.5px;align-items:baseline;} .rt-h span:first-child{color:var(--ink-faint);} .rt-h span:last-child{color:var(--ink-faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rt-dst-list{display:flex;flex-direction:column;gap:2px;}
+.rt-dst,.rt-tech{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:12px;padding:9px 10px;border-radius:12px;cursor:pointer;width:100%;}
+.rt-dst:hover,.rt-tech:hover{background:var(--tint-hover,rgba(0,0,0,.04));}
+.rt-dst.on{outline:2px solid var(--st-teal-ink,#0f766e);background:var(--st-teal-soft,#eef7f5);}
+.rt-dst:focus-visible,.rt-tech:focus-visible{outline:2px solid var(--accent);}
+.rt-ic{flex:none;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;}
+.rt-dt{flex:1;min-width:0;display:flex;flex-direction:column;} .rt-dt b{font-size:14px;font-weight:600;} .rt-dt b em{font-style:normal;font-weight:500;color:var(--ink-faint);font-size:12.5px;margin-left:4px;} .rt-dt small{font-size:12.5px;color:var(--ink-faint);}
+.rt-techs{display:flex;flex-direction:column;gap:2px;margin:0 0 4px 46px;}
+.rt-tech.on{background:var(--ink);color:var(--surface);} .rt-tech.on small{color:inherit;opacity:.75;}
+.rt-av{flex:none;width:30px;height:30px;border-radius:50%;background:#5d7189;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.rt-inbox{background:var(--surface);border-radius:20px;padding:14px 16px;margin:0 0 16px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow);}
+.rt-inbox-h{display:flex;align-items:center;gap:8px;} .rt-inbox-h b{font-size:16px;} .rt-inbox-h .hint{margin-left:auto;}
+.rt-n{font:700 12px var(--font-mono);background:var(--surface-2);border-radius:999px;padding:1px 8px;} .rt-new{font-size:11px;font-weight:700;color:#fff;background:var(--st-bad,#c81e1e);border-radius:999px;padding:2px 8px;}
+.rt-in{display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--surface-2);border-radius:14px;padding:10px 12px;}
+.rt-in.new{box-shadow:inset 3px 0 0 var(--st-teal-ink,#0f766e);}
+.rt-in-a{display:flex;align-items:center;gap:8px;} .rt-bay{font-size:11.5px;font-weight:600;background:var(--surface);border-radius:999px;padding:2px 8px;}
+.rt-in-b{display:flex;flex-direction:column;min-width:0;} .rt-in-b b{font-weight:600;} .rt-in-b b em{font-style:normal;font-weight:500;color:var(--ink-faint);} .rt-in-b small{color:var(--ink-faint);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rt-in-c{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end;}
+.rt-in-c select{border:1px solid var(--border);border-radius:10px;padding:6px 8px;font:inherit;font-size:13px;background:var(--surface);color:var(--ink);max-width:170px;}
+@media (max-width:900px){.rt-in{grid-template-columns:1fr;} .rt-in-c{justify-content:flex-start;} .rt-h{grid-template-columns:90px 1fr;} .rt-h span:last-child{grid-column:1/-1;}}
+/* Parsec */
+
+
+
+
+/* stage bar in lists (console, foreman) */
+
+
+
+   
+
+
+    
+
+ 
+  
+
+  
+ 
+
+  

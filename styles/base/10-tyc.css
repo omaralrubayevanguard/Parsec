@@ -1,0 +1,35 @@
+/* Parsec · styles/base · 10-tyc.css
+   Triage yard cards (Parsec 8).
+   Base blocks are the stylesheets Parsec 8 shipped with, one <style id> each (build/styles.txt); later areas style themselves in styles/app. */
+/* the selected RO card on Triage */
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+
+
+
+
+ 
+
+
+
+
+
+
+
+  
+
+
+.rt2-sheet:not(.inline){grid-template-columns:minmax(0,1fr) !important;gap:14px !important;}
+.rt2-sheet:not(.inline) .rt2-dt{min-width:0;} .rt2-sheet:not(.inline) .rt2-dt b{white-space:nowrap;}

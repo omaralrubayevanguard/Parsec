@@ -1,0 +1,55 @@
+/* Parsec · styles/base · 05-v160.css
+   Parsec 8 round 160.
+   Base blocks are the stylesheets Parsec 8 shipped with, one <style id> each (build/styles.txt); later areas style themselves in styles/app. */
+/* ===== header ===== */
+
+html.pz-rib body{ background:var(--bg) !important; background-image:none !important; }
+.pz-tab{height:40px;}
+
+.pz-tabs{gap:0;}
+.pz-sep{height:18px;margin:0 8px 11px;}
+.pz-find,.pz-clock,.pz-clock.in,.pz-clock.out{background:transparent !important;}
+
+
+.pz-find:hover,.pz-clock:hover{background:rgba(255,255,255,.08) !important;}
+ 
+ 
+.pz-hdr .icon-btn,.pz-hdr .pnav-set-btn{background:transparent !important;}
+.pz-hdr .icon-btn svg,.pz-hdr .pnav-set-btn svg{width:21px;height:21px;stroke-width:2;}
+.pz-hdr .icon-btn:hover,.pz-hdr .pnav-set-btn:hover{background:rgba(255,255,255,.1) !important;}
+.pz-hdr .profile-btn{background:transparent;}
+.pz-lip{height:12px;}
+.ami-new{font-weight:700;}
+/* ===== triage — selected RO block ===== */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.ty-road{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;background:var(--surface);border-radius:16px;padding:12px 14px;}
+.ty-road > b{align-self:center;}
+
+
+.pz-hdr .pnav-set-pop{position:absolute !important;top:calc(100% + 10px) !important;right:0 !important;left:auto !important;bottom:auto !important;width:310px !important;max-height:calc(100dvh - 90px) !important;z-index:80;}
+html[data-device=phone] .pz-hdr .pnav-set-pop{position:fixed !important;left:8px !important;right:8px !important;top:64px !important;width:auto !important;}
+.pz-hdr .notif-pop,.pz-hdr .profile-pop{z-index:80;}
+.pz-hdr .pnav-set.open .pnav-set-btn{background:rgba(255,255,255,.14) !important;color:#fff !important;}

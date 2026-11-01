@@ -1,0 +1,18 @@
+/* Parsec · styles/base · 07-stone.css
+   the Stone palette (Parsec 8).
+   Base blocks are the stylesheets Parsec 8 shipped with, one <style id> each (build/styles.txt); later areas style themselves in styles/app. */
+/* ===== Stone — one warm grey, components a shade lighter, controls a shade darker ===== */
+
+.badge-count{background:var(--kcfc8bc) !important;color:var(--k2a2723) !important;}
+   
+
+
+ 
+.pz-bdg{background:var(--kcfc8bc) !important;color:var(--k2a2723) !important;}
+
+.pz-clock.in{color:var(--kld8d2c6) !important;} .pz-clock.out{color:var(--kld9b8ae) !important;}
+.pz-clock.in:hover{background:var(--k8e4a3c) !important;color:#fff !important;} .pz-clock.out:hover{background:var(--kb4a443c) !important;color:#fff !important;}
+.btn-primary{background:var(--k2f2c28) !important;color:var(--kf3f0ea) !important;}
+.btn-primary:hover{background:var(--kb4a443c) !important;}
+.ra-bar{background:var(--k2f2c28) !important;}
+.toast{background:var(--k2f2c28) !important;}

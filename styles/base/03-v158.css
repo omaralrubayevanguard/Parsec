@@ -1,0 +1,212 @@
+/* Parsec · styles/base · 03-v158.css
+   Parsec 8 round 158.
+   Base blocks are the stylesheets Parsec 8 shipped with, one <style id> each (build/styles.txt); later areas style themselves in styles/app. */
+/* ===== ribbon header ===== */
+html.pz-rib{--nav-room: var(--page-pad-x);--pz-top:58px;}
+html.pz-rib .island, html.pz-rib .topbar.hdr{ display:none !important; }
+.pz-hdr{position:sticky;top:calc(-1 * var(--pz-top));z-index:60;padding:0 var(--page-pad-x);font-family:var(--font-body);}
+.pz-top{height:var(--pz-top);display:flex;align-items:center;gap:10px;}
+.pz-brand{display:inline-flex;align-items:center;gap:10px;font-size:19px;letter-spacing:-.01em;white-space:nowrap;}
+.pz-logo svg{width:28px;height:28px;display:block;}
+
+.pz-sp{flex:1;}
+.pz-find{all:unset;box-sizing:border-box;background:rgba(255,255,255,.08);display:flex;align-items:center;gap:9px;font-size:13.5px;cursor:pointer;transition:background .2s ease;}
+
+.pz-find span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pz-find kbd{font-size:11px;color:var(--k9a9285);}
+.pz-find:focus-visible,.pz-live:focus-visible,.pz-clock:focus-visible,.pz-tab:focus-visible{outline:2px solid var(--k4a443c);outline-offset:2px;}
+.pz-live{all:unset;box-sizing:border-box;height:38px;padding:0 12px;border-radius:12px;display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--klece8e1);cursor:pointer;background:rgba(var(--kr-grn),.12);transition:background .2s ease;}
+.pz-live:hover{background:rgba(var(--kr-grn),.2);}
+.pz-pulse{width:9px;height:9px;border-radius:50%;background:var(--kcfc8bc);animation:pzPulse 1.8s ease-in-out infinite;}
+@keyframes pzPulse{0%,100%{box-shadow:0 0 0 0 rgba(var(--kr-grn),.55)}50%{box-shadow:0 0 0 6px rgba(var(--kr-grn),0)}}
+.pz-clock{all:unset;box-sizing:border-box;font-size:13px;font-weight:700;cursor:pointer;transition:background .2s ease,color .2s ease;}
+.pz-clock.out{background:rgba(var(--kr-red),.16);}
+
+.pz-clock.in{background:rgba(255,255,255,.08);}
+
+
+
+.pz-hdr .icon-btn,.pz-hdr .pnav-set-btn{width:38px !important;height:38px !important;border-radius:12px !important;border:0 !important;}
+
+.pz-w{position:relative;}
+.pz-me{display:flex;align-items:center;gap:10px;margin-left:4px;}
+
+
+
+.pz-hdr .profile-btn{width:38px;height:38px;}
+.pz-row{display:flex;align-items:flex-end;gap:0;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;padding:0 16px;margin:0 -16px;}
+.pz-row::-webkit-scrollbar{display:none;}
+.pz-grp{display:flex;flex-direction:column;gap:6px;flex:none;}
+
+.pz-tabs{display:flex;align-items:flex-end;}
+.pz-sep{flex:none;width:1px;}
+.pz-tab{all:unset;box-sizing:border-box;position:relative;display:flex;align-items:center;font-weight:600;cursor:pointer;border-radius:14px 14px 0 0;white-space:nowrap;transition:color .2s ease,background .25s ease;}
+
+.pz-ti{display:inline-flex;width:17px;height:17px;}
+.pz-ti svg{width:17px;height:17px;}
+.pz-bdg{font-size:11px;font-weight:700;border-radius:999px;padding:1px 7px;}
+.pz-tab.on{font-weight:800;}
+
+.pz-tab.on::before,.pz-tab.on::after{content:"";position:absolute;bottom:0;width:16px;height:16px;pointer-events:none;}
+.pz-tab.on::before{left:-16px;border-bottom-right-radius:14px;box-shadow:6px 6px 0 6px var(--bg);}
+.pz-tab.on::after{right:-16px;border-bottom-left-radius:14px;box-shadow:-6px 6px 0 6px var(--bg);}
+
+.pz-lip{background:var(--bg);margin:0 calc(-1 * var(--page-pad-x));border-radius:22px 22px 0 0;}
+html.yd-roam .pz-hdr{display:none !important;}
+html[data-device=phone] .pz-find span,html[data-device=phone] .pz-find kbd,html[data-device=phone] .pz-sep{display:none;}
+html[data-device=phone] .pz-find{width:38px;padding:0;justify-content:center;}
+@media (max-width:1180px){ .pz-find span,.pz-find kbd{display:none;} .pz-find{width:38px;padding:0;justify-content:center;} }
+@media (prefers-reduced-motion: reduce){ .pz-tab.on{animation:none;} .pz-pulse{animation:none;} }
+
+/* ===== Triage yard map ===== */
+.ty{display:flex;flex-direction:column;gap:14px;--ty-slot:color-mix(in srgb, var(--ink) 7%, var(--bg));--ty-dk:var(--k2f2c28);}
+.ty .hint{font-size:12.5px;}
+
+
+
+
+
+
+
+
+.ty-t:focus-visible{outline:2px solid var(--k4a443c);outline-offset:2px;}
+
+
+
+
+
+
+
+
+.ty-menu{position:absolute;top:44px;right:0;width:360px;background:var(--surface);border-radius:16px;padding:8px;display:flex;flex-direction:column;gap:2px;box-shadow:0 24px 50px -20px rgba(var(--kr-sh),.45);z-index:30;animation:tyUp .25s ease both;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.ty-slot{position:relative;border-radius:12px;background:var(--ty-slot);display:flex;align-items:flex-end;justify-content:center;padding-bottom:5px;box-sizing:border-box;min-width:0;transition:background .2s ease,box-shadow .2s ease;}
+.ty-slot.s-chip{height:54px;}.ty-slot.s-plate{height:62px;}.ty-slot.s-tag{height:100px;}
+
+.ty-slot.tgt{background:var(--ke2ded7);box-shadow:inset 0 0 0 2px var(--k4a443c);cursor:pointer;animation:tyTgt 1.4s ease-in-out infinite;}
+.ty-slot.tgt:hover,.ty-slot.drop-over{background:var(--kd3cec5);box-shadow:inset 0 0 0 2px var(--k6b6459);}
+@keyframes tyTgt{0%,100%{box-shadow:inset 0 0 0 2px var(--k4a443c)}50%{box-shadow:inset 0 0 0 2px rgba(var(--kr-grn),.3)}}
+/* cards */
+.ty-t{all:unset;box-sizing:border-box;position:relative;cursor:pointer;background:var(--surface);color:var(--ink);box-shadow:0 6px 14px -10px rgba(var(--kr-sh),.6);transition:transform .2s cubic-bezier(.2,.8,.2,1),opacity .25s ease,background .2s ease,box-shadow .2s ease;max-width:100%;}
+.ty-t:hover{transform:translateY(-2px);z-index:6;box-shadow:0 12px 22px -12px rgba(var(--kr-sh),.6);}
+.ty-t.mine{box-shadow:inset 0 0 0 2px var(--k4a443c),0 6px 14px -10px rgba(var(--kr-sh),.6);}
+.ty-t.on{background:var(--ty-dk);color:#fff;}
+.ty-t.dim{opacity:.22;}
+.ty-t.pk{outline:2px dashed var(--k4a443c);outline-offset:2px;}
+.ty-t.dragging{opacity:.4;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@keyframes tyUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+
+/* flow / zones */
+
+
+
+
+
+
+
+
+/* side */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* low */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+@media (prefers-reduced-motion: reduce){ .ty-slot.tgt{animation:none;} }
+
+  

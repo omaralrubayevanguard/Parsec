@@ -1,2 +1,0 @@
-Parsec tooltip lint — 334 static tooltips checked, 0 break a writing rule, 0 only repeat their button's label (hidden at runtime)
-

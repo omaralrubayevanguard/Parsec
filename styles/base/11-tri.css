@@ -1,0 +1,12 @@
+/* Parsec · styles/base · 11-tri.css
+   Triage (Parsec 8).
+   Base blocks are the stylesheets Parsec 8 shipped with, one <style id> each (build/styles.txt); later areas style themselves in styles/app. */
+/* Triage card — stages and statuses by hand, New RO button */
+.ty-newro{margin:0 6px 0 4px;}
+
+
+
+.tyc-st{display:grid;grid-template-columns:34px 1fr;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--ink-dim);}
+.tyc-st select{font:inherit;font-size:12px;font-weight:600;color:var(--ink);background:var(--surface-2);border:0;border-radius:8px;padding:5px 6px;min-width:0;max-width:100%;}
+
+ 

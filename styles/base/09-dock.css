@@ -1,0 +1,4 @@
+/* Parsec · styles/base · 09-dock.css
+   the bottom dock (Parsec 8).
+   Base blocks are the stylesheets Parsec 8 shipped with, one <style id> each (build/styles.txt); later areas style themselves in styles/app. */
+.ra-bar{display:none !important;} body:has(.jc-host) .toast-wrap{bottom:84px !important;}
