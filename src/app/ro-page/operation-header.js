@@ -3,7 +3,7 @@
    ── facts (generated; run tools/headers.py to refresh) ──
    declares   ropJtLbl ropJt ropStatus ropOpMenu ropDelOp ropRename ropOpRow ropOpBody ropChips ROP_JT (9 functions, 1 constant)
    state      punches
-   uses       access/ clock/ data/ kit/ pages/ pages/warranty/ ro/ shell/ state/
+   uses       access/ clock/ data/ kit/ library/ pages/ pages/warranty/ ro/ shell/ state/
 */
 /* ---------- the operation's header row (Parsec 12.3): status and ⋯ in the row, the job type a dropdown ---------- */
 var ROP_JT = [['DIAG', 'DIAG'], ['OP', 'REPAIR'], ['PM', 'PM'], ['WARR', 'WARR'], ['COMEBACK', 'COMEBACK'], ['SUBLET', 'SUBLET'], ['RECALL', 'RECALL']];
@@ -97,6 +97,7 @@ function ropOpRow(j, i, on, stash) {
   var row = el('div', { class: 'px-row rop-orow' + (on ? ' is-on' : ''), role: 'button', tabindex: '0', 'aria-expanded': on ? 'true' : 'false', 'data-op': j.id, title: pxCase(nm) + (typeof st !== 'string' && st.sub ? ' · ' + st.sub : ''),
     html: pxSi(nm, live ? 'px-breathe' : '') + '<span class="px-row__n">' + (i + 1) + '</span><span class="px-row__t" title="' + esc(j.complaint || 'New operation') + (on ? ' — click to change it' : ' — double-click to change it') + '">' + esc(j.complaint || 'New operation') + '</span>' + (meta ? '<span class="px-row__m">' + esc(meta) + '</span>' : '') + ropChips(j) });
   row.appendChild(ropJt(j));
+  var fgr = libOpFgrp(j); if (fgr) row.appendChild(el('span', { class: 'libFg mono', text: fgr, title: 'Function group ' + (libFgName(fgr) || fgr) }));   /* Parsec 17.1 */
   row.insertAdjacentHTML('beforeend', '<span class="px-row__time">' + pxNum(c.b) + ' <em>/ ' + qtHtml(RO, j, c.q) + ' h</em></span>' + pxMini(c.b, c.q) + '<span class="px-av" title="' + esc(who) + '"' + v149eAvAttr(who) + '>' + esc(ivInit(who)) + '</span>');
   var ctl = el('span', { class: 'rop-octl' });
   if (!RO.shop) ctl.appendChild(ropStatus(j));
@@ -119,8 +120,10 @@ function ropOpRow(j, i, on, stash) {
 function ropOpBody(j, stash) {
   var body = el('div', { class: 'px-op' });
   /* the links that rode with the codes (the claim, fixed before, filled in from) stay, on their own line; codes live in the Fault codes block */
-  var head = stash && stash.querySelector('.card[data-job="' + j.id + '"] > .cardHead'), links = head ? Array.prototype.slice.call(head.querySelectorAll('.fltLink')) : [];
-  if (links.length) { var lr = el('div', { class: 'px-ophead rop-olinks' }); links.forEach(function (a) { lr.appendChild(a); }); body.appendChild(lr); }
+  /* Parsec 17.1: the codes and documents line, which carries those links too */
+  if (!RO.shop) body.appendChild(faultBar(j));
+  else { var head = stash && stash.querySelector('.card[data-job="' + j.id + '"] > .cardHead'), links = head ? Array.prototype.slice.call(head.querySelectorAll('.fltLink')) : [];
+    if (links.length) { var lr = el('div', { class: 'px-ophead rop-olinks' }); links.forEach(function (a) { lr.appendChild(a); }); body.appendChild(lr); } }
   body.appendChild(pxTime(j));
   body.appendChild(pxTabs(j, stash));
   return body;

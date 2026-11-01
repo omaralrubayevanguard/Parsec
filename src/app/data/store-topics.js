@@ -29,7 +29,8 @@ var PD_TOPICS = {
               "dataV", "dataClean", "setLog", "shopBtns"],   /* Parsec 16.3: shop buttons by department */
   inventory: ["inventory", "ptSet", "returns", "ptDone", "ptBayLog"],
   inbox:     ["ib", "handover", "pageNote", "pageNoteAt", "fmNote"],
-  library:   ["fixes", "fxStd", "fxQ", "fxQk", "fxAlias", "fxRev", "fxKit", "truckPics", "truckCheckList"],
+  library:   ["fixes", "fxStd", "fxQ", "fxQk", "fxAlias", "fxRev", "fxKit", "truckPics", "truckCheckList",
+              "libDocs", "libCodes", "libRules"],          /* Parsec 17.1: the Library — documents, the codes read from them, the shop's number rules */
   time:      ["holes", "tlReq", "tlAirWhy"],             /* + the punches whose RO is gone (shop time) */
   completed: ["tcDone"],
   lists:     ["dismissed", "mobTickIds", "tgCleared", "fmCleared", "waCleared", "autoFired", "autoLog"],   /* Parsec 16.2: reminders already sent · What ran */

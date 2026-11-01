@@ -115,6 +115,17 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `tooltip-words.js` | The words of every tooltip: tipNorm(raw, ctx) rewrites a raw title into the house style (what it does, then the key; sentence case; no “Click to”), with TIPMAP for exact phrases and TIPPAT for patterns. | 22 | 0 | 2 |
 | `version.js` | The version line shown on Settings → Data and written into every export and layout.json. Change it with every release (docs/CONVENTIONS.md → Releasing). | 0 | 0 | 2 |
 
+## library/  — the Library: reading fault codes and Volvo documents, filing them (always asked first), the files in Parsec Data/Library, documents on an RO, the viewer
+
+| file | what it is | KB | functions | constants |
+|---|---|---:|---:|---:|
+| `codes.js` | Fault codes in every form (P105E, P1050 FTB 17, 3226/2, MID 128 PID 110 FMI 0): reading what was typed, the label and chip text, what a code means from the Library or the built-in J1939 list. | 7 | 11 | 3 |
+| `intake.js` | Filing a document, always asked first: libIntake reads each file, shows what was found to check or change, then files it in the Library and, from an RO, links it to the operation. | 11 | 6 | 1 |
+| `read-docs.js` | Reading a document: its kind from its number (CBR, TSB, FSB, Recall, Procedure), number, release, date, title, function group, model, the codes it mentions, and a DTC bulletin’s code table with FTBs; Volvo’s function groups. | 19 | 15 | 6 |
+| `read-files.js` | Reading a file for the Library: a PDF’s text and where each piece sits on the page (pdf.js), a screenshot through the built-in reader. | 3 | 3 | 0 |
+| `store.js` | The Library’s records and files: STATE.libDocs / libCodes / libRules, the files in Parsec Data/Library/<kind>/, adding without doubles, and documents on an RO’s operations (op.docs) with a copy in Attachments. | 10 | 25 | 3 |
+| `viewer.js` | A document open in a panel beside the page (libOpen): its facts, the PDF itself, Open in a tab. | 6 | 4 | 1 |
+
 ## pages/  — the page modules and what they share
 
 | file | what it is | KB | functions | constants |
@@ -190,6 +201,15 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `model.js` | The parts inventory itself (STATE.inventory): parts and kits with quantities, matching an RO's part to stock (invFind), syncing from operations. | 29 | 35 | 3 |
 | `page-model.js` | The Inventory page's model: sample stock seeded once, what the ROs still need, shelves, reorder and counts. | 6 | 7 | 22 |
 | `view.js` | viewStock(): the page module's entry. | 0 | 1 | 0 |
+
+## pages/library/  — the Library page: Fault codes, CBRs, TSBs, FSBs, Recalls (Procedures soon)
+
+| file | what it is | KB | functions | constants |
+|---|---|---:|---:|---:|
+| `_close.js` | Closes the Library page closure. | 0 | 0 | 0 |
+| `_open.js` | Opens the Library page closure (LIBPG). | 0 | 0 | 1 |
+| `library-page.js` | The Library page: tabs (Fault codes, CBRs, TSBs, FSBs, Recalls, Procedures soon), the search, the function-group filter, documents in Impact’s columns by function group, codes by module with their FTBs, adding by button or drop. | 15 | 19 | 10 |
+| `view.js` | viewLibrary() and libOpenFor(): the page module’s entry and opening it narrowed to an RO and operation. | 0 | 2 | 0 |
 
 ## pages/manager/  — Manager: the shop's KPIs
 
@@ -332,14 +352,15 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `constants.js` | The RO page's constants: job types, status looks, task kinds. | 3 | 3 | 6 |
 | `declined.js` | Declined on the operation's status menu (14.8 A) and the complaint edited in place while the clock runs or not. | 14 | 13 | 0 |
 | `extract-operations.js` | Extract operations into this RO from pasted text or a screenshot (Parsec 14.8 B): complaint, status, quoted time and approval only; matched to existing operations before anything is added. | 20 | 15 | 2 |
-| `fault-codes.js` | Fault codes on each operation (SPN / FMI, P-codes): reading what was typed, what a code means, the chips on the tile and the card, and the note a chip starts. | 9 | 9 | 4 |
-| `header-page.js` | The RO page header (pxHeader): breadcrumb with the RO number (click copies it), the pager, the customer and contact with its menu (16.3 B), the counters (hours, parts, files), the options menu. | 30 | 22 | 1 |
+| `fault-codes.js` | Fault codes on each operation (SPN / FMI, P-codes): reading what was typed, what a code means, the chips on the tile and the card, and the note a chip starts. | 7 | 9 | 1 |
+| `header-page.js` | The RO page header (pxHeader): breadcrumb with the RO number (click copies it), the pager, the customer and contact with its menu (16.3 B), the counters (hours, parts, files), the options menu. | 31 | 22 | 1 |
 | `helpers.js` | DOM and format helpers local to the RO page (el, svg, hm, hms, uid…) and the attachment store in IndexedDB for files not yet in the folder. | 17 | 22 | 6 |
 | `icons.js` | The icon set the RO page uses (IC) and tecRender(), the RO page's way to ask the app to redraw. | 12 | 1 | 1 |
 | `ivory.js` | The Ivory / Graphite look on the RO page: ivOn, the operation side panel, clockCalm. | 6 | 4 | 0 |
 | `job-cards.js` | The operation cards: the efficiency bar, the start / stop reason questions, the complete gate, the drag order, glide between renders. | 21 | 21 | 6 |
 | `job-road.js` | The job road: the small animated scene under an open job card (truck, road, sky by time of day) — RD_SCENES and the SVG builders; ROAD_CSS is appended to JC_CSS. | 23 | 10 | 18 |
 | `layout.js` | The RO page in your layout (Parsec 12): the one-panel page — operations in the middle, the truck card and the sections on the right (ROPS), who is on it, the right column's fit. | 12 | 22 | 3 |
+| `library-on-ro.js` | The Library on the RO page: each operation’s codes, function group and documents with + document, what each code means, the documents that cover its codes (Attach / Not now), the documents strip above the operations, and PDFs offered to the Library before they attach. | 6 | 5 | 0 |
 | `modal-export-print.js` | The RO page's modal, and export / import / print of one RO (sheetFromRO, importSheet). | 10 | 15 | 2 |
 | `one-ro-view.js` | One RO view (14.3 B): the Technician page's middle and right are the RO page itself; TCX says when the RO page is embedded there. | 1 | 3 | 2 |
 | `op-card.js` | The open operation card (jobCard): header, body, parts, the day strip and rail, the metrics and the quote; built fresh on every render. | 58 | 1 | 0 |

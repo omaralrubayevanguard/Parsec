@@ -47,7 +47,7 @@ function addFilesToRO(list) {
   var shots = arr.filter(isShot), docs = arr.filter(function (x) { return !isShot(x); });
   pushUndo('attach files');
   if (shots.length) addFiles(pgEntryFor('pics', true).oid, shots);
-  if (docs.length) addFiles(pgEntryFor('report', true).oid, docs);
+  if (docs.length) libRouteDocs(docs, null, function (L) { addFiles(pgEntryFor('report', true).oid, L); save(true); });   /* Parsec 17.1: a PDF is offered to the Library first */
   roTab = 'files';
   save(true);
 }

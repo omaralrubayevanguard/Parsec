@@ -1,42 +1,22 @@
 /* Parsec · ro-page · fault-codes.js
    Fault codes on each operation (SPN / FMI, P-codes): reading what was typed, what a code means, the chips on the tile and the card, and the note a chip starts.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   parseFault fcSame fcLabel fcShort faultMeaning addFault openFaultNotes faultMini faultBar FC_ADD FC_SPN FC_FMI … (9 functions, 4 constants)
-   uses       access/ data/ pages/fixes/ pages/warranty/ shell/ state/
+   declares   parseFault fcSame fcLabel fcShort faultMeaning addFault openFaultNotes faultMini faultBar FC_ADD (9 functions, 1 constant)
+   uses       access/ data/ library/ pages/fixes/ pages/warranty/ shell/ state/
 */
 /* ============ fault-code chips (SPN / FMI) on each operation — N3 + N6 ============ */
 var FC_ADD = null;      /* id of the operation whose "add a code" panel is open */
-var FC_SPN = { 84: 'Vehicle speed', 91: 'Accelerator pedal position', 94: 'Fuel delivery pressure', 97: 'Water in fuel', 100: 'Engine oil pressure',
-  102: 'Boost pressure', 105: 'Intake manifold temperature', 110: 'Engine coolant temperature', 111: 'Engine coolant level', 157: 'Fuel rail pressure',
-  168: 'Battery voltage', 190: 'Engine speed', 411: 'EGR differential pressure', 412: 'EGR temperature', 3031: 'DEF tank temperature',
-  3216: 'Aftertreatment NOx, intake', 3226: 'Aftertreatment NOx, outlet', 3251: 'DPF differential pressure', 3719: 'DPF soot load',
-  4364: 'SCR catalyst conversion efficiency', 5246: 'SCR operator inducement' };
-var FC_FMI = ['above normal (most severe)', 'below normal (most severe)', 'erratic or intermittent', 'voltage high or shorted high', 'voltage low or shorted low',
-  'current low or open circuit', 'current high or grounded', 'mechanical fault', 'abnormal frequency', 'abnormal update rate', 'abnormal rate of change',
-  'root cause not known', 'bad device', 'out of calibration', 'special instructions', 'above normal (least severe)', 'above normal (moderate)',
-  'below normal (least severe)', 'below normal (moderate)', 'network data in error'];
-function parseFault(str) {
-  var d = /^\s*([PCUB])\s*-?\s*(\d{4,6})\s*$/i.exec(String(str || ''));
-  if (d) return { code: d[1].toUpperCase() + d[2] };
-  var m = /^\s*(?:SPN\s*)?(\d{1,6})\s*(?:\/|-|:|,|\s|FMI)\s*(?:FMI\s*)?(\d{1,2})\s*$/i.exec(String(str || ''));
-  if (!m) return null;
-  var spn = +m[1], fmi = +m[2];
-  return fmi > 31 ? null : { spn: spn, fmi: fmi };
-}
-var FC_SYS = { P: 'Powertrain', C: 'Chassis', B: 'Body', U: 'Network' };
-function fcSame(a, b) { return a.code ? a.code === b.code : (!b.code && a.spn === b.spn && a.fmi === b.fmi); }
-function fcLabel(f) { return f.code || 'SPN ' + f.spn + ' \u00b7 FMI ' + f.fmi; }
-function fcShort(f) { return f.code || f.spn + '/' + f.fmi; }
-function faultMeaning(f) {
-  if (f.code) return FC_SYS[f.code.charAt(0)] + ' fault code';
-  var fm = f.fmi === 31 ? 'condition exists' : FC_FMI[f.fmi];
-  return (FC_SPN[f.spn] || 'SPN ' + f.spn) + (fm ? ' — ' + fm : '');
-}
+/* Parsec 17.1: one reader for every form a code is written in, and its meaning from the Library (library/codes.js) */
+function parseFault(str) { return libCodeParse(str); }
+function fcSame(a, b) { return libCodeSame(a, b); }
+function fcLabel(f) { return libCodeLabel(f); }
+function fcShort(f) { return libCodeShort(f); }
+function faultMeaning(f) { return libCodeMeaning(f); }
 function addFault(job, f) {
   job.faults = job.faults || [];
   if (job.faults.some(function (x) { return fcSame(x, f); })) { toast(fcLabel(f) + ' is already on this operation'); return false; }
   pushUndo('fault code');
-  job.faults.push(f.code ? { id: 'fc_' + uid(), code: f.code } : { id: 'fc_' + uid(), spn: f.spn, fmi: f.fmi });
+  job.faults.push(libCodeStore(f));
   save(true); render();
   return true;
 }
@@ -87,6 +67,7 @@ function faultBar(job) {
   row.appendChild(el('button', { class: 'fltAdd' + (FC_ADD === job.id ? ' on' : ''), type: 'button', text: '+ code', title: 'Add a fault code',
     onClick: function (e) { e.stopPropagation(); FC_ADD = FC_ADD === job.id ? null : job.id; render();
       if (FC_ADD) requestAnimationFrame(function () { var i = R.querySelector('.fltIn'); if (i) i.focus(); }); } }));
+  libOpChips(job, row);   /* Parsec 17.1: its function group, its documents, + document, the Library */
   /* this job's warranty claim, and how often the shop has fixed it before */
   try {
     if (navAllowed('warranty') && wcIsOp(RO, job)) {
@@ -105,15 +86,16 @@ function faultBar(job) {
       onClick: function (e) { e.stopPropagation(); UI.view = 'fixes'; UI.fixKey = fixKeyOf(job.complaint); UI.fixQuery = ''; UI.fixAdd = false; persistUI(); tecRender(); window.scrollTo(0, 0); } }));
   } catch (err) {}
   bar.appendChild(row);
+  libOpBelow(job, bar);   /* what each code means, and what the Library has for them */
   if (FC_ADD === job.id) {
-    var inp = el('input', { class: 'fltIn mono', type: 'text', placeholder: '111/1 or P0420', 'aria-label': 'Fault code: SPN/FMI, or a P, C, B or U code', autocomplete: 'off', spellcheck: 'false' });
+    var inp = el('input', { class: 'fltIn mono', type: 'text', placeholder: 'P1050 FTB 17 · 3226/2 · MID 128 PID 110 FMI 0', 'aria-label': 'Fault code: a P, C, B or U code with its FTB, SPN/FMI, or MID/PID/FMI', autocomplete: 'off', spellcheck: 'false' });
     var prev = el('div', { class: 'fltPrev' });
     var addB = el('button', { class: 'fltPlus', type: 'button', text: 'Add ↵' });
     function paint() {
       var f = parseFault(inp.value);
       prev.innerHTML = '';
-      if (!inp.value.trim()) { prev.appendChild(el('span', { class: 'fltHint', text: 'Type 111/1 (SPN/FMI) or P0420 (P, C, B, U)' })); addB.disabled = true; return; }
-      if (!f) { prev.appendChild(el('span', { class: 'fltHint bad', text: 'Like 111/1 (FMI 0–31) or P0420' })); addB.disabled = true; return; }
+      if (!inp.value.trim()) { prev.appendChild(el('span', { class: 'fltHint', text: 'Any way it’s written: P105E, P1050 FTB 17, 3226/2, MID 128 PID 110 FMI 0' })); addB.disabled = true; return; }
+      if (!f) { prev.appendChild(el('span', { class: 'fltHint bad', text: 'Like P1050 FTB 17, 3226/2 (FMI 0–31) or MID 128 PID 110 FMI 0' })); addB.disabled = true; return; }
       prev.appendChild(el('span', { class: 'fltChip pv' }, [el('span', { class: 'fltGo' }, [el('i', { class: 'fltDot' }), document.createTextNode(fcLabel(f))])]));
       prev.appendChild(el('span', { class: 'fltMean', text: faultMeaning(f) }));
       addB.disabled = false;

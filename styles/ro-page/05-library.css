@@ -1,0 +1,50 @@
+/* Parsec 17.1 — the Library on the RO page: each operation's codes and documents, what a code means, the documents the
+   Library has for its codes, and the documents strip above the operations. The kinds' dots match the Library page. */
+:host{--lk-codes:#2F8795;--lk-cbr:#6C69C8;--lk-tsb:#86643A;--lk-fsb:#AD7210;--lk-recall:#C0503F;--lk-proc:#857F75;}
+:host(.dark-ui){--lk-codes:#58B3C0;--lk-cbr:#9E9DF0;--lk-tsb:#D1B184;--lk-fsb:#E2A84C;--lk-recall:#EC7F6C;--lk-proc:#8D897F;}
+
+/* the codes: a teal outline, code · FTB */
+.fltChip{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1px var(--lk-codes);}
+.fltChip:hover{box-shadow:inset 0 0 0 1.5px var(--lk-codes);}
+.fltChip .fltDot{background:var(--lk-codes);}
+.fltRow .libFg{display:inline-flex;align-items:center;height:24px;padding:0 8px;border-radius:6px;background:var(--surface-2);color:var(--ink-dim);font:600 11.5px var(--font-code);}
+.px-row .libFg{flex:none;display:inline-flex;align-items:center;height:20px;padding:0 6px;border-radius:5px;background:var(--surface-2);color:var(--ink-dim);font:600 11px var(--font-code);}
+
+/* a document chip: its kind's dot, KIND number rel NN; × takes it off the operation */
+.libChip{display:inline-flex;align-items:center;height:28px;border-radius:16px;box-shadow:inset 0 0 0 1px var(--line-2);background:var(--surface);color:var(--ink);font:600 12px var(--font-body);white-space:nowrap;}
+.libChip i{flex:none;width:6px;height:6px;border-radius:50%;background:var(--lk-tsb);}
+.libChip.k-cbr i{background:var(--lk-cbr);} .libChip.k-tsb i{background:var(--lk-tsb);} .libChip.k-fsb i{background:var(--lk-fsb);}
+.libChip.k-recall i{background:var(--lk-recall);} .libChip.k-proc i{background:var(--lk-proc);}
+.libChip.k-recall{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--lk-recall) 55%,transparent);}
+.libChip.ro{height:24px;padding:0 9px;gap:6px;}
+.libGo{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:7px;height:100%;padding:0 11px;border-radius:16px;}
+button.libChip.libGo{box-shadow:inset 0 0 0 1px var(--line-2);}
+button.libChip.libGo.k-recall{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--lk-recall) 55%,transparent);}
+.libChip:hover,button.libGo:hover{box-shadow:inset 0 0 0 1.5px var(--ink-dim);}
+.libGo:focus-visible,.libX:focus-visible,.libOfferB:focus-visible{outline:2px solid var(--accent,#86643A);outline-offset:1px;}
+.libX{all:unset;cursor:pointer;display:none;align-items:center;justify-content:center;width:22px;height:22px;margin-right:3px;border-radius:50%;color:var(--muted);}
+.libChip:hover .libX,.libChip:focus-within .libX{display:inline-flex;}
+.libX:hover{background:var(--surface-2);color:var(--ink);}
+.libFind{margin-left:auto;}
+
+/* what each code means */
+.libMean{display:flex;flex-direction:column;gap:3px;padding:0 2px;}
+.libMeanL{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:baseline;font-size:12.5px;color:var(--ink-dim);}
+.libMeanL b{font:600 11.5px var(--font-code);color:var(--ink);white-space:nowrap;}
+.libMeanL span{min-width:0;}
+
+/* a document the Library has for a code */
+.libOffer{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 8px;border-radius:10px;background:color-mix(in srgb,var(--lk-codes) 9%,var(--surface));font-size:12.5px;color:var(--ink-dim);}
+.libOfferT{flex:1;min-width:120px;}
+.libOfferB{all:unset;cursor:pointer;height:26px;padding:0 10px;border-radius:7px;font:600 12px var(--font-body);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line-2);background:var(--surface);}
+.libOfferB:hover{box-shadow:inset 0 0 0 1px var(--ink-dim);}
+.libOfferB.pri{background:var(--ink);color:var(--surface);box-shadow:none;}
+
+/* above the operations: the documents on this RO, by operation */
+.libStrip{display:flex;align-items:center;gap:6px 14px;flex-wrap:wrap;margin:8px 0 4px;padding:8px 12px;border-radius:12px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);}
+.libStripL{font:600 11px var(--font-body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
+.libGrp{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.libOp{font:600 11.5px var(--font-code);color:var(--ink-dim);}
+.libStrip .libChip{height:26px;}
+.libStrip .libGo{padding:0 10px;}
+.libStrip .libGo,.fltRow button.libGo{font:600 12px var(--font-body);}

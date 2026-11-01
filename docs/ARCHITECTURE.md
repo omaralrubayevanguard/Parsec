@@ -67,7 +67,10 @@ ROs/Closed/<year>/…/ro.json.gz       closed ROs by year, compressed
 Shop/<topic>.json                    everything else by topic (staff, settings, punches/<YYYY-MM>, activity/<YYYY-MM>, …)
 Backups/<YYYY-MM>/data-<date>.json.gz   end of day, keep 30
 Exports/<date time>/                 tables/*.jsonl + attachments + schema.json + README + manifest (sha256)
+Library/<kind>/<number> - <title> (rel NN).pdf   the Library's documents (CBR, TSB, FSB, Recalls, Procedures), one copy each (17.1)
 ```
+
+- **The Library (17.1)**: `library/` reads codes and documents and files them; `pages/library/` is the page; `ro-page/library-on-ro.js` puts them on an operation. Its records are `STATE.libDocs` (one per document and release), `STATE.libCodes` (codes read from a DTC bulletin, with their FTBs) and `STATE.libRules` (number prefixes the shop taught it), in `Shop/library.json`. An operation links a document with `op.docs = [{ id, at, by }]`, and a copy goes into the RO's `Attachments/` (the entry's file carries `doc`). Nothing is filed without the person saying File it (`libIntake`).
 
 - **Records**: every record has an id and `updatedAt` / `updatedBy`; deletions leave a mark in `STATE.tombs` (`store-records.js`).
 - **Write**: `pd16Write` writes only what changed since the last write (`store-read-write.js`).

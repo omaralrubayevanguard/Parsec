@@ -145,6 +145,10 @@ pages/assets/_open.js
 pages/assets/assets-page.js
 pages/assets/_close.js
 pages/assets/view.js
+pages/library/_open.js
+pages/library/library-page.js
+pages/library/_close.js
+pages/library/view.js
 
 access/admin-helpers.js
 access/admin-page/_open.js
@@ -313,6 +317,7 @@ ro-page/page-helpers.js
 ro-page/fault-codes.js
 ro-page/op-tiles.js
 ro-page/op-card.js
+ro-page/library-on-ro.js
 ro-page/totals.js
 ro-page/toolbar.js
 ro-page/attachments-view.js
@@ -335,4 +340,10 @@ ro-page/_close.js
 shell/header-shrink.js
 
 boot/dev-tools.js
+library/codes.js
+library/read-docs.js
+library/read-files.js
+library/store.js
+library/intake.js
+library/viewer.js
 boot/init.js

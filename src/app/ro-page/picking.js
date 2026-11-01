@@ -3,7 +3,7 @@
    ── facts (generated; run tools/headers.py to refresh) ──
    declares   ropSelReset ropSelOps ropSelParts ropPool ropJobOf ropAny ropToggle ropAll ropCk ropPickClick ropDecorOps ropPartsHead … (23 functions, 1 constant)
    state      punches
-   uses       access/ automations/ data/ kit/ pages/ pages/warranty/ ro/ shell/ state/ trucks/
+   uses       access/ automations/ data/ kit/ library/ pages/ pages/warranty/ ro/ shell/ state/ trucks/
 */
 /* ---------- picking ---------- */
 function ropSelReset() { ROPS.o = {}; ROPS.p = {}; ROPS.pOp = null; ROPS.last = null; }
@@ -119,11 +119,11 @@ function ropSelAct(v, anchor) {
     return;
   }
   if (v === 'code') {
-    var inp = el('input', { class: 'px-input px-input--full', placeholder: '3226/2 or P0401' });
+    var inp = el('input', { class: 'px-input px-input--full', placeholder: 'P1050 FTB 17 · 3226/2 · MID 128 PID 110 FMI 0' });
     pxModal({ title: 'Add a code to ' + opsTxt, size: 'sm', submit: 'Add to ' + live.length, body: [inp], run: function () {
-      var f = parseFault(inp.value); if (!f) { toast('Type it as SPN/FMI — 3226/2 — or a P-code like P0401.'); return false; }
+      var f = parseFault(inp.value); if (!f) { toast('Type it as P1050 FTB 17, SPN/FMI like 3226/2, or MID 128 PID 110 FMI 0.'); return false; }
       var add = live.filter(function (j) { return !(j.faults || []).some(function (x) { return fcSame(x, f); }); }); if (!add.length) { toast(fcLabel(f) + ' is already on all of them.'); return; }
-      pushUndo('fault code'); add.forEach(function (j) { j.faults = (j.faults || []).concat([f.code ? { id: 'fc_' + uid(), code: f.code } : { id: 'fc_' + uid(), spn: f.spn, fmi: f.fmi }]); });
+      pushUndo('fault code'); add.forEach(function (j) { j.faults = (j.faults || []).concat([libCodeStore(f)]); });
       save(true); ropSelReset(); render(); ropUndo(fcLabel(f) + ' added to ' + add.length + ' operation' + (add.length === 1 ? '' : 's') + '.'); } });
     return;
   }

@@ -291,6 +291,7 @@ function pxOps(stash) {
   var add = ropIb('plus', 'Add operation (O)', function () { pxAddOp(); }, 'rop-addop');
   var oxb = ropIb('scan', 'Extract operations from text or a screenshot', function () { openExtractOps(); }, 'rop-xops');   /* Parsec 14.8 */
   box.appendChild(el('div', { class: 'px-sec' }, [el('h3', { text: 'Operations' }), el('span', { class: 'n', text: String(S.jobs.length) }), add, oxb]));
+  var docStrip = libDocStrip(); if (docStrip) box.appendChild(docStrip);   /* Parsec 17.1: every document on this RO, by operation */
   var ops = el('div', { class: 'px-ops' }), cur = S.ui.card;
   S.jobs.forEach(function (j, i) {
     var st = opStatus(j), nm = typeof st === 'string' ? st : st.status, c = jobCalc(j), live = !!runningPunchOf(j), t = 'OP';

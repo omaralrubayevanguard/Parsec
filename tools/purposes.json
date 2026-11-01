@@ -261,5 +261,16 @@
   "sample/sample-trucks.js": "Sample trucks from the catalog: a real Volvo body built that year, per sample RO.",
   "boot/init.js": "Boot: theme, device, the folder (restoreFolder → FS_READY), the first render, the timers and the window listeners. Last in the manifest on purpose.",
   "boot/dev-tools.js": "Developer readouts (off by default, localStorage tec_devtools) and v161Clean, which removes the localStorage keys of the work tools Parsec 16.1 retired, once.",
-  "kit/version.js": "The version line shown on Settings → Data and written into every export and layout.json. Change it with every release (docs/CONVENTIONS.md → Releasing).\nBUILD_WAS keeps the previous line so a folder written by the version before can be told apart."
+  "kit/version.js": "The version line shown on Settings → Data and written into every export and layout.json. Change it with every release (docs/CONVENTIONS.md → Releasing).\nBUILD_WAS keeps the previous line so a folder written by the version before can be told apart.",
+  "library/codes.js": "Fault codes in every form (P105E, P1050 FTB 17, 3226/2, MID 128 PID 110 FMI 0): reading what was typed, the label and chip text, what a code means from the Library or the built-in J1939 list.",
+  "library/read-docs.js": "Reading a document: its kind from its number (CBR, TSB, FSB, Recall, Procedure), number, release, date, title, function group, model, the codes it mentions, and a DTC bulletin’s code table with FTBs; Volvo’s function groups.",
+  "library/read-files.js": "Reading a file for the Library: a PDF’s text and where each piece sits on the page (pdf.js), a screenshot through the built-in reader.",
+  "library/store.js": "The Library’s records and files: STATE.libDocs / libCodes / libRules, the files in Parsec Data/Library/<kind>/, adding without doubles, and documents on an RO’s operations (op.docs) with a copy in Attachments.",
+  "library/intake.js": "Filing a document, always asked first: libIntake reads each file, shows what was found to check or change, then files it in the Library and, from an RO, links it to the operation.",
+  "library/viewer.js": "A document open in a panel beside the page (libOpen): its facts, the PDF itself, Open in a tab.",
+  "pages/library/_open.js": "Opens the Library page closure (LIBPG).",
+  "pages/library/library-page.js": "The Library page: tabs (Fault codes, CBRs, TSBs, FSBs, Recalls, Procedures soon), the search, the function-group filter, documents in Impact’s columns by function group, codes by module with their FTBs, adding by button or drop.",
+  "pages/library/_close.js": "Closes the Library page closure.",
+  "pages/library/view.js": "viewLibrary() and libOpenFor(): the page module’s entry and opening it narrowed to an RO and operation.",
+  "ro-page/library-on-ro.js": "The Library on the RO page: each operation’s codes, function group and documents with + document, what each code means, the documents that cover its codes (Attach / Not now), the documents strip above the operations, and PDFs offered to the Library before they attach."
 }

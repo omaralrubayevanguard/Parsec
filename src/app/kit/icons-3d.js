@@ -234,4 +234,4 @@ function paletteMove(d){
    One button, wearing the icon of the page you are on, that opens a vertical list down
    the left edge. The row of five pills is gone; this gives the header its left side back
    and the list has room for full names instead of collapsing labels on hover. */
-var NAV_PAGES = [["tech","Technician"],["ros","Repair Orders"],["warranty","Warranty"],["fixes","Fixes"],["foreman","Foreman"],["manager","Manager"],["triage","Triage"],["rolist","RO List"],["assets","Assets"],["timelog","Time Log"],["parts","Parts"],["inventory","Inventory"],["career","Career"],["admin","Admin"]];
+var NAV_PAGES = [["tech","Technician"],["ros","Repair Orders"],["warranty","Warranty"],["fixes","Fixes"],["foreman","Foreman"],["manager","Manager"],["triage","Triage"],["rolist","RO List"],["assets","Assets"],["library","Library"],["timelog","Time Log"],["parts","Parts"],["inventory","Inventory"],["career","Career"],["admin","Admin"]];

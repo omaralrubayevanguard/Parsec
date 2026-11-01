@@ -17,7 +17,7 @@ var PM_TABS = { Technician: ["tech", "ros", "timelog", "fixes"], Manager: ["mana
   "Warranty admin": ["warranty", "rolist", "parts", "fixes"], admin: ["rolist", "tech", "triage", "manager"] };
 var PM_NAME = { tech: "Technician", console: "Console", triage: "Triage", rolist: "ROs", ros: "ROs", foreman: "Foreman", warranty: "Warranty", manager: "Manager", parts: "Parts", inventory: "Inventory", assets: "Assets", admin: "Admin", timelog: "Time Log", fixes: "Fixes", career: "Career", inbox: "Inbox", report: "Day report", profile: "You" };
 var PM_SHORT = { timelog: "Time", foreman: "Floor", tech: "My ROs" };
-var PM_GROUPS = [["", ["career", "timelog", "rolist", "ros", "tech", "triage", "foreman", "parts", "warranty", "manager", "fixes", "assets", "inventory", "report", "admin"]]];   /* the sidebar's order */
+var PM_GROUPS = [["", ["career", "timelog", "rolist", "ros", "tech", "triage", "foreman", "parts", "warranty", "manager", "fixes", "assets", "library", "inventory", "report", "admin"]]];   /* the sidebar's order */
 function pmRole(){ var s = typeof viewAsStaff === "function" ? viewAsStaff() : null; return s && s.role ? s.role : "admin"; }
 function pmAllowed(){ var a = {}; navPages().forEach(function(p){ a[p[0]] = p[1]; }); if(a.ros && a.rolist) delete a.ros; return a; }
 function pmTabKeys(){

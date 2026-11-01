@@ -67,7 +67,7 @@ function dropFilesOnJob(job, files) {
   if (!arr.length && !other.length) return;
   pushUndo('attach files');
   if (arr.length) addFiles(pgEntryFor('pics', true).oid, arr, job.id);
-  if (other.length) addFiles(pgEntryFor('report', true).oid, other, job.id);
+  if (other.length) libRouteDocs(other, job, function (L) { addFiles(pgEntryFor('report', true).oid, L, job.id); save(true); });   /* Parsec 17.1: a PDF is offered to the Library first */
   save(true);
 }
 /* 6: other visits by the same truck */

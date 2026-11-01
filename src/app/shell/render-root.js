@@ -3,7 +3,7 @@
    Flow: every change ends in render(); pages never touch the DOM outside their own after() hooks.
    ── facts (generated; run tools/headers.py to refresh) ──
    declares   histSync render HIST_LAST HIST_POP (2 functions, 2 constants)
-   uses       access/ access/admin-page/ automations/ clock/ data/ import/ import/new-ro/ kit/ pages/ pages/assets/ pages/career/ pages/fixes/ pages/foreman/ pages/inbox/ pages/inventory/ pages/manager/ pages/report/ pages/rolist/ pages/technician/ pages/timelog/ pages/triage/ pages/warranty/ phone/ ro/ ro-page/ settings/ state/ trucks/
+   uses       access/ access/admin-page/ automations/ clock/ data/ import/ import/new-ro/ kit/ pages/ pages/assets/ pages/career/ pages/fixes/ pages/foreman/ pages/inbox/ pages/inventory/ pages/library/ pages/manager/ pages/report/ pages/rolist/ pages/technician/ pages/timelog/ pages/triage/ pages/warranty/ phone/ ro/ ro-page/ settings/ state/ trucks/
    at load    on window popstate
 */
 /* ============================== RENDER ROOT ============================== */
@@ -71,6 +71,7 @@ function render(){
   else if(UI.view==="inventory") viewHtml = viewStock();   /* Parsec 12.5 */
   else if(UI.view==="admin") viewHtml = viewAdmin();   /* Parsec 13 */
   else if(UI.view==="assets") viewHtml = viewAssets();   /* Parsec 14 */
+  else if(UI.view==="library") viewHtml = viewLibrary();   /* Parsec 17.1 */
   else if(UI.view==="report") viewHtml = viewDayReport();
   
   else if(UI.view==="profile") viewHtml = pxProfileView();

@@ -3,7 +3,7 @@
    ── facts (generated; run tools/headers.py to refresh) ──
    declares   truckYM0 opStory opWasDone opReopenMark opReoTake opReopenedLast opDoneNow opFaultCodes milesTxt openRoAt wcIsOp wcOps … (20 functions, 7 constants)
    state      ros
-   uses       access/ data/ pages/ ro/ shell/ state/
+   uses       access/ data/ library/ pages/ ro/ shell/ state/
 */
 /* ============================== WARRANTY ADMIN + COMMON FIXES ==============================
    Two pages beside Repair Orders, built like it: the list down the right, the selected item
@@ -62,7 +62,7 @@ function opReoTake(){ var x = OPREO_T; OPREO_T = null; return x && Date.now() - 
 function opReopenedLast(op){ var L = op && Array.isArray(op.reopened) ? op.reopened : []; return L.length ? L[L.length - 1] : null; }
 
 function opDoneNow(op){ var s = opStatus(op); return /^Complete/.test(typeof s === 'string' ? s : (s && s.status) || ''); }
-function opFaultCodes(op){ return (op.faults || []).map(function(f){ return f.code || ('SPN ' + f.spn + ' FMI ' + f.fmi); }); }
+function opFaultCodes(op){ return (op.faults || []).map(function(f){ return libCodeLabel(f).replace(/ \u00b7 /g, ' '); }); }   /* P1050 FTB 17 · SPN 3226 FMI 2 · MID 128 PID 110 FMI 0 */
 function milesTxt(v){ var n = String(v || '').replace(/\D/g, ''); return n ? Number(n).toLocaleString('en-US') + ' mi' : ''; }
 /* jump to an operation on the Repair Orders page */
 function openRoAt(roId, opId){

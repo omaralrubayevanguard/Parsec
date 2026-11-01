@@ -250,12 +250,12 @@ function busy() {
 }
 
 return { attach: attach, busy: busy, syncFiles: syncFiles, scanFolder: scanFolder,
-  addFilesTo: function (ro, task, list, cb, opId) {   /* the Warranty packet's Upload; the Technician page's Files tab gives the operation */
+  addFilesTo: function (ro, task, list, cb, opId, extra, tick) {   /* the Warranty packet's Upload; the Technician page's Files tab gives the operation; the Library adds { doc } and ticks the entry */
     var arr = Array.prototype.slice.call(list || []); if (!ro || !arr.length) { if (cb) cb(0); return; }
     var entry = bulletinFor(ro, task), d = new Date(), ts = pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
     if (!Array.isArray(entry.files)) entry.files = [];
-    Promise.all(arr.map(function (file) { return shrinkImage(file).then(function (out) { var id = uid(); return idbPut(id, out.blob).then(function () { entry.files.push({ id: id, name: out.name, size: out.blob.size, type: out.blob.type || file.type, ts: nowIso(), op: opId || undefined }); }); }); }))
-      .then(function () { scheduleSave(true); syncFiles(); if (RO === ro && HOST && HOST.isConnected) render(); if (cb) cb(arr.length); }, function () { if (cb) cb(0); });
+    Promise.all(arr.map(function (file) { return shrinkImage(file).then(function (out) { var id = uid(); return idbPut(id, out.blob).then(function () { entry.files.push(Object.assign({ id: id, name: out.name, size: out.blob.size, type: out.blob.type || file.type, ts: nowIso(), op: opId || undefined }, extra || {})); }); }); }))
+      .then(function () { if (tick && !entry.done) { entry.done = true; entry.tickedAt = nowIso(); } scheduleSave(true); syncFiles(); if (RO === ro && HOST && HOST.isConnected) render(); if (cb) cb(arr.length); }, function () { if (cb) cb(0); });
   },
   blobOf: function (f, roId) { return getBlob(f, roId); },
   rerender: function () { if (RO && R && HOST && HOST.isConnected) render(); },

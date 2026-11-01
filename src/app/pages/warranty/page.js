@@ -2,7 +2,7 @@
    The Warranty page: header, Needs action on the left, the selected RO, Claims, Board, Money, the failed-parts shelf.
    ── facts (generated; run tools/headers.py to refresh) ──
    declares   waView waChip waJt waRoSt waHead waSearchHtml waList waTop waVClaims waAskBtn waFixBtn waPacket … (20 functions)
-   uses       access/ data/ kit/ pages/ pages/triage/ ro/ shell/ state/ trucks/
+   uses       access/ data/ kit/ library/ pages/ pages/triage/ ro/ shell/ state/ trucks/
 */
 /* ============================== the page ============================== */
 function waView(){
@@ -164,6 +164,7 @@ function waOpCard(ro, op){
     + (c.short ? '<div class="wa-short w"><b>Short ' + waUsd(c.short.amt) + '</b><span>' + esc(c.short.why || "") + (c.short.src ? ' · statement ' + esc(c.short.src) : '') + (c.short.dec ? ' · ' + esc(c.short.dec) : '') + '</span></div>' : '')
     + (s === "appealed" && c.appeal ? '<div class="wa-short ap w"><b>Appeal</b><span>' + esc(c.appeal) + '</span></div>' : '')
     + (c.dec && s === "denied" ? '<div class="wa-short w"><b>Decided</b><span>' + esc(c.dec) + '</span></div>' : '') + '</div>';
+  h += libWaDocs(ro, op);   /* Parsec 17.1: the documents used on this operation, and the claim folder */
   h += waPacket(ro, op, live);
   h += '<div class="wa-acts">' + acts + (s !== "repair" ? '<button class="btn btn-sm" data-action="wa-copy" data-ro="' + ro.id + '" data-op="' + op.id + '" title="Copy for the claim  (C)">' + tgI("copy", 13) + 'Copy</button><button class="btn btn-sm" data-action="wa-print" data-ro="' + ro.id + '" data-op="' + op.id + '" title="Print the packet  (P)">' + tgI("print", 13) + 'Print</button>' : '')
     + '<span class="sp"></span><button class="btn btn-sm tg-gh" data-action="wa-open-ro" data-ro="' + ro.id + '" data-op="' + op.id + '" title="Open this operation on the RO">' + tgI("note", 13) + 'RO</button></div>';
