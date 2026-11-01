@@ -332,7 +332,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `constants.js` | The RO page's constants: job types, status looks, task kinds. | 3 | 3 | 6 |
 | `declined.js` | Declined on the operation's status menu (14.8 A) and the complaint edited in place while the clock runs or not. | 14 | 13 | 0 |
 | `extract-operations.js` | Extract operations into this RO from pasted text or a screenshot (Parsec 14.8 B): complaint, status, quoted time and approval only; matched to existing operations before anything is added. | 20 | 15 | 2 |
-| `fault-codes.js` | Fault codes on each operation (SPN / FMI): parsing, meanings, the chips and notes; and the operation tile state (mock-ups A + C). | 76 | 15 | 4 |
+| `fault-codes.js` | Fault codes on each operation (SPN / FMI, P-codes): reading what was typed, what a code means, the chips on the tile and the card, and the note a chip starts. | 9 | 9 | 4 |
 | `header-page.js` | The RO page header (pxHeader): breadcrumb with the RO number (click copies it), the pager, the customer and contact with its menu (16.3 B), the counters (hours, parts, files), the options menu. | 30 | 22 | 1 |
 | `helpers.js` | DOM and format helpers local to the RO page (el, svg, hm, hms, uid…) and the attachment store in IndexedDB for files not yet in the folder. | 17 | 22 | 6 |
 | `icons.js` | The icon set the RO page uses (IC) and tecRender(), the RO page's way to ask the app to redraw. | 12 | 1 | 1 |
@@ -342,6 +342,8 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `layout.js` | The RO page in your layout (Parsec 12): the one-panel page — operations in the middle, the truck card and the sections on the right (ROPS), who is on it, the right column's fit. | 12 | 22 | 3 |
 | `modal-export-print.js` | The RO page's modal, and export / import / print of one RO (sheetFromRO, importSheet). | 10 | 15 | 2 |
 | `one-ro-view.js` | One RO view (14.3 B): the Technician page's middle and right are the RO page itself; TCX says when the RO page is embedded there. | 1 | 3 | 2 |
+| `op-card.js` | The open operation card (jobCard): header, body, parts, the day strip and rail, the metrics and the quote; built fresh on every render. | 58 | 1 | 0 |
+| `op-tiles.js` | The operation tiles on the RO page: one row of tiles with their states (to do, live, held, selected, done), the progress strip, and P to quick-add a part. | 8 | 5 | 0 |
 | `open-operation.js` | The open operation card: the clock bar, part tiles with status and ETA, the job log; setPartStatus and the Receive all / Install all actions. | 26 | 18 | 8 |
 | `operation-header.js` | The operation's header row: job type, status pill and menu, the ⋯ menu (rename, delete), the row's body. | 11 | 9 | 1 |
 | `page-helpers.js` | Helpers the RO page's renderers share: operation state chips, parts arrived checks, dropping files on a job, visit words, similar jobs. | 38 | 25 | 13 |

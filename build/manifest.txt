@@ -311,6 +311,8 @@ ro-page/open-operation.js
 ro-page/summary-and-selection.js
 ro-page/page-helpers.js
 ro-page/fault-codes.js
+ro-page/op-tiles.js
+ro-page/op-card.js
 ro-page/totals.js
 ro-page/toolbar.js
 ro-page/attachments-view.js

@@ -12,7 +12,7 @@ Parsec 17 changed how the code is kept, not what it does. These are the next ste
 
 5. **One page shape.** Foreman, Triage and Warranty predate the page frame (`PG`) and are plain functions; wrapping each in its own closure with `view()/after()` like the others makes every page look the same and lets tests reach them the same way.
 
-6. **A size guard.** *Done in 17:* `build.py` prints "worth splitting (over 60 KB)" for any `src/app` file past that size (`ro-page/fault-codes.js` is 76 KB), so files get split before they turn into the old problem. What's left is splitting them.
+6. **A size guard.** *Done in 17:* `build.py` prints "worth splitting (over 60 KB)" for any `src/app` file past that size (`ro-page/fault-codes.js` is 76 KB), so files get split before they turn into the old problem. *Done since:* `ro-page/fault-codes.js` was split into `fault-codes.js` (the codes), `op-tiles.js` (the tile row) and `op-card.js` (`jobCard`, 59 KB, one function: splitting it into sections is a later step).
 
 7. **Server, when IT decides.** `docs/SERVER.md` has the staged path; Stage 0 (exports on a shared drive, verified) needs no code and starts the conversation with IT about where the data may live.
 
