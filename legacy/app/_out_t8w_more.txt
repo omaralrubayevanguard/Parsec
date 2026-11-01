@@ -1,0 +1,8 @@
+1280 800 None {"main":[8,792],"win":800,"tg":784,"docH":800,"over":false}
+1920 1080 None {"main":[8,1072],"win":1080,"tg":1064,"docH":1080,"over":false}
+1440 900 large {"main":[8,892],"win":900,"tg":884,"docH":900,"over":false}
+1440 900 floor {"main":[8,892],"win":900,"tg":884,"docH":900,"over":false}
+reload before [12,"Vanguard Greensboro",true,0,"money","90"]
+reload after  [12,"Vanguard Greensboro",true,0,"money","90"]
+nav badge: 1Warranty1
+errors: []

@@ -1,0 +1,8 @@
+snoozed: True
+after undo snoozed: False in list: True
+apr ops: [['ok', 'Dana Kowalski', 'Call'], None] status: Hold Tech
+toast: Approved $315 · Dana Kowalski · back on the board for Luis Martinez
+released: Complete – Released {"at":"2026-10-24T16:04:11.601Z","by":"Admin","to":"Sam Driver","key":"89","spot":"Lot D1","override":null}
+tpl: Hi {first}, unit {unit} is ready. It’s parked in {spot} and the keys are at the service desk. {ro}. Thanks! {"name":"Vanguard Truck Center","phone":"336-555-0100"}
+after reload view: console inbox tpl kept: 4 people kept: 1 cleared: 2
+errors: []

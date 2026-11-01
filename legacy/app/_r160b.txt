@@ -1,0 +1,58 @@
+ok   the old build's state: no data version, a fat Completed record (307 lines, 108,044 bytes)
+ok   …epoch-ms history in it
+ok   …MM-DD-YYYY warranty starts in it
+ok   …prices as text in it
+ok   converted once on load: dataV 16, 898 values into the new form
+ok   nothing left in an old form but the ones nobody can read: ['S.ros[1].operations[0].otherCost=see invoice', 'S.ros[3].buildDate=07-01-25']
+ok   the unreadable ones stay exactly as they were and are listed: ros[0] (RO RO-35725).history[1].at="yesterday"; ros[1] (RO RO-38162).op1.otherCost="see invoice"; ros[3] (RO RO-36611).buildDate="07-01-25"
+ok   …an "other" line in the Activity log: Data clean-up (Parsec 16): 3 values kept as typed — ros[0] (RO RO-35725).history[1].at = "yesterday"; ros[1] (
+ok   …and on the console
+ok   savedAt and sgSeen stay numbers (sync stamps, compared as numbers)
+ok   X: warrantyStart 2025-07-02, history at 2026-10-31T01:54:25.974Z
+ok   the old file time without a year → 2026-10-29T04:31:22.000Z
+ok   '$1,250.00' on the Parts list → 1250
+ok   Completed: 307 lines 108,044 → 55,395 bytes; the deleted RO keeps its snapshot (1 line)
+ok   no new fields on a Completed line
+ok   normalize twice → the same result; a second pass changes nothing ([True, 0, 16])
+ok   the same tech text in both builds (4457 chars)
+ok   the same deleted text in both builds (314 chars)
+ok   RO page (parts tab) inputs: the same (18 lines)
+ok   RO page (parts tab) text: the same (226 lines)
+ok   RO page (parts tab) files: the same (0 lines)
+ok   RO page (files tab) inputs: the same (18 lines)
+ok   RO page (files tab) text: the same (210 lines)
+ok   RO page (files tab) files: the same (1 lines)
+ok   …prices on it: ['· $412.00', '· $18.90', '· $24.50 ea', '$1,134.40']
+ok   RO page: WARRANTY STARTS still MM-DD-YYYY: ['MM-DD-YYYY=10-20-2026', 'MM-DD-YYYY=07-02-2025']
+ok   the old file shows its time as before: ['leak.jpg Picture 10-29']
+ok   warranty page facts: the same (1)
+ok   warranty page ctx: the same (0)
+ok   warranty page f: the same (5)
+ok   warranty page shu: the same (0)
+ok   typed DATE BUILT 03-15-2024 → 2024-03-15; a price typed 42.5 in Edit part → [42.5]
+ok   …and the box still shows 03-15-2024 (['10-20-2026', '03-15-2024', '07-02-2025'])
+ok   new history lines are ISO: ['2026-10-31T01:54:28.897Z']
+ok   a claim amount typed 1,300.5 → 1300.5, shown '1300.50'
+ok   anything still written the old way goes into the new form on the save: ['2024-08-09', 12.4, 'string', 'string']
+ok   a date waits while a box has the cursor (half-typed dates aren't read), money doesn't: ['08-09-2024', 35.5, '2024-08-09']
+ok   the save pass costs 1.22 ms
+       ['dash.jpg', 'image/jpeg', 10496583, [4000, 3000]] → ['dash.jpg', 'image/jpeg', 772189, [1600, 1200]] 
+       ['wide.jpg', 'image/jpeg', 8476, [2400, 300]] → ['wide.jpg', 'image/jpeg', 4775, [1600, 200]] 
+       ['shot.png', 'image/png', 3663, [400, 300]] → ['shot.png', 'image/png', 3663, [400, 300]] same
+       ['wide.png', 'image/png', 24556, [3000, 400]] → ['wide.png', 'image/png', 24556, [3000, 400]] same
+       ['big.png', 'image/png', 7742089, [1500, 1500]] → ['big.jpg', 'image/jpeg', 1610285, [1500, 1500]] 
+       ['mid.jpg', 'image/jpeg', 894855, [1200, 900]] → ['mid.jpg', 'image/jpeg', 894855, [1200, 900]] same
+       ['report.pdf', 'application/pdf', 3000000, None] → ['report.pdf', 'application/pdf', 3000000, None] same
+ok   a 4000 px photo → a 1600 px JPEG (10,496,583 → 772,189 bytes)
+ok   a 2400 px JPEG, small in bytes, → 1600 px wide too
+ok   a small PNG is untouched
+ok   a 3000 px PNG under 2 MB stays the PNG it was
+ok   a PNG over 2 MB (7,742,089 bytes) → JPEG, not made bigger ([1500, 1500])
+ok   a 1200 px JPEG of 894,855 bytes is untouched (the old rule re-saved anything over 400 KB)
+ok   a PDF is untouched
+ok   through the RO page: saved dash.jpg 772189 bytes, ts 2026-10-31T01:55:28.738Z, bulletin at 2026-10-31T01:54:16.412Z
+ok   the sample made in the new build is all in the new form (0 left: [])
+ok   …its Completed lines for ROs it has are slim (296 lines, 53,212 bytes; the previous data's lines keep their snapshots, as before)
+ok   no page errors: 
+FAILS 0
+exit 0

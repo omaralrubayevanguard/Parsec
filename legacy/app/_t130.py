@@ -1,0 +1,45 @@
+# Parsec 13 core — the permission model and the scrambled PINs
+import asyncio, os, sys, json
+sys.argv = sys.argv[:2] if len(sys.argv) > 1 else ['x', 't12.html']
+_src = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "_t127p.py")).read().split("async def main():")[0]
+exec(_src)
+async def main():
+    async with async_playwright() as p:
+        b, pg, errs = await setup(p)
+        ok(await pg.evaluate("__tg.sha256hex('abc')") == "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad", "SHA-256 is right")
+        r = await pg.evaluate("(()=>{ const S=__tg.STATE(); __tg.staffList(); return [Object.keys(S.perm.roles).length, S.staff.every(s=>s.ov && !('pin' in s)), S.perm.rules.eod]; })()")
+        ok(r[0] == 7 and r[1] and r[2] is True, f"role templates, everyone has their changes, no plain PINs ({r})")
+        # an old plain PIN is scrambled once
+        r = await pg.evaluate("""(()=>{ const S=__tg.STATE(), sf=S.staff[0]; delete sf.pinH; sf.pin='4321'; S.shop=S.shop||{}; S.shop.adminPin='9876'; __tg.staffList();
+          return [('pin' in sf), !!sf.pinH, sf.pinH !== '4321', __tg.pinOk(sf,'4321'), __tg.pinOk(sf,'1234'), ('adminPin' in S.shop), __tg.adminPinOk('9876'), __tg.adminPinOk('9875'), JSON.stringify(S).indexOf('"4321"') < 0 && !/"pin"\s*:/.test(JSON.stringify(S.staff))]; })()""")
+        ok(r == [False, True, True, True, False, False, True, False, True], f"an old plain PIN is scrambled; the right PIN works, a wrong one doesn't; it's nowhere in the data ({r})")
+        # what a technician can do and open
+        T = await pg.evaluate("__tg.staffList().find(s=>s.role==='Technician').id")
+        await pg.evaluate(SIGN(T))
+        r = await pg.evaluate("[__tg.can('t.own'), __tg.can('t.editown'), __tg.can('ro.del'), __tg.can('p.cost'), __tg.navAllowed('tech'), __tg.navAllowed('manager'), __tg.navAllowed('admin'), __tg.canPage('parts')]")
+        ok(r == [True, True, False, False, True, False, False, True], f"a technician: own clock and punches, no deleting, no costs; Technician page, no Manager or Admin ({r})")
+        # a change for one person
+        r = await pg.evaluate(f"""(()=>{{ const sf=__tg.staffList().find(s=>s.id==='{T}'); __tg.permSet(sf,'acts','p.order',true); __tg.permSet(sf,'pages','inventory',true);
+          const a=[__tg.can('p.order'), __tg.navAllowed('inventory'), __tg.permChangedN(sf), sf.pages.inventory];
+          __tg.permSet(sf,'acts','p.order',false); a.push(__tg.permChangedN(sf)); __tg.permBack(sf); a.push(__tg.permChangedN(sf), __tg.navAllowed('inventory')); return a; }})()""")
+        ok(r == [True, True, 2, True, 1, 0, False], f"a change for one person, the same as the role clears it, back to the role ({r})")
+        # a role change reaches everyone in it
+        r = await pg.evaluate("(()=>{ __tg.permRoleSet('Technician','acts','p.cost',true); const a=__tg.can('p.cost'); __tg.permRoleSet('Technician','acts','p.cost',false); return [a, __tg.can('p.cost')]; })()")
+        ok(r == [True, False], f"a role's change reaches everyone in it ({r})")
+        # the Admin (no one signed in) can do everything; a manager can manage people
+        M = await pg.evaluate("__tg.staffList().find(s=>s.role==='Manager').id")
+        await pg.evaluate(SIGN(M))
+        r = await pg.evaluate("[__tg.can('a.people'), __tg.navAllowed('admin'), __tg.can('a.data'), __tg.permDenyMsg('a.data')]")
+        ok(r[0] and r[1] and r[2] is False and "Admin page" in r[3], f"a manager: manage people, open Admin, not reset the data ({r})")
+        await pg.evaluate("(()=>{ localStorage.removeItem('tec_viewas'); __tg.pxSignedIn(); })()")
+        r = await pg.evaluate("[__tg.can('a.data'), __tg.navAllowed('admin'), __tg.can('ro.del')]")
+        ok(r == [True, True, True], f"the Admin: everything ({r})")
+        # wrong tries: five, then a minute
+        r = await pg.evaluate("(()=>{ const id='x1'; __tg.pinFailClear(id); for(let i=0;i<4;i++) __tg.pinFail(id,'X'); const a=[__tg.pinTriesLeft(id), __tg.pinWaitMs(id)]; __tg.pinFail(id,'X'); a.push(__tg.pinWaitMs(id) > 50000); __tg.pinFailClear(id); a.push(__tg.pinWaitMs(id), __tg.pinTriesLeft(id)); return a; })()")
+        ok(r == [1, 0, True, 0, 5], f"five wrong tries, then a minute's wait ({r})")
+        r = await pg.evaluate("(()=>{ const L=new Set(); for(let i=0;i<50;i++) L.add(__tg.pinTempNew()); return [...L].every(p=>/^\\d{4}$/.test(p) && p!=='1234' && p!=='0000'); })()")
+        ok(r, "temporary PINs are 4 digits, never 1234 or 0000")
+        ok(not errs, "no console errors: " + "; ".join(errs[:3]))
+        await b.close()
+    print("\nFAILS:", len(FAILS), FAILS)
+asyncio.run(main())

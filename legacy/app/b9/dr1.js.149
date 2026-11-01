@@ -1,0 +1,148 @@
+/* ============================== Day report — the whole shop on one sheet (Day report mock-up, option C) ==============================
+   Every technician's day from the Time Log: totals across the shop, a line per tech with the day on it, the jobs worked
+   by RO, everything to look at, and signatures. One page to print. A technician sees only their own line. */
+var DR = (function(){
+  const ic = PG.ic, esc = PG.e;
+  const p2 = n => String(n).padStart(2, '0');
+  const hm = m => m == null || isNaN(m) ? '—' : p2(Math.floor(m / 60)) + ':' + p2(Math.round(m % 60));
+  const dur = m => { m = Math.round(m || 0); return Math.floor(m / 60) + ':' + p2(m % 60); };
+  const h1 = n => (Math.round((+n || 0) * 10) / 10).toFixed(1);
+  const pct = n => n == null ? '—' : Math.round(n * 100) + '%';
+  const DNL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], DN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const MNL = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], MN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const U = { kb: false };
+  const day = () => /^\d{4}-\d{2}-\d{2}$/.test(UI.reportDate || '') ? UI.reportDate : todayStr();
+  const longD = k => { const d = PG.dOf(k); return DNL[d.getDay()] + ', ' + MNL[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear(); };
+  const shortD = k => { const d = PG.dOf(k); return DN[d.getDay()] + ', ' + MN[d.getMonth()] + ' ' + d.getDate(); };
+  function me(){ return PG.me(); }
+  const isTech = () => { const m = me(); return !!m.tech && !m.lead && !m.admin; };
+  function techs(){ const m = me(); if(isTech()) return [m.tech]; return (typeof rtTechs === 'function' ? rtTechs() : []) || []; }
+  const first = t => PG.first(t);
+  const sign = () => STATE.tlSign && typeof STATE.tlSign === 'object' ? STATE.tlSign : {};
+  const approved = (t, k) => { const s = sign()[t + '|' + PG.perStart(k)]; return !!(s && s.fm); };
+  const ok = () => STATE.tlOk && typeof STATE.tlOk === 'object' ? STATE.tlOk : {};
+
+  /* ---------- what to look at in one tech's day ---------- */
+  function look(t, c, k){
+    const L = [], today = k === todayStr();
+    c.fixes.forEach(f => L.push({ k: 'r', t: f.k === 'noout' ? `No clock out — the day counts to the last punch, ${hm(f.at)}` : `${f.t} — ${f.why}` }));
+    c.soft.forEach(x => L.push({ k: 'r', t: `${dur(x.to - x.from)} of air ${hm(x.from)} – ${hm(x.to)} — not explained` }));
+    c.ps.filter(p => p.ro !== 'SHOP' && p.e != null && !p.note).forEach(p => L.push({ k: 'a', t: `${p.ro} ${hm(p.s)} – ${hm(p.e)} — no work note` }));
+    const al = c.lunch.find(x => x[3] === 'auto'); if(al && !c.D.autoOk) L.push({ k: 'a', t: `Lunch taken automatically ${hm(al[0])} – ${hm(al[1])}` });
+    if(c.noLunch) L.push({ k: 'a', t: 'No lunch clocked — six hours or more on the clock' });
+    if(today && c.on && c.over >= 30) L.push({ k: 'a', t: `Still on the clock ${Math.round(c.over)} min past the ${hm(c.shEnd)} shift end` });
+    else if(!today && !c.open && c.last != null && c.last - c.shEnd >= 30) L.push({ k: 'a', t: `Clocked out ${hm(c.last)} — ${Math.round(c.last - c.shEnd)} min past the ${hm(c.shEnd)} shift end` });
+    c.ps.filter(p => p.ed).forEach(p => L.push({ k: 'n', t: p.ed === 'added by hand' ? `${p.ro === 'SHOP' ? 'Shop time' : p.ro} ${hm(p.s)} – ${hm(p.e2)} added by hand` : `${p.ro === 'SHOP' ? 'Shop time' : p.ro} changed${p.by ? ' by ' + p.by : ''} · was ${p.ed}${p.why ? ' — ' + p.why : ''}` }));
+    return L;
+  }
+  /* ---------- the shop's day ---------- */
+  function data(k){
+    TL.flush();
+    const T = techs(), rows = T.map(t => ({ t, c: TL.calc(t, k) })), on = rows.filter(r => r.c);
+    on.forEach(r => { r.look = look(r.t, r.c, k); r.flags = r.look.filter(x => x.k !== 'n').length; r.ok = approved(r.t, k); });
+    const S = f => on.reduce((a, r) => a + (r.c[f] || 0), 0);
+    const cl = S('clocked'), job = S('job'), air = S('airM'), shop = S('shop'), q = S('q'), jq = S('jq');
+    let a = 360, b = 1080;
+    on.forEach(r => { const c = r.c; if(c.first != null) a = Math.min(a, Math.floor(c.first / 60) * 60); const e = Math.max(c.last || 0, c.span || 0, ...c.ps.map(p => p.e2)); if(e) b = Math.max(b, Math.ceil(e / 60) * 60); });
+    /* the jobs, by RO and operation, across every tech */
+    const J = {}; let shopRow = null;
+    on.forEach(r => r.c.ps.forEach(p => {
+      const m = Math.max(0, p.e2 - p.s);
+      if(p.ro === 'SHOP'){ if(!shopRow) shopRow = { m: 0, what: {}, who: {} }; shopRow.m += m; if(p.shop || p.cm) shopRow.what[p.shop || p.cm] = 1; shopRow.who[first(r.t)] = 1; return; }
+      const x = J[p.opId] || (J[p.opId] = { ro: p.ro, roId: p.roId, opId: p.opId, cust: p.cust, cm: p.cm, m: 0, who: {}, last: null });
+      x.m += m; x.who[first(r.t)] = 1; if(!x.last || p.e2 >= x.last.e2) x.last = p;
+    }));
+    const jobs = Object.values(J).map(x => { const ro = getRO(x.roId), ops = ro ? ro.operations || [] : [], i = ops.findIndex(o => o.id === x.opId), op = ops[i];
+      const unit = ro ? [ro.model, ro.unitNumber ? '#' + ro.unitNumber : ''].filter(Boolean).join(' · ') : '';
+      const done = op && opDoneNow(op), run = x.last && x.last.e == null && k === todayStr();
+      const left = run ? 'On it now' : done ? 'Done' : (x.last && x.last.er) || '—';
+      return Object.assign(x, { opN: i + 1, unit, q: op ? +op.quoted || 0 : 0, war: !!(ro && ro.warranty), left, tone: run ? 'g' : done ? 'g' : /Waiting|Hold|Parts|Approval/.test(left) ? 'a' : '' }); })
+      .sort((x, y) => String(x.ro).localeCompare(String(y.ro), undefined, { numeric: true }) || x.opN - y.opN);
+    return { k, T, rows, on, cl, job, air, shop, q, jq, eff: jq > 3 ? q / (jq / 60) : null, a, b, jobs, shopRow, punches: on.reduce((s, r) => s + r.c.ps.length, 0), ros: new Set(jobs.map(j => j.roId)).size, flags: on.reduce((s, r) => s + r.flags, 0) };
+  }
+  /* ---------- drawing ---------- */
+    /* Parsec 14: where a job was left, with the status look every page uses (pgSt) when it's a status */
+  const leftH = j => { if(typeof pgSt !== 'function') return `<span class="${j.tone}">${esc(j.left)}</span>`;
+    if(j.left === 'On it now') return pgSt('ro', 'Working', { cls: 'sm', size: 12, label: 'On it now' }); if(j.left === 'Done') return pgSt('ro', 'Complete', { cls: 'sm', size: 12, label: 'Done' });
+    const k = pgStKey('ro', j.left); return PGST_RO[k] ? pgSt('ro', k, { cls: 'sm', size: 12 }) : `<span class="${j.tone}">${esc(j.left)}</span>`; };
+  function track(c, a, b){
+    const X = m => ((Math.max(a, Math.min(b, m)) - a) / (b - a) * 100).toFixed(2) + '%', W = (x, y) => ((Math.max(a, Math.min(b, y)) - Math.max(a, Math.min(b, x))) / (b - a) * 100).toFixed(2) + '%';
+    let h = '';
+    c.segs.forEach(x => { if(x[1] != null) h += `<span class="k" style="left:${X(x[0])};width:${W(x[0], x[1])}"></span>`; });
+    c.lunch.forEach(x => { h += `<span class="b lun${x[3] === 'auto' ? ' auto' : ''}" style="left:${X(x[0])};width:${W(x[0], x[1])}" title="${x[2] === 'Lunch' || x[3] === 'auto' ? 'Lunch' : esc(x[2] || 'Off the clock')} ${hm(x[0])} – ${hm(x[1])}"></span>`; });
+    c.air.forEach(x => { const bad = c.soft.some(s => s.from === x[0]); h += `<span class="b ai${bad ? ' prob' : ''}" style="left:${X(x[0])};width:${W(x[0], x[1])}" title="Air ${hm(x[0])} – ${hm(x[1])}"></span>`; });
+    c.ps.forEach(p => { h += `<span class="b ${p.ro === 'SHOP' ? 'sh' : 'jb'}${p.e == null ? ' run' : ''}" style="left:${X(p.s)};width:${W(p.s, p.e2)}" title="${p.ro === 'SHOP' ? 'Shop time' : esc(p.ro)} ${hm(p.s)} – ${p.e == null ? 'now' : hm(p.e)}"></span>`; });
+    if(c.shEnd > a && c.shEnd < b) h += `<span class="se" style="left:${X(c.shEnd)}" title="Shift ends ${hm(c.shEnd)}"></span>`;
+    return `<div class="dy-trk">${h}</div>`;
+  }
+  function axis(a, b){ let h = '<div class="dy-ax">'; for(let m = a; m <= b; m += 60) h += `<span style="left:${((m - a) / (b - a) * 100).toFixed(2)}%">${p2(m / 60)}</span>`; return h + '</div>'; }
+  const av = t => `<span class="dy-av">${esc(PG.ini(t))}</span>`;
+  function sheet(D){
+    const k = D.k, today = k === todayStr(), shopName = String(STATE.shopName || (STATE.settings && STATE.settings.shopName) || '').trim(), one = isTech();
+    const nApp = D.on.filter(r => r.ok).length;
+    let h = `<article class="dy-paper"><header><div class="t"><span class="lg">${PX_LOGO}</span><b>${one ? 'Day report' : 'Shop day report'}</b><small>${esc(shopName || 'Parsec')} · ${longD(k)}</small></div>
+      <div class="r"><b>${one ? esc(D.T[0] || '') : 'Every technician'}</b><small>${one ? 'Technician' : `${D.on.length} of ${D.T.length} in${D.T.length - D.on.length ? ' · ' + (D.T.length - D.on.length) + ' not in' : ''}`}</small><small>${D.punches} punch${D.punches === 1 ? '' : 'es'} · ${D.ros} RO${D.ros === 1 ? '' : 's'}${today ? ' · so far today' : ''}</small>
+      ${D.on.length ? (nApp === D.on.length ? `<span class="dy-stamp">${ic('lock', 10)}Timesheet${D.on.length > 1 ? 's' : ''} approved</span>` : one ? '<span class="dy-stamp todo">Timesheet not approved yet</span>' : `<span class="dy-stamp todo">${nApp} of ${D.on.length} timesheets approved</span>`) : ''}</div></header>`;
+    if(!D.on.length) return h + `<div class="dy-empty">No one clocked in or punched on ${longD(k)}.</div>${sigs(one)}</article>`;
+    h += `<div class="dy-tot">
+      <div><small>Clocked</small><b>${dur(D.cl)}</b></div>
+      <div><small><i class="jb"></i>On jobs</small><b>${dur(D.job)}<em>${D.cl ? Math.round(D.job / D.cl * 100) : 0}%</em></b></div>
+      <div><small><i class="ai"></i>Air</small><b>${dur(D.air)}</b></div>
+      <div><small><i class="sh"></i>Shop</small><b>${dur(D.shop)}</b></div>
+      <div><small>Quoted</small><b>${h1(D.q)}<em>h</em></b></div>
+      <div><small>Efficiency</small><b class="${D.eff == null ? '' : D.eff >= 1 ? 'g' : 'r'}">${pct(D.eff)}</b></div>
+      <div><small>To look at</small><b class="${D.flags ? 'r' : ''}">${D.flags}</b></div></div>`;
+    h += `<div class="dy-h3">${one ? 'Your day' : 'Who worked'}<span class="sp"></span><small>${hm(D.a)} – ${hm(D.b)} · every clock and punch</small></div><table class="dy-shop"><thead><tr><th class="l">Technician</th><th class="l">The day</th><th>In</th><th>Out</th><th>Clocked</th><th>On jobs</th><th>Air</th><th>Eff.</th><th class="l">Status</th></tr></thead><tbody>`;
+    D.rows.forEach(({ t, c }) => {
+      const r = D.on.find(x => x.t === t);
+      if(!c){ h += `<tr class="off"><td class="l"><span class="who">${av(t)}${esc(t)}</span></td><td class="l s" colspan="7">Not in</td><td></td></tr>`; return; }
+      const st = r.ok ? '<span class="g">Approved</span>' : today && c.on ? '<span class="g">On the clock</span>' : r.flags ? `<span class="r">${r.flags} to look at</span>` : '<span class="mu">Nothing to look at</span>';
+      h += `<tr><td class="l"><button class="who" data-a="tech" data-t="${esc(t)}" title="Open ${esc(first(t))}’s day in the Time Log">${av(t)}${esc(t)}</button></td><td class="tl">${track(c, D.a, D.b)}</td><td>${hm(c.first)}</td><td>${c.open && today ? 'on' : hm(c.last)}</td><td>${dur(c.clocked)}</td><td>${dur(c.job)}</td><td>${dur(c.airM)}</td><td><span class="${c.eff == null ? '' : c.eff >= 1 ? 'g' : 'r'}">${pct(c.eff)}</span></td><td class="l s">${st}</td></tr>`; });
+    h += `<tr class="ax"><td></td><td class="tl">${axis(D.a, D.b)}</td><td colspan="7"></td></tr>`;
+    if(!one) h += `<tr class="tot"><td class="l" colspan="4">The shop</td><td>${dur(D.cl)}</td><td>${dur(D.job)}</td><td>${dur(D.air)}</td><td>${pct(D.eff)}</td><td></td></tr>`;
+    h += `</tbody></table><div class="dy-leg"><span><i class="jb"></i>On a job</span><span><i class="ai"></i>Air — on the clock, off a job</span><span><i class="sh"></i>Shop time</span><span><i class="lun"></i>Lunch / off the clock</span><span><i class="se"></i>Shift ends</span></div>`;
+    h += `<div class="dy-h3">Jobs worked<small>${one ? 'by RO' : 'by RO · time today across every tech'}</small></div>`;
+    if(!D.jobs.length && !D.shopRow) h += `<div class="dy-empty sm">No RO time on this day.</div>`;
+    else { h += `<table class="dy-jobs"><thead><tr><th class="l">RO</th><th class="l">Customer · unit</th><th class="l">Operation</th><th class="l">Tech</th><th>Time today</th><th>Quoted</th><th class="l">Left as</th></tr></thead><tbody>`;
+      D.jobs.forEach(j => { h += `<tr><td class="l"><button class="dy-ro" data-a="ro" data-ro="${esc(j.roId)}" data-op="${esc(j.opId)}" title="Open the RO">${esc(j.ro)}</button><small>${j.opN > 0 ? 'Op ' + j.opN : ''}${j.war ? ' · warranty' : ''}</small></td><td class="l s">${esc(j.cust || '—')}${j.unit ? `<small>${esc(j.unit)}</small>` : ''}</td><td class="l s w">${esc(j.cm || '—')}</td><td class="l s">${esc(Object.keys(j.who).join(', '))}</td><td>${dur(j.m)}</td><td>${j.q ? h1(j.q) : '—'}</td><td class="l s">${leftH(j)}</td></tr>`; });
+      if(D.shopRow) h += `<tr class="shp"><td class="l"><b>Shop</b></td><td class="l s mu">—</td><td class="l s w">${esc(Object.keys(D.shopRow.what).join(', ') || 'Shop time')}</td><td class="l s">${esc(Object.keys(D.shopRow.who).join(', '))}</td><td>${dur(D.shopRow.m)}</td><td>—</td><td></td></tr>`;
+      h += `</tbody></table>`; }
+    h += `<div class="dy-h3">To look at<small>${D.flags ? D.flags + ' from the Time Log' : 'nothing open in the Time Log'}</small></div><div class="dy-chk">`;
+    let any = false;
+    D.on.forEach(r => r.look.forEach(x => { any = true; h += `<div><span class="m ${x.k}">${ic(x.k === 'n' ? 'pencil' : 'flag', 11)}</span><span>${one ? '' : `<b>${esc(first(r.t))}</b> · `}${esc(x.t)}</span></div>`; }));
+    D.rows.filter(r => !r.c).forEach(r => { any = true; h += `<div><span class="m n">${ic('user', 11)}</span><span><b>${esc(first(r.t))}</b> · not in</span></div>`; });
+    if(!any) h += `<div><span class="m">${ic('check', 11)}</span><span>Every clock closed, every punch has a note, no unexplained air</span></div>`;
+    h += `</div>${sigs(one)}<footer>Printed from Parsec · ${shortD(todayStr())} ${hm(PG.mod(Date.now()))} · times are 24-hour · efficiency is quoted hours ÷ hours on finished jobs · air is clocked time on no job and not lunch</footer></article>`;
+    return h;
+  }
+  function sigs(one){ return `<div class="dy-sig"><div>${one ? 'Technician' : 'Foreman'}</div><div>${one ? 'Foreman' : 'Manager'}</div></div>`; }
+  function view(){
+    const k = day(), D = data(k), today = k === todayStr();
+    const facts = `${isTech() ? '' : `<span class="tg-hf"><b>${D.on.length} of ${D.T.length}</b>in</span>`}${D.on.length ? `${isTech() ? '' : '<i>·</i>'}<span class="tg-hf"><b>${dur(D.cl)}</b>clocked</span><i>·</i><span class="tg-hf"><b>${pct(D.eff)}</b>efficiency</span>` : ''}${D.flags ? `<i>·</i><span class="tg-hf w"><b>${D.flags}</b>to look at</span>` : ''}`;
+    return `<div class="tg dy" data-pg="report"><header class="tg-head"><h1 class="tg-h1">Day report</h1>
+      <span class="dy-dn"><button class="btn btn-sm ib" data-a="dnav" data-d="-1" title="Day before (←)">${ic('chevL', 15)}</button><label class="dy-dl">${today ? 'Today · ' : ''}${shortD(k)}<input type="date" data-ch="date" value="${k}" max="${todayStr()}" title="Pick a day"></label><button class="btn btn-sm ib" data-a="dnav" data-d="1" title="Day after (→)"${today ? ' disabled' : ''}>${ic('chevR', 15)}</button></span>
+      <span class="tg-facts">${facts}</span><span class="sp"></span>
+      <button class="btn btn-sm tg-gh" data-a="tl" title="Back to the Time Log">${ic('timelog', 14)}Time Log</button><button class="btn btn-sm btn-primary" data-a="print" title="Print or save as PDF (P)">${ic('print', 14)}Print</button></header>
+      <div class="tg-body"><div class="dy-cv pg-scroll">${sheet(D)}</div></div></div>`;
+  }
+  function go(k){ UI.reportDate = k; persistUI(); PG.keepScroll(render); }
+  function print(){ PG.printPaper(document.querySelector('[data-pg="report"] .dy-paper'), (isTech() ? 'Day report ' : 'Shop day report ') + day()); }
+  const H = {
+    dnav: t => { const k = PG.addD(day(), +t.dataset.d); if(k > todayStr()) return; go(k); },
+    tl: () => { try{ const TU = TL.U(); TU.day = day(); }catch(e){} PG.go('timelog'); },
+    tech: t => { try{ const TU = TL.U(); TU.who = t.dataset.t; TU.day = day(); TU.view = 'day'; }catch(e){} PG.go('timelog'); },
+    ro: t => PG.openRo(t.dataset.ro, t.dataset.op),
+    print: () => print()
+  };
+  function change(t){ if(t.dataset.ch === 'date' && /^\d{4}-\d{2}-\d{2}$/.test(t.value)) go(t.value > todayStr() ? todayStr() : t.value); }
+  function keydown(ev){
+    if(ev.ctrlKey || ev.metaKey || ev.altKey || PG.typing(ev)) return;
+    const stop = () => { ev.preventDefault(); ev.stopPropagation(); };
+    if(ev.key === 'ArrowLeft'){ H.dnav({ dataset: { d: -1 } }); return stop(); }
+    if(ev.key === 'ArrowRight'){ H.dnav({ dataset: { d: 1 } }); return stop(); }
+    if(ev.key === 'p' || ev.key === 'P'){ print(); return stop(); }
+  }
+  PG.reg('report', { H, U: () => U, change, keydown });
+  return { view, data };
+})();
+function viewDayReport(){ return DR.view(); }

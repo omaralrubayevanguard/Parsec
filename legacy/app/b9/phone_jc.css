@@ -1,0 +1,10 @@
+/* ===== Parsec 9.6: the RO page on a phone — one column, the page scrolls ===== */
+:host([data-device=phone]) .page.roB.ivB{margin:0 !important;padding:0 !important;min-height:0 !important}
+:host([data-device=phone]) .pxr{height:auto !important;min-height:0 !important}
+:host([data-device=phone]) .px-head{height:auto !important;min-height:48px;flex-wrap:wrap !important;row-gap:4px !important;padding:6px 12px !important}
+:host([data-device=phone]) .px-head__acts{margin-left:0 !important;flex:1 1 100% !important;min-width:0;overflow-x:auto;scrollbar-width:none}
+:host([data-device=phone]) .px-ro{flex-direction:column !important;min-height:0 !important;flex:none !important}
+:host([data-device=phone]) .px-ro__main{overflow:visible !important;flex:none !important;width:auto !important}
+:host([data-device=phone]) .px-ro__col{padding:16px 16px 20px !important;max-width:none !important;margin:0 !important}
+:host([data-device=phone]) .px-ro__rail{width:auto !important;overflow:visible !important;flex:none !important;padding:16px !important;box-shadow:inset 0 1px 0 var(--hairline) !important}
+:host([data-device=phone]) .px-kbd{display:none !important}

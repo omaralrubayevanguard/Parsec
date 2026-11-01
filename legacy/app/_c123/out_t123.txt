@@ -1,0 +1,74 @@
+ok   truck line under the name: 2020 Volvo VNL 760 · 6x4 · High-roof sleeper · 70-inch · Unit T-702
+ok   Vehicle shows Configuration
+ok   Vehicle shows Sleeper
+ok   Vehicle shows Engine
+ok   Vehicle shows Make
+row: {'tag': 'DIV', 'jt': True, 'st': True, 'menu': True, 'all': True, 'body': True, 'cf': False, 'code': False, 'oldHead': False, 'jtc': 'rgb(47, 135, 149)'}
+ok   status, ⋯ and job type in every operation's row
+ok   no complaint line, no + code in the open operation's body
+ok   job type menu: ['DIAG', 'REPAIR', 'PM', 'WARR', 'COMEBACK', 'SUBLET', 'RECALL']
+ok   job type set to PM, toast: Op 1 is PM now.
+ok   chip shows PM
+ok   Undo puts the job type back (OP)
+ok   status menu opens from the row [True, 320, 284, 'visible']
+ok   clicking the status doesn't fold the operation
+status items: ['Hold tech', 'Waiting – Parts', 'Waiting – Foreman', 'Waiting – Tech support', 'Waiting – Customer', 'Waiting – Approval', 'Complete']
+ok   status set from the row: Waiting – Parts | Op 1 set to Waiting – Parts.
+ok   Undo puts the status back
+ok   ⋯ menu opens from a closed row [True, ['Add part', 'Print Op', 'Move to another RO…', 'Delete operation']]
+time: {"bar": 3, "segc": ["var(--rc-diag)", "var(--rc-rep)", "var(--rc-test)"], "tps": 3, "lc": ["var(--rc-diag)|var(--rc-wparts)", "var(--rc-rep)|var(--rc-lunch)", "var(--rc-test)|var(--rc-switch)"], "adds": 2, "legacy": false, "words": [], "legend": false, "acts": ["Add time entry"]}
+ok   day bar with 3 segments, 3 punches
+ok   colors follow the reasons (start line/dot, stop dot)
+ok   a + between punches (2)
+ok   no punches section, no Edit entries / word links, no legend
+ok   Time tab action at the right of the tabs
+dots: ['rgb(61, 111, 217)', 'rgb(173, 114, 16)', 'rgb(61, 111, 217)']
+ok   start and stop dots differ in color
+ok   click a time: a time input in place
+ok   start time saved, Undo in the toast: Start time 6:45 am — 1:25 on that punch.
+ok   Undo puts the time back
+ok   an overlapping stop is refused: Overlaps another punch — you can only be on one operation at
+ok   start reasons with color dots: Diagnosing, Repairing, Inspecting, Inspecting – 74-point, Inspecting – DOT, Testing, Bench Testing
+ok   start reason changed to Diagnosing
+ok   the line takes the new color
+ok   Undo puts the reason back
+ok   stop reason changed
+ok   note icon opens a note line on the punch
+ok   note saved in the punch
+ok   trash shows on hover
+ok   punch deleted at once: Punch deleted — 0:30.
+ok   Undo brings the punch back
+form: ['2026-10-26', '08:10', 'Repairing', '09:00', 'Switched job']
+ok   a + opens the form in place, prefilled between its neighbours
+ok   time entry added: Time entry added — 0:30.
+ok   4 punches now
+ok   the header icon opens a time entry at the end
+ok   Escape closes it
+ok   Parts tab actions: ['Add part/Add part', 'From inventory…/From inventory…', 'Extract from a quote…/Extract from a quote…']
+ok   no word links left in the Parts pane
+ok   Add part opens the quick add line
+ok   part added: Added Brake chamber
+ok   the line stays open for the next part
+ok   Files tab actions: ['Upload', 'Take a photo', 'Paste a screenshot']
+ok   Upload attaches to the operation (0 -> 1) 1 file attached
+ok   Take a photo uses the camera input
+ok   no word links left on the RO page: []
+ok   every icon button has a title and an aria-label
+ok   Start / Stop and Save keep their words: ['Save', 'Start Op 1', 'Transfer…', 'Road test', 'Truck checks']
+ok   double-click the title: rename in place
+ok   renamed
+ivl ['rgb(61, 111, 217)', 'rgb(29, 28, 26)', 'color(srgb 0.164549 0.411922 0.449255)', 'rgb(61, 111, 217)']
+ivd ['rgb(127, 162, 245)', 'rgb(237, 235, 230)', 'color(srgb 0.508706 0.763451 0.794667)', 'rgb(127, 162, 245)']
+vvl ['rgb(61, 111, 217)', 'rgb(23, 28, 36)', 'color(srgb 0.157961 0.411922 0.460235)', 'rgb(61, 111, 217)']
+vvd ['rgb(127, 162, 245)', 'rgb(237, 241, 247)', 'color(srgb 0.508706 0.770039 0.813333)', 'rgb(127, 162, 245)']
+ok   no horizontal page scroll at 1440
+ok   no console errors (desktop): []
+ok   phone: nothing wider than the screen []
+ok   phone: no horizontal page scroll
+phone row: [88, '1', ['rop-cb:11', 'px-si:18', 'px-row__n:15', 'px-row__t:15', 'px-tag:57', 'px-row__time:57', 'px-mini:0', 'px-av:0', 'rop-octl:0']]
+ok   phone: punch tools visible without hover
+ok   phone: a tap on a time edits it
+ok   phone: the time entry form fits (362)
+ok   no console errors (phone): []
+
+0 failed

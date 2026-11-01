@@ -1,0 +1,9 @@
+/* the sidebar's theme strip */
+.pxr-thm{display:flex;gap:2px;flex:none;margin:6px 0 4px;padding:4px;border-radius:12px;background:var(--px-fill, rgba(128,128,128,.12));box-shadow:inset 0 1px 2px rgba(0,0,0,.08),inset 0 0 0 1px var(--px-hair, rgba(0,0,0,.08))}
+.pxr-thm button{all:unset;box-sizing:border-box;cursor:pointer;flex:1;height:28px;display:grid;place-items:center;border-radius:9px}
+.pxr-thm button:hover{background:color-mix(in srgb, var(--px-ink, #000) 6%, transparent)}
+.pxr-thm button[aria-pressed="true"]{background:var(--px-raised, var(--px-panel, #fff));box-shadow:0 0 0 1px var(--px-hair, rgba(0,0,0,.08)),0 1px 2px rgba(0,0,0,.1)}
+.pxr-thm button:focus-visible{outline:2px solid var(--px-focus, #86643A);outline-offset:1px}
+.pxr-sw{display:block;width:16px;height:16px;border-radius:50%;background:linear-gradient(90deg,var(--a) 50%,var(--b) 50%);box-shadow:inset 0 0 0 1px rgba(0,0,0,.22)}
+.pxr-thm.one{padding:3px;margin-left:auto;margin-right:auto;width:36px}
+.pxr-thm.one button{height:28px}

@@ -1,0 +1,2 @@
+t6.html [('triage', 24), ('foreman', 55), ('warranty', 37), ('ros', 38)]
+t8.html [('triage', 12), ('foreman', 13), ('warranty', 13), ('ros', 6), ('shortcuts', 'Keyboard shortcuts\n×\nEverywhere\nCtrl K\nSearch, or jump to an RO\nN\nNew repair order\n[\nOpen or close the sidebar\nSpace\nStart or stop the clock\n?\nKeyboard shortcut')]

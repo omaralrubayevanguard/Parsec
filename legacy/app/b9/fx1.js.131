@@ -1,0 +1,91 @@
+/* ============================== Fixes (Fixes v2 + ideas mock-ups) ==============================
+   Every finished operation is a fix, grouped by complaint: the usual cause and correction, parts, hours against
+   the quote, whether it held, check-first steps, the shop standard; open ROs that can use one (nothing fills
+   in by itself — Use fix shows what changes); Review for write-ups; Trends for the foreman and the manager. */
+var FX = (function(){
+  const ic = PG.ic, kbd = PG.kbd, esc = PG.e;
+  const p2 = n => String(n).padStart(2, '0');
+  const usd = n => '$' + (+n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const usd0 = n => '$' + Math.round(+n || 0).toLocaleString('en-US');
+  const h1 = n => (Math.round((+n || 0) * 10) / 10).toFixed(1);
+  const MN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const TODAY = () => todayStr();
+  const dOf = k => { const [y, m, d] = String(k).slice(0, 10).split('-').map(Number); return new Date(y, m - 1, d); };
+  const kOf = d => d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate());
+  const addD = (k, n) => { const d = dOf(k); d.setDate(d.getDate() + n); return kOf(d); };
+  const fd = k => { if(!k) return '—'; const d = dOf(k); return MN[d.getMonth()] + ' ' + d.getDate() + (d.getFullYear() !== new Date().getFullYear() ? ', ' + d.getFullYear() : ''); };
+  const dd = (a, b) => Math.round((dOf(b) - dOf(a)) / 86400000);
+  const lc = s => /^[A-Z][a-z]/.test(s || '') ? s[0].toLowerCase() + s.slice(1) : (s || '');
+  const F = n => PG.first(n || '') || '—';
+  const RATE = () => laborRate();
+  const SYS = { aft: ['Aftertreatment', 'filter'], eng: ['Engine', 'engine'], cool: ['Cooling', 'drop'], elec: ['Electrical', 'bolt'], air: ['Air and brakes', 'air'], cab: ['Cab and A/C', 'snow'], drv: ['Drivetrain', 'gear2'], oth: ['Other', 'wrench'] };
+  const SYSW = [['aft', /nox|dpf|def\b|doser|regen|aftertreat|scr\b|soot|urea|adblue/], ['cool', /coolant|radiator|water pump|thermostat|fan clutch|overheat|hose/], ['air', /air dryer|air leak|brake|chamber|slack|wheel seal|abs|air slow|compressor, air|governor/], ['cab', /a\/c|\bac\b|heater|hvac|door|mirror|seat|window|wiper|blower|dash/], ['drv', /clutch|transmission|i-shift|axle|driveshaft|u-joint|differential|pto/], ['elec', /alternator|battery|starter|wiring|harness|light|lamp|charging|fuse|connector/], ['eng', /turbo|injector|misfire|engine|oil|egr|fuel|cylinder|boost|vgt|valve|head gasket|derate/]];
+  const sysOf = t => { const s = String(t || '').toLowerCase(); for(const [k, re] of SYSW) if(re.test(s)) return k; return 'oth'; };
+  const U = { view: 'lib', sel: null, pop: null, kb: false, sort: 'count', grp: 'sys', flt: false, open: {}, fe: null, fmdl: null, fmi: null, hl: null, steps: {} };
+  /* ---------- the shop's own choices: standards, quotes, aliases, reviews ---------- */
+  const st0 = k => STATE[k] && typeof STATE[k] === 'object' && !Array.isArray(STATE[k]) ? STATE[k] : (STATE[k] = {});
+  const STD = () => st0('fxStd'), QO = () => st0('fxQ'), QK = () => st0('fxQk'), ALIAS = () => st0('fxAlias'), REV = () => st0('fxRev'), KITS = () => st0('fxKit');
+  const keyOf = c => { let k = fixKeyOf(c); const A = ALIAS(); let n = 0; while(A[k] && n++ < 5) k = A[k]; return k; };
+  function ME(){ return PG.me(); }
+  function role(){ const m = ME(); if(m.admin) return 'mg'; const r = m.role; return r === 'Manager' ? 'mg' : r === 'Foreman' ? 'fm' : r === 'Service writer' || r === 'Triage' ? 'tr' : r === 'Technician' ? (ME().staff && ME().staff.lead ? 'lt' : 'tech') : 'tr'; }
+  const isRev = () => role() !== 'tech';
+  const canStd = () => ['fm', 'lt', 'mg'].includes(role());
+  const ROLEL = { tech: 'Technician', lt: 'Lead tech', fm: 'Foreman', tr: 'Triage', mg: 'Manager' };
+  /* ---------- the fixes, from the finished operations ---------- */
+  let C = null;
+  function flush(){ C = null; }
+  function build(){
+    if(C) return C; C = {};
+    const raw = fixAll(), E = {}, T = {};
+    raw.forEach(x => {
+      if(x.manual && x.review) return;
+      const k = keyOf(x.complaint); if(!k) return;
+      const ro = x.roId ? getRO(x.roId) : null, op = ro ? (ro.operations || []).find(o => o.id === x.opId) : null;
+      const hrs = op ? (opCalc(op).burntHrs || +op.burnt || 0) : (+x.hours || 0), q = op ? (+op.quoted || 0) : 0;
+      const parts = (x.parts || []).map(p => [String(p.partNumber || '').trim(), p.description || p.partNumber || 'Part', parseFloat(p.qty) || 1, priceOf(p.price) || 0]);
+      const e = { id: x.id, k, date: x.date ? localDay(x.date) : '', ro: x.ro ? roShortNo(x.ro) : '—', roId: x.roId || null, opId: x.opId || null, cust: ro ? ro.customerName || '' : 'Added by hand', truck: x.truck || '—', eng: x.engine || '—', miles: parseInt(String(x.miles || '').replace(/\D/g, ''), 10) || 0, vin: x.vin ? '…' + String(x.vin).slice(-8) : '', vinF: x.vin || '',
+        cause: x.cause || '', fix: x.correction || '', parts, codes: x.codes || [], tech: String(x.tech || '').split(',')[0].trim(), h: Math.round(hrs * 10) / 10, q, cost: x.cost || 0, out: 'ok', man: !!x.manual, op, ro0: ro, jt: op ? opJobType(op) : '' };
+      (E[k] = E[k] || []).push(e); if(!T[k] || (e.date > (T[k].d || ''))) T[k] = { t: x.complaint, d: e.date };
+    });
+    /* comebacks: the same complaint on the same truck within 60 days */
+    Object.keys(E).forEach(k => { const L = E[k].slice().sort((a, b) => (a.date || '') < (b.date || '') ? -1 : 1);
+      L.forEach((e, i) => { if(!e.vinF) return; const f = L.slice(i + 1).find(x => x.vinF === e.vinF && x.date && e.date && dd(e.date, x.date) <= 60 && x.roId !== e.roId); if(f){ e.out = 'cb'; e.back = dd(e.date, f.date); e.backRo = f.ro; f.after = e.ro; } }); });
+    /* open ROs with an operation the shop has fixed before */
+    const O = [];
+    STATE.ros.forEach(ro => { if(ro.id === SHOP_RO_ID || ro.shop || roIsDone(ro)) return; (ro.operations || []).forEach(op => { if(op.declined || opDoneNow(op) || !String(op.complaint || '').trim()) return; const k = keyOf(op.complaint); if(!E[k] || !E[k].some(e => e.opId !== op.id)) return;
+      const past = E[k].filter(e => e.opId !== op.id), cb = ro.vin ? past.filter(e => e.vinF === ro.vin && e.date && dd(e.date, TODAY()) <= 60).sort((a, b) => a.date < b.date ? 1 : -1)[0] : null;
+      O.push({ no: tgNum(ro), roId: ro.id, opId: op.id, op, ro, k, cust: ro.customerName || '—', truck: truckYM(ro).line || ro.model || '—', eng: ro.engineType || '—', miles: parseInt(String(ro.mileage || '').replace(/\D/g, ''), 10) || 0, tech: ro.assignedTech || '', wr: PG.person('Service writer'), q: +op.quoted || null, parts: opRealParts(op), from: op.fxUse ? op.fxUse.ro : (op.fxQ ? op.fxQ.ro : null), by: op.fxUse ? op.fxUse.by : null, in: ro.dateOpened ? localDay(ro.dateOpened) : '', cb: cb ? { ro: cb.ro, days: dd(cb.date, TODAY()), date: cb.date } : null, jt: opJobType(op) }); }); });
+    E && Object.keys(E).forEach(k => E[k].forEach(e => { if(e.out !== 'cb' && O.some(o => o.cb && o.cb.ro === e.ro && o.k === k)){ const o = O.find(x => x.cb && x.cb.ro === e.ro && x.k === k); e.out = 'cb'; e.back = o.cb.days; e.backRo = o.no; e.live = 1; } }));
+    C.E = E; C.T = T; C.O = O;
+    C.G = Object.keys(E).map(k => ({ k, t: T[k].t, sys: sysOf(T[k].t) }));
+    return C;
+  }
+  const grp = k => build().G.find(g => g.k === k) || null;
+  const band = m => m < 300000 ? 'lo' : m < 500000 ? 'mid' : 'hi';
+  let FILT = false;
+  const passF = e => !FILT || ((!U.fe || e.eng === U.fe) && (!U.fmdl || String(e.truck).includes(U.fmdl)) && (!U.fmi || band(e.miles) === U.fmi));
+  const nF = () => [U.fe, U.fmdl, U.fmi].filter(Boolean).length;
+  const ents = k => (build().E[k] || []).filter(passF).sort((a, b) => (a.date || '') < (b.date || '') ? 1 : -1);
+  const opensOf = k => build().O.filter(o => o.k === k);
+  const pend = o => !o.q || !o.parts.length;
+  function stats(k){ build(); const key = 'st' + k + (FILT ? '|' + U.fe + U.fmdl + U.fmi : ''); if(C[key]) return C[key];
+    const E = ents(k), cb = E.filter(e => e.out === 'cb').length, wh = E.filter(e => e.h > 0), hrs = wh.length ? wh.reduce((s, e) => s + e.h, 0) / wh.length : 0;
+    const qs = E.map(e => e.q).filter(x => x > 0), qm = {}; qs.forEach(x => { qm[x] = (qm[x] || 0) + 1; }); const q0 = qs.length ? +Object.keys(qm).sort((a, b) => qm[b] - qm[a])[0] : hrs;
+    const q = QO()[k] || q0, cost = E.length ? E.reduce((s, e) => s + (e.cost || 0), 0) / E.length : 0;
+    const T = {}; E.forEach(e => { if(e.tech) T[e.tech] = (T[e.tech] || 0) + 1; }); const top = Object.keys(T).sort((a, b) => T[b] - T[a])[0] || '';
+    const Cs = {}, X = {}, PT = {}, CD = {}; E.forEach(e => { if(e.cause) Cs[e.cause] = (Cs[e.cause] || 0) + 1; if(e.fix) X[e.fix] = (X[e.fix] || 0) + 1; e.parts.forEach(p => { const pk = p[0] || p[1]; PT[pk] = PT[pk] || { p, n: 0 }; PT[pk].n++; }); e.codes.forEach(c => { CD[c] = (CD[c] || 0) + 1; }); });
+    const srt = o => Object.keys(o).sort((a, b) => o[b] - o[a]);
+    return (C[key] = { E, n: E.length, cb, hrs, q, cost, top, topN: T[top] || 0, causes: srt(Cs).map(c => [c, Cs[c]]), fixes: srt(X).map(c => [c, X[c]]), parts: Object.values(PT).sort((a, b) => b.n - a.n), codes: srt(CD).map(c => [c, CD[c]]), trucks: new Set(E.map(e => e.vinF || e.id)).size, engs: [...new Set(E.map(e => e.eng).filter(x => x && x !== '—'))] }); }
+  function groupsList(){ let L = build().G.filter(g => ents(g.k).length); if(U.flt) L = L.filter(g => opensOf(g.k).length);
+    if(U.sort === 'recent') L.sort((a, b) => (ents(a.k)[0].date || '') < (ents(b.k)[0].date || '') ? 1 : -1); else if(U.sort === 'az') L.sort((a, b) => a.t.localeCompare(b.t)); else L.sort((a, b) => ents(b.k).length - ents(a.k).length || a.t.localeCompare(b.t));
+    return L; }
+  const flat = () => { const L = groupsList(); if(U.grp !== 'sys') return L.map(g => g.k); return Object.keys(SYS).flatMap(s => L.filter(g => g.sys === s)).map(g => g.k); };
+  const onHand = pn => { if(!pn) return null; const k = invPnKey(pn), it = invList().find(x => !x.kit && invPnKey(x.pn) === k); return it ? (+it.oh || 0) : null; };
+  /* the cheap checks first: the other ways it was fixed, cheapest first */
+  function stepsOf(k){ const s = stats(k); if(s.n < 3) return null; const V = {}; s.E.forEach(e => { const key = (e.fix || '').toLowerCase(); if(!key) return; const v = V[key] || (V[key] = { fix: e.fix, cause: e.cause, n: 0, cost: e.parts.reduce((a, p) => a + p[2] * p[3], 0), h: 0 }); v.n++; v.h += e.h; });
+    const L = Object.values(V); if(L.length < 2) return null; L.sort((a, b) => a.cost - b.cost);
+    return L.slice(0, 4).map(v => [v.cause ? 'Check: ' + v.cause : v.fix, v.fix + (v.cost ? ' — ' + usd(v.cost) : ' — labor only') + (v.n ? ' · about ' + h1(v.h / v.n) + ' h' : ''), v.n + ' of ' + s.n]); }
+  function tipOf(k){ const s = stats(k); if(s.n < 3) return ''; const cbE = s.E.filter(e => e.out === 'cb');
+    if(cbE.length) return `${cbE.length} of ${s.n} came back${cbE[0].cause ? ' — the first time it was “' + lc(cbE[0].cause) + '”' : ''}. Check what was missed before releasing it.`;
+    if(s.fixes.length > 1){ const m = s.fixes[s.fixes.length - 1]; return `${m[1]} of ${s.n} times it was “${lc(m[0])}”, not the usual fix.`; }
+    return ''; }

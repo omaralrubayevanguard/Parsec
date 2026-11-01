@@ -1,0 +1,187 @@
+  /* ---------- threads, views, counts ---------- */
+  const rd = () => PG.keepScroll(render);
+  const stOf = k => { const s = store(); return s.st[k] || (s.st[k] = {}); };
+  const quiet = () => { try{ AUTO_SILENT = true; scheduleSave(true); } finally { AUTO_SILENT = false; } };
+  const fromN = f => !f || f === 'Parsec' ? 'Parsec' : f;
+  const avOf = f => !f || f === 'Parsec' ? '<span class="tg-av ib-sys">P</span>' : PG.av(f);
+  const isPerson = f => !!f && f !== 'Parsec' && !!staffForTech(f);
+  const ROn = id => { const ro = id && getRO(id); return ro ? tgNum(ro) : ''; };
+  const custOf = id => { const ro = id && getRO(id); return ro ? (ro.customerName || '') : ''; };
+  function dd(at){ if(!at) return 0; const a = new Date(at); a.setHours(0, 0, 0, 0); const b = new Date(); b.setHours(0, 0, 0, 0); return Math.round((b - a) / 86400000); }
+  function threads(L){ const M = new Map(); L.forEach(n => { const k = tkey(n); if(!M.has(k)) M.set(k, []); M.get(k).push(n); });
+    return [...M.entries()].map(([key, I]) => { I.sort(order); const prim = I.find(n => live(n) && actionable(n)) || I[0]; return { key, I, prim, top: I[0], ask: I.some(n => live(n) && actionable(n)), un: I.some(n => n.st === 'new'), cov: prim.cov || null }; }); }
+  function mine(){ return itemsFor(meName()); }
+  function inView(){ return mine().filter(n => U.view === 'in' ? live(n) : U.view === 'snz' ? n.st === 'snz' : n.st === 'done'); }
+  function sentBy(me){
+    const s = store(), now = Date.now(), L = [];
+    s.items.forEach(n => { if(!techSame(n.from, me) || techSame(n.to, me) || now - new Date(n.at) > 7 * 86400000) return; const st = s.st[n.id] || {};
+      L.push({ id: n.id, to: n.to, ro: n.ro, t: n.t, at: n.nudged || n.at, sentAt: n.at, seen: st.read && st.read !== true ? st.read : st.read ? n.at : null, did: st.done ? (st.how ? st.how[0].toUpperCase() + st.how.slice(1) : 'Done') : null, didAt: st.done || null, note: true }); });
+    STATE.ros.forEach(ro => { const r = ro.route; if(!r || !r.by || !techSame(r.by, me) || r.state === 'returned' || now - new Date(r.at) > 3 * 86400000) return;
+      L.push({ id: 'rt:' + ro.id + ':' + r.at, to: rtWhoText(ro), ro: ro.id, t: `Sent ${tgNum(ro)} to ${RT_LBL[r.to] || r.to}`, at: r.at, sentAt: r.at, seen: r.state === 'accepted' ? (r.acceptedAt || r.at) : r.seen ? r.at : null, did: r.state === 'accepted' && r.acceptedBy ? 'Accepted' : null, didAt: r.acceptedAt || null, route: true }); });
+    return L.sort((a, b) => new Date(b.at) - new Date(a.at));
+  }
+  function groups(){
+    if(U.view === 'sent') return [['Sent by you', sentBy(meName()).map(x => ({ key: 's:' + x.id, sent: x }))]];
+    let T = threads(inView()).sort((a, b) => order(a.top, b.top));
+    if(U.view !== 'in') return [[U.view === 'snz' ? 'Snoozed' : 'Done', T]];
+    if(U.lf === 'un') T = T.filter(t => t.un); else if(U.lf === 'ask') T = T.filter(t => t.ask);
+    const C = T.filter(t => t.cov), A = T.filter(t => !t.cov && t.ask), R = T.filter(t => !t.cov && !t.ask);
+    return [[`Covering for ${C.length ? PG.first(C[0].cov) : ''}`, C], ['Needs you', A], ['Today', R.filter(t => dd(t.top.at) <= 0)], ['Yesterday', R.filter(t => dd(t.top.at) === 1)], ['Earlier', R.filter(t => dd(t.top.at) > 1)]].filter(g => g[1].length);
+  }
+  const flat = () => groups().flatMap(g => g[1]);
+  const curT = () => U.sel === 'SUM' ? null : flat().find(t => t.key === U.sel && t.I) || null;
+  function counts(){ const me = meName(), M = mine(), own = M.filter(n => !n.cov);
+    return { ask: threads(own.filter(live)).filter(t => t.ask).length, un: own.filter(n => n.st === 'new').length, snz: own.filter(n => n.st === 'snz').length, done: own.filter(n => n.st === 'done').length, inb: threads(M.filter(live)).length, sent: sentBy(me).length }; }
+  /* asks past their goal: a reminder at the goal; a note sent to you reaches your backup at one and a half times it */
+  function esc8(n){ if(!actionable(n) || !live(n)) return null; const g = goalMin((staffForTech(n.to) || {}).role), t = new Date(n.at).getTime(), age = (Date.now() - t) / 60000; if(!(age >= g)) return null;
+    const b = backupOf(n.to), sf = staffForTech(b); return { rem: clk(t + g * 60000), bk: clk(t + g * 90000), gone: !n.derived && age >= g * 1.5, who: b, role: sf ? sf.role : '', goal: g, derived: !!n.derived }; }
+  /* ---------- summary for the morning ---------- */
+  function sumOf(me){
+    const s = store(), M = mine().filter(n => live(n) && !n.cov), sf = staffForTech(me), tech = !sf || sf.role === 'Technician';
+    const outs = shiftList().filter(x => x.out && (!x.by || techSame(x.by, me)) && localDay(x.out) !== todayStr()).map(x => x.out).sort(), since = outs.pop() || new Date(Date.now() - 86400000).toISOString();
+    const due = STATE.ros.filter(ro => !ro.shop && ro.id !== SHOP_RO_ID && !roIsDone(ro) && ro.promisedAt && localDay(ro.promisedAt) === todayStr() && (!tech || techSame(ro.assignedTech, me))).sort((a, b) => new Date(a.promisedAt) - new Date(b.promisedAt));
+    const run = STATE.punches.filter(p => !p.stop && localDay(p.start) !== todayStr() && techSame(punchWho(p), me));
+    const sh = shiftList().filter(x => !x.out && (!x.by || techSame(x.by, me)) && localDay(x.in) === todayStr())[0];
+    const pass = s.pass[me] && Date.now() - new Date(s.pass[me].at) < 24 * 3600000 ? s.pass[me] : null;
+    return { since, at: sh ? sh.in : null, A: M.filter(actionable), M, R: M.filter(n => n.k === 'rem'), due, run, pass };
+  }
+  function sumShows(me){ const s = store(), p = s.prefs[me] || {}; if(p.sum === false || U.view !== 'in') return false; if((s.sumx || {})[me] === todayStr()) return false; const S0 = sumOf(me); return !!(S0.M.length || S0.due.length || S0.run.length || S0.pass); }
+  /* ---------- drawing ---------- */
+  function view(){
+    const me = meName();
+    if(U._me !== me){ U._me = me; U.view = 'in'; U.lf = 'all'; U.sel = null; U.pop = null; U.bulk = false; U.bs = {}; U.reply = ''; flush(); }
+    const c = counts(), L = flat();
+    if(U.sel !== 'SUM' && !(U.sel && U.sel.startsWith('s:') && U.view === 'sent') && !L.some(t => t.key === U.sel)){ U.sel = sumShows(me) && U.view === 'in' ? 'SUM' : (L[0] ? L[0].key : null); }
+    if(U.sel === 'SUM' && !sumShows(me)) U.sel = L[0] ? L[0].key : null;
+    const T = curT(); let ch = 0; if(T && !U._hold) T.I.forEach(n => { if(n.st === 'new'){ const st = stOf(n.key); st.read = nowIso(); ch++; } });
+    remember(mine()); if(ch){ flush(); setTimeout(quiet, 0); }
+    return `<div class="tg ib" data-pg="inbox">${head(counts())}<div class="tg-body">${list(c)}<div class="tg-main">${detail()}</div>${pop()}</div></div>`;
+  }
+  function head(c){
+    const M = PG.me(), s = store(), aw = s.away[M.name] && (!s.away[M.name].until || new Date(s.away[M.name].until) > Date.now()) ? s.away[M.name] : null;
+    const vs = [['in', 'inbox', 'Inbox', c.inb], ['snz', 'clock', 'Snoozed', c.snz], ['done', 'check', 'Done', 0], ['sent', 'send', 'Sent', 0]];
+    return `<header class="tg-head"><h1 class="tg-h1">Inbox</h1><span class="tg-facts"><span class="tg-hf" style="cursor:default">${PG.av(M.name)}${esc(M.name)}<span class="ib-role">${esc(M.role === 'Admin' ? 'Every page' : M.role)}</span></span><i>·</i>${aw ? `<button class="tg-hf w" data-a="pop" data-p="away"><b>Away</b>until ${esc(PG.whenL(aw.until))}</button><i>·</i>` : ''}${c.ask ? `<button class="tg-hf w" data-a="lf" data-v="ask" data-top="1"><b>${c.ask}</b>need you</button><i>·</i>` : ''}<button class="tg-hf" data-a="lf" data-v="un" data-top="1"><b>${c.un}</b>unread</button></span>
+    <div class="tg-views">${vs.map((x, i) => `<button class="${U.view === x[0] ? 'on' : ''}" data-a="view" data-v="${x[0]}" title="${x[2]} (${i + 1})">${ic(x[1], 14)}${x[2]}${x[3] ? `<span class="ib-vn">${x[3]}</span>` : ''}</button>`).join('')}</div><span class="tg-hsep"></span>
+    <button class="btn btn-sm${U.pop && U.pop.type === 'eos' ? ' on' : ''}" data-a="pop" data-p="eos" title="Pass on what’s open" style="height:30px">${ic('moon', 14)}End of shift</button><button class="btn ib${aw ? ' on' : ''}" data-a="pop" data-p="away" title="Away — who covers your asks">${ic('exit', 16)}</button><button class="btn ib tg-srch-b" data-a="pop" data-p="srch" title="Search your inbox (/)">${ic('search', 16)}</button><button class="btn ib" data-a="pop" data-p="set" title="What reaches you">${ic('gear', 16)}</button></header>`;
+  }
+  function badgeOf(t){ const n = t.prim, e = esc8(n), s = store(), aw = s.away[n.to];
+    if(t.cov) return `<span class="ib-k cov">for ${esc(PG.first(t.cov))}</span>`;
+    if(aw && aw.cover && actionable(n) && live(n) && !techSame(n.to, meName())) return `<span class="ib-k cov">${esc(PG.first(aw.cover))} has it too</span>`;
+    if(e) return `<span class="ib-k late">${e.gone ? 'with ' + esc(PG.first(e.who)) + ' too' : 'overdue'}</span>`;
+    if(n.k !== 'fyi' && n.st !== 'done') return `<span class="ib-k ${n.k}">${KIND[n.k]}</span>`;
+    if(n.auto) return '<span class="ib-k auto">cleared itself</span>';
+    return ''; }
+  function item(t){ if(t.sent) return sentItem(t.sent);
+    const n = t.prim, on = t.key === U.sel, un = t.un, many = t.I.filter(x => U.view === 'in' ? live(x) : true).length, src = SRC[n.src] || SRC.inbox;
+    const names = [...new Set(t.I.map(x => PG.first(fromN(x.from))))].slice(0, 3).join(', ');
+    return `<div class="tg-it ib-it${on ? ' on' : ''}${on && U.kb ? ' kb' : ''}${un ? ' un' : ''}${U.bulk ? ' bk' : ''}" data-a="sel" data-id="${esc(t.key)}">${U.bulk ? `<span class="ib-cb${U.bs[t.key] ? ' on' : ''}">${U.bs[t.key] ? ic('check', 11) : ''}</span>` : un ? '<span class="tg-dot"></span>' : ''}<span class="tg-gi">${ic(src[1], 15)}</span><span class="tg-t"><b>${esc(n.t)}</b>${many > 1 ? `<span class="ib-n">${many}</span>` : ''}</span><span class="tg-w">${n.ro && getRO(n.ro) ? `<span class="tg-no">${esc(ROn(n.ro))}</span> ${esc(custOf(n.ro))} · ` : ''}${esc(names)}</span><span class="ib-m"><small>${n.st === 'snz' ? ic('clock', 11) + esc(n.snzT || '') : esc(PG.ago(t.top.at))}</small>${badgeOf(t)}</span></div>`; }
+  function sentItem(x){ const on = 's:' + x.id === U.sel;
+    return `<div class="tg-it ib-it${on ? ' on' : ''}" data-a="sel" data-id="s:${esc(x.id)}"><span class="tg-gi">${PG.av(x.to, 'sm')}</span><span class="tg-t"><b>${esc(x.t)}</b></span><span class="tg-w">${x.ro && getRO(x.ro) ? `<span class="tg-no">${esc(ROn(x.ro))}</span> ${esc(custOf(x.ro))} · ` : ''}to ${esc(PG.first(x.to))}</span><span class="ib-m"><small>${esc(PG.ago(x.sentAt))}</small>${x.did ? `<span class="ib-k auto">${esc(x.did.split(' ')[0])}</span>` : x.seen ? '<span class="ib-k men">seen</span>' : '<span class="ib-k late">not seen</span>'}</span></div>`; }
+  function list(c){
+    const me = meName(), G = groups(), s = store(), aw = s.away[me] && (!s.away[me].until || new Date(s.away[me].until) > Date.now()) ? s.away[me] : null;
+    const sm = U.view === 'in' && sumShows(me) ? sumOf(me) : null;
+    const top = U.view === 'in' ? `${aw ? `<div class="ib-band away">${ic('exit', 14)}<span><b>Away until ${esc(PG.whenL(aw.until))}</b> — ${esc(PG.first(aw.cover))} has your asks. Everything else waits for you.</span><button data-a="awayoff">Back now</button></div>` : ''}${sm ? `<div class="tg-it ib-it ib-sum${U.sel === 'SUM' ? ' on' : ''}" data-a="sel" data-id="SUM"><span class="tg-gi">${ic('sun', 15)}</span><span class="tg-t"><b>Morning summary</b></span><span class="tg-w">Since ${esc(PG.whenL(sm.since))}</span><span class="ib-m"><small>${sm.at ? esc(PG.clk(sm.at)) : 'today'}</small></span></div>` : ''}` : '';
+    const nb = Object.values(U.bs).filter(Boolean).length;
+    const bulkBar = U.bulk ? `<div class="ib-bulk"><b>${nb} picked</b><span class="sp"></span><button class="btn btn-sm" data-a="bk" data-v="read">Mark read</button><button class="btn btn-sm" data-a="bk" data-v="snz">Snooze to tomorrow</button><button class="btn btn-sm btn-primary" data-a="bk" data-v="done">${ic('check', 13)}Done</button><button class="btn btn-sm ib" data-a="bulk" title="Stop picking">${ic('x', 13)}</button></div>` : '';
+    const v = U.view, body = G.length ? G.map(([g, L]) => `<div class="tg-grp">${esc(g)}<span>${L.length}</span></div>` + L.map(item).join('')).join('')
+      : `<div class="tg-empty"><span class="tg-ring0">${ic(v === 'in' ? 'check' : v === 'snz' ? 'clock' : v === 'sent' ? 'send' : 'inbox', 22)}</span><h3>${v === 'in' ? (U.lf === 'all' ? 'You’re all caught up' : 'Nothing here') : v === 'snz' ? 'Nothing snoozed' : v === 'sent' ? 'Nothing sent this week' : 'Nothing done this week'}</h3><p>${v === 'in' ? 'Hand-offs, asks and anything sent to you land here. Shop-wide activity stays on the Activity log.' : v === 'snz' ? 'Snoozed things come back at the time — or when the thing happens.' : v === 'sent' ? 'What you hand off shows here, with when it was seen.' : 'What you finish moves here for a week.'}</p></div>`;
+    return `<section class="tg-list"><div class="tg-lh">${{ in: 'Inbox', snz: 'Snoozed', done: 'Done', sent: 'Sent' }[v]}<span class="n">${G.reduce((a, g) => a + g[1].length, 0)}</span>${v === 'in' ? `<span class="sp" style="flex:1"></span><button class="btn btn-sm tg-gh${U.bulk ? ' on' : ''}" data-a="bulk">${ic('check', 13)}${U.bulk ? 'Picking' : 'Pick several'}</button>` : ''}</div>${v === 'in' ? `<div class="ib-lh2"><span class="tg-seg3">${[['all', 'All'], ['un', 'Unread · ' + c.un], ['ask', 'Needs you · ' + c.ask]].map(x => `<button class="${U.lf === x[0] ? 'on' : ''}" data-a="lf" data-v="${x[0]}">${x[1]}</button>`).join('')}</span></div>` : ''}${bulkBar}<div class="tg-scroll">${top}${body}</div><div class="tg-keys"><span>${kbd('J')}${kbd('K')}move</span><span>${kbd('↵')}do it</span><span>${kbd('E')}done</span><span>${kbd('S')}snooze</span><span>${kbd('X')}pick</span><span>${kbd('R')}reply</span></div></section>`;
+  }
+  function roStrip(id){ const ro = id && getRO(id); if(!ro) return '';
+    let hold = ''; try{ hold = rtHolderName(rtHolder(ro), ro); }catch(e){ hold = ro.assignedTech || ''; }
+    const st = roStatus(ro).status || '', days = ro.dateOpened ? dd(ro.dateOpened) : 0, truck = [ro.unitNumber ? '#' + ro.unitNumber : '', ro.year, ro.make, ro.model].filter(Boolean).join(' ');
+    return `<div class="ib-ro" data-a="open" data-ro="${esc(ro.id)}" title="Open ${esc(roTag(ro))}"><span class="tg-no">${esc(tgNum(ro))}</span><b>${esc(ro.customerName || '—')}</b><span class="tr">${esc(truck)}</span><span class="sp"></span>${st ? pgSt('ro', st, { cls: 'sm st', size: 12 }) : ''}${hold ? `<span class="who">${PG.av(hold)}${esc(PG.first(hold))} has it</span>` : ''}<span class="dd">${days ? days + ' d open' : 'in today'}</span>${ro.location ? `<span class="sp2">${esc(ro.location)}</span>` : ''}${ic('chevR', 14)}</div>`; }
+  /* what each kind of item lets you do */
+  const VERB = { move: ['It’s in a bay', 'do', 'Okay — the tech can start.'] };
+  function actsOf(n){ let A = (n.acts || []).map(a => typeof a === 'string' ? VERB[a] : a).filter(Boolean);
+    if(!A.length){ if(n.k === 'ask' || n.k === 'men') A.push(['Done', 'do', 'Done — it’s in Done for a week.']); if(isPerson(n.from) && n.k === 'men') A.push(['Reply', 'reply']); if(n.ro) A.push(['Open RO', 'open']); }
+    if(n.ro && (n.k === 'ask' || n.k === 'men') && !A.some(a => a[1] === 'open')) A.push(['Open RO', 'open']);
+    return A; }
+  function techFree(){ return rtTechs().map(t => { const p = STATE.punches.filter(x => !x.stop && techSame(punchWho(x), t))[0], ro = p && !isShopPunch(p) && getRO(p.roId);
+    const on = shiftList().some(x => !x.out && (!x.by || techSame(x.by, t)) && localDay(x.in) === todayStr());
+    return [t, ro ? 'on ' + tgNum(ro) : p ? 'on shop time' : on ? 'free now' : 'not clocked in', !!ro]; }); }
+  function msg(n, big){
+    const fr = n.from, e = esc8(n), pick = U.pick[n.key], A = live(n) ? actsOf(n) : [];
+    const pk = n.pick && live(n) ? `<div class="ib-pick">${techFree().map(([t, s, busy]) => `<button class="ib-tc${pick === t ? ' on' : ''}${busy ? ' busy' : ''}" data-a="pick" data-id="${esc(n.key)}" data-t="${esc(t)}">${PG.av(t)}<span class="c"><b>${esc(PG.first(t))}</b><small>${esc(s)}</small></span></button>`).join('')}</div>` : '';
+    const acts = A.length ? `<div class="ib-acts">${A.map((a, i) => { const dis = a[1] === 'pick' && !pick; return `<button class="btn btn-sm${i === 0 && big ? ' btn-primary' : ''}" data-a="act" data-id="${esc(n.key)}" data-i="${i}"${dis ? ' disabled' : ''}>${a[1] === 'pick' && pick ? 'Send to ' + esc(PG.first(pick)) : esc(a[0])}${i === 0 && big ? kbd('↵') : ''}</button>`; }).join('')}${big ? `<span class="hint">${n.derived && n.k === 'ask' ? 'It clears itself if this gets done on its own page.' : n.k === 'men' && isPerson(fr) ? esc(PG.first(fr)) + ' sees your answer in their inbox.' : ''}</span>` : `<button class="btn btn-sm tg-gh" data-a="done1" data-id="${esc(n.key)}">${ic('check', 13)}Done</button>`}</div>` : '';
+    const eb = e && big ? `<div class="ib-esc">${ic('clock', 13)}<span>Past the ${PG.h1(e.goal / 60).replace(/\.0$/, '')} h goal${e.derived ? '' : ` — reminded at ${e.rem}. ${e.gone ? `It went to ${esc(e.who)}${e.role ? ' (' + esc(e.role) + ')' : ''} too at ${e.bk}.` : e.who ? `If it’s still here at ${e.bk} it goes to ${esc(e.who)}${e.role ? ' (' + esc(e.role) + ')' : ''} too.` : ''}`}</span></div>` : '';
+    const parts = n.parts ? `<div class="ib-parts">${n.parts.map(p => `<div><b>${esc(p[0])}</b><span class="m">${esc(p[1] || '')}</span><span class="${/none/.test(p[2] || '') ? 'w' : ''}">${esc(p[2] || '')}</span></div>`).join('')}</div>` : '';
+    const lbl = n.cov ? 'For ' + esc(PG.first(n.cov)) + ' — you’re covering' : n.k === 'men' ? '@ ' + esc(PG.first(meName())) : KIND[n.k];
+    return `<div class="ib-msg ${n.k}${big ? '' : ' sm'}">${big ? '' : `<div class="ib-mh">${avOf(fr)}<b>${esc(n.t)}</b><small>${esc(fromN(fr))} · ${esc(PG.ago(n.at))}</small></div>`}<span class="k">${lbl}</span>${eb}${n.b ? `<p>${esc(n.b)}</p>` : ''}${n.q ? `<blockquote>${avOf(fr)}<span>“${esc(n.q)}”</span></blockquote>` : ''}${parts}${pk}${acts}</div>`;
+  }
+  const HO = { send: h => `Sent to ${h.to === 'tech' ? (h.who || 'a technician') : RT_LBL[h.to] || h.to}${h.note ? ' — ' + h.note : ''}`, auto: h => `Stage rule sent it to ${RT_LBL[h.to] || h.to}`, accept: h => `Accepted (${RT_LBL[h.to] || h.to})`, return: h => `Sent back${h.note ? ' — ' + h.note : ''}`, got: () => 'Got it back' };
+  function feedOf(t){
+    const me = meName(), F = [];
+    t.I.forEach(x => { F.push([fromN(x.from), x.at, x.t]); (stOf(x.key).sent || []).forEach(r => F.push([r.by || me, r.at, r.t])); });
+    const ro = t.prim.ro && getRO(t.prim.ro); if(ro) (ro.handoffs || []).slice(-8).forEach(h => { const f = HO[h.kind]; if(f) F.push([h.by || 'Parsec', h.at, f(h)]); });
+    return F.filter((f, i, A) => A.findIndex(g => g[0] === f[0] && g[2] === f[2]) === i).sort((a, b) => new Date(b[1]) - new Date(a[1])).slice(0, 7);
+  }
+  function detail(){
+    if(U.sel === 'SUM') return sumPane();
+    if(U.sel && U.sel.startsWith('s:')){ const x = sentBy(meName()).find(y => 's:' + y.id === U.sel); if(x) return sentPane(x); }
+    const t = curT(); if(!t) return `<div class="tg-blank"><div class="tg-empty"><span class="tg-ring0">${ic('inbox', 22)}</span><h3>Nothing open</h3><p>Pick something on the left.</p></div></div>`;
+    const n = t.prim, fr = n.from, others = t.I.filter(x => x !== n && (U.view === 'in' ? live(x) : true)), isLive = live(n), src = SRC[n.src] || SRC.inbox, nl = t.I.filter(live).length;
+    const state = n.st === 'done' ? `<div class="ib-state">${ic('check', 14)}Done${n.how ? ' — ' + esc(n.how) : ''}<span class="sp"></span><button class="btn btn-sm tg-gh" data-a="back" data-id="${esc(n.key)}">Back to the inbox</button></div>` : n.st === 'snz' ? `<div class="ib-state">${ic('clock', 14)}Snoozed — ${esc(n.snzT || '')}<span class="sp"></span><button class="btn btn-sm tg-gh" data-a="back" data-id="${esc(n.key)}">Unsnooze</button></div>` : '';
+    const reply = isPerson(fr) && !techSame(fr, meName()) ? `<div class="ib-reply">${PG.av(meName())}<input data-in="reply" placeholder="Reply to ${esc(PG.first(fr))} — @ someone to bring them in" value="${esc(U.reply)}" autocomplete="off"><button class="btn btn-sm btn-primary" data-a="send"${U.reply.trim() ? '' : ' disabled'}>${ic('send', 13)}Send</button></div>` : '';
+    const openB = n.ro && getRO(n.ro) ? `<button class="btn btn-sm" data-a="open" data-ro="${esc(n.ro)}">${ic('ros', 14)}Open RO</button>` : src[1] !== 'inbox' && navAllowed(src[1]) ? `<button class="btn btn-sm" data-a="gopage" data-v="${src[1]}">${ic(src[1], 14)}Open ${esc(src[0])}</button>` : '';
+    return `<div class="ib-pane"><div class="tg-top"><div class="r1"><span class="ib-src">${ic(src[1], 13)}${esc(src[0])}</span><span class="ib-from">${isPerson(fr) ? PG.av(fr) : ''}${esc(fromN(fr))} · ${esc(PG.whenL(n.at))}</span><span class="sp"></span>${isLive ? `<button class="btn btn-sm${U.pop && U.pop.type === 'snz' ? ' on' : ''}" data-a="pop" data-p="snz" title="Snooze (S)">${ic('clock', 14)}Snooze</button><button class="btn btn-sm" data-a="done" title="Done (E)">${ic('check', 14)}Done${nl > 1 ? ' · all ' + nl : ''}</button>` : ''}${openB}</div><h2>${esc(n.t)}</h2>${roStrip(n.ro)}</div>
+     <div class="ib-pad">${state}${msg(n, true)}${others.length ? `<div class="ib-also"><div class="ib-ch"><b>Also on this RO</b><small>${others.length} more — one thread per truck</small></div>${others.map(x => msg(x, false)).join('')}</div>` : ''}
+      <div class="ib-card"><div class="ib-ch"><b>${n.ro ? 'On this RO' : 'Where it came from'}</b><small>${n.ro ? 'newest first' : ''}</small></div><div class="tg-feed">${feedOf(t).map(f => `<div class="tg-fe">${avOf(f[0]).replace('tg-av', 'gi tg-av')}<b>${esc(f[0])}</b><time>${esc(PG.ago(f[1]))}</time><p>${esc(f[2])}</p></div>`).join('')}</div></div>${reply}</div></div>`;
+  }
+  function sumPane(){ const me = meName(), s = sumOf(me);
+    return `<div class="ib-pane"><div class="tg-top"><div class="r1"><span class="ib-src">${ic('sun', 13)}Morning summary</span><span>${s.at ? 'Clocked in ' + esc(PG.clk(s.at)) + ' · ' : ''}since ${esc(PG.whenL(s.since))}</span><span class="sp"></span><button class="btn btn-sm" data-a="sumx">${ic('check', 14)}Got it</button></div><h2>Good ${new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 17 ? 'afternoon' : 'evening'}, ${esc(PG.first(me))}</h2></div>
+     <div class="ib-pad"><div class="ib-sumg"><div><b>${s.A.length}</b><small>need you</small></div><div><b>${s.M.length}</b><small>in your inbox</small></div><div><b>${s.R.length}</b><small>reminder${s.R.length === 1 ? '' : 's'}</small></div><div><b>${s.due.length}</b><small>promised today</small></div></div>
+      ${s.A.length ? `<div class="ib-card"><div class="ib-ch"><b>Needs you first</b></div>${s.A.slice().sort(order).slice(0, 8).map(n => `<div class="ib-sl" data-a="sel" data-id="${esc(tkey(n))}">${ic((SRC[n.src] || SRC.inbox)[1], 14)}<span>${esc(n.t)}</span><small>${n.ro ? esc(ROn(n.ro)) + ' · ' : ''}${esc(fromN(n.from))}</small></div>`).join('')}</div>` : ''}
+      ${s.due.length || s.run.length ? `<div class="ib-card"><div class="ib-ch"><b>Due today</b></div>${s.due.map(ro => `<div class="ib-sl" data-a="open" data-ro="${esc(ro.id)}"><span class="tg-no">${esc(tgNum(ro))}</span><span>${esc(ro.customerName || '')} — promised ${esc(PG.clk(ro.promisedAt))}</span><small>${esc(roStatus(ro).status || '')}</small></div>`).join('')}${s.run.map(p => `<div class="ib-sl w" data-a="tlday" data-d="${esc(localDay(p.start))}">${ic('play', 14)}<span>Clock still running — ${esc(roTag(getRO(p.roId)))} since ${esc(PG.whenL(p.start))}</span></div>`).join('')}</div>` : ''}
+      ${s.pass ? `<div class="ib-card"><div class="ib-ch"><b>${techSame(s.pass.from, me) ? 'Your note from last shift' : 'Passed on to you'}</b><small>end of shift</small></div><div class="ib-sl">${ic('moon', 14)}<span>${techSame(s.pass.from, me) ? '' : esc(PG.first(s.pass.from)) + ' passed on ' + s.pass.n + ' thing' + (s.pass.n === 1 ? '' : 's') + (s.pass.note ? ': ' : '.')}${s.pass.note ? '“' + esc(s.pass.note) + '”' : ''}</span></div></div>` : ''}</div></div>`; }
+  function sentPane(x){
+    const steps = [['Sent', x.sentAt, true], ['Seen', x.seen, !!x.seen], [x.did || 'Done', x.didAt, !!x.did]];
+    const nudge = !x.seen && x.note ? `<button class="btn btn-sm btn-primary" data-a="nudge" data-id="${esc(x.id)}">${ic('bell', 14)}Nudge ${esc(PG.first(x.to))}</button>` : '';
+    return `<div class="ib-pane"><div class="tg-top"><div class="r1"><span class="ib-src">${ic('send', 13)}Sent</span><span class="ib-from">${PG.av(x.to)}to ${esc(x.to)} · ${esc(PG.whenL(x.sentAt))}</span><span class="sp"></span>${nudge}${x.ro && getRO(x.ro) ? `<button class="btn btn-sm" data-a="open" data-ro="${esc(x.ro)}">${ic('ros', 14)}Open RO</button>` : ''}</div><h2>${esc(x.t)}</h2>${roStrip(x.ro)}</div>
+     <div class="ib-pad"><div class="ib-seen">${steps.map((s, i) => `<div class="st${s[2] ? ' on' : ''}"><span class="d">${s[2] ? ic('check', 12) : i + 1}</span><b>${esc(s[0])}</b><small>${s[2] && s[1] ? esc(PG.clk(s[1])) : i === 1 ? 'not yet' : '—'}</small></div>`).join('<span class="ln"></span>')}</div>
+      <div class="ib-msg fyi"><span class="k">What ${esc(PG.first(x.to))} sees</span><p>${!x.seen ? `${esc(PG.first(x.to))} hasn’t opened it yet.${x.note ? ' Nudge to bring it back to the top of their inbox.' : ''}` : x.did ? `${esc(PG.first(x.to))} saw it at ${esc(PG.clk(x.seen))} — ${esc(x.did.toLowerCase())}.` : `${esc(PG.first(x.to))} saw it at ${esc(PG.clk(x.seen))}. Nothing done on it yet.`}</p></div></div></div>`;
+  }
+  /* ---------- popovers ---------- */
+  function at(h, m, addDays, dow){ const d = new Date(); if(dow != null){ const k = (dow - d.getDay() + 7) % 7 || 7; d.setDate(d.getDate() + k); } else if(addDays) d.setDate(d.getDate() + addDays); d.setHours(h, m || 0, 0, 0); return d.toISOString(); }
+  function snzOpts(t){
+    const n = t.prim, hr = new Date().getHours(), L = [];
+    L.push(hr < 15 ? ['Later today', '4:00 pm', at(16, 0), 'until 4:00 pm today'] : ['In an hour', PG.clk(Date.now() + 3600000), new Date(Date.now() + 3600000).toISOString(), 'for an hour']);
+    L.push(['Tomorrow', '7:00 am', at(7, 0, 1), 'until tomorrow, 7:00 am']);
+    L.push(['Monday', '7:00 am', at(7, 0, 0, 1), 'until Monday, 7:00 am']);
+    const E = [], ro = n.ro && getRO(n.ro);
+    if(ro){ const out = raLive(ro).flatMap(op => opRealParts(op)).filter(p => !pxPartIn(p)), eta = out.map(p => p.eta).filter(Boolean).sort()[0];
+      if(out.length) E.push(['Until the parts arrive', 'parts', `until the parts for ${tgNum(ro)} are in` + (eta ? ' — ETA ' + PG.day(eta + 'T12:00:00') : ''), eta ? 'ETA ' + PG.day(eta + 'T12:00:00').split(',')[0] : '']);
+      E.push(['Until the customer replies', 'cust', `until ${ro.customerName || 'the customer'} replies`, '']);
+      E.push(['Until the RO moves', 'moves', `until ${tgNum(ro)} moves to its next stage`, '']); }
+    return { L, E };
+  }
+  function pop(){
+    const p = U.pop; if(!p) return ''; const me = meName(), s = store();
+    const hd = (t, sub) => `<div class="tg-ph"><b>${t}</b>${sub ? `<span class="cu">${sub}</span>` : ''}<button class="btn btn-sm ib" data-a="popx">${ic('x', 14)}</button></div>`;
+    if(p.type === 'snz'){ const t = curT(); if(!t) return ''; const O = snzOpts(t);
+      return `<div class="tg-pop menu ib-pop-w"><div class="tg-ph"><b>Snooze until</b></div>${O.L.map((x, i) => `<button class="tg-mi" data-a="snz" data-i="${i}">${kbd(i + 1)}${x[0]}<span class="meta">${x[1]}</span></button>`).join('')}${O.E.length ? `<div class="ib-psep">or until something happens</div>${O.E.map((x, i) => `<button class="tg-mi" data-a="snz" data-e="${i}">${kbd(i + 4)}${x[0]}<span class="meta">${esc(x[3])}</span></button>`).join('')}` : ''}<div class="tg-pft">${ic('info', 12)}It comes back to the top of your inbox.</div></div>`; }
+    if(p.type === 'set'){ const pr = s.prefs[me] || {};
+      return `<div class="tg-pop xf ib-pop-w">${hd('What reaches you', esc(me))}
+      <div class="ib-sr lk"><span>${ic('lock', 14)}Hand-offs, asks and @ mentions</span><span class="ib-always">Always</span></div>
+      <div class="ib-ctx">Asks can’t be turned off — they always reach you. Choose which pages can send you reminders and things to know.</div>
+      ${Object.keys(SRC).filter(k => k !== 'inbox').map(k => `<div class="ib-sr"><span>${ic(SRC[k][1], 14)}${SRC[k][0]}</span><span class="tg-seg3">${[['inbox', 'Inbox'], ['off', 'Off']].map(x => `<button class="${(pr[k] || 'inbox') === x[0] ? 'on' : ''}" data-a="setv" data-k="${k}" data-v="${x[0]}">${x[1]}</button>`).join('')}</span></div>`).join('')}
+      <label class="ib-ck"><input type="checkbox" data-in="sum" data-ch="1" ${pr.sum === false ? '' : 'checked'}>Morning summary — at the top of the inbox at clock-in</label>
+      <div class="tg-pft">${ic('info', 12)}This is only what’s sent to you. Shop-wide activity stays on the Activity log.</div></div>`; }
+    if(p.type === 'away'){ const aw = s.away[me] || {}, sel = p.cover || aw.cover || backupOf(me), un = p.until || 'tmr';
+      const C = [backupOf(me), PG.person('Foreman'), PG.person('Manager'), PG.person('Service writer')].filter((v, i, A) => v && !techSame(v, me) && A.indexOf(v) === i).slice(0, 4);
+      return `<div class="tg-pop xf ib-pop-w">${hd('Away', 'who covers your asks')}<div class="ib-ctx">While you’re away your asks show up in your cover’s inbox too. Things to know and reminders wait for you.</div>
+        <span class="tg-lbl top">Until</span><div class="tg-r" style="margin-bottom:10px">${[['eod', 'End of today'], ['tmr', 'Tomorrow, 7:00 am'], ['mon', 'Monday, 7:00 am']].map(x => `<button class="tg-chip${un === x[0] ? ' on' : ''}" data-a="awu" data-v="${x[0]}">${x[1]}</button>`).join('')}</div>
+        <span class="tg-lbl top">Covering</span><div class="ib-pick" style="grid-template-columns:repeat(2,minmax(0,1fr))">${C.map(t => { const sf = staffForTech(t); return `<button class="ib-tc${techSame(sel, t) ? ' on' : ''}" data-a="awc" data-t="${esc(t)}">${PG.av(t)}<span class="c"><b>${esc(t)}</b><small>${t === backupOf(me) ? 'your usual backup' : esc(sf ? sf.role.toLowerCase() : '')}</small></span></button>`; }).join('') || '<div class="ib-none">Add people on the Settings page to pick a cover.</div>'}</div>
+        <div class="tg-acts">${s.away[me] ? '<button class="btn btn-sm tg-gh" data-a="awayoff">I’m back</button>' : ''}<button class="btn btn-sm btn-primary" data-a="awayon"${C.length ? '' : ' disabled'}>${s.away[me] ? 'Update' : 'Turn on'}${kbd('↵')}</button></div></div>`; }
+    if(p.type === 'eos'){ const A = mine().filter(n => !n.cov && live(n) && actionable(n)).sort(order), sel = p.sel || (p.sel = Object.fromEntries(A.map(n => [n.key, true]))), to = p.to || (p.to = backupOf(me) || 'ME');
+      const T = [backupOf(me), PG.person('Manager'), 'ME'].filter((v, i, A2) => v && !techSame(v, me) && A2.indexOf(v) === i);
+      return `<div class="tg-pop xf ib-pop-w">${hd('End of shift', 'pass on what’s open')}${A.length ? `<span class="tg-lbl top">Still open</span>${A.map(n => `<label class="ib-eo" data-a="eosk" data-id="${esc(n.key)}"><input type="checkbox" ${sel[n.key] ? 'checked' : ''} tabindex="-1"><span><b>${esc(n.t)}</b><small>${n.ro ? esc(ROn(n.ro)) + ' · ' : ''}${esc(fromN(n.from))} · ${esc(PG.ago(n.at))}</small></span></label>`).join('')}` : '<div class="ib-none">Nothing open — a clean hand-off.</div>'}
+        <span class="tg-lbl top" style="margin-top:10px">To</span><div class="tg-r" style="margin-bottom:8px">${T.map(t => `<button class="tg-chip${to === t ? ' on' : ''}" data-a="eost" data-v="${esc(t)}">${t === 'ME' ? 'Keep them for tomorrow' : esc(t)}</button>`).join('')}</div>
+        <label class="ib-f"><span>Note</span><textarea data-in="eon" rows="2" placeholder="What the next person should know">${esc(p.note || '')}</textarea></label>
+        <div class="tg-acts"><span class="hint">${to === 'ME' ? 'They stay in your inbox; the note goes in your morning summary.' : `${esc(PG.first(to))} gets them in the inbox, with your note in the morning summary.`}</span><button class="btn btn-sm btn-primary" data-a="eosgo">Pass it on${kbd('↵')}</button></div></div>`; }
+    if(p.type === 'ret'){ const n = mine().find(x => x.key === p.key); if(!n) return '';
+      return `<div class="tg-pop xf ib-pop-w">${hd('Send back', esc(ROn(n.ro)))}<div class="ib-ctx">It goes back to whoever sent it, with your reason.</div><div class="tg-r" style="margin-bottom:8px">${['Not ready yet', 'Wrong desk', 'Missing information', 'Needs approval first'].map(x => `<button class="tg-chip${p.why === x ? ' on' : ''}" data-a="retw" data-v="${esc(x)}">${x}</button>`).join('')}</div><label class="ib-f"><span>Why</span><textarea data-in="retn" rows="2" placeholder="What they need to do first">${esc(p.note || '')}</textarea></label><div class="tg-acts"><button class="btn btn-sm btn-primary" data-a="retgo"${(p.why || (p.note || '').trim()) ? '' : ' disabled'}>Send back${kbd('↵')}</button></div></div>`; }
+    if(p.type === 'srch'){ const q = (p.q || '').trim().toLowerCase(), L = q ? mine().filter(n => (n.t + ' ' + (n.b || '') + ' ' + (n.q || '') + ' ' + ROn(n.ro) + ' ' + custOf(n.ro) + ' ' + fromN(n.from)).toLowerCase().includes(q)).sort(order) : [];
+      return `<div class="tg-pop menu ib-pop-w"><div class="ib-srin">${ic('search', 15)}<input data-in="q" placeholder="RO, customer, person or words" value="${esc(p.q || '')}" autocomplete="off"></div>${q ? (L.length ? L.slice(0, 7).map((n, i) => `<button class="ib-srr${i === 0 ? ' k' : ''}" data-a="sel" data-id="${esc(tkey(n))}" data-n="${esc(n.key)}" data-go="1"><span class="gi">${ic((SRC[n.src] || SRC.inbox)[1], 14)}</span><b>${esc(n.t)}</b><span class="m">${n.st === 'done' ? 'done' : n.st === 'snz' ? 'snoozed' : esc(PG.ago(n.at))}</span><small>${n.ro ? esc(ROn(n.ro)) + ' · ' + esc(custOf(n.ro)) + ' · ' : ''}${esc(fromN(n.from))}</small></button>`).join('') : `<div class="ib-none">Nothing matches “${esc(p.q)}”.</div>`) : '<div class="ib-none">Searches everything that came to you — done and snoozed too.</div>'}</div>`; }
+    return '';
+  }

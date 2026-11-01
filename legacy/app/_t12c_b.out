@@ -1,0 +1,18 @@
+d busy while reading: Reading screenshot 2 of 4…
+d after 4 shots: {"busy": "", "pieces": ["Screenshot \u00b7 Operations: 1 operation \u00b7 1 part", "Screenshot 2 \u00b7 Parts: 2 parts", "Screenshot 3 \u00b7 Notes: 2 notes", "Screenshot 4 \u00b7 Case header: Summit Freightways \u00b7 the truck"], "ops": 1, "loose": 2, "notes": 2, "f": "RA0001238877", "newMode": true}
+d loose parts line: 2 parts came in without their operation — they go onOp 1 · Clutch slipping - replace clutchLeave them out
+d notes after taking the notes shot out: 0
+d old add-ro modal → import: [True, None]
+d N key opens it: True
+d RO list New RO: True
+d ERRORS []
+ph busy while reading: Reading screenshot 2 of 4…
+ph after 4 shots: {"busy": "", "pieces": ["Screenshot \u00b7 Operations: 1 operation \u00b7 1 part", "Screenshot 2 \u00b7 Parts: 2 parts", "Screenshot 3 \u00b7 Notes: 2 notes", "Screenshot 4 \u00b7 Case header: Summit Freightways \u00b7 the truck"], "ops": 1, "loose": 2, "notes": 2, "f": "RA0001238877", "newMode": true}
+ph loose parts line: 2 parts came in without their operation — they go onOp 1 · Clutch slipping - replace clutchLeave them out
+ph notes after taking the notes shot out: 0
+ph paste box: True
+ph pieces from the paste box: 1
+ph footer box: [761, 844, 844]
+ph old add-ro modal → import: [True, None]
+ph ERRORS []
+FAILS []

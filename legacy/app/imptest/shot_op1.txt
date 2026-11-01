@@ -1,0 +1,5 @@
+Operation 1 - Clutch slipping - replace clutch
+Labor Hours: 8.0   Labor: $1,680.00   Approval Status: Approved
+Skill: B  Op Code: CL-210
+Part #   Description   Qty   Unit   Core   Ext   Salesman
+VOL-85013702   Clutch kit 15.5"   1   1,240.00   150.00   1,390.00   BURKE, RYAN

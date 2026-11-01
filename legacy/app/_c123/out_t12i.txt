@@ -1,0 +1,41 @@
+ok   d created from the import
+ok   d RO page shows 758560
+ok   d RO page shows 23116577
+ok   d RO page shows Service
+ok   d RO page shows PO-55120
+ok   d RO page shows 20417
+ok   d RO page shows Jenna Cho
+ok   d RO page shows Ryan Burke
+ok   d RO page shows $150.00
+ok   d RO page shows Skill B
+ok   d RO page shows RA0001238877
+ok   d approval chip
+ok   d schedule rows
+ok   d Activity shows ASIST notes
+d counts: {"new": 11, "upd": 6, "kept": 1, "same": 22, "edit": 0, "changes": 17}
+ok   d merge counts
+ok   d applied ["B4", "A-77310", 3, "Waiting \u2013 Parts"]
+ok   d RO page shows the update
+d ERRORS []
+ok   d no console errors
+ok   ph created from the import
+ok   ph RO page shows 758560
+ok   ph RO page shows 23116577
+ok   ph RO page shows Service
+ok   ph RO page shows PO-55120
+ok   ph RO page shows 20417
+ok   ph RO page shows Jenna Cho
+FAIL ph RO page shows Ryan Burke
+FAIL ph RO page shows $150.00
+ok   ph RO page shows Skill B
+ok   ph RO page shows RA0001238877
+ok   ph approval chip
+ok   ph schedule rows
+ok   ph Activity shows ASIST notes
+ph counts: {"new": 11, "upd": 6, "kept": 1, "same": 22, "edit": 0, "changes": 17}
+ok   ph merge counts
+ok   ph applied ["B4", "A-77310", 3, "Waiting \u2013 Parts"]
+ok   ph RO page shows the update
+ph ERRORS []
+ok   ph no console errors
+FAILS 2 ['ph RO page shows Ryan Burke', 'ph RO page shows $150.00']

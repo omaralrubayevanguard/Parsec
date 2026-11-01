@@ -1,0 +1,92 @@
+# Parsec 14.7 (A) — the RO page: Receive N / Install N for picked parts (an operation's Parts tab and Parts on this RO, one Undo),
+# and the Vehicle group's Build date, Warranty start, Opened and Closed; the New RO import reads Build date and Warranty start.
+import asyncio, os, sys, json
+sys.argv = sys.argv[:2] if len(sys.argv) > 1 else ['x', 't12_a.html']
+_src = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "_t127p.py")).read().split("async def main():")[0]
+exec(_src)
+OUT = os.path.join(H, "shots147a"); os.makedirs(OUT, exist_ok=True)
+# an RO with two live operations: op 1 has three parts (ordered, not ordered, received), op 2 one backordered
+OPEN = """(()=>{ localStorage.removeItem('tec_viewas'); localStorage.removeItem('tec_out'); localStorage.removeItem('rop_fold'); __tg.pxSignedIn();
+  const S=__tg.STATE(), r=S.ros.find(r=>!r.shop && !r.dateClosed && r.operations.filter(o=>!o.declined).length>=2); const L=r.operations.filter(o=>!o.declined), a=L[0], b=L[1];
+  a.parts=[{id:'pa1', description:'Fuel filter', partNumber:'FF-1', qty:'1', status:'Ordered'}, {id:'pa2', description:'O-ring kit', partNumber:'OR-2', qty:'2', status:'Not Ordered'}, {id:'pa3', description:'Gasket', partNumber:'GK-3', qty:'1', status:'Received'}];
+  b.parts=[{id:'pb1', description:'Hose', partNumber:'HS-9', qty:'1', status:'Backordered'}];
+  r.buildDate='03-14-2020'; r.warrantyStart=''; const U=__tg.UI(); U.view='ros'; U.selectedRo=r.id; U.roOpen={}; U.roOpen[r.id]=[a.id]; U.ivTab=U.ivTab||{}; U.ivTab[a.id]='parts'; __tg.render(); return [r.id, a.id, b.id]; })()"""
+PST = "(id=>{ for(const r of __tg.STATE().ros) for(const o of (r.operations||[])) for(const p of (o.parts||[])) if(p.id===id) return p.status; return null; })"
+async def jtoast(pg): return await pg.evaluate(J("const t=R.getElementById('toast'); return t ? t.textContent : ''"))
+async def jundo(pg):
+    await pg.evaluate(J("const t=R.getElementById('toast'); const b=t && t.querySelector('button'); b && b.click();")); await pg.wait_for_timeout(450)
+async def st(pg, *ids): return [await pg.evaluate(PST + f"('{i}')") for i in ids]
+async def bar(pg): return await pg.evaluate(J("const b=R.querySelector('.rop-sb'); return b ? [...b.querySelectorAll('button')].map(x=>[x.dataset.v||'', x.textContent.trim(), x.disabled, x.title]) : null"))
+async def main():
+    async with async_playwright() as p:
+        b, pg, errs = await setup(p)
+        rid, oa, ob = await pg.evaluate(OPEN); await pg.wait_for_timeout(1200)
+        # ---- an operation's Parts tab: pick two, Receive 2
+        n = await pg.evaluate(J("return R.querySelectorAll('.rop-prow .rop-cb').length"))
+        ok(n >= 3, f"op 1's parts have pick boxes ({n})")
+        await pg.evaluate(J("R.querySelector('.rop-prow[data-part=pa1] .rop-cb').click()")); await pg.wait_for_timeout(250)
+        await pg.evaluate(J("R.querySelector('.rop-prow[data-part=pa3] .rop-cb').click()")); await pg.wait_for_timeout(250)
+        B = await bar(pg); d = {x[0]: x for x in (B or [])}
+        ok(B and d.get("prcv", [0, ""])[1] == "Receive 1" and d.get("pinall", [0, ""])[1] == "Install 2", f"the bar: Receive 1 · Install 2 ({[x[1] for x in B or []]})")
+        await pg.screenshot(path=os.path.join(OUT, "a1_op_bar.png"))
+        await pg.evaluate(J("R.querySelector('.rop-sb [data-v=prcv]').click()")); await pg.wait_for_timeout(400)
+        ok(await st(pg, "pa1", "pa3") == ["Received", "Received"], "Receive: the ordered one is received, the received one stays")
+        t = await jtoast(pg); ok("1 part received" in t and "skipped" in t, f"toast: {t[:90]}")
+        ok(not await pg.evaluate(J("return !!R.querySelector('.rop-sb')")), "the pick clears")
+        await jundo(pg)
+        ok(await st(pg, "pa1") == ["Ordered"], "one Undo puts it back")
+        # pick every part on op 1, Install 3 — the not-received ones are received and installed in one go
+        await pg.evaluate(J("R.querySelector('.rop-pth .rop-cb').click()")); await pg.wait_for_timeout(250)
+        B = await bar(pg); d = {x[0]: x for x in (B or [])}
+        ok(d.get("pinall", [0, ""])[1] == "Install 3" and "received too" in d.get("pinall", [0, 0, 0, ""])[3], f"Install 3, its title says the others are received too ({d.get('pinall')})")
+        await pg.evaluate(J("R.querySelector('.rop-sb [data-v=pinall]').click()")); await pg.wait_for_timeout(400)
+        ok(await st(pg, "pa1", "pa2", "pa3") == ["Installed"] * 3, "Install: all three installed")
+        t = await jtoast(pg); ok("3 parts installed" in t and "2 received on the way" in t, f"toast: {t[:90]}")
+        # nothing left to change: the buttons are disabled with a reason
+        await pg.evaluate(J("R.querySelector('.rop-pth .rop-cb').click()")); await pg.wait_for_timeout(250)
+        B = await bar(pg); d = {x[0]: x for x in (B or [])}
+        ok(d["prcv"][2] and d["pinall"][2] and d["pinall"][3], f"all installed: Receive and Install are off, with a reason ({d['pinall'][3]})")
+        await pg.evaluate(J("R.querySelector('.rop-sb .rop-clr').click()")); await pg.wait_for_timeout(250)
+        # ---- Parts on this RO: pick across operations
+        await jundo(pg); await pg.wait_for_timeout(200)
+        nn = await pg.evaluate(J("return [R.querySelectorAll('.rop-k-parts .rop-pkr .rop-cb').length, !!R.querySelector('.rop-k-parts .rop-sech0 > .rop-cb')]"))
+        ok(nn[0] == 4 and nn[1], f"Parts on this RO: a box on each part and one in the heading ({nn})")
+        await pg.evaluate(J("R.querySelector('.rop-k-parts .rop-sech0 > .rop-cb').click()")); await pg.wait_for_timeout(250)
+        B = await bar(pg); d = {x[0]: x for x in (B or [])}
+        ok(B and d["prcv"][1] == "Receive 3" and d["pinall"][1] == "Install 4" and "pmove" not in d, f"the RO's bar: Receive 3 · Install 4, no Move ({[x[1] for x in B]})")
+        await pg.screenshot(path=os.path.join(OUT, "a2_ro_bar.png"))
+        await pg.evaluate(J("R.querySelector('.rop-sb [data-v=prcv]').click()")); await pg.wait_for_timeout(400)
+        ok(await st(pg, "pa1", "pa2", "pa3", "pb1") == ["Received"] * 4, "Receive 3 across both operations")
+        t = await jtoast(pg); ok("3 parts received" in t, f"toast: {t[:90]}")
+        await jundo(pg)
+        ok(await st(pg, "pa1", "pa2", "pb1") == ["Ordered", "Not Ordered", "Backordered"], "one Undo for all three")
+        # ---- the Vehicle group: Build date, Warranty start, Opened, Closed
+        await pg.evaluate("(()=>{ const U=__tg.UI(); U.ivFold=U.ivFold||{}; U.ivFold.vehicle=false; __tg.render(); })()"); await pg.wait_for_timeout(500)
+        V = await pg.evaluate(J("const g=R.querySelector('.px-pg[data-pg=vehicle]'); return g ? [...g.querySelectorAll('.px-prop')].map(r=>[r.children[0].textContent, r.children[1].textContent, r.classList.contains('is-edit')]) : null"))
+        lab = {x[0]: x for x in (V or [])}
+        ok(all(k in lab for k in ["Build date", "Warranty start", "Opened", "Closed"]), f"Vehicle shows the four dates ({[x[0] for x in V or []]})")
+        ok(lab.get("Build date", [0, ""])[1] == "Mar 14, 2020" and lab.get("Warranty start", [0, ""])[1] == "Add date" and lab.get("Closed", [0, ""])[1] == "Open" and not lab["Closed"][2] and lab["Opened"][2], f"build Mar 14, 2020 · warranty Add date · Closed Open (not editable) · Opened editable ({lab.get('Build date')}, {lab.get('Closed')})")
+        # edit Warranty start in place
+        await pg.evaluate(J("const r=[...R.querySelectorAll('.px-pg[data-pg=vehicle] .px-prop')].find(r=>r.children[0].textContent==='Warranty start'); r.click();")); await pg.wait_for_timeout(200)
+        await pg.evaluate(J("const i=R.querySelector('.px-pg[data-pg=vehicle] .px-prop input'); i.value='2020-05-01'; i.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true}));")); await pg.wait_for_timeout(400)
+        ws = await pg.evaluate(f"__tg.getRO('{rid}').warrantyStart")
+        ok(ws == "05-01-2020", f"Warranty start saved the way the RO keeps it ({ws})")
+        au = await pg.evaluate("(__tg.auditLog()||[]).slice(-3).map(a=>a.text).join(' | ')")
+        ok("Warranty start" in au, f"…with an Activity line ({au[-90:]})")
+        await pg.screenshot(path=os.path.join(OUT, "a3_vehicle.png"))
+        # a closed RO: Closed shows its date and can be changed
+        await pg.evaluate(f"(()=>{{ const r=__tg.getRO('{rid}'); r.dateClosed=new Date(2026,9,20,15,0).toISOString(); __tg.render(); try{{ __tg.JC.rerender(); }}catch(e){{}} }})()"); await pg.wait_for_timeout(500)
+        V = await pg.evaluate(J("const g=R.querySelector('.px-pg[data-pg=vehicle]'); return g ? [...g.querySelectorAll('.px-prop')].map(r=>[r.children[0].textContent, r.children[1].textContent, r.classList.contains('is-edit')]) : null"))
+        print("   ", await pg.evaluate(f"[__tg.UI().view, __tg.UI().selectedRo, __tg.getRO('{rid}').dateClosed, (typeof __tg.JC)]"), await pg.evaluate(J("return (R.querySelector('.px-ro__rail')||{}).innerText ? 'rail' : 'no rail'")))
+        lab = {x[0]: x for x in (V or [])}
+        ok(lab.get("Closed", [0, "", False])[1] == "Oct 20, 2026" and lab["Closed"][2], f"a closed RO: Closed Oct 20, 2026, editable ({lab.get('Closed')})")
+        await pg.evaluate(f"(()=>{{ const r=__tg.getRO('{rid}'); delete r.dateClosed; __tg.render(); }})()"); await pg.wait_for_timeout(300)
+        # ---- the New RO import reads them
+        P = await pg.evaluate("(()=>{ const P=__tg.IMPX.parse('Customer: Prairie Line Trucking\\nVIN: 4V4NC9EH5LN223344\\nBuild Date: 03/14/2020\\nWarranty Start Date: May 1, 2020\\nUnit: T-796'); return [P.f.built, P.f.warrStart]; })()")
+        ok(P == ["03-14-2020", "05-01-2020"], f"the import reads Build date and Warranty start ({P})")
+        P2 = await pg.evaluate("(()=>{ const P=__tg.IMPX.parse('Model: VNL 760   Date Built: 2021-02-09   In-Service Date: 04/02/21'); return [P.f.built, P.f.warrStart, P.f.model]; })()")
+        ok(P2[0] == "02-09-2021" and P2[1] == "04-02-2021", f"…on one line too ({P2})")
+        ok(not errs, "no page errors: " + " | ".join(errs[:3]))
+        await b.close()
+    print("FAILS:", len(FAILS), FAILS)
+asyncio.run(main())

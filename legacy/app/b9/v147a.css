@@ -1,0 +1,7 @@
+/* Parsec 14.7 (A): Parts on this RO — a pick box on each row, like an operation's Parts tab */
+.px-li.rop-pkr { position: relative; }
+.rop-pkr > .rop-cb { left: -26px; }
+.rop-pkr:hover > .rop-cb { opacity: 1; }
+.px-li.rop-pkr.is-sel { background: var(--accent-tint); box-shadow: none; border-radius: 8px; }
+:host([data-device=phone]) .px-li.rop-pkr { padding-left: 30px; }
+:host([data-device=phone]) .rop-pkr > .rop-cb { left: 2px; }

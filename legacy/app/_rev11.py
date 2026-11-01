@@ -1,0 +1,18 @@
+import os; exec(open('/tmp/claude-0/-home-claude/febe01e4-e12e-554d-9dc2-ccfd769708e9/scratchpad/app/_revlib.py').read())
+async def main():
+    async with async_playwright() as p:
+        b, pg, errs = await setup(p)
+        rid = await mkro(pg); await flow_approve(pg, rid); await flow_order(pg, rid); await flow_receive(pg, rid)
+        await psel(pg)
+        await pg.evaluate("(()=>{ const b=[...document.querySelectorAll('[data-pg=parts] button')].find(b=>/^Send to Frank/.test(b.textContent.trim())); b&&b.click(); })()"); await pg.wait_for_timeout(600)
+        print("toast", await toast(pg))
+        print(await pg.evaluate(RO(rid, "return [r.route ? JSON.stringify(r.route).slice(0,300) : null, r.assignedTech||null, r.location];")))
+        await go(pg, 'foreman')
+        na = await lst(pg, ".tg-list .tg-it", 40); print("FOREMAN needs:", [x[:110] for x in na])
+        await pg.evaluate("(()=>{ const it=[...document.querySelectorAll('.tg-list .tg-it')].find(x=>/8877/.test(x.innerText)); it && it.click(); })()"); await pg.wait_for_timeout(600)
+        await shot(pg, "g1_foreman")
+        btns = await pg.evaluate("[...document.querySelectorAll('.tg-main button, .tg-list button')].filter(b=>b.offsetParent).map(b=>b.textContent.trim().replace(/\\s+/g,' ').slice(0,24)+'|'+(b.dataset.a||b.dataset.action||''))")
+        print("BTNS", btns[:40])
+        print("ERR", errs)
+        await b.close()
+asyncio.run(main())

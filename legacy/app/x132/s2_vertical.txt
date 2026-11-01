@@ -1,0 +1,8 @@
+Operation 1 - Replace turbo actuator
+Labor Hours: 3.5   Labor Rate: $210.00   Labor: $735.00   Approval Status: Approved
+Parts: $1,145.00   Shop Supplies: $18.00   Op Total: $1,898.00
+Part #   Description   Qty   Unit   Core   Ext
+VOL-22430011   Turbo actuator   1   1,145.00   0.00   1,145.00
+Operation 2 - Replace starter
+Labor Hours: 2.0   Labor: $420.00   Approval Status: Pending
+Sublet: $95.00

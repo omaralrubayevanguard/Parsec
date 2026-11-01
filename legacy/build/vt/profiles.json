@@ -1,0 +1,1244 @@
+[
+ {
+  "id": "vn-original-day",
+  "family": "VN",
+  "cab": "Day cab",
+  "label": "VN original day cab",
+  "from": 1997,
+  "to": 2002,
+  "body": "Short day cab, no sleeper, pearl white paint",
+  "sheet": "vn-original",
+  "col": 0,
+  "columns": 3,
+  "review": true,
+  "reviewYears": [],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "history",
+   "legacy-2015"
+  ]
+ },
+ {
+  "id": "vn-original-mid",
+  "family": "VN",
+  "cab": "Mid-roof sleeper",
+  "label": "VN original mid-roof sleeper",
+  "from": 1997,
+  "to": 2002,
+  "body": "Integrated medium-height sleeper, silver paint",
+  "sheet": "vn-original",
+  "col": 1,
+  "columns": 3,
+  "review": true,
+  "reviewYears": [],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "history",
+   "legacy-2015"
+  ]
+ },
+ {
+  "id": "vn-original-high",
+  "family": "VN",
+  "cab": "High-roof sleeper",
+  "label": "VN original high-roof sleeper",
+  "from": 1997,
+  "to": 2002,
+  "body": "Tall integrated 1990s sleeper with curved aerodynamic roof, deep blue paint",
+  "sheet": "vn-original",
+  "col": 2,
+  "columns": 3,
+  "review": true,
+  "reviewYears": [],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "history",
+   "legacy-2015"
+  ]
+ },
+ {
+  "id": "vnl-03-300",
+  "family": "VNL",
+  "cab": "300",
+  "label": "VNL 300 day cab",
+  "from": 2003,
+  "to": 2017,
+  "body": "No sleeper, white paint",
+  "sheet": "vnl-2003-a",
+  "col": 0,
+  "columns": 3,
+  "review": true,
+  "reviewYears": [
+   2018,
+   2025
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "legacy-2015",
+   "history"
+  ]
+ },
+ {
+  "id": "vnl-03-430",
+  "family": "VNL",
+  "cab": "430",
+  "label": "VNL 430 short sleeper",
+  "from": 2003,
+  "to": 2017,
+  "body": "41-inch short flat-roof sleeper, silver paint",
+  "sheet": "vnl-2003-a",
+  "col": 1,
+  "columns": 3,
+  "review": true,
+  "reviewYears": [
+   2018,
+   2025
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "legacy-2015",
+   "history"
+  ]
+ },
+ {
+  "id": "vnl-03-630",
+  "family": "VNL",
+  "cab": "630",
+  "label": "VNL 630 mid-roof sleeper",
+  "from": 2003,
+  "to": 2017,
+  "body": "61-inch mid-roof sleeper, deep blue paint",
+  "sheet": "vnl-2003-a",
+  "col": 2,
+  "columns": 3,
+  "review": true,
+  "reviewYears": [
+   2018,
+   2025
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "legacy-2015",
+   "history"
+  ]
+ },
+ {
+  "id": "vnl-03-670",
+  "family": "VNL",
+  "cab": "670",
+  "label": "VNL 670 high-roof sleeper",
+  "from": 2003,
+  "to": 2017,
+  "body": "61-inch tall sleeper, white paint",
+  "sheet": "vnl-2003-b",
+  "col": 0,
+  "columns": 3,
+  "review": true,
+  "reviewYears": [
+   2018,
+   2025
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "legacy-2015",
+   "history"
+  ]
+ },
+ {
+  "id": "vnl-03-730",
+  "family": "VNL",
+  "cab": "730",
+  "label": "VNL 730 mid-roof sleeper",
+  "from": 2007,
+  "to": 2017,
+  "body": "77-inch long mid-roof sleeper, graphite paint",
+  "sheet": "vnl-2003-b",
+  "col": 1,
+  "columns": 3,
+  "review": true,
+  "reviewYears": [
+   2018,
+   2025
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "legacy-2015",
+   "history"
+  ]
+ },
+ {
+  "id": "vnl-03-780",
+  "family": "VNL",
+  "cab": "780",
+  "label": "VNL 780 high-roof sleeper",
+  "from": 2003,
+  "to": 2017,
+  "body": "77-inch long high-roof sleeper with curved tall roof, deep blue paint",
+  "sheet": "vnl-2003-b",
+  "col": 2,
+  "columns": 3,
+  "review": true,
+  "reviewYears": [
+   2018,
+   2025
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "legacy-2015",
+   "history"
+  ]
+ },
+ {
+  "id": "vnm-200",
+  "family": "VNM",
+  "cab": "200",
+  "label": "VNM 200 day cab",
+  "from": 2003,
+  "to": 2017,
+  "body": "No sleeper, pearl white paint",
+  "sheet": "vnm-legacy",
+  "col": 0,
+  "columns": 3,
+  "review": true,
+  "reviewYears": [],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vnm-200",
+   "vnm-430",
+   "vnm-630",
+   "legacy-2015"
+  ]
+ },
+ {
+  "id": "vnm-430",
+  "family": "VNM",
+  "cab": "430",
+  "label": "VNM 430 short sleeper",
+  "from": 2003,
+  "to": 2017,
+  "body": "41-inch short flat-roof sleeper, silver paint",
+  "sheet": "vnm-legacy",
+  "col": 1,
+  "columns": 3,
+  "review": true,
+  "reviewYears": [],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vnm-200",
+   "vnm-430",
+   "vnm-630",
+   "legacy-2015"
+  ]
+ },
+ {
+  "id": "vnm-630",
+  "family": "VNM",
+  "cab": "630",
+  "label": "VNM 630 mid-roof sleeper",
+  "from": 2003,
+  "to": 2017,
+  "body": "61-inch mid-roof sleeper, blue paint",
+  "sheet": "vnm-legacy",
+  "col": 2,
+  "columns": 3,
+  "review": true,
+  "reviewYears": [],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vnm-200",
+   "vnm-430",
+   "vnm-630",
+   "legacy-2015"
+  ]
+ },
+ {
+  "id": "vt-800",
+  "family": "VT",
+  "cab": "800",
+  "label": "VT 800 day cab",
+  "from": 2006,
+  "to": 2010,
+  "body": "Long nose day cab, no sleeper, silver paint",
+  "sheet": "vt-legacy",
+  "col": 0,
+  "columns": 3,
+  "review": true,
+  "reviewYears": [],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vt-2006"
+  ]
+ },
+ {
+  "id": "vt-830",
+  "family": "VT",
+  "cab": "830",
+  "label": "VT 830 mid-roof sleeper",
+  "from": 2007,
+  "to": 2010,
+  "body": "Very large mid-roof 77-inch sleeper, deep wine red paint",
+  "sheet": "vt-legacy",
+  "col": 1,
+  "columns": 3,
+  "review": true,
+  "reviewYears": [],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vt-2006"
+  ]
+ },
+ {
+  "id": "vt-880",
+  "family": "VT",
+  "cab": "880",
+  "label": "VT 880 high-roof sleeper",
+  "from": 2006,
+  "to": 2010,
+  "body": "77-inch full-height integrated sleeper, pearl white paint",
+  "sheet": "vt-legacy",
+  "col": 2,
+  "columns": 3,
+  "review": true,
+  "reviewYears": [],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vt-2006"
+  ]
+ },
+ {
+  "id": "vnl-18-300",
+  "family": "VNL",
+  "cab": "300",
+  "label": "VNL 300 day cab",
+  "from": 2018,
+  "to": 2024,
+  "body": "Day cab without sleeper, white paint",
+  "sheet": "vnl-2018-a",
+  "col": 0,
+  "columns": 4,
+  "review": false,
+  "reviewYears": [
+   2018,
+   2025
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vnl-old"
+  ]
+ },
+ {
+  "id": "vnl-18-400",
+  "family": "VNL",
+  "cab": "400",
+  "label": "VNL 400 flat-roof sleeper",
+  "from": 2018,
+  "to": 2024,
+  "body": "42-inch short flat-roof sleeper, graphite paint",
+  "sheet": "vnl-2018-a",
+  "col": 1,
+  "columns": 4,
+  "review": false,
+  "reviewYears": [
+   2018,
+   2025
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vnl-old"
+  ]
+ },
+ {
+  "id": "vnl-18-740",
+  "family": "VNL",
+  "cab": "740",
+  "label": "VNL 740 mid-roof sleeper",
+  "from": 2018,
+  "to": 2024,
+  "body": "70-inch long mid-roof sleeper, silver paint",
+  "sheet": "vnl-2018-a",
+  "col": 2,
+  "columns": 4,
+  "review": false,
+  "reviewYears": [
+   2018,
+   2025
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vnl-old"
+  ]
+ },
+ {
+  "id": "vnl-18-760",
+  "family": "VNL",
+  "cab": "760",
+  "label": "VNL 760 high-roof sleeper",
+  "from": 2018,
+  "to": 2024,
+  "body": "70-inch full-height long sleeper, deep blue paint",
+  "sheet": "vnl-2018-a",
+  "col": 3,
+  "columns": 4,
+  "review": false,
+  "reviewYears": [
+   2018,
+   2025
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vnl-old"
+  ]
+ },
+ {
+  "id": "vnl-18-860",
+  "family": "VNL",
+  "cab": "860",
+  "label": "VNL 860 high-roof sleeper",
+  "from": 2018,
+  "to": 2024,
+  "body": "VNL LONG hood, 77-inch very large full-height sleeper, white paint",
+  "sheet": "regional-2018",
+  "col": 0,
+  "columns": 4,
+  "review": false,
+  "reviewYears": [
+   2018,
+   2025
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vnl-old"
+  ]
+ },
+ {
+  "id": "vnr-18-300",
+  "family": "VNR",
+  "cab": "300",
+  "label": "VNR 300 day cab",
+  "from": 2018,
+  "to": 2025,
+  "body": "VNR short hood day cab, no sleeper, blue paint",
+  "sheet": "regional-2018",
+  "col": 1,
+  "columns": 4,
+  "review": false,
+  "reviewYears": [],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vnr-old",
+   "vnr-660"
+  ]
+ },
+ {
+  "id": "vnr-18-400",
+  "family": "VNR",
+  "cab": "400",
+  "label": "VNR 400 flat-roof sleeper",
+  "from": 2018,
+  "to": 2025,
+  "body": "VNR short hood, 41-inch short flat-roof sleeper, silver paint",
+  "sheet": "regional-2018",
+  "col": 2,
+  "columns": 4,
+  "review": false,
+  "reviewYears": [],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vnr-old",
+   "vnr-660"
+  ]
+ },
+ {
+  "id": "vnr-18-640",
+  "family": "VNR",
+  "cab": "640",
+  "label": "VNR 640 mid-roof sleeper",
+  "from": 2018,
+  "to": 2025,
+  "body": "VNR short hood, 61-inch mid-roof sleeper, graphite paint",
+  "sheet": "regional-2018",
+  "col": 3,
+  "columns": 4,
+  "review": false,
+  "reviewYears": [],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vnr-old",
+   "vnr-660"
+  ]
+ },
+ {
+  "id": "vnr-20-660",
+  "family": "VNR",
+  "cab": "660",
+  "label": "VNR 660 high-roof sleeper",
+  "from": 2020,
+  "to": 2025,
+  "body": "2020 VNR short rounded hood with T-shaped lamps, 61-inch high-roof sleeper, blue paint",
+  "sheet": "regional-special",
+  "col": 0,
+  "columns": 4,
+  "review": false,
+  "reviewYears": [],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vnr-old",
+   "vnr-660"
+  ]
+ },
+ {
+  "id": "vnr-electric-21",
+  "family": "VNR Electric",
+  "cab": "4x2 tractor",
+  "label": "VNR Electric original 4\u00d72",
+  "from": 2021,
+  "to": 2021,
+  "body": "2021 VNR Electric day cab, rounded short hood with T lamps, ONE rear axle, large battery boxes along chassis, no exhaust stacks, white paint",
+  "sheet": "regional-special",
+  "col": 1,
+  "columns": 4,
+  "review": false,
+  "reviewYears": [
+   2021,
+   2022
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "electric-2021",
+   "electric-2022"
+  ]
+ },
+ {
+  "id": "vnr-electric-22",
+  "family": "VNR Electric",
+  "cab": "6x4 tractor",
+  "label": "VNR Electric enhanced 6\u00d74",
+  "from": 2022,
+  "to": 2026,
+  "body": "2022\u20132026 VNR Electric day cab, TWO rear drive axles, bulky rectangular battery packs along chassis, no exhaust stacks, teal blue paint",
+  "sheet": "regional-special",
+  "col": 2,
+  "columns": 4,
+  "review": false,
+  "reviewYears": [
+   2021,
+   2022
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "electric-2021",
+   "electric-2022"
+  ]
+ },
+ {
+  "id": "vnx-13-630",
+  "family": "VNX",
+  "cab": "630",
+  "label": "VNX original mid-roof sleeper",
+  "from": 2013,
+  "to": 2017,
+  "body": "2013 VNX heavy-haul long-hood tractor, raised ride height, large black rectangular grille, older teardrop lamps, 61-inch mid-roof sleeper, twin chrome stacks, silver paint",
+  "sheet": "regional-special",
+  "col": 3,
+  "columns": 4,
+  "review": true,
+  "reviewYears": [
+   2018,
+   2026
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vnx-2018",
+   "vnx-new"
+  ]
+ },
+ {
+  "id": "vnl-25-300",
+  "family": "VNL",
+  "cab": "300",
+  "label": "VNL 300 new-platform day cab",
+  "from": 2025,
+  "to": 2026,
+  "body": "No sleeper, pearl white paint",
+  "sheet": "vnl-2025-a",
+  "col": 0,
+  "columns": 3,
+  "review": false,
+  "reviewYears": [
+   2018,
+   2025
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [
+   "Core",
+   "Edge",
+   "Edge Black",
+   "Ultimate"
+  ],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vnl-new",
+   "vnl-modelyear"
+  ]
+ },
+ {
+  "id": "vnl-25-440",
+  "family": "VNL",
+  "cab": "440",
+  "label": "VNL 440 new-platform mid-roof",
+  "from": 2025,
+  "to": 2026,
+  "body": "42-inch compact mid-roof sleeper, silver paint",
+  "sheet": "vnl-2025-a",
+  "col": 1,
+  "columns": 3,
+  "review": false,
+  "reviewYears": [
+   2018,
+   2025
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [
+   "Core",
+   "Edge",
+   "Edge Black",
+   "Ultimate"
+  ],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vnl-new",
+   "vnl-modelyear"
+  ]
+ },
+ {
+  "id": "vnl-25-640",
+  "family": "VNL",
+  "cab": "640",
+  "label": "VNL 640 new-platform mid-roof",
+  "from": 2025,
+  "to": 2026,
+  "body": "62-inch longer mid-roof sleeper, blue paint",
+  "sheet": "vnl-2025-a",
+  "col": 2,
+  "columns": 3,
+  "review": false,
+  "reviewYears": [
+   2018,
+   2025
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [
+   "Core",
+   "Edge",
+   "Edge Black",
+   "Ultimate"
+  ],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vnl-new",
+   "vnl-modelyear"
+  ]
+ },
+ {
+  "id": "vnl-25-660",
+  "family": "VNL",
+  "cab": "660",
+  "label": "VNL 660 new-platform high roof",
+  "from": 2025,
+  "to": 2026,
+  "body": "62-inch full-height sleeper, white paint, dark neutral grille trim",
+  "sheet": "vnl-2025-b",
+  "col": 0,
+  "columns": 3,
+  "review": false,
+  "reviewYears": [
+   2018,
+   2025
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [
+   "Core",
+   "Edge",
+   "Edge Black",
+   "Ultimate"
+  ],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vnl-new",
+   "vnl-modelyear"
+  ]
+ },
+ {
+  "id": "vnl-25-840",
+  "family": "VNL",
+  "cab": "840",
+  "label": "VNL 840 new-platform mid-roof",
+  "from": 2025,
+  "to": 2026,
+  "body": "74-inch extra-long mid-roof sleeper, silver paint, tasteful chrome accents",
+  "sheet": "vnl-2025-b",
+  "col": 1,
+  "columns": 3,
+  "review": false,
+  "reviewYears": [
+   2018,
+   2025
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [
+   "Core",
+   "Edge",
+   "Edge Black",
+   "Ultimate"
+  ],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vnl-new",
+   "vnl-modelyear"
+  ]
+ },
+ {
+  "id": "vnl-25-860",
+  "family": "VNL",
+  "cab": "860",
+  "label": "VNL 860 new-platform high roof",
+  "from": 2025,
+  "to": 2026,
+  "body": "74-inch extra-long full-height sleeper, deep graphite paint, Edge Black gloss black grille bumper mirrors and fairing accents",
+  "sheet": "vnl-2025-b",
+  "col": 2,
+  "columns": 3,
+  "review": false,
+  "reviewYears": [
+   2018,
+   2025
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [
+   "Core",
+   "Edge",
+   "Edge Black",
+   "Ultimate"
+  ],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vnl-new",
+   "vnl-modelyear"
+  ]
+ },
+ {
+  "id": "vnr-26-300",
+  "family": "VNR",
+  "cab": "300",
+  "label": "VNR 300 new-platform day cab",
+  "from": 2026,
+  "to": 2026,
+  "body": "Day cab, no sleeper, white paint",
+  "sheet": "vnr-2026",
+  "col": 0,
+  "columns": 4,
+  "review": false,
+  "reviewYears": [
+   2026
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [
+   "Core",
+   "Edge"
+  ],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vnr-new",
+   "vnr-production"
+  ]
+ },
+ {
+  "id": "vnr-26-440",
+  "family": "VNR",
+  "cab": "440",
+  "label": "VNR 440 new-platform mid-roof",
+  "from": 2026,
+  "to": 2026,
+  "body": "42-inch short mid-roof sleeper, silver paint",
+  "sheet": "vnr-2026",
+  "col": 1,
+  "columns": 4,
+  "review": false,
+  "reviewYears": [
+   2026
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [
+   "Core",
+   "Edge"
+  ],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vnr-new",
+   "vnr-production"
+  ]
+ },
+ {
+  "id": "vnr-26-640",
+  "family": "VNR",
+  "cab": "640",
+  "label": "VNR 640 new-platform mid-roof",
+  "from": 2026,
+  "to": 2026,
+  "body": "62-inch mid-roof sleeper, blue paint",
+  "sheet": "vnr-2026",
+  "col": 2,
+  "columns": 4,
+  "review": false,
+  "reviewYears": [
+   2026
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [
+   "Core",
+   "Edge"
+  ],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vnr-new",
+   "vnr-production"
+  ]
+ },
+ {
+  "id": "vnr-26-660",
+  "family": "VNR",
+  "cab": "660",
+  "label": "VNR 660 new-platform high roof",
+  "from": 2026,
+  "to": 2026,
+  "body": "62-inch high-roof sleeper, graphite paint",
+  "sheet": "vnr-2026",
+  "col": 3,
+  "columns": 4,
+  "review": false,
+  "reviewYears": [
+   2026
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [
+   "Core",
+   "Edge"
+  ],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vnr-new",
+   "vnr-production"
+  ]
+ },
+ {
+  "id": "vhd-01-200",
+  "family": "VHD",
+  "cab": "200",
+  "label": "VHD 200 original day cab",
+  "from": 2001,
+  "to": 2016,
+  "body": "Axle-back day cab, red paint",
+  "sheet": "vhd-legacy",
+  "col": 0,
+  "columns": 2,
+  "review": true,
+  "reviewYears": [],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "legacy-2015",
+   "vhd-led",
+   "vhd-new"
+  ]
+ },
+ {
+  "id": "vhd-01-430",
+  "family": "VHD",
+  "cab": "430",
+  "label": "VHD 430 original sleeper",
+  "from": 2001,
+  "to": 2016,
+  "body": "Axle-back 42-inch flat-roof sleeper, white paint",
+  "sheet": "vhd-legacy",
+  "col": 1,
+  "columns": 2,
+  "review": true,
+  "reviewYears": [],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "legacy-2015",
+   "vhd-led",
+   "vhd-new"
+  ]
+ },
+ {
+  "id": "vhd-17-300",
+  "family": "VHD",
+  "cab": "300",
+  "label": "VHD 300 LED-era day cab",
+  "from": 2018,
+  "to": 2020,
+  "body": "Older pre-2020 hood, set-back front axle, rectangular LED headlamp units, day cab, red paint",
+  "sheet": "vhd-modern",
+  "col": 0,
+  "columns": 4,
+  "review": true,
+  "reviewYears": [
+   2018,
+   2020
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "legacy-2015",
+   "vhd-led",
+   "vhd-new"
+  ]
+ },
+ {
+  "id": "vhd-17-400",
+  "family": "VHD",
+  "cab": "400",
+  "label": "VHD 400 LED-era sleeper",
+  "from": 2018,
+  "to": 2020,
+  "body": "Older pre-2020 hood, set-back front axle, LED headlamp units, 42-inch flat-roof sleeper, white paint",
+  "sheet": "vhd-modern",
+  "col": 1,
+  "columns": 4,
+  "review": true,
+  "reviewYears": [
+   2018,
+   2020
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "legacy-2015",
+   "vhd-led",
+   "vhd-new"
+  ]
+ },
+ {
+  "id": "vhd-21-300",
+  "family": "VHD",
+  "cab": "300",
+  "label": "VHD 300 redesigned day cab",
+  "from": 2020,
+  "to": 2026,
+  "body": "2020 redesign face, T-shaped LED lamps, modern dark grille, axle-back day cab, red paint",
+  "sheet": "vhd-modern",
+  "col": 2,
+  "columns": 4,
+  "review": false,
+  "reviewYears": [
+   2020,
+   2021
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "legacy-2015",
+   "vhd-led",
+   "vhd-new"
+  ]
+ },
+ {
+  "id": "vhd-21-400",
+  "family": "VHD",
+  "cab": "400",
+  "label": "VHD 400 redesigned sleeper",
+  "from": 2020,
+  "to": 2026,
+  "body": "2020 redesign face, T-shaped LED lamps, modern dark grille, axle-back 42-inch flat-roof sleeper, white paint",
+  "sheet": "vhd-modern",
+  "col": 3,
+  "columns": 4,
+  "review": false,
+  "reviewYears": [
+   2020,
+   2021
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "legacy-2015",
+   "vhd-led",
+   "vhd-new"
+  ]
+ },
+ {
+  "id": "vnx-18-300",
+  "family": "VNX",
+  "cab": "300",
+  "label": "VNX 300 heavy-haul day cab",
+  "from": 2018,
+  "to": 2026,
+  "body": "Day cab, white paint",
+  "sheet": "vnx-2018",
+  "col": 0,
+  "columns": 3,
+  "review": false,
+  "reviewYears": [
+   2018,
+   2026
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vnx-2018",
+   "vnx-new"
+  ]
+ },
+ {
+  "id": "vnx-18-400",
+  "family": "VNX",
+  "cab": "400",
+  "label": "VNX 400 short sleeper",
+  "from": 2018,
+  "to": 2026,
+  "body": "42-inch flat-roof sleeper, graphite paint",
+  "sheet": "vnx-2018",
+  "col": 1,
+  "columns": 3,
+  "review": false,
+  "reviewYears": [
+   2018,
+   2026
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vnx-2018",
+   "vnx-new"
+  ]
+ },
+ {
+  "id": "vnx-18-740",
+  "family": "VNX",
+  "cab": "740",
+  "label": "VNX 740 mid-roof sleeper",
+  "from": 2018,
+  "to": 2026,
+  "body": "70-inch long mid-roof sleeper, silver paint",
+  "sheet": "vnx-2018",
+  "col": 2,
+  "columns": 3,
+  "review": false,
+  "reviewYears": [
+   2018,
+   2026
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vnx-2018",
+   "vnx-new"
+  ]
+ },
+ {
+  "id": "vah-12-200",
+  "family": "VAH",
+  "cab": "200",
+  "label": "VAH 200 original day cab",
+  "from": 2012,
+  "to": 2020,
+  "body": "Low day cab, pearl white paint",
+  "sheet": "vah-legacy",
+  "col": 0,
+  "columns": 3,
+  "review": true,
+  "reviewYears": [],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vah-launch",
+   "vah-2014",
+   "vah-new"
+  ]
+ },
+ {
+  "id": "vah-12-430",
+  "family": "VAH",
+  "cab": "430",
+  "label": "VAH 430 original short sleeper",
+  "from": 2012,
+  "to": 2020,
+  "body": "Low flat 42-inch sleeper, silver paint",
+  "sheet": "vah-legacy",
+  "col": 1,
+  "columns": 3,
+  "review": true,
+  "reviewYears": [],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vah-launch",
+   "vah-2014",
+   "vah-new"
+  ]
+ },
+ {
+  "id": "vah-14-630",
+  "family": "VAH",
+  "cab": "630",
+  "label": "VAH 630 original long sleeper",
+  "from": 2014,
+  "to": 2020,
+  "body": "Low flat 61-inch long sleeper, blue paint",
+  "sheet": "vah-legacy",
+  "col": 2,
+  "columns": 3,
+  "review": true,
+  "reviewYears": [],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vah-launch",
+   "vah-2014",
+   "vah-new"
+  ]
+ },
+ {
+  "id": "vah-21-300",
+  "family": "VAH",
+  "cab": "300",
+  "label": "VAH 300 redesigned day cab",
+  "from": 2020,
+  "to": 2026,
+  "body": "Very low day cab, white paint",
+  "sheet": "vah-modern",
+  "col": 0,
+  "columns": 3,
+  "review": false,
+  "reviewYears": [
+   2020,
+   2021
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vah-launch",
+   "vah-2014",
+   "vah-new"
+  ]
+ },
+ {
+  "id": "vah-21-400",
+  "family": "VAH",
+  "cab": "400",
+  "label": "VAH 400 redesigned short sleeper",
+  "from": 2020,
+  "to": 2026,
+  "body": "Reduced-height 42-inch flat sleeper, silver paint",
+  "sheet": "vah-modern",
+  "col": 1,
+  "columns": 3,
+  "review": false,
+  "reviewYears": [
+   2020,
+   2021
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vah-launch",
+   "vah-2014",
+   "vah-new"
+  ]
+ },
+ {
+  "id": "vah-21-600",
+  "family": "VAH",
+  "cab": "600",
+  "label": "VAH 600 redesigned long sleeper",
+  "from": 2020,
+  "to": 2026,
+  "body": "Reduced-height 61-inch flat sleeper, blue paint",
+  "sheet": "vah-modern",
+  "col": 2,
+  "columns": 3,
+  "review": false,
+  "reviewYears": [
+   2020,
+   2021
+  ],
+  "rangeType": "Illustration coverage; not a certified start/end production or registration range",
+  "trims": [],
+  "trimNote": "Trim metadata is supported; this asset depicts one representative finish, not each trim.",
+  "sources": [
+   "vah-launch",
+   "vah-2014",
+   "vah-new"
+  ]
+ }
+]

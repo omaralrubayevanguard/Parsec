@@ -1,0 +1,27 @@
+OK   stop clock       changed=True undone=True pop=None toast='Automation · RO status: RO → Hold TechUndo  [needed 2 undos]'
+OK   fix lunch        changed=True undone=True pop=None toast='Lunch taken out of Luis’s clock on 31447 · 11:30–12:30.Undo'
+OK   accept sent      changed=True undone=True pop=None toast='RO-34578 accepted — it’s with you now. Decide when you’re ready.Undo'
+OK   decide quote     changed=True undone=True pop=None toast='Op 2 “Replace EGR cooler — leaking coolant into the intake” is on the estimate · 38202 to Approval — waiting f'
+OK   decide go-ahead  changed=True undone=True pop=None toast='38202 on hold for parts · today · Priya takes 32355 in B6.Undo'
+OK   back again       changed=True undone=True pop=None toast='32960 flagged comeback · back to Mike Rodriguez — waiting for him to accept.Undo'
+OK   rt fail redo     changed=True undone=True pop=None toast='32355 back to Mike Rodriguez for a redo · #1 — waiting for him to accept.Undo'
+OK   qc pass          changed=True undone=True pop=None toast='36019 back to Mike Rodriguez · Recheck the repair — top of his order.Undo'
+OK   assign check-in  changed=True undone=True pop=None toast='31399 → Dana Kowalski · AW1 · #1 — waiting for her to accept.Undo'
+OK   plan arrival     changed=True undone=True pop=None toast='37079 → Mike Rodriguez · AW1 when it lands · #4 — waiting for him to accept.Undo'
+OK   bring in         changed=True undone=True pop=None toast='33487 → B4 (from D5) · Mike next — waiting for him to accept.Undo'
+OK   risk             changed=True undone=True pop=None toast='Approval will tell Keystone the new time: ~17:15.Undo'
+OK   hold for parts   changed=True undone=True pop=None toast='38202 on hold for parts · today · Priya takes 32355 in B6.Undo'
+OK   give work        changed=True undone=True pop=None toast='32355 → Priya Shah in B6 (was Mike) · #1 — waiting for her to accept.Undo'
+OK   plan together    changed=True undone=True pop=None toast='3 assigned — 33487 → Priya · B4, 31399 → Dana · AW1, 37079 → Mike · AW2. Each tech has them on the Console.Und'
+fill Awning 1 {"type":"fill","bay":"Awning 1","at":null,"ro":null,"pick":"ro_qwdwus4hubx","t":"Dana Kowalski"} -> RO-31399 Dana Kowalski
+  after undo: empty
+tmr plan {"Mike Rodriguez":[],"Dana Kowalski":[],"Luis Martinez":["ro_zhpp5gghubx","ro_uqd1w1ohubx"],"Priya Shah":[]}
+note {"d":"2026-10-23","text":"• Luis: start on 35808 Keystone Carriers — finish it first.\n• B3 stays blocked by 35223 until its part shows.\n• B5 stays blocked by 37498 until its part shows.\n• B10 stays blocked by 39365 until its part shows.","at":"2026-10-22T14:15:34.497Z","by":"Admin"}
+cxMe None card len 374 <section class="fm-cx card"><div class="fm-cxn"><span class="fm-cxk">From the foreman</span><p>• Luis: start on 35808 Keystone Carriers — finish it first.<br>• B3 stays blocked by 35223 until its part
+cxMe as Luis ['Luis Martinez', 'Technician']
+UI_KEYS fm ['fmView', 'fmDay']
+localStorage has fmCfg/fmTmr/fmNote/fmCleared: [True, True, True, True]
+cleared today: 0
+reload before ["techs",12,["Brakes","PM","Electrical"],true,"2026-10-23"]
+reload after  ["techs",12,["Brakes","PM","Electrical"],true,"2026-10-23"] view console
+errors: []

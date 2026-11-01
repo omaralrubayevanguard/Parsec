@@ -1,0 +1,870 @@
+/* ============================== Parsec 12: the RO page in your layout (b9/rop1.js — inside the RO page, JC) ==============================
+   From the RO page mock-up. The middle: Operations, Parts on this RO, Fault codes, Photos & codes, Messages about this RO, Truck history,
+   Warranty claim, Customer, Estimate & approval, Ready to close. The right: Truck & status, the stage bar, Who has it, People, Schedule,
+   Vehicle, Money. Next step and Paperwork are off — Paperwork's fields went to Customer (case, PO, auth, tech support), Schedule (the dates)
+   and Vehicle (department). Activity stays the header button (11.3). An open operation: Time (each punch with its notes between start and
+   stop), Parts, Files. And picking (the selecting mock-up): a box on each operation and part, Ctrl / Shift click, a bar along the bottom. */
+var ROP_IC = {
+  camera: '<path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1.2-1.8A1 1 0 0 1 9.5 5h5a1 1 0 0 1 .8.4L16.5 7h2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="13" r="3.2"/>',
+  flag: '<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
+  send: '<path d="M4 12l16-8-6 16-2.5-6.5z"/><path d="M11.5 13.5L20 4"/>',
+  undo: '<path d="M9 7L4.5 11.5 9 16"/><path d="M5 11.5h9a5 5 0 0 1 0 10h-2"/>',
+  wrench: '<path d="M14.7 6.3a4 4 0 0 0-5.2 5.2l-5 5a1.8 1.8 0 0 0 2.5 2.5l5-5a4 4 0 0 0 5.2-5.2l-2.4 2.4-2.3-.3-.3-2.3z"/>',
+  image: '<rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.7"/><path d="M4 17l4.5-4 3.5 3 3-2.5 5 4"/>',
+  file: '<path d="M7 3.5h7l4 4v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-15a1 1 0 0 1 1-1z"/><path d="M14 3.5v4h4"/>',
+  clockPlus: '<path d="M20 12a8 8 0 1 1-6.2-7.8"/><path d="M12 8v4l2.5 1.5"/><path d="M18.5 3v5M16 5.5h5"/>',
+  notePlus: '<path d="M13.5 4.5H6a1.5 1.5 0 0 0-1.5 1.5v12A1.5 1.5 0 0 0 6 19.5h12a1.5 1.5 0 0 0 1.5-1.5v-7.5"/><path d="M8 10h5M8 13.5h7"/><path d="M18 3v5M15.5 5.5h5"/>',
+  box: '<path d="M4 8l8-4 8 4v8l-8 4-8-4z"/><path d="M4 8l8 4 8-4M12 12v8"/>',
+  scan: '<path d="M7 3.5H5.5a2 2 0 0 0-2 2V7M17 3.5h1.5a2 2 0 0 1 2 2V7M7 20.5H5.5a2 2 0 0 1-2-2V17M17 20.5h1.5a2 2 0 0 0 2-2V17"/><path d="M8 9h8M8 12h8M8 15h5"/>',
+  upload: '<path d="M12 15.5V4.5M7.5 9 12 4.5 16.5 9"/><path d="M4.5 15v3a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-3"/>',
+  paste: '<rect x="6" y="5" width="12" height="15.5" rx="2"/><path d="M9.5 5V4a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1"/><path d="M9 11h6M9 14.5h4"/>',
+  partAsk: '<path d="M4 8l8-4 8 4v8l-8 4-8-4z"/><path d="M4 8l8 4 8-4M12 12v8"/><circle cx="18.5" cy="18.5" r="3.5" fill="currentColor" stroke="none" opacity=".18"/>',
+  chevDn: '<path d="M7 10l5 5 5-5"/>', chevUp: '<path d="M7 14l5-5 5 5"/>'
+};
+function ri(k, sz) { if (!ROP_IC[k]) return pxI(k, sz); sz = sz || 16; return '<svg class="px-ico" width="' + sz + '" height="' + sz + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ROP_IC[k] + '</svg>'; }
+var ROPS = { ro: null, o: {}, p: {}, pOp: null, last: null };
+var ROPU = { msgTo: '', msgAll: false, histAll: false, fcOp: null };
+var ROP_TH = {};
+function ropH1(v) { return (Math.round((+v || 0) * 10) / 10).toFixed(1); }
+function ropN(job) { return S.jobs.indexOf(job) + 1; }
+function ropFirst(n) { return String(n || '').trim().split(/\s+/)[0] || ''; }
+function ropMe() { try { return PG.me().name; } catch (e) { return punchByName() || 'Admin'; } }
+function ropIsMe(n) { try { return PG.isMe(n); } catch (e) { return false; } }
+function ropPerson(role) { try { return PG.person(role) || ''; } catch (e) { return ''; } }
+function ropWriter() { var w = ''; try { w = rtPerson('writer') || ''; } catch (e) {} return w; }
+function ropAgo(t) { try { return PG.ago(t); } catch (e) { return pxWhen(t); } }
+function ropDay(t) { try { return PG.day(t); } catch (e) { return new Date(t).toLocaleDateString(); } }
+function ropClk(t) { var d = new Date(t); if (isNaN(d)) return ''; return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).toLowerCase().replace(/\s/g, ' '); }
+function ropLive() { var L = []; try { L = raLive(RO); } catch (e) { L = (S.jobs || []).filter(function (j) { return j && !j.declined; }); } return L; }
+function ropRun(job) { return STATE.punches.filter(function (p) { return p.opId === job.id && !p.stop; })[0] || null; }
+function ropNone(t) { return el('div', { class: 'rop-none', text: t }); }
+function ropNote(to, k, job, t, b, q) { if (typeof IB === 'undefined' || !to) return false; try { IB.send({ to: to, k: k, src: 'ros', ro: RO.id, op: job ? job.id : null, t: t, b: b || '', q: q || '' }); return true; } catch (e) { console.error(e); return false; } }
+/* Undo takes the whole change back — with whatever an automation did because of it (it adds its own undo step after ours) */
+function ropUndo(msg) { var t0 = Date.now() - 3000;
+  toast(msg, { label: 'UNDO', run: function () {
+    try { var g = 8; while (g-- && UNDO.length > 1) { var u = UNDO[UNDO.length - 1]; if ((u.label === 'automation' || u.auto) && u.at >= t0) UNDO.pop(); else break; } } catch (e) {}
+    restoreSnapshot(); } }); }
+function ropNo() { return (RO && RO.roNumber) || tgNum(RO); }   /* the full RO number, as on the band */
+function ropAv(n) { return '<span class="px-av" title="' + esc(n || '') + '">' + esc(ivInit(n || '?')) + '</span>'; }
+/* a block in the middle: its heading, then its rows */
+function ropSec(key, title, sub, body, act) {
+  var head = el('div', { class: 'px-sec rop-sech' }, [el('h3', { text: title })].concat(sub ? [el('span', { class: 'n', text: sub })] : []).concat(act ? [act] : []));
+  return el('section', { class: 'rop-blk rop-k-' + key }, [head].concat(body));
+}
+
+/* ---------- the middle ---------- */
+function ropParts() {
+  var L = []; ropLive().forEach(function (j) { (j.parts || []).forEach(function (p) { if (p && (p.description || p.partNumber)) L.push({ j: j, p: p }); }); });
+  var inH = L.filter(function (x) { return pxPartIn(x.p); }).length, ext = L.some(function (x) { return +x.p.core > 0 || x.p.salesman; });
+  var box = el('div', { class: 'px-list rop-pl' + (ext ? ' is-ext' : '') });
+  if (L.length && ext) box.appendChild(el('div', { class: 'rop-plh', html: '<span>Part</span><span class="r">Core</span><span>Salesman</span><span>Status</span>' }));
+  L.forEach(function (x) {
+    var st = x.p.status || 'Not Ordered';
+    var b = el('button', { class: 'px-pstat', type: 'button', title: 'Part status and options', html: pxPsi(st) + '<span>' + esc(pxCase(st)) + '</span>' + pxI('chevD', 12).replace('class="px-ico"', 'class="px-ico px-chev"') });
+    b.addEventListener('click', function (e) { e.stopPropagation(); pxPartMenu(b, x.j, x.p); });
+    var nm = el('button', { class: 'rop-nm', type: 'button', title: 'Open Op ' + ropN(x.j) + ' — its parts', html: '<b>' + esc(ptName(x.p)) + '</b><small>' + (x.p.partNumber ? '<span class="px-id">' + esc(x.p.partNumber) + '</span> · ' : '') + 'qty ' + esc(x.p.qty || '1') + ' · Op ' + ropN(x.j) + '</small>', onClick: function (e) { e.stopPropagation(); pxGoto(x.j.id, 'parts'); } });
+    box.appendChild(el('div', { class: 'px-li rop-pr' }, [nm].concat(ext ? [el('span', { class: 'r px-num rop-mu', text: +x.p.core > 0 ? pxMoney(+x.p.core) : '' }), el('span', { class: 'rop-mu rop-ell', text: x.p.salesman || '' })] : []).concat([b])));
+  });
+  if (!L.length) box.appendChild(ropNone('No parts on this RO yet.'));
+  var cur = S.jobs.filter(function (j) { return j.id === S.ui.card; })[0] || ropLive()[0];
+  var ask = cur ? ropIb('partAsk', 'Ask Parts for a part', function () { ropAsk('parts', [cur], []); }) : null;
+  return ropSec('parts', 'Parts on this RO', L.length ? inH + ' of ' + L.length + ' in hand' : '', [box], ask);
+}
+function ropDtc() {
+  var L = []; ropLive().forEach(function (j) { (j.faults || []).forEach(function (f) { L.push({ j: j, f: f }); }); });
+  var files = S.log.filter(function (e) { return e.task === 'dtc'; }).reduce(function (n, e) { return n + (e.files || []).length; }, 0);
+  var box = el('div', { class: 'px-list' });
+  L.forEach(function (x) {
+    var rm = el('button', { class: 'rop-x', type: 'button', title: 'Take this code off', 'aria-label': 'Remove ' + fcLabel(x.f), html: pxI('x', 13), onClick: function (e) {
+      e.stopPropagation(); pushUndo('fault code'); x.j.faults = (x.j.faults || []).filter(function (f) { return f !== x.f; }); save(true); render(); ropUndo(fcLabel(x.f) + ' taken off Op ' + ropN(x.j)); } });
+    box.appendChild(el('div', { class: 'px-li rop-dc' }, [el('span', { class: 'px-id rop-code', text: fcLabel(x.f) }), el('span', { class: 'rop-dt', html: '<b>' + esc(faultMeaning(x.f)) + '</b><small>Op ' + ropN(x.j) + ' · ' + esc(x.j.complaint || 'Operation') + '</small>' }), rm]));
+  });
+  if (!L.length) box.appendChild(ropNone('No codes on this RO yet.'));
+  var live = ropLive(); if (!live.length) return ropSec('dtc', 'Fault codes', '', [box]);
+  if (!ROPU.fcOp || !live.some(function (j) { return j.id === ROPU.fcOp; })) ROPU.fcOp = (live.filter(function (j) { return j.id === S.ui.card; })[0] || live[0]).id;
+  var inp = el('input', { class: 'rop-in__i', placeholder: 'Add a code — 3226/2 or P0401, Enter', 'aria-label': 'Add a fault code' });
+  var sel = el('select', { class: 'rop-sel', 'aria-label': 'Which operation' }); live.forEach(function (j) { sel.appendChild(el('option', { value: j.id, text: 'Op ' + ropN(j) })); }); sel.value = ROPU.fcOp;
+  sel.addEventListener('change', function () { ROPU.fcOp = sel.value; });
+  inp.addEventListener('keydown', function (e) {
+    e.stopPropagation(); if (e.key !== 'Enter') return; e.preventDefault();
+    var f = parseFault(inp.value), j = S.jobs.filter(function (x) { return x.id === sel.value; })[0];
+    if (!f) { toast('Type it as SPN/FMI — 3226/2 — or a P-code like P0401.'); return; }
+    if (j && addFault(j, f)) { ropUndo(fcLabel(f) + ' added to Op ' + ropN(j)); requestAnimationFrame(function () { var i2 = R.querySelector('.rop-k-dtc .rop-in__i'); if (i2) i2.focus(); }); }
+  });
+  var row = el('label', { class: 'rop-in' }, [el('span', { html: pxI('plus', 14) }), inp].concat(live.length > 1 ? [sel] : []));
+  return ropSec('dtc', 'Fault codes', (L.length ? L.length + ' code' + (L.length === 1 ? '' : 's') : '') + (files ? (L.length ? ' · ' : '') + files + ' DTC file' + (files === 1 ? '' : 's') : ''), [box, row]);
+}
+function ropThumb(f) {
+  var isImg = /^image\//.test(f.type || '') || /\.(jpe?g|png|webp|gif|heic)$/i.test(f.name || '');
+  var b = el('button', { class: 'rop-th' + (isImg ? '' : ' is-file'), type: 'button', title: f.name || 'File', onClick: function (e) { e.stopPropagation(); openAttachments(f.id); } });
+  if (!isImg) { b.innerHTML = ri('file', 16) + '<small>' + esc(String(f.name || 'File').slice(0, 18)) + '</small>'; return b; }
+  var im = el('img', { alt: f.name || 'Picture' }); b.appendChild(im);
+  if (ROP_TH[f.id]) im.src = ROP_TH[f.id];
+  else getBlob(f).then(function (bl) { if (bl) { ROP_TH[f.id] = URL.createObjectURL(bl); im.src = ROP_TH[f.id]; } else b.classList.add('is-gone'); }, function () { b.classList.add('is-gone'); });
+  return b;
+}
+function ropPhotos() {
+  var T = [['dashpic', 'Dash picture'], ['pics', 'Pictures'], ['dtc', 'DTCs']], all = [];
+  T.forEach(function (t) { S.log.filter(function (e) { return e.task === t[0]; }).forEach(function (e) { (e.files || []).forEach(function (f) { all.push({ f: f, t: t }); }); }); });
+  var grid = el('div', { class: 'rop-ph' });
+  all.slice(-10).forEach(function (x) { var th = ropThumb(x.f); th.appendChild(el('em', { text: x.t[1] })); grid.appendChild(th); });
+  var body = [all.length ? grid : ropNone('No dash picture, pictures or DTC files yet.')];
+  var adds = el('span', { class: 'rop-tacts rop-sacts' });
+  T.forEach(function (t) {
+    var inp = el('input', { type: 'file', multiple: 'multiple', accept: t[0] === 'dtc' ? 'image/*,.pdf,application/pdf,.txt,.csv' : 'image/*,video/*', style: 'display:none', onChange: function () { var arr = Array.prototype.slice.call(inp.files || []); if (!arr.length) return; pushUndo('attach files'); addFiles(pgEntryFor(t[0], true).oid, arr); } });
+    adds.appendChild(inp); adds.appendChild(ropIb(t[0] === 'dtc' ? 'file' : t[0] === 'pics' ? 'image' : 'camera', 'Add ' + (t[0] === 'dtc' ? 'DTC files' : t[1].toLowerCase()), function () { inp.click(); }));
+  });
+  var nn = 0; try { nn = trkNotesOf(RO).length; } catch (e) {}
+  if (nn) { var nb = ropIb('note', nn + ' note' + (nn === 1 ? '' : 's') + ' on the truck', function () { try { trkInspOpen(RO); } catch (er) {} }, 'has-n'); nb.insertAdjacentHTML('beforeend', '<small class="rop-ibn">' + nn + '</small>'); adds.appendChild(nb); }
+  adds.addEventListener('click', function (e) { e.stopPropagation(); });
+  return ropSec('photos', 'Photos & codes', all.length ? all.length + ' file' + (all.length === 1 ? '' : 's') : '', body, adds);
+}
+function ropInbox() {
+  var L = []; try { L = IB.store().items.filter(function (n) { return n.ro === RO.id; }).sort(function (a, b) { return new Date(b.at) - new Date(a.at); }); } catch (e) {}
+  var box = el('div', { class: 'px-list' });
+  L.slice(0, ROPU.msgAll ? 40 : 4).forEach(function (n) {
+    box.appendChild(el('div', { class: 'px-li rop-ms', html: ropAv(n.from) + '<span><b>' + esc(ropFirst(n.from)) + ' → ' + esc(ropFirst(n.to)) + '</b><small>' + esc(n.q || n.b || n.t || '') + '</small></span><time>' + esc(ropAgo(n.at)) + '</time>' }));
+  });
+  if (!L.length) box.appendChild(ropNone('No messages about this RO yet.'));
+  var body = [box];
+  if (L.length > 4) body.push(el('div', { class: 'px-adds rop-more' }, [ropIb(ROPU.msgAll ? 'chevUp' : 'chevDn', ROPU.msgAll ? 'Show fewer' : 'Show all ' + L.length, function () { ROPU.msgAll = !ROPU.msgAll; render(); })]));
+  var ppl = [[ropPerson('Foreman'), 'Foreman'], [ropPerson('Parts'), 'Parts'], [ropWriter() || RO.createdBy || '', 'Advisor'], [RO.assignedTech || '', 'Technician']].filter(function (x) { return x[0] && !ropIsMe(x[0]); });
+  var seen = {}; ppl = ppl.filter(function (x) { var k = x[0].toLowerCase(); if (seen[k]) return false; seen[k] = 1; return true; });
+  if (ppl.length) {
+    if (!ROPU.msgTo || !ppl.some(function (x) { return x[0] === ROPU.msgTo; })) ROPU.msgTo = ppl[0][0];
+    var to = el('div', { class: 'rop-to' }, [el('span', { text: 'To' })].concat(ppl.map(function (x) { return el('button', { class: ROPU.msgTo === x[0] ? 'is-on' : '', type: 'button', html: esc(ropFirst(x[0])) + '<small>' + x[1] + '</small>', onClick: function (e) { e.stopPropagation(); ROPU.msgTo = x[0]; render(); } }); })));
+    var inp = el('input', { class: 'rop-in__i', placeholder: 'Message about ' + (RO.roNumber || 'this RO') + '… Enter sends it', 'aria-label': 'Message' });
+    inp.addEventListener('keydown', function (e) {
+      e.stopPropagation(); if (e.key !== 'Enter' || !inp.value.trim()) return; e.preventDefault();
+      var job = S.jobs.filter(function (j) { return j.id === S.ui.card; })[0] || null, who = ROPU.msgTo;
+      if (ropNote(who, 'men', job, ropFirst(ropMe()) + ' wrote about ' + ropNo(), (RO.customerName || '') + (job ? ' · Op ' + ropN(job) + ' — ' + (job.complaint || '') : ''), inp.value.trim())) { toast('Sent to ' + ropFirst(who) + ' — it’s under Messages on this RO.'); render(); requestAnimationFrame(function () { var i2 = R.querySelector('.rop-k-inbox .rop-in__i'); if (i2) i2.focus(); }); }
+    });
+    body.push(to, el('label', { class: 'rop-in' }, [el('span', { html: ri('send', 14) }), inp]));
+  }
+  return ropSec('inbox', 'Messages about this RO', L.length ? String(L.length) : '', body);
+}
+function ropOpenRo(id) { UI.view = 'ros'; UI.selectedRo = id; UI.modal = null; tecRender(); }
+function ropHistory() {
+  var vin = String(RO.vin || '').trim(), unit = String(RO.unitNumber || '').trim();
+  var L = STATE.ros.filter(function (x) { return x.id !== RO.id && !x.shop && x.id !== SHOP_RO_ID && ((vin && String(x.vin || '').trim() === vin) || (!vin && unit && String(x.unitNumber || '').trim() === unit && x.customerName === RO.customerName)); }).sort(function (a, b) { return new Date(b.dateOpened || 0) - new Date(a.dateOpened || 0); });
+  var keys = {}; ropLive().forEach(function (op) { var k = op.complaint && fixKeyOf(op.complaint); if (k) keys[k] = 1; (op.faults || []).forEach(function (f) { keys['fc:' + fcLabel(f)] = 1; }); });
+  var box = el('div', { class: 'px-list' });
+  L.slice(0, ROPU.histAll ? 20 : 5).forEach(function (x) {
+    var ops = []; try { ops = raLive(x); } catch (e) {}
+    var b = 0; ops.forEach(function (op) { try { b += opCalc(op).burntHrs; } catch (e) {} });
+    var same = ops.some(function (op) { return (op.complaint && keys[fixKeyOf(op.complaint)]) || (op.faults || []).some(function (f) { return keys['fc:' + fcLabel(f)]; }); });
+    box.appendChild(el('button', { class: 'px-li rop-hr', type: 'button', title: 'Open ' + roLabel(x), onClick: function (e) { e.stopPropagation(); ropOpenRo(x.id); },
+      html: '<span class="px-id">' + esc(tgNum(x)) + '</span><span><b>' + esc((ops[0] || {}).complaint || '—') + (ops.length > 1 ? ' <em>+' + (ops.length - 1) + '</em>' : '') + '</b><small>' + (x.dateOpened ? esc(ropDay(x.dateOpened)) + ' · ' : '') + (roIsDone(x) ? 'done' : 'open') + ' · ' + ropH1(b) + ' h</small></span>' + (same ? '<span class="rop-tag w">same problem</span>' : '<span></span>') }));
+  });
+  if (!L.length) box.appendChild(ropNone('First visit for this truck in Parsec.'));
+  var body = [box]; if (L.length > 5) body.push(el('div', { class: 'px-adds rop-more' }, [ropIb(ROPU.histAll ? 'chevUp' : 'chevDn', ROPU.histAll ? 'Show fewer' : 'Show all ' + L.length, function () { ROPU.histAll = !ROPU.histAll; render(); })]));
+  return ropSec('history', 'Truck history', L.length ? (unit ? 'Unit ' + unit + ' · ' : '') + L.length + ' visit' + (L.length === 1 ? '' : 's') : '', body);
+}
+function ropWarranty() {
+  var L = []; try { L = wcOps(RO); } catch (e) {} if (!L.length) return null;
+  var box = el('div', { class: 'px-list' });
+  L.forEach(function (op) {
+    var s = '', st = { l: '', i: 0 }; try { s = wcStatus(RO, op); st = WC_ST[s] || { l: s, i: 0 }; } catch (e) {}
+    var trk = WC_STAGES.map(function (g, i) { return '<span class="' + (i < st.i ? 'd' : i === st.i ? 'n' : '') + '"><i></i>' + esc(g[1]) + '</span>'; }).join('');
+    box.appendChild(el('div', { class: 'px-li rop-wa', html: '<div class="h"><b>Op ' + ropN(op) + ' · ' + esc(op.complaint || '') + '</b><span class="rop-tag' + (st.i >= 3 ? ' g' : st.i >= 1 ? ' a' : '') + '">' + esc(st.l || s) + '</span></div><div class="rop-wst">' + trk + '</div>' }));
+  });
+  var go = el('button', { class: 'px-btn px-btn--ghost px-btn--sm rop-go', type: 'button', html: pxI('warranty', 14) + 'Open in Warranty', onClick: function (e) { e.stopPropagation(); UI.view = 'warranty'; UI.wxRo = RO.id; UI.modal = null; tecRender(); } });
+  return ropSec('warranty', 'Warranty claim', L.length + ' operation' + (L.length === 1 ? '' : 's'), [box], go);
+}
+function ropCustomer() {
+  var c = RO.customerName || '', mine = STATE.ros.filter(function (x) { return c && x.customerName === c && !x.shop && x.id !== SHOP_RO_ID; }), open = mine.filter(function (x) { return x.id !== RO.id && !roIsDone(x); });
+  var ct = (RO.contacts || []).slice(-1)[0];
+  var warr = pxToggle(!!RO.warranty, function (v) { pushUndo('warranty RO'); RO.warranty = v; save(true); render(); tecRender(); }, 'Warranty RO');
+  var props = el('div', { class: 'rop-props' }, [
+    pxProp('Customer', c || 'Add customer', { empty: !c, edit: pxField2('customerName') }),
+    pxProp('Cust #', RO.custNo || 'Add', { id: !!RO.custNo, empty: !RO.custNo, edit: pxField2('custNo') }),
+    pxProp('Case #', RO.caseNumber || 'Add case', { id: !!RO.caseNumber, empty: !RO.caseNumber, copy: RO.caseNumber || null, edit: pxField2('caseNumber') }),
+    pxProp('PO #', RO.poNumber || 'Add PO', { id: !!RO.poNumber, empty: !RO.poNumber, edit: pxField2('poNumber') }),
+    pxProp('Auth #', RO.authNumber || 'Add auth', { id: !!RO.authNumber, empty: !RO.authNumber, edit: pxField2('authNumber') }),
+    pxProp('Tech support', RO.techSupportCase || 'Add case', { id: !!RO.techSupportCase, empty: !RO.techSupportCase, edit: pxField2('techSupportCase') }),
+    pxProp('Warranty RO', warr)]);
+  var body = [props, el('div', { class: 'rop-cu', html: '<small>' + mine.length + ' RO' + (mine.length === 1 ? '' : 's') + ' in Parsec' + (open.length ? ' · ' + open.length + ' other open' : '') + '</small>' + (ct ? '<small>Last contact: ' + esc(ct.kind || 'Contact') + (ct.out ? ' — ' + esc(ct.out) : '') + (ct.note ? ' · ' + esc(ct.note) : '') + ' · ' + esc(ropAgo(ct.at)) + '</small>' : '') })];
+  if (open.length) { var box = el('div', { class: 'px-list' }); open.slice(0, 3).forEach(function (x) { box.appendChild(el('button', { class: 'px-li rop-hr', type: 'button', title: 'Open ' + roLabel(x), onClick: function (e) { e.stopPropagation(); ropOpenRo(x.id); }, html: '<span class="px-id">' + esc(tgNum(x)) + '</span><span><b>' + (x.unitNumber ? 'Unit ' + esc(x.unitNumber) + ' · ' : '') + esc(roStatus(x).status) + '</b><small>' + esc(((raLive(x)[0]) || {}).complaint || '') + '</small></span><span></span>' })); }); body.push(box); }
+  return ropSec('customer', 'Customer', '', body);
+}
+function ropEstimate() {
+  var live = ropLive(), M = { total: 0 }; try { M = roMoney(RO); } catch (e) {}
+  var need = live.filter(function (op) { return +op.quoted > 0 && !op.appr && ['WARR', 'RECALL'].indexOf(opJobType(op)) < 0; }), appr = live.filter(function (op) { return op.appr && op.appr.at && op.appr.s !== 'no'; });
+  var rows = live.map(function (op) { var m = 0; try { m = opMoney(op).total; } catch (e) {} var a = op.asistApproval;
+    return '<span>Op ' + ropN(op) + ' · ' + esc(opJobType(op)) + ' · ' + ropH1(+op.quoted || 0) + ' h' + (op.appr && op.appr.at ? (op.appr.s === 'no' ? ' <em class="b">declined</em>' : ' <em class="g">approved</em>') : need.indexOf(op) > -1 ? ' <em class="w">not approved</em>' : '') + (a ? ' <em class="rop-asist" title="ASIST’s approval — shown only">ASIST: ' + esc(a) + '</em>' : '') + '</span><b>' + esc(pxMoney(m)) + '</b>'; }).join('');
+  var wr = ropWriter();
+  var st = need.length ? '<span class="rop-tag w">' + need.length + ' waiting on approval</span>' : appr.length ? '<span class="rop-tag g">Approved ' + esc(ropDay(appr[appr.length - 1].appr.at)) + (appr[appr.length - 1].appr.by ? ' · ' + esc(appr[appr.length - 1].appr.by) : '') + '</span>' : '';
+  var foot = el('div', { class: 'rop-row', html: st });
+  if (need.length && wr && !ropIsMe(wr)) foot.appendChild(el('button', { class: 'px-btn px-btn--sm', type: 'button', html: pxI('chat', 14) + 'Ask ' + esc(ropFirst(wr)), onClick: function (e) { e.stopPropagation(); if (ropNote(wr, 'men', need[0], ropFirst(ropMe()) + ' asked about the approval on ' + ropNo(), (RO.customerName || '') + ' — the estimate isn’t approved yet', 'Any word from the customer?')) toast('Asked ' + ropFirst(wr) + ' about the approval.'); } }));
+  return ropSec('estimate', 'Estimate & approval', '', [el('div', { class: 'rop-es', html: rows + '<span class="t">Total</span><b class="t">' + esc(pxMoney(M.total)) + '</b>' }), foot]);
+}
+function ropReady() {
+  var C = []; try { C = tyCloseChecks(RO); } catch (e) {} if (!C.length) return null;
+  var ok = C.filter(function (c) { return c.ok; }).length, box = el('div', { class: 'px-list rop-rd' });
+  box.appendChild(el('div', { class: 'rop-rdb', html: '<i style="width:' + (ok / C.length * 100).toFixed(0) + '%"></i>' }));
+  C.forEach(function (c) { var b = el('button', { class: 'px-li rop-ck' + (c.ok ? ' is-ok' : ''), type: 'button', html: (c.ok ? pxI('check', 14) : '<i></i>') + '<span><b>' + esc(c.t) + '</b><small>' + esc(c.d || '') + '</small></span>' });
+    if (c.op) b.addEventListener('click', function (e) { e.stopPropagation(); pxGoto(c.op.id, c.k === 'parts' ? 'parts' : 'time'); }); else b.disabled = true;
+    box.appendChild(b); });
+  return ropSec('ready', 'Ready to close', ok + ' of ' + C.length, [box]);
+}
+
+/* ---------- the right ---------- */
+function ropBand() {
+  var band = pxTitle(), tb = band.querySelector ? (band.classList.contains('px-titleblock') ? band : band.querySelector('.px-titleblock')) : null;
+  var live = ropLive(), job = S.jobs.filter(function (j) { return j.id === S.ui.card && live.indexOf(j) > -1; })[0] || live.filter(function (j) { return ropRun(j); })[0] || live.filter(function (j) { return !opDoneNow(j); })[0];
+  var acts = el('div', { class: 'rop-acts' });
+  if (job && !opDoneNow(job)) { var on = !!ropRun(job);
+    acts.appendChild(el('button', { class: 'px-btn px-btn--sm ' + (on ? '' : 'px-btn--primary'), type: 'button', title: on ? 'Stop the clock on Op ' + ropN(job) : 'Start the clock on Op ' + ropN(job), html: (on ? pxI('stop', 14) + 'Stop' : pxI('play', 14) + 'Start') + ' Op ' + ropN(job), onClick: function (e) { e.stopPropagation(); toggleJobClock(job); tecRender(); } })); }
+  acts.appendChild(el('button', { class: 'px-btn px-btn--sm', type: 'button', title: 'Transfer (T)', html: pxI('swap', 14) + 'Transfer…', onClick: function (e) { e.stopPropagation(); pxTransfer(); } }));
+  /* Parsec 12.2: the road test and the truck checks, on every RO */
+  try { if (trxBtnsOk(RO)) { var qcHot = trxPassed(RO) && !trxQcDone(RO) && trxAllDone(RO);
+    acts.appendChild(el('button', { class: 'px-btn px-btn--sm rop-rtb', type: 'button', title: 'Road test — send someone or log the result', html: pxI('road', 14) + 'Road test', onClick: function (e) { e.stopPropagation(); trxOpen('road', RO.id); } }));
+    acts.appendChild(el('button', { class: 'px-btn px-btn--sm rop-qcb' + (qcHot ? ' px-btn--primary' : ''), type: 'button', title: 'Truck checks before release', html: pxI('check', 14) + 'Truck checks', onClick: function (e) { e.stopPropagation(); trxOpen('checks', RO.id); } })); } } catch (er) { console.error(er); }
+  if (tb) tb.appendChild(acts);
+  return el('div', { class: 'rop-band' }, [band]);
+}
+function ropWho() {
+  var h = null; try { h = tgHold(RO); } catch (e) {} if (!h) return null;
+  var who = h.who || '', me = ropIsMe(who), D = { tech: 'Technician', foreman: 'Foreman', parts: 'Parts', writer: 'Service writer', triage: 'Triage', warranty: 'Warranty' }[h.to] || '';
+  var q = /^Anyone in /.test(who);   /* Parsec 12.1: sent to the department's queue */
+  if (who && (who === D || q)) who = '';   /* nobody named yet — the department, not a person to nudge */
+  var x = h.goal ? h.held / h.goal : 0, age = h.held >= 60000 ? '<span class="rop-age' + (x >= 1 ? ' b' : x >= .75 ? ' w' : '') + '" title="Follow up after ' + esc(tgShortDur(h.goal)) + (x >= 1 ? ' — overdue' : '') + '">' + esc(tgShortDur(h.held)) + '</span>' : '';
+  var box = el('div', { class: 'rop-who' }, [el('div', { class: 'rop-wh', html: (who ? ropAv(who) : '<span class="px-av">' + pxI('clock', 12) + '</span>') + '<span><b>' + (me ? 'With you' : who ? 'With ' + esc(who) : esc(q ? h.who + ' — the queue' : D ? 'No ' + D.toLowerCase() + ' on it yet' : 'Nobody on it yet')) + '</b><small>' + esc(D) + (h.goal ? ' · follow up after ' + esc(tgShortDur(h.goal)) : '') + '</small></span>' + age })]);
+  if (who && !me) box.appendChild(el('button', { class: 'px-btn px-btn--sm', type: 'button', html: pxI('chat', 14) + 'Nudge ' + esc(ropFirst(who)), onClick: function (e) { e.stopPropagation(); var job = S.jobs.filter(function (j) { return j.id === S.ui.card; })[0] || ropLive()[0]; if (ropNote(who, 'men', job, ropFirst(ropMe()) + ' asked about ' + ropNo(), (RO.customerName || '') + (job ? ' · Op ' + ropN(job) + ' — ' + (job.complaint || '') : ''), 'Any news on this one?')) toast('Nudged ' + ropFirst(who) + ' — it’s under Messages on ' + ropNo() + '.'); } }));
+  return el('section', { class: 'rop-rblk' }, [el('div', { class: 'rop-rh', text: 'Who has it' }), box]);
+}
+function ropDT(k) { return { type: 'datetime-local', get: function () { if (!RO[k]) return ''; var d = new Date(RO[k]); if (isNaN(d)) return ''; d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16); }, set: function (v) { RO[k] = v ? new Date(v).toISOString() : null; } }; }
+function ropCfg() { try { return truckCfg(RO); } catch (e) { return [RO.axles, RO.cab].filter(Boolean).join(' · '); } }
+function ropProps() {
+  var f = null; try { f = roForecast(RO); } catch (e) {}
+  var ready = f ? (f.ready ? 'Ready now' : fcWhen(f.likely)) : '—';
+  var opened = RO.dateOpened ? new Date(RO.dateOpened) : null, days = opened ? Math.max(0, Math.floor((Date.now() - opened) / 864e5)) : 0;
+  var pr = RO.promisedAt ? new Date(RO.promisedAt) : null, fu = RO.followUpAt ? new Date(RO.followUpAt) : null, dfmt = function (d) { return d.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' }) + ' · ' + ropClk(d); };
+  var props = el('div', { class: 'px-props' });
+  props.appendChild(pxGroup('schedule', 'Schedule', ready, [pxProp('Ready about', ready),
+    pxProp('Opened', opened ? dfmt(opened) : '—', { empty: !opened }),
+    pxProp('Promised', pr ? fcWhen(pr) : 'Add date', { empty: !pr, edit: ropDT('promisedAt') }),
+    pxProp('Follow-up', fu ? fcWhen(fu) : 'Add date', { empty: !fu, edit: ropDT('followUpAt') }),
+    pxProp('Days open', String(days), { num: true }),
+    RO.dateClosed ? pxProp('Closed', dfmt(new Date(RO.dateClosed))) : null].filter(Boolean)));
+  var tech = RO.assignedTech || '', adv = ropWriter() || RO.createdBy || '', fm = ropPerson('Foreman');
+  var h0 = rtHolder(RO), hn = rtHolderName(h0, RO), r = RO.route;
+  var tr = ropIb('swap', 'Transfer… (T)', function () { pxTransfer(); }, 'px-pg__act');
+  var pv = function (n) { return el('span', { style: 'display:flex;align-items:center;gap:8px', html: '<span class="px-av">' + esc(ivInit(n)) + '</span>' + esc(n) }); };
+  var ppl = [pxProp('Technician', tech ? pv(tech) : 'Not assigned', { empty: !tech }), pxProp('Advisor', adv ? pv(adv) : 'Not set', { empty: !adv })];
+  if (RO.createdBy && !techSame(RO.createdBy, adv)) ppl.push(pxProp('Created by', pv(RO.createdBy)));
+  if (fm) ppl.push(pxProp('Foreman', pv(fm)));
+  if (hn && !techSame(hn, tech) && !techSame(hn, adv) && !techSame(hn, fm)) ppl.push(pxProp('With', pv(hn)));
+  if (r && r.state === 'pending') ppl.push(pxProp('Sent to', (r.to === 'tech' ? (r.who || 'a technician') : RT_LBL[r.to]) + ' · waiting'));
+  props.appendChild(pxGroup('people', 'People', [ivInit(tech), adv ? ivInit(adv) : ''].filter(Boolean).join(' · '), ppl, tr));
+  var mi = RO.mileage ? Number(String(RO.mileage).replace(/[^\d.]/g, '')).toLocaleString('en-US') + ' mi' : '';
+  var eh = RO.engineHours ? Number(String(RO.engineHours).replace(/[^\d.]/g, '')).toLocaleString('en-US') + ' h' : '';
+  var yr = RO.year ? String(RO.year) : (function () { try { var t = truckYM(RO); return t.year ? t.year + ' · VIN' : ''; } catch (e) { return ''; } })();
+  props.appendChild(pxGroup('vehicle', 'Vehicle', [RO.unitNumber ? 'Unit ' + RO.unitNumber : '', mi].filter(Boolean).join(' · '), [
+    pxProp('VIN', RO.vin || 'Add VIN', { id: !!RO.vin, empty: !RO.vin, copy: RO.vin || null, edit: pxField2('vin') }),
+    pxProp('Unit', RO.unitNumber || 'Add unit', { empty: !RO.unitNumber, edit: pxField2('unitNumber') }),
+    pxProp('Make', RO.make || 'Add make', { empty: !RO.make, edit: { get: function () { return RO.make || ''; }, set: function (v) { v = String(v || '').trim(); if (v) RO.make = v; else delete RO.make; delete RO.trkBody; } } }),
+    pxProp('Model', RO.model || 'Add model', { empty: !RO.model, edit: { get: function () { return RO.model || ''; }, set: function (v) { RO.model = String(v || '').trim(); delete RO.trkBody; delete RO.trkTrim; } } }),
+    pxProp('Model year', yr || 'Add year', { num: true, empty: !RO.year, edit: { get: function () { return RO.year ? String(RO.year) : ''; }, set: function (v) { var y = +String(v || '').replace(/\D/g, ''); if (y >= 1980 && y <= new Date().getFullYear() + 2) RO.year = y; else delete RO.year; delete RO.trkBody; } } }),
+    (RO.axles || RO.cab) ? pxProp('Configuration', ropCfg() || 'Add', { edit: { get: ropCfg, set: function (v) { var a = String(v || '').split(/\s*·\s*|\s*,\s*/), ax = /^\d+x\d+$/i.test(a[0] || '') ? a.shift() : ''; if (ax) RO.axles = ax.toLowerCase(); else delete RO.axles; var cb = a.join(' · ').trim(); if (cb) RO.cab = cb; else delete RO.cab; } } }) : null,
+    RO.sleeper ? pxProp('Sleeper', RO.sleeper, { edit: pxField2('sleeper') }) : null,
+    pxProp('Chassis', RO.chassis || 'Add chassis', { id: !!RO.chassis, empty: !RO.chassis, edit: pxField2('chassis') }),
+    pxProp('Engine', RO.engineType || 'Add engine', { empty: !RO.engineType, edit: pxField2('engineType') }),
+    pxProp('Engine serial', RO.engineSerial || 'Add serial', { id: !!RO.engineSerial, empty: !RO.engineSerial, edit: pxField2('engineSerial') }),
+    pxProp('Mileage', mi || 'Add mileage', { num: true, empty: !mi, edit: pxField2('mileage') }),
+    pxProp('Engine hours', eh || 'Add hours', { num: true, empty: !eh, edit: pxField2('engineHours') }),
+    pxProp('Key tag', RO.keyTag || 'Add tag', { id: !!RO.keyTag, empty: !RO.keyTag, edit: pxField2('keyTag') }),
+    pxProp('Location', RO.location || 'Add location', { empty: !RO.location, edit: pxField2('location') }),
+    pxProp('Department', RO.department || 'Add department', { empty: !RO.department, edit: pxField2('department') })].filter(Boolean)));
+  var M = roMoney(RO), T = totals();
+  props.appendChild(pxGroup('money', 'Money', pxMoney(M.total), [
+    pxProp('Labor', pxNum(T.q) + ' h · ' + pxMoney(M.labor), { num: true }),
+    pxProp('Parts', pxMoney(M.parts), { num: true }),
+    M.other ? pxProp('Other', pxMoney(M.other), { num: true }) : null,
+    pxProp('Estimate', pxMoney(M.total), { num: true })].filter(Boolean)));
+  return props;
+}
+function ropRail() {
+  var top = el('div', { class: 'rop-top' }, [ropBand()]);
+  var stg = null; try { stg = pxStage(); } catch (e) {} if (stg) top.appendChild(el('section', { class: 'rop-rblk rop-stg' }, [stg]));
+  var who = null; try { who = ropWho(); } catch (e) { console.error(e); } if (who) top.appendChild(who);
+  return el('aside', { class: 'px-ro__rail rop-rail' }, [top, ropProps()]);
+}
+
+/* ---------- an open operation: the Time tab (Parsec 12.3) ----------
+   Each punch from start to stop with its notes in between. The line and the start dot wear the start reason's color, the stop dot the
+   stop reason's (one color per reason, everywhere — b9/v123.css). A slim day bar sits on top. Everything is edited right here: click a time
+   or a reason to change it, trash on hover deletes (Undo in the toast), a + between punches or the tab's clock icon adds a time entry. */
+var ROPT = { ed: null, add: null, note: null, padd: null };
+function ropStops() { var L = []; try { L = STOP_REASONS_BREAK.concat(STOP_REASONS_EXPLICIT); } catch (e) {} return L.concat(['Switched job', 'Pulled to another truck', 'Declined']); }
+function ropRc(r) { try { return r ? reasonVar(r) : 'var(--ink-4)'; } catch (e) { return 'var(--ink-4)'; } }
+function ropHM(ms) { var d = new Date(ms); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+function ropYMD(ms) { var d = new Date(ms); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function ropAt(baseMs, hhmm) { var m = /^(\d{1,2}):(\d{2})/.exec(hhmm || ''); if (!m) return null; var d = new Date(baseMs); d.setHours(+m[1], +m[2], 0, 0); return d.getTime(); }
+function ropShortDay(ms) { var d = new Date(ms); return d.toDateString() === new Date().toDateString() ? 'Today' : d.toLocaleDateString([], { month: 'short', day: 'numeric' }); }
+/* an icon button: the name shows when you point at it */
+function ropIb(icon, label, fn, cls) {
+  var b = el('button', { class: 'rop-ib' + (cls ? ' ' + cls : ''), type: 'button', 'aria-label': label, title: label, html: ri(icon, 15) });
+  b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); fn(e, b); });
+  return b;
+}
+function ropDayBar(ps) {
+  if (!ps.length) return null;
+  var bar = el('div', { class: 'rop-dbt', role: 'img' }), last = null, days = 0, tot = 0, lp = ps[ps.length - 1];
+  ps.forEach(function (p) {
+    var a = +new Date(p.start), live = !p.stop, b = live ? Date.now() : +new Date(p.stop), k = new Date(a).toDateString();
+    if (last && last !== k) bar.appendChild(el('span', { class: 'rop-dgap' }));
+    if (last !== k) days++;
+    last = k; tot += Math.max(0, b - a);
+    var seg = el('span', { class: 'rop-dsg' + (live ? ' is-live' : ''), style: 'flex:' + Math.max(1, Math.round((b - a) / 60000)) + ' 1 0;--c:' + ropRc(p.startReason),
+      title: (p.startReason || '—') + ' → ' + (live ? 'on the clock' : (p.stopReason || '—')) + ' · ' + hmText(b - a), text: hmText(b - a) });
+    if (live) TIMERS.push(function () { var d = Date.now() - a; seg.textContent = hmText(d); seg.style.flexGrow = Math.max(1, Math.round(d / 60000)); });
+    bar.appendChild(seg);
+  });
+  var f0 = +new Date(ps[0].start), endT = lp.stop ? ropClk(lp.stop) : 'now';
+  bar.setAttribute('aria-label', ps.length + ' punch' + (ps.length === 1 ? '' : 'es') + ', ' + hmText(tot) + ' in all');
+  var lbl = el('div', { class: 'rop-dbl' }, [el('span', { text: (days > 1 || ropShortDay(f0) !== 'Today' ? ropShortDay(f0) + ' · ' : '') + ropClk(f0) }),
+    el('span', { text: (days > 1 ? days + ' days · ' : '') + hmText(tot) + ' in all' }), el('span', { text: endT })]);
+  return el('div', { class: 'rop-dbar' }, [bar, lbl]);
+}
+function ropTm(job, p, f, ms) {
+  var key = p.id + ':' + f;
+  if (ROPT.ed === key) {
+    var done = false, inp = el('input', { class: 'rop-tin', type: 'time', value: ropHM(ms), 'aria-label': f === 's' ? 'Start time' : 'Stop time' });
+    var go = function () { if (done) return; done = true; ropSetTime(job, p, f, inp.value); };
+    inp.addEventListener('click', function (e) { e.stopPropagation(); });
+    inp.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Enter') { e.preventDefault(); go(); } else if (e.key === 'Escape') { e.preventDefault(); done = true; ROPT.ed = null; render(); } });
+    inp.addEventListener('blur', function () { setTimeout(go, 0); });
+    requestAnimationFrame(function () { try { inp.focus(); } catch (e) {} });
+    return inp;
+  }
+  var b = el('button', { class: 'rop-tm', type: 'button', title: 'Change the ' + (f === 's' ? 'start' : 'stop') + ' time', text: ropClk(ms) });
+  b.addEventListener('click', function (e) { e.stopPropagation(); ROPT.ed = key; ROPT.note = null; render(); });
+  return b;
+}
+function ropSetTime(job, p, f, v) {
+  ROPT.ed = null;
+  var st = +new Date(p.start), en = p.stop ? +new Date(p.stop) : null, cur = f === 's' ? st : en;
+  var ts = ropAt(f === 's' ? st : (en || st), v);
+  if (ts == null || Math.floor(ts / 60000) === Math.floor(cur / 60000)) { render(); return; }
+  if (f === 'e' && ts <= st && ts + 864e5 > st) ts += 864e5;   /* past midnight */
+  if (f === 'e' && ts > Date.now()) { toast('A stop time can’t be in the future'); render(); return; }
+  var r = editPunchCommit(p, { start: f === 's' ? new Date(ts).toISOString() : p.start, stop: f === 'e' ? new Date(ts).toISOString() : (p.stop || null), startReason: p.startReason, stopReason: p.stopReason, opId: p.opId, notes: p.notes });
+  if (!r.ok) { toast(r.msg); render(); return; }
+  save(true); render(); tecRender();
+  ropUndo((f === 's' ? 'Start' : 'Stop') + ' time ' + ropClk(ts) + ' — ' + hmText((p.stop ? +new Date(p.stop) : Date.now()) - +new Date(p.start)) + ' on that punch.');
+}
+function ropRsn(job, p, f) {
+  var r = f === 's' ? p.startReason : p.stopReason;
+  var b = el('button', { class: 'rop-rs', type: 'button', title: 'Change the ' + (f === 's' ? 'start' : 'stop') + ' reason', 'aria-haspopup': 'menu', style: '--c:' + ropRc(r), html: '<i></i><span>' + esc(r || '—') + '</span>' + pxI('chevD', 10) });
+  b.addEventListener('click', function (e) {
+    e.stopPropagation();
+    var L = f === 's' ? START_REASONS.slice() : ropStops(); if (r && L.indexOf(r) < 0) L.unshift(r);
+    var pop = el('div', { class: 'px-pop rop-pop rop-rspop', role: 'menu' }, [el('div', { class: 'rop-poph', html: '<b>' + (f === 's' ? 'Started for' : 'Stopped for') + '</b>' })].concat(L.map(function (x) {
+      var on = x === r;
+      return el('button', { class: 'px-menu__item rop-mi' + (on ? ' is-on' : ''), type: 'button', role: 'menuitemradio', 'aria-checked': on ? 'true' : 'false', html: '<i class="rop-dot" style="background:' + ropRc(x) + '"></i><span><b>' + esc(x) + '</b></span>' + (on ? pxI('check', 13) : ''),
+        onClick: function (ev) { ev.stopPropagation(); pxClosePop(); if (on) return;
+          if (updatePunchReasons(p.id, f === 's' ? x : p.startReason, f === 'e' ? x : p.stopReason)) { save(true); render(); tecRender(); ropUndo((f === 's' ? 'Start' : 'Stop') + ' reason: ' + x + '.'); } } });
+    })));
+    pxPop(b, pop);
+  });
+  return b;
+}
+function ropDelPunch(p) {
+  var d = hmText((p.stop ? +new Date(p.stop) : Date.now()) - +new Date(p.start));
+  deletePunch(p.id); save(true); render(); tecRender(); ropUndo('Punch deleted — ' + d + '.');
+}
+function ropNoteLines(p) { return String(p.notes || '').split(/\n/).filter(function (l) { return l.trim(); }); }
+function ropPunch(job, p, box) {
+  var st = +new Date(p.start), live = !p.stop, en = live ? Date.now() : +new Date(p.stop), who = punchWho(p);
+  var blk = el('div', { class: 'rop-tp' + (live ? ' is-live' : '') + (p.stopReason && /^Complete/.test(p.stopReason) ? ' is-done' : ''), 'data-pid': p.id, style: '--lc:' + ropRc(p.startReason) + ';--ec:' + (live ? 'var(--status-working)' : ropRc(p.stopReason)) });
+  var srow = el('div', { class: 'rop-te is-s' }, [el('i'), ropTm(job, p, 's', st), el('span', { class: 'rop-tw' }, [el('span', { class: 'rop-twl', text: 'Started ·' }), ropRsn(job, p, 's')].concat(who ? [el('span', { class: 'rop-twl', text: '· ' + ropFirst(who) })] : [])),
+    el('span', { class: 'rop-ttools' }, [ropIb('notePlus', 'Add a note here', function () { ROPT.note = p.id; ROPT.ed = null; render(); }), ropIb('trash', 'Delete punch', function () { ropDelPunch(p); }, 'is-dng')])]);
+  blk.appendChild(srow);
+  var ns = noteEntries(p.notes);
+  ns.forEach(function (n, i) {
+    var at = st, m = /^(\d+):(\d{2})$/.exec(n.ran || ''); if (m) at = st + (+m[1] * 60 + +m[2]) * 60000;
+    blk.appendChild(el('div', { class: 'rop-tn' }, [el('small', { text: ropClk(at) }), el('span', { text: n.text }), ropIb('x', 'Delete this note', function () {
+      var lines = ropNoteLines(p); if (!lines[i]) return; pushUndo('delete punch note'); lines.splice(i, 1); p.notes = lines.join('\n'); save(true); render(); ropUndo('Note deleted.'); }, 'rop-tnx is-dng')]));
+  });
+  if (ROPT.note === p.id) {
+    var ni = el('input', { class: 'rop-nin', placeholder: live ? 'What are you doing right now? Enter saves' : 'A note on this punch — Enter saves', 'aria-label': 'A note on this punch' });
+    ni.addEventListener('click', function (e) { e.stopPropagation(); });
+    ni.addEventListener('keydown', function (e) { e.stopPropagation();
+      if (e.key === 'Escape') { ROPT.note = null; render(); return; }
+      if (e.key !== 'Enter') return; e.preventDefault();
+      var txt = autoPunct(String(ni.value || '').trim()); if (!txt) { ROPT.note = null; render(); return; }
+      pushUndo('punch note'); var line = noteStampFor(p) + ' ' + txt; p.notes = String(p.notes || '').trim() ? String(p.notes).replace(/\s+$/, '') + '\n' + line : line;
+      ROPT.note = null; save(true); render(); ropUndo('Note added to the punch.'); });
+    ni.addEventListener('blur', function () { setTimeout(function () { if (ROPT.note === p.id && !String(ni.value || '').trim()) { ROPT.note = null; render(); } }, 150); });
+    blk.appendChild(el('div', { class: 'rop-tn is-add' }, [el('small', { text: live ? 'now' : ropClk(en) }), ni]));
+    requestAnimationFrame(function () { try { ni.focus(); } catch (e) {} });
+  } else if (!ns.length) blk.appendChild(el('div', { class: 'rop-tn is-none', html: '<span>No notes on this punch</span>' }));
+  var dur = el('em', { text: hmText(en - st) });
+  if (live) TIMERS.push(function () { dur.textContent = hmText(Date.now() - st); });
+  var erow = live ? el('div', { class: 'rop-te is-e' }, [el('i'), el('b', { text: 'now' }), el('span', { class: 'rop-tw', text: 'On the clock' }), dur])
+    : el('div', { class: 'rop-te is-e' }, [el('i'), ropTm(job, p, 'e', en), el('span', { class: 'rop-tw' }, [el('span', { class: 'rop-twl', text: 'Stopped ·' }), ropRsn(job, p, 'e')]), dur]);
+  blk.appendChild(erow);
+  box.appendChild(blk);
+}
+/* a new time entry, opened right where it goes, prefilled between its neighbours */
+function ropAddForm(job, A) {
+  var base = A.s || A.e || Date.now();
+  var dIn = el('input', { type: 'date', value: ropYMD(base), 'aria-label': 'Day' }), sIn = el('input', { type: 'time', value: ropHM(A.s || Date.now() - 36e5), 'aria-label': 'Started' }), eIn = el('input', { type: 'time', value: ropHM(A.e || Date.now()), 'aria-label': 'Stopped' });
+  var sr = el('select', { 'aria-label': 'Started for' }), er = el('select', { 'aria-label': 'Stopped because' });
+  START_REASONS.forEach(function (x) { sr.appendChild(el('option', { value: x, text: x })); }); sr.value = START_REASONS.indexOf('Repairing') > -1 ? 'Repairing' : START_REASONS[0];
+  ropStops().forEach(function (x) { er.appendChild(el('option', { value: x, text: x })); }); er.value = 'Switched job';
+  var lab = function (t, c) { return el('label', {}, [el('span', { text: t }), c]); };
+  function saveIt() {
+    var d0 = new Date(dIn.value + 'T00:00:00').getTime(); if (isNaN(d0)) { toast('Pick the day'); return; }
+    var s = ropAt(d0, sIn.value), e = ropAt(d0, eIn.value); if (s == null || e == null) { toast('Both a start and a stop are needed'); return; }
+    if (e <= s) e += 864e5;
+    if (e > Date.now()) { toast('A stop time can’t be in the future'); return; }
+    var r = addManualPunch({ roId: RO.id, opId: job.id, start: new Date(s).toISOString(), stop: new Date(e).toISOString(), startReason: sr.value, stopReason: er.value, notes: '' });
+    if (!r.ok) { toast(r.msg); return; }
+    ROPT.add = null; save(true); render(); tecRender(); ropUndo('Time entry added — ' + hmText(e - s) + '.');
+  }
+  var f = el('div', { class: 'rop-tf', role: 'group', 'aria-label': 'A new time entry' }, [lab('Day', dIn), el('span'), lab('Started', sIn), lab('For', sr), lab('Stopped', eIn), lab('Because', er),
+    el('div', { class: 'rop-tff' }, [el('small', { text: 'A new time entry on Op ' + ropN(job) }), el('button', { class: 'px-btn px-btn--ghost px-btn--sm', type: 'button', text: 'Cancel', onClick: function (e) { e.stopPropagation(); ROPT.add = null; render(); } }),
+      el('button', { class: 'px-btn px-btn--primary px-btn--sm', type: 'button', html: pxI('check', 13) + 'Save', onClick: function (e) { e.stopPropagation(); saveIt(); } })])]);
+  f.addEventListener('click', function (e) { e.stopPropagation(); });
+  f.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Enter' && e.target.tagName !== 'SELECT') { e.preventDefault(); saveIt(); } if (e.key === 'Escape') { ROPT.add = null; render(); } });
+  requestAnimationFrame(function () { try { sIn.focus(); } catch (e) {} });
+  return f;
+}
+function ropAddEnd(job) {
+  var ps = punchesOf(job).slice().sort(function (a, b) { return new Date(a.start) - new Date(b.start); }), l = ps[ps.length - 1], now = Date.now();
+  var s = l && l.stop ? Math.max(+new Date(l.stop), now - 36e5) : now - 36e5;
+  ROPT.add = { op: job.id, k: 'end', s: s, e: now }; ROPT.ed = null; ROPT.note = null; render();
+}
+function ropTimeline(job, pane) {
+  if (ROPT.add && ROPT.add.op !== job.id) ROPT.add = null;
+  var ps = punchesOf(job).slice().sort(function (a, b) { return new Date(a.start) - new Date(b.start); }), items = [];
+  ps.forEach(function (p) { items.push({ at: +new Date(p.start), p: p }); });
+  (job.log || []).forEach(function (l) { if (l && l.text && (l.kind === 'cause' || l.kind === 'fix')) items.push({ at: +new Date(l.at), n: { lb: l.kind === 'fix' ? 'Correction' : 'Cause', text: l.text } }); });
+  (Array.isArray(job.offNotes) ? job.offNotes : []).forEach(function (n) { items.push({ at: +new Date(n.at), n: { lb: n.by ? ropFirst(n.by) : 'Note', text: n.text } }); });
+  items.sort(function (a, b) { return a.at - b.at; });
+  var bar = ropDayBar(ps); if (bar) pane.appendChild(bar);
+  var box = el('div', { class: 'rop-tl' }), last = '', prevP = null, k = 0;
+  var dayRow = function (t) { var d = new Date(t), lb = d.toDateString() === new Date().toDateString() ? 'Today' : pxDay(d); if (lb === last) return; last = lb; box.appendChild(el('div', { class: 'rop-tday', text: lb })); };
+  items.forEach(function (it) {
+    if (it.p && prevP) {
+      var key = 'b' + (k++), A = { op: job.id, k: key, s: prevP.stop ? +new Date(prevP.stop) : null, e: +new Date(it.p.start) };
+      if (ROPT.add && ROPT.add.k === key) box.appendChild(ropAddForm(job, ROPT.add));
+      else if (!ROPT.add) box.appendChild(el('button', { class: 'rop-addb', type: 'button', 'aria-label': 'Add a time entry here', html: '<span>' + pxI('plus', 10) + 'time entry</span>', onClick: function (e) { e.stopPropagation(); A.s = A.s || A.e - 18e5; ROPT.add = A; ROPT.ed = null; ROPT.note = null; render(); } }));
+    }
+    dayRow(it.at);
+    if (it.n) { box.appendChild(el('div', { class: 'rop-tn is-solo', html: '<small>' + esc(ropClk(it.at)) + '</small><span><em>' + esc(it.n.lb) + '</em>' + esc(it.n.text) + '</span>' })); return; }
+    ropPunch(job, it.p, box); prevP = it.p;
+  });
+  if (ROPT.add && ROPT.add.k === 'end') box.appendChild(ropAddForm(job, ROPT.add));
+  if (!items.length && !(ROPT.add && ROPT.add.k === 'end')) box.appendChild(ropNone('No time on this operation yet. Start the clock above, or add a time entry.'));
+  pane.appendChild(box);
+  if (opDoneNow(job)) return;
+  var rp = ropRun(job);
+  var ta = el('textarea', { class: 'px-input px-input--full rop-ta', rows: '2', placeholder: rp ? 'What you found, what you did — it goes in this punch (Enter saves)' : 'What you found, what you did — no clock needed (Enter saves)' });
+  if (OFF_DRAFTS[job.id]) ta.value = OFF_DRAFTS[job.id];
+  ta.addEventListener('input', function () { if (ta.value.trim()) OFF_DRAFTS[job.id] = ta.value; else delete OFF_DRAFTS[job.id]; });
+  function saveNote() {
+    var txt = autoPunct(String(ta.value || '').replace(/\s*\n\s*/g, ' ').trim()); if (!txt) return;
+    pushUndo('note'); delete OFF_DRAFTS[job.id];
+    var p2 = ropRun(job);
+    if (p2) { var line = noteStampFor(p2) + ' ' + txt; p2.notes = String(p2.notes || '').trim() ? String(p2.notes).replace(/\s+$/, '') + '\n' + line : line; }
+    else job.offNotes = (Array.isArray(job.offNotes) ? job.offNotes : []).concat([{ id: 'on' + Date.now().toString(36), at: new Date().toISOString(), text: txt, by: punchByName() || ropMe() }]);
+    save(true); render(); ropUndo(p2 ? 'Note saved in the running punch' : 'Note saved on Op ' + ropN(job));
+    requestAnimationFrame(function () { var t2 = R.querySelector('.rop-ta'); if (t2) t2.focus(); });
+  }
+  ta.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); saveNote(); } });
+  pane.appendChild(el('div', { class: 'px-notecomp' }, [ta, el('button', { class: 'px-btn px-btn--sm', type: 'button', text: 'Save', onClick: saveNote })]));
+}
+/* ---------- each tab's actions, at the right of the tabs (only the open tab's) ---------- */
+function ropAttach(job, files) {
+  var arr = Array.prototype.slice.call(files || []); if (!arr.length) return;
+  dropFilesOnJob(job, arr); UI.ivTab = UI.ivTab || {}; UI.ivTab[job.id] = 'files'; render();
+  toast(arr.length + ' file' + (arr.length === 1 ? '' : 's') + ' added to Op ' + ropN(job), { label: 'UNDO', run: function () { restoreSnapshot(); } });
+}
+function ropPasteShot(job) {
+  var no = function () { toast('Press Ctrl V on the RO to paste a screenshot here.'); };
+  try {
+    if (!navigator.clipboard || !navigator.clipboard.read) { no(); return; }
+    navigator.clipboard.read().then(function (items) {
+      var got = [];
+      items.forEach(function (it) { var t = (it.types || []).filter(function (x) { return /^image\//.test(x); })[0]; if (t) got.push(it.getType(t).then(function (b) { return new File([b], 'screenshot-' + new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-') + '.' + (t.split('/')[1] || 'png'), { type: t }); })); });
+      if (!got.length) { toast('No picture on the clipboard — copy a screenshot first.'); return; }
+      Promise.all(got).then(function (fs) { ropAttach(job, fs); });
+    }, no);
+  } catch (e) { no(); }
+}
+function ropTabActs(job, cur) {
+  var box = el('span', { class: 'rop-tacts' });
+  if (cur === 'time') box.appendChild(ropIb('clockPlus', 'Add time entry', function () { ropAddEnd(job); }));
+  else if (cur === 'parts') {
+    box.appendChild(ropIb('plus', 'Add part', function () { ROPT.padd = job.id; render(); }));
+    box.appendChild(ropIb('box', 'From inventory…', function () { openInvPicker(job); }));
+    box.appendChild(ropIb('scan', 'Extract from a quote…', function () { openExtractParts(job); }));
+  } else {
+    var mk = function (acc, cap) { var i = el('input', { type: 'file', accept: acc, style: 'display:none' }); if (!cap) i.setAttribute('multiple', 'multiple'); else i.setAttribute('capture', 'environment'); i.addEventListener('change', function () { ropAttach(job, i.files); }); box.appendChild(i); return i; };
+    var up = mk('image/*,video/*,.pdf,application/pdf'), cam = mk('image/*', 1);
+    box.appendChild(ropIb('upload', 'Upload', function () { up.click(); }));
+    box.appendChild(ropIb('camera', 'Take a photo', function () { cam.click(); }));
+    box.appendChild(ropIb('paste', 'Paste a screenshot', function () { ropPasteShot(job); }));
+  }
+  box.addEventListener('click', function (e) { e.stopPropagation(); });
+  return box;
+}
+/* Ctrl V on the RO page with a picture on the clipboard: it goes on the open operation */
+document.addEventListener('paste', function (e) {
+  try {
+    if (UI.view !== 'ros' || !RO || RO.shop || UI.modal) return;
+    var t = (e.composedPath && e.composedPath()[0]) || e.target; if (t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName || '') || t.isContentEditable)) return;
+    var fs = Array.prototype.filter.call((e.clipboardData && e.clipboardData.files) || [], function (f) { return /^image\//.test(f.type || ''); }); if (!fs.length) return;
+    var job = S.jobs.filter(function (j) { return j.id === S.ui.card; })[0]; if (!job) return;
+    e.preventDefault(); ropAttach(job, fs);
+  } catch (er) {}
+});
+/* the quick add line for a part, opened from the Parts tab's + */
+function ropPartAdd(job, pane, nParts) {
+  if (ROPT.padd !== job.id && UI.ivPartAdd !== job.id) { if (!nParts) pane.appendChild(el('div', { class: 'px-li', html: '<small>No parts on this operation yet.</small>' })); return; }
+  UI.ivPartAdd = null; ROPT.padd = job.id;
+  var inp = el('input', { class: 'px-input px-input--full rop-padd', placeholder: 'e.g. 4988201 x2 brake chamber $45.99 — Enter adds it, Esc closes' });
+  inp.addEventListener('click', function (e) { e.stopPropagation(); });
+  inp.addEventListener('keydown', function (ev) {
+    ev.stopPropagation();
+    if (ev.key === 'Escape') { ROPT.padd = null; render(); return; }
+    if (ev.key !== 'Enter') return; ev.preventDefault();
+    var qp = parseQuickPart(inp.value); if (!qp.desc && !qp.pn) return;
+    pushUndo('add part');
+    var np = blankPart(); np.description = qp.desc; np.partNumber = qp.pn; np.qty = qp.qty; if (qp.price) np.price = qp.price;
+    job.parts.push(np); invAddFromPart(np, RO && RO.roNumber); save(true); render();
+    toast('Added ' + (qp.desc || qp.pn), { label: 'UNDO', run: function () { restoreSnapshot(); } });
+  });
+  pane.appendChild(inp);
+  requestAnimationFrame(function () { try { inp.focus(); } catch (e) {} });
+}
+/* ---------- the operation's header row (Parsec 12.3): status and ⋯ in the row, the job type a dropdown ---------- */
+var ROP_JT = [['DIAG', 'DIAG'], ['OP', 'REPAIR'], ['PM', 'PM'], ['WARR', 'WARR'], ['COMEBACK', 'COMEBACK'], ['SUBLET', 'SUBLET'], ['RECALL', 'RECALL']];
+function ropJtLbl(k) { return k === 'OP' ? 'REPAIR' : k; }
+function ropJt(j) {
+  var t = 'OP'; try { t = opJobType(j); } catch (e) {}
+  var b = el('button', { class: 'px-tag rop-jt', type: 'button', 'data-t': t, title: 'Job type — click to change', 'aria-haspopup': 'menu', style: '--jc:' + jtVar(t), html: '<span>' + esc(ropJtLbl(t)) + '</span>' + pxI('chevD', 10) });
+  b.addEventListener('click', function (e) {
+    e.stopPropagation();
+    var pop = el('div', { class: 'px-pop rop-pop rop-jtpop', role: 'menu' }, [el('div', { class: 'rop-poph', html: '<b>Job type</b><small>Op ' + ropN(j) + '</small>' })].concat(ROP_JT.map(function (x) {
+      var on = x[0] === t;
+      return el('button', { class: 'px-menu__item rop-mi' + (on ? ' is-on' : ''), type: 'button', role: 'menuitemradio', 'aria-checked': on ? 'true' : 'false', html: '<i class="rop-dot sq" style="background:' + jtVar(x[0]) + '"></i><span><b>' + x[1] + '</b></span>' + (on ? pxI('check', 13) : ''),
+        onClick: function (ev) { ev.stopPropagation(); pxClosePop(); if (on) return; pushUndo('job type'); j.jobType = x[0]; save(true); render(); ropUndo('Op ' + ropN(j) + ' is ' + x[1] + ' now.'); } });
+    })));
+    pxPop(b, pop);
+  });
+  return b;
+}
+/* the operation's status: the pill and its menu, in the row (it used to sit in the open operation's body) */
+function ropStatus(j) {
+  var st = opStatus(j), nm = typeof st === 'string' ? st : st.status, sub = typeof st !== 'string' && st.sub ? st.sub : '';
+  var b = el('button', { class: 'rop-st', type: 'button', 'aria-haspopup': 'menu', title: 'Operation status: ' + jobStatusLabel(nm) + (sub ? ' · ' + sub : '') + ' — click to change', html: pxSi(nm) + '<span>' + esc(pxCase(jobStatusLabel(nm))) + '</span>' + pxI('chevD', 10) });
+  b.addEventListener('click', function (e) {
+    e.stopPropagation();
+    var pop = el('div', { class: 'px-pop rop-pop rop-stpop', role: 'menu' }, [el('div', { class: 'rop-poph', html: '<b>Operation status</b><small>Op ' + ropN(j) + '</small>' })]);
+    JOB_STATUS_NAMES.forEach(function (n) {
+      var on = jobStatusLabel(n) === jobStatusLabel(nm);
+      pop.appendChild(pxMenuItem(pxSi(n), pxCase(jobStatusLabel(n)), { on: on, tick: on, run: function () {
+        if (on) return;
+        if (/^Complete/.test(n) && opCompleteGate(j)) return;
+        pushUndo('operation status');
+        var rp = runningPunchOf(j); if (rp) { stopClock(); rp.stopReason = n; }
+        j.jobStatus = { status: n, setAt: nowIso() };
+        save(true); render(); tecRender();
+        ropUndo('Op ' + ropN(j) + ' set to ' + pxCase(jobStatusLabel(n)) + (rp ? ' — clock stopped' : '') + '.');
+      } }));
+    });
+    pxPop(b, pop, { alignRight: true });
+  });
+  return b;
+}
+/* the operation's ⋯: the same on every row */
+function ropOpMenu(j) {
+  return ropIb('more', 'More for Op ' + ropN(j), function (e, b) {
+    var pop = el('div', { class: 'px-pop rop-pop rop-opmenu', role: 'menu' }, [
+      pxMenuItem('plus', 'Add part', { run: function () { S.ui.card = j.id; UI.ivTab = UI.ivTab || {}; UI.ivTab[j.id] = 'parts'; ROPT.padd = j.id; render(); } }),
+      pxMenuItem('print', 'Print Op', { run: function () { printOp(j); } }),
+      pxMenuItem('swap', 'Move to another RO…', { run: function () { moveOpDialog(j); } }),
+      pxSep(),
+      pxMenuItem('trash', 'Delete operation', { danger: true, run: function () { ropDelOp(j); } })]);
+    pxPop(b, pop, { alignRight: true });
+  }, 'rop-more1');
+}
+function ropDelOp(job) {
+  var np = punchesOf(job).length, nP = (job.parts || []).length;
+  modal({ title: 'Delete this operation?',
+    body: [(job.complaint || 'This operation') + ' and its ' + nP + (nP === 1 ? ' part line' : ' part lines') + (np ? ', plus ' + np + ' time punch' + (np === 1 ? '' : 'es') + ' in the Time Log,' : '') + ' will be removed.' + (runningPunchOf(job) ? ' Its clock is running now — it will be stopped and removed with it.' : '')],
+    actions: [{ label: 'Cancel' }, { label: 'Delete operation', kind: 'danger', run: function () {
+      var wasLive = !!runningPunchOf(job);
+      snapshot('delete operation');
+      STATE.punches = STATE.punches.filter(function (p) { return p.opId !== job.id; });
+      S.jobs = S.jobs.filter(function (x) { return x.id !== job.id; });
+      if (S.ui.card === job.id) S.ui.card = null;
+      var oa = openList(RO), ok = oa.indexOf(job.id); if (ok > -1) oa.splice(ok, 1);
+      if (soloJob === job.id) soloJob = null;
+      save(true); render();
+      toast('Operation deleted' + (wasLive ? ' — its clock was stopped' : ''), { label: 'UNDO', run: function () { restoreSnapshot(); } });
+    } }] });
+}
+function ropRename(j, span) {
+  var inp = el('input', { class: 'rop-ren', value: j.complaint || '', 'aria-label': 'The operation' }), done = false;
+  var fin = function (keep) { if (done) return; done = true; var v = String(inp.value || '').trim();
+    if (keep && v && v !== j.complaint) { pushUndo('rename operation'); j.complaint = v; save(true); render(); ropUndo('Renamed Op ' + ropN(j) + '.'); } else render(); };
+  inp.addEventListener('click', function (e) { e.stopPropagation(); });
+  inp.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Enter') { e.preventDefault(); fin(true); } else if (e.key === 'Escape') { e.preventDefault(); fin(false); } });
+  inp.addEventListener('blur', function () { fin(true); });
+  span.replaceWith(inp); inp.focus(); inp.select();
+}
+function ropOpRow(j, i, on, stash) {
+  var st = opStatus(j), nm = typeof st === 'string' ? st : st.status, c = jobCalc(j), live = !!runningPunchOf(j);
+  var rp = (j.parts || []).filter(function (p) { return p && (p.description || p.partNumber); });
+  var notOrd = rp.filter(function (p) { return (p.status || 'Not Ordered') === 'Not Ordered'; }).length, out = rp.filter(function (p) { return !partInHand(p); }).length;
+  var meta = notOrd ? notOrd + ' part' + (notOrd === 1 ? '' : 's') + ' not ordered' : out ? out + ' part' + (out === 1 ? '' : 's') + ' on the way' : (j.declined ? 'Declined' : '');
+  var who = (punchesOf(j).slice(-1)[0] || {}).by || RO.assignedTech || '';
+  var row = el('div', { class: 'px-row rop-orow' + (on ? ' is-on' : ''), role: 'button', tabindex: '0', 'aria-expanded': on ? 'true' : 'false', 'data-op': j.id, title: pxCase(nm) + (typeof st !== 'string' && st.sub ? ' · ' + st.sub : ''),
+    html: pxSi(nm, live ? 'px-breathe' : '') + '<span class="px-row__n">' + (i + 1) + '</span><span class="px-row__t" title="' + esc(j.complaint || 'New operation') + ' — double-click to rename">' + esc(j.complaint || 'New operation') + '</span>' + (meta ? '<span class="px-row__m">' + esc(meta) + '</span>' : '') + ropChips(j) });
+  row.appendChild(ropJt(j));
+  row.insertAdjacentHTML('beforeend', '<span class="px-row__time">' + pxNum(c.b) + ' <em>/ ' + pxNum(c.q) + ' h</em></span>' + pxMini(c.b, c.q) + '<span class="px-av" title="' + esc(who) + '">' + esc(ivInit(who)) + '</span>');
+  var ctl = el('span', { class: 'rop-octl' });
+  if (!RO.shop) ctl.appendChild(ropStatus(j));
+  ctl.appendChild(ropOpMenu(j));
+  ctl.addEventListener('click', function (e) { e.stopPropagation(); });
+  ctl.addEventListener('mousedown', function (e) { e.stopPropagation(); });
+  row.appendChild(ctl);
+  function tog(e) { if (ropPickClick(e, 'o', j.id)) return; S.ui.card = on ? null : j.id; if (on) UI.roOp[RO.id] = null; render(); }
+  /* Ctrl / Shift click anywhere on the row picks it — on the job type, the status or ⋯ too */
+  row.addEventListener('click', function (e) { if ((e.ctrlKey || e.metaKey || e.shiftKey) && !(e.target.closest && e.target.closest('.rop-cb, .rop-ren'))) { e.stopPropagation(); ropPickClick(e, 'o', j.id); } }, true);
+  row.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('.rop-octl, .rop-jt, .rop-cb, .rop-ren')) return; e.stopPropagation(); tog(e); });
+  row.addEventListener('keydown', function (e) { if ((e.key === 'Enter' || e.key === ' ') && e.target === row) { e.preventDefault(); e.stopPropagation(); tog(e); } });
+  var tl = row.querySelector('.px-row__t');
+  if (tl) tl.addEventListener('dblclick', function (e) { e.preventDefault(); e.stopPropagation(); ropRename(j, tl); });
+  return row;
+}
+function ropOpBody(j, stash) {
+  var body = el('div', { class: 'px-op' });
+  /* the links that rode with the codes (the claim, fixed before, filled in from) stay, on their own line; codes live in the Fault codes block */
+  var head = stash && stash.querySelector('.card[data-job="' + j.id + '"] > .cardHead'), links = head ? Array.prototype.slice.call(head.querySelectorAll('.fltLink')) : [];
+  if (links.length) { var lr = el('div', { class: 'px-ophead rop-olinks' }); links.forEach(function (a) { lr.appendChild(a); }); body.appendChild(lr); }
+  body.appendChild(pxTime(j));
+  body.appendChild(pxTabs(j, stash));
+  return body;
+}
+/* the operation's chips: Skill and ASIST's approval (shown only) */
+function ropChips(j) {
+  var h = '';
+  if (j.skill) h += '<span class="rop-chip" title="Skill">Skill ' + esc(j.skill) + '</span>';
+  if (j.asistApproval) h += '<span class="rop-chip is-' + (/^appr/i.test(j.asistApproval) ? 'a' : /^decl/i.test(j.asistApproval) ? 'd' : 'p') + '" title="ASIST’s approval — shown only, it doesn’t change the status">ASIST ' + esc(j.asistApproval) + '</span>';
+  return h;
+}
+
+/* ---------- picking ---------- */
+function ropSelReset() { ROPS.o = {}; ROPS.p = {}; ROPS.pOp = null; ROPS.last = null; }
+function ropSelOps() { return S.jobs.filter(function (j) { return j && ROPS.o[j.id]; }); }
+function ropSelParts() { var j = ROPS.pOp && S.jobs.filter(function (x) { return x.id === ROPS.pOp; })[0]; return j ? (j.parts || []).filter(function (p) { return p && ROPS.p[p.id]; }) : []; }
+function ropAny() { return Object.keys(ROPS.o).length > 0 || Object.keys(ROPS.p).length > 0; }
+function ropToggle(k, id, ev, opId) {
+  var ids, M;
+  if (k === 'o') { ROPS.p = {}; ROPS.pOp = null; M = ROPS.o; ids = S.jobs.filter(function (j) { return j && j.id; }).map(function (j) { return j.id; }); }
+  else { if (ROPS.pOp !== opId) { ROPS.p = {}; ROPS.pOp = opId; } ROPS.o = {}; M = ROPS.p; var j = S.jobs.filter(function (x) { return x.id === opId; })[0]; ids = j ? (j.parts || []).filter(function (p) { return p && (p.description || p.partNumber); }).map(function (p) { return p.id; }) : []; }
+  if (ev && ev.shiftKey && ROPS.last && ROPS.last.k === k && ids.indexOf(ROPS.last.id) > -1 && ids.indexOf(id) > -1) { var a = ids.indexOf(ROPS.last.id), b = ids.indexOf(id); ids.slice(Math.min(a, b), Math.max(a, b) + 1).forEach(function (i) { M[i] = 1; }); }
+  else if (M[id]) delete M[id]; else M[id] = 1;
+  if (k === 'p' && !Object.keys(ROPS.p).length) ROPS.pOp = null;
+  ROPS.last = { k: k, id: id }; pxClosePop(); render();
+}
+function ropAll(k, opId) {
+  if (k === 'o') { var L = S.jobs.filter(function (j) { return j && j.id; }), all = L.length && L.every(function (j) { return ROPS.o[j.id]; }); ropSelReset(); if (!all) L.forEach(function (j) { ROPS.o[j.id] = 1; }); }
+  else { var j = S.jobs.filter(function (x) { return x.id === opId; })[0], P = j ? (j.parts || []).filter(function (p) { return p && (p.description || p.partNumber); }) : [], all2 = ROPS.pOp === opId && P.length && P.every(function (p) { return ROPS.p[p.id]; }); ropSelReset(); if (!all2 && P.length) { ROPS.pOp = opId; P.forEach(function (p) { ROPS.p[p.id] = 1; }); } }
+  pxClosePop(); render();
+}
+/* the box: a span inside the row (the row is a button), so a click on it picks instead of opening */
+function ropCk(on, mid, label, fn) {
+  var b = el('span', { class: 'rop-cb' + (on ? ' is-on' : mid ? ' is-mid' : ''), role: 'checkbox', tabindex: '0', 'aria-checked': on ? 'true' : mid ? 'mixed' : 'false', 'aria-label': label, html: on ? pxI('check', 11) : mid ? '<i></i>' : '' });
+  b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); fn(e); });
+  b.addEventListener('keydown', function (e) { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); fn(e); } });
+  return b;
+}
+function ropPickClick(e, k, id, opId) { if (!(e.ctrlKey || e.metaKey || e.shiftKey)) return false; e.preventDefault(); ropToggle(k, id, e, opId); return true; }
+function ropDecorOps(box) {
+  var sec = box.querySelector('.px-sec'), L = S.jobs.filter(function (j) { return j && j.id; }), n = L.filter(function (j) { return ROPS.o[j.id]; }).length;
+  if (sec && L.length) { sec.classList.add('rop-sech0'); sec.insertBefore(ropCk(n > 0 && n === L.length, n > 0, 'Pick every operation', function () { ropAll('o'); }), sec.firstChild); }
+  Array.prototype.forEach.call(box.querySelectorAll('.px-row[data-op]'), function (row) {
+    var id = row.getAttribute('data-op'), j = S.jobs.filter(function (x) { return x.id === id; })[0]; if (!j) return;
+    if (ROPS.o[id]) row.classList.add('is-sel');
+    row.insertBefore(ropCk(!!ROPS.o[id], false, 'Pick operation ' + ropN(j), function (e) { ropToggle('o', id, e); }), row.firstChild);
+  });
+}
+function ropPartsHead(job, parts, pane) {
+  if (!parts.length) return;
+  var n = ROPS.pOp === job.id ? parts.filter(function (p) { return ROPS.p[p.id]; }).length : 0, ext = parts.some(function (p) { return +p.core > 0 || p.salesman; });
+  pane.appendChild(el('div', { class: 'px-li rop-pth' + (ext ? ' is-ext' : '') }, [ropCk(n > 0 && n === parts.length, n > 0, 'Pick every part on Op ' + ropN(job), function () { ropAll('p', job.id); }),
+    el('span', { text: 'Part' }), el('span', { text: 'Number' }), el('span', { class: 'r', text: 'Qty' })].concat(ext ? [el('span', { class: 'r', text: 'Core' }), el('span', { text: 'Salesman' })] : []).concat([el('span', { text: 'Status' })])));
+}
+function ropPartRow(job, p, b, eta, parts) {
+  var ext = parts.some(function (x) { return +x.core > 0 || x.salesman; }), on = ROPS.pOp === job.id && !!ROPS.p[p.id];
+  var cells = [el('span', { class: 'px-li__t', html: esc(ptName(p)) + (eta && !partInHand(p) ? ' <small>· ETA ' + esc(eta) + '</small>' : '') }), el('span', { class: 'px-id px-muted', text: p.partNumber || '' }), el('span', { class: 'r', text: p.qty || '1' })];
+  if (ext) cells.push(el('span', { class: 'r px-muted', text: +p.core > 0 ? pxMoney(+p.core) : '' }), el('span', { class: 'px-muted rop-ell', text: p.salesman || '' }));
+  cells.push(b);
+  var row = el('div', { class: 'px-li px-li--part rop-prow' + (ext ? ' is-ext' : '') + (on ? ' is-sel' : ''), 'data-part': p.id }, [ropCk(on, false, 'Pick ' + ptName(p), function (e) { ropToggle('p', p.id, e, job.id); })].concat(cells));
+  row.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('.px-pstat')) return; ropPickClick(e, 'p', p.id, job.id); });
+  return row;
+}
+function ropAsk(who, ops, parts) {
+  var to = who === 'parts' ? ropPerson('Parts') : ropPerson('Foreman'), toF = to ? ropFirst(to) : who === 'parts' ? 'Parts' : 'the foreman';
+  if (!to) { toast('There’s no one in that role on the team yet.'); return; }
+  var what = parts.length ? parts.map(function (z) { return ptName(z) + (z.partNumber ? ' · ' + z.partNumber : '') + ' · qty ' + (z.qty || 1); }).join('\n') : ops.map(function (op) { return 'Op ' + ropN(op) + ' — ' + (op.complaint || ''); }).join('\n');
+  var ta = el('textarea', { class: 'px-input px-input--full', rows: '3', placeholder: parts.length ? 'Need more, wrong part, is it here yet… One note, about all of them.' : 'What do you need? One note, about all of them.' });
+  pxModal({ title: 'Ask ' + toF, sub: 'About ' + (parts.length ? parts.length + ' part' + (parts.length === 1 ? '' : 's') : ops.map(function (op) { return 'Op ' + ropN(op); }).join(', ')) + ' — ' + (RO.roNumber || ''), size: 'sm', submit: 'Send to ' + toF,
+    body: [el('div', { class: 'rop-what', text: what }), ta], run: function () {
+      var first = ops[0] || S.jobs.filter(function (j) { return j.id === ROPS.pOp; })[0] || null;
+      ropNote(to, 'men', first, ropFirst(ropMe()) + ' asked about ' + (parts.length ? parts.length + ' part' + (parts.length === 1 ? '' : 's') : ops.map(function (op) { return 'Op ' + ropN(op); }).join(', ')) + ' — ' + ropNo(), what, ta.value.trim());
+      ropSelReset(); render(); toast('Sent to ' + toF + ' — one note, under Messages on this RO.'); } });
+}
+function ropPaperHead(what) {
+  var tl = ''; try { tl = trkLabel(RO); } catch (e) {} if (tl === 'this truck') tl = RO.model || '';
+  var qr = ''; try { var q = qrcode(0, 'L'); q.addData(keyTagCode(RO)); q.make(); qr = q.createSvgTag(3, 2); } catch (e) {}
+  var when = ''; try { when = PG.whenL(Date.now()); } catch (e) { when = new Date().toLocaleString(); }
+  return '<div class="tp-h"><div><small>' + esc(what) + '</small><h1>' + esc(RO.roNumber || '') + ' · ' + esc(RO.customerName || '') + '</h1><p>' + esc(tl) + (RO.unitNumber ? ' · Unit ' + esc(RO.unitNumber) : '') + (RO.vin ? ' · VIN ' + esc(RO.vin) : '') + '</p><p>' + esc(ropMe()) + ' · printed ' + esc(when) + (RO.location ? ' · ' + esc(RO.location) : '') + '</p></div>' + (qr ? '<div class="tp-qr">' + qr + '<small>Scan to switch</small></div>' : '') + '</div>';
+}
+/* print one sheet: built in the page for a moment so the Technician page's paper styles go with it */
+function ropPrint(title, inner) {
+  var host = document.createElement('div'); host.setAttribute('data-pg', 'tech'); host.className = 'tg rop-printhost'; host.style.cssText = 'position:fixed;left:-10000px;top:0;width:800px;height:auto;visibility:hidden';
+  var p = document.createElement('div'); p.className = 'tch-paper'; p.innerHTML = inner; host.appendChild(p); document.body.appendChild(host);
+  try { PG.printPaper(p, title); } catch (e) { console.error(e); } host.remove();
+}
+function ropJacket(L) {
+  return ropPaperHead('Job jacket') + L.map(function (op) { var P = (op.parts || []).filter(function (p) { return p && (p.description || p.partNumber); }), F = op.faults || [];
+    return '<section class="tp-op"><h2>Op ' + ropN(op) + ' · ' + esc(opJobType(op)) + ' · ' + esc(op.complaint || '') + '<span>' + ropH1(+op.quoted || 0) + ' h quoted</span></h2>' + (F.length ? '<p class="tp-c">Codes: ' + esc(F.map(fcLabel).join(', ')) + '</p>' : '')
+      + (P.length ? '<table><tr><th></th><th>Part</th><th>Number</th><th>Qty</th><th>Status</th></tr>' + P.map(function (p) { return '<tr><td>☐</td><td>' + esc(p.description || '') + '</td><td>' + esc(p.partNumber || '') + '</td><td>' + esc(p.qty || 1) + '</td><td>' + esc(p.status || 'Not Ordered') + '</td></tr>'; }).join('') + '</table>' : '') + '<div class="tp-l"><b>Cause</b><i></i><i></i><b>Correction</b><i></i><i></i></div></section>'; }).join('');
+}
+function ropPickList(op, P) {
+  return ropPaperHead('Pick list · Op ' + ropN(op) + ' — ' + (op.complaint || '')) + '<table class="tp-pl"><tr><th></th><th>Part number</th><th>Description</th><th>Qty</th><th>Status</th></tr>' + P.map(function (p) { return '<tr><td>☐</td><td>' + esc(p.partNumber || '—') + '</td><td>' + esc(p.description || '') + '</td><td>' + esc(p.qty || 1) + '</td><td>' + esc(p.status || 'Not Ordered') + '</td></tr>'; }).join('') + '</table>';
+}
+function ropStopRun(job, why) { var rp = ropRun(job); if (!rp) return false; rp.stop = nowIso(); rp.stopReason = why; try { creditBurnt(rp); } catch (e) {} return true; }
+function ropSelAct(v, anchor) {
+  var L = ropSelOps(), live = L.filter(function (j) { return !opDoneNow(j) && !j.declined; }), P = ropSelParts(), opsTxt = L.map(function (op) { return 'Op ' + ropN(op); }).join(', ');
+  if (v === 'start') { if (live.length === 1 && !ropRun(live[0])) { var j0 = live[0]; ropSelReset(); toggleJobClock(j0); tecRender(); } return; }
+  if (v === 'hold') {
+    var pt = ropPerson('Parts'), wr = ropWriter() || ropPerson('Triage'), fm = ropPerson('Foreman');
+    var pop = el('div', { class: 'px-pop rop-pop', role: 'menu' }, [el('div', { class: 'rop-poph', html: '<b>Put ' + esc(opsTxt) + ' on hold</b><small>they go to Waiting</small>' })].concat([['Waiting – Parts', (pt ? ropFirst(pt) : 'Parts') + ' gets one note for all of them', pt], ['Waiting – Approval', (wr ? ropFirst(wr) : 'The writer') + ' gets them to send the estimate', wr], ['Waiting – Tech Support', 'Waiting on a Volvo case', ''], ['Waiting – Foreman', (fm ? ropFirst(fm) : 'The foreman') + ' gets them', fm]].map(function (z) {
+      return el('button', { class: 'px-menu__item rop-mi', type: 'button', role: 'menuitem', html: '<span><b>' + esc(z[0]) + '</b><small>' + esc(z[1]) + '</small></span>', onClick: function (e) {
+        e.stopPropagation(); pxClosePop(); if (!live.length) return;
+        pushUndo('hold'); try { commitNoteDrafts(); } catch (er) {}
+        live.forEach(function (j) { if (!ropStopRun(j, z[0])) j.jobStatus = { status: z[0], sub: null, setAt: nowIso(), hand: true }; });
+        if (z[2]) ropNote(z[2], z[0] === 'Waiting – Foreman' ? 'ask' : 'fyi', live[0], ropNo() + ' — ' + live.length + ' operation' + (live.length === 1 ? '' : 's') + ' waiting on you', live.map(function (j) { return 'Op ' + ropN(j) + ' — ' + (j.complaint || ''); }).join('\n'));
+        save(true); ropSelReset(); render(); tecRender(); ropUndo(live.length + ' on hold — ' + z[0].toLowerCase() + '.' + (z[2] ? ' ' + ropFirst(z[2]) + ' has one note about them.' : '')); } }); })));
+    pxPop(anchor, pop); return;
+  }
+  if (v === 'askp' || v === 'pask') return ropAsk('parts', L, P);
+  if (v === 'askf') return ropAsk('foreman', L, []);
+  if (v === 'note') {
+    var ta = el('textarea', { class: 'px-input px-input--full', rows: '3', placeholder: 'What you found, what you did… each one gets it, with the time' });
+    pxModal({ title: 'A note on ' + opsTxt, sub: 'Each one gets it, with the time', size: 'sm', submit: 'Save on ' + live.length, body: [ta], run: function () {
+      var txt = autoPunct(String(ta.value || '').trim()); if (!txt || !live.length) return false;
+      pushUndo('note on ' + live.length);
+      live.forEach(function (j) { var rp = ropRun(j); if (rp) { var line = noteStampFor(rp) + ' ' + txt; rp.notes = String(rp.notes || '').trim() ? String(rp.notes).replace(/\s+$/, '') + '\n' + line : line; } else j.offNotes = (Array.isArray(j.offNotes) ? j.offNotes : []).concat([{ id: 'on' + Date.now().toString(36) + ropN(j), at: nowIso(), text: txt, by: punchByName() || ropMe() }]); });
+      save(true); ropSelReset(); render(); ropUndo('Note saved on ' + live.length + ' operation' + (live.length === 1 ? '' : 's') + '.'); } });
+    return;
+  }
+  if (v === 'code') {
+    var inp = el('input', { class: 'px-input px-input--full', placeholder: '3226/2 or P0401' });
+    pxModal({ title: 'Add a code to ' + opsTxt, size: 'sm', submit: 'Add to ' + live.length, body: [inp], run: function () {
+      var f = parseFault(inp.value); if (!f) { toast('Type it as SPN/FMI — 3226/2 — or a P-code like P0401.'); return false; }
+      var add = live.filter(function (j) { return !(j.faults || []).some(function (x) { return fcSame(x, f); }); }); if (!add.length) { toast(fcLabel(f) + ' is already on all of them.'); return; }
+      pushUndo('fault code'); add.forEach(function (j) { j.faults = (j.faults || []).concat([f.code ? { id: 'fc_' + uid(), code: f.code } : { id: 'fc_' + uid(), spn: f.spn, fmi: f.fmi }]); });
+      save(true); ropSelReset(); render(); ropUndo(fcLabel(f) + ' added to ' + add.length + ' operation' + (add.length === 1 ? '' : 's') + '.'); } });
+    return;
+  }
+  if (v === 'done') {
+    var ok = [], no = [];
+    live.forEach(function (j) { var g = []; try { g = opCompleteGaps(j); } catch (e) {} if (g.length) no.push('Op ' + ropN(j) + ': ' + g.map(function (z) { return z.t; }).join(', ')); else ok.push(j); });
+    if (ok.length) { pushUndo('mark done'); try { commitNoteDrafts(); } catch (er) {} ok.forEach(function (j) { if (!ropStopRun(j, 'Complete')) j.jobStatus = { status: 'Complete', sub: null, setAt: nowIso(), hand: true }; }); save(true); }
+    ropSelReset(); render(); tecRender();
+    var msg = (ok.length ? ok.length + ' done' : 'None done') + (no.length ? ' · not yet — ' + no.join(' · ') : '') + '.';
+    if (ok.length) ropUndo(msg); else toast(msg);
+    return;
+  }
+  if (v === 'print') { ropPrint((RO.roNumber || 'RO') + ' job jacket', ropJacket(L)); return; }
+  if (v === 'del') {   /* Parsec 12.2: delete the picked operations — with their parts and time; Undo brings them back */
+    if (!L.length) return;
+    var nPt = 0, nPu = 0, run = false; L.forEach(function (j) { nPt += (j.parts || []).length; STATE.punches.forEach(function (p) { if (p.opId === j.id) { nPu++; if (!p.stop) run = true; } }); });
+    var ln = L.length + ' operation' + (L.length === 1 ? '' : 's');
+    pxModal({ title: 'Delete ' + opsTxt + '?', sub: ln + ' on ' + ropNo(), size: 'sm', danger: true, submit: 'Delete ' + ln,
+      body: [el('p', { class: 'rop-delp', text: L.map(function (op) { return 'Op ' + ropN(op) + ' — ' + (op.complaint || 'Operation'); }).join('\n') }),
+        el('p', { class: 'rop-delp2', text: (nPt || nPu ? (L.length === 1 ? 'Its ' : 'Their ') + nPt + ' part line' + (nPt === 1 ? '' : 's') + (nPu ? ' and ' + nPu + ' time punch' + (nPu === 1 ? '' : 'es') + ' in the Time Log' : '') + (nPt + nPu === 1 ? ' goes' : ' go') + ' too' : 'Nothing else goes with ' + (L.length === 1 ? 'it' : 'them')) + (run ? ' — the clock running on one stops' : '') + '. Undo brings them back.' })],
+      run: function () {
+        var ids = L.map(function (j) { return j.id; });
+        pushUndo('delete ' + ln); try { commitNoteDrafts(); } catch (er) {}
+        try { audit('op-del', 'Deleted ' + opsTxt + ' on ' + roLabel(RO), RO); } catch (er) {}
+        STATE.punches = STATE.punches.filter(function (p) { return ids.indexOf(p.opId) < 0; });
+        S.jobs = S.jobs.filter(function (x) { return ids.indexOf(x.id) < 0; });
+        if (ids.indexOf(S.ui.card) > -1) S.ui.card = S.jobs[0] ? S.jobs[0].id : null;
+        try { var oa = openList(RO); ids.forEach(function (id) { var k = oa.indexOf(id); if (k > -1) oa.splice(k, 1); }); } catch (er) {}
+        try { if (soloJob && ids.indexOf(soloJob) > -1) soloJob = null; } catch (er) {}
+        save(true); ropSelReset(); render(); tecRender(); ropUndo(ln + ' deleted.');
+      } });
+    return;
+  }
+  if (v === 'story') { var live0 = ropLive(), B = []; try { B = raStory(RO).split('\n\n'); } catch (e) {} var txt2 = L.map(function (op) { return B[live0.indexOf(op)]; }).filter(Boolean).join('\n\n');
+    pxCopy((RO.roNumber || '') + ' · ' + (RO.customerName || '') + '\n\n' + txt2, 'Copied the story for ' + L.length + ' operation' + (L.length === 1 ? '' : 's') + ' — paste it in ASIST or anywhere.'); return; }
+  var op = S.jobs.filter(function (x) { return x.id === ROPS.pOp; })[0]; if (!op) return;
+  var setSt = function (from, to, verb, why) { var D = P.filter(function (p) { return from.indexOf(p.status || 'Not Ordered') > -1; }); if (!D.length) return;
+    pushUndo('parts ' + verb); D.forEach(function (p) { p.status = to; p.statusChangedAt = nowIso(); if (to === 'Picked up') p.pickedBy = punchByName() || ropMe(); }); save(true);
+    if (to === 'Picked up' || to === 'Returned') ropNote(ropPerson('Parts'), 'fyi', op, ropFirst(ropMe()) + ' ' + (to === 'Returned' ? 'is returning' : 'picked up') + ' ' + D.length + ' part' + (D.length === 1 ? '' : 's') + ' for ' + ropNo(), D.map(function (p) { return ptName(p) + (p.partNumber ? ' · ' + p.partNumber : ''); }).join('\n'));
+    ropSelReset(); render(); ropUndo(D.length + ' part' + (D.length === 1 ? '' : 's') + ' ' + verb + (P.length > D.length ? ' · ' + (P.length - D.length) + ' skipped (' + why + ')' : '') + '.'); };
+  if (v === 'ppick') return setSt(['Staged'], 'Picked up', 'picked up', 'not staged');
+  if (v === 'pinst') return setSt(['Picked up', 'Received', 'Staged'], 'Installed', 'installed', 'not in hand');
+  if (v === 'pret') return setSt(['Not Ordered', 'Ordered', 'Backordered', 'Received', 'Staged', 'Picked up'], 'Returned', 'going back to Parts', 'installed or already returned');
+  if (v === 'ppns') { pxCopy(P.map(function (p) { return (p.partNumber || '—') + '\t' + (p.description || '') + '\t' + (p.qty || 1); }).join('\n'), 'Copied ' + P.length + ' part number' + (P.length === 1 ? '' : 's') + '.'); return; }
+  if (v === 'plist') { ropPrint((RO.roNumber || 'RO') + ' pick list', ropPickList(op, P)); return; }
+  if (v === 'pmove') {
+    var T = S.jobs.filter(function (j) { return j && j.id && j.id !== op.id && !j.declined; });
+    var pop2 = el('div', { class: 'px-pop rop-pop', role: 'menu' }, [el('div', { class: 'rop-poph', html: '<b>Move ' + P.length + ' part' + (P.length === 1 ? '' : 's') + ' to</b>' })].concat(T.length ? T.map(function (to) {
+      return el('button', { class: 'px-menu__item rop-mi', type: 'button', role: 'menuitem', html: '<span class="px-id">Op ' + ropN(to) + '</span><span><b>' + esc(to.complaint || 'Operation') + '</b></span>', onClick: function (e) {
+        e.stopPropagation(); pxClosePop(); pushUndo('move parts'); var ids = P.map(function (p) { return p.id; });
+        to.parts = (to.parts || []).concat((op.parts || []).filter(function (p) { return ids.indexOf(p.id) > -1; })); op.parts = (op.parts || []).filter(function (p) { return ids.indexOf(p.id) < 0; });
+        save(true); ropSelReset(); UI.ivTab = UI.ivTab || {}; UI.ivTab[to.id] = 'parts'; S.ui.card = to.id; render(); ropUndo(P.length + ' part' + (P.length === 1 ? '' : 's') + ' moved to Op ' + ropN(to) + '.'); } }); }) : [ropNone('No other operation on this RO.')]));
+    pxPop(anchor, pop2); return;
+  }
+}
+function ropSelBar() {
+  if (!ropAny()) return null;
+  var L = ropSelOps(), P = ropSelParts(), fmF = ropPerson('Foreman') ? ropFirst(ropPerson('Foreman')) : 'the foreman', info, acts = [];
+  var b = function (v, ic0, t, dis, tip, pri) { var x = el('button', { class: 'px-btn px-btn--sm' + (pri ? ' px-btn--primary' : ''), type: 'button', 'data-v': v, title: tip || '', html: ri(ic0, 14) + esc(t) + (v === 'hold' || v === 'pmove' ? pxI('chevD', 11) : '') }); if (dis) x.disabled = true; x.addEventListener('click', function (e) { e.stopPropagation(); ropSelAct(v, x); }); return x; };
+  if (L.length) {
+    var live = L.filter(function (j) { return !opDoneNow(j) && !j.declined; }), left = 0; live.forEach(function (j) { try { left += Math.max(0, num(j.quoted) - jtmHours(j)); } catch (e) {} });
+    var one = live.length === 1 && L.length === 1 && !ropRun(live[0]);
+    info = '<b>' + L.length + ' operation' + (L.length === 1 ? '' : 's') + '</b><small>' + (live.length ? ropH1(left) + ' h left' : 'nothing left to do') + '</small>';
+    acts = [b('start', 'play', 'Start', !one, one ? '' : 'Start works on one operation that isn’t running'), b('hold', 'clock', 'Hold', !live.length), b('askp', 'parts', 'Ask Parts'), b('askf', 'chat', 'Ask ' + fmF), b('note', 'pencil', 'Note on all', !live.length), b('code', 'plus', 'Add a code', !live.length), b('done', 'check', 'Mark done', !live.length, '', true), b('print', 'print', 'Print job jacket'), b('story', 'copy', 'Copy the story'), b('del', 'trash', 'Delete')];
+    acts[acts.length - 1].classList.add('rop-del');
+  } else {
+    var op = S.jobs.filter(function (x) { return x.id === ROPS.pOp; })[0], st = P.filter(function (p) { return p.status === 'Staged'; }).length, hand = P.filter(function (p) { return ['Picked up', 'Received', 'Staged'].indexOf(p.status) > -1; }).length, ret = P.filter(function (p) { return ['Installed', 'Returned'].indexOf(p.status) < 0; }).length;
+    info = '<b>' + P.length + ' part' + (P.length === 1 ? '' : 's') + ' · Op ' + (op ? ropN(op) : '') + '</b><small>' + (st ? st + ' staged' : 'none staged') + '</small>';
+    acts = [b('ppick', 'check', 'Picked up' + (st && st < P.length ? ' · ' + st : ''), !st, st ? '' : 'Only staged parts can be picked up', true), b('pinst', 'wrench', 'Installed' + (hand && hand < P.length ? ' · ' + hand : ''), !hand, hand ? '' : 'Only parts in hand can be installed'), b('pask', 'parts', 'Ask Parts'), b('pret', 'undo', 'Return', !ret), b('pmove', 'swap', 'Move to…'), b('ppns', 'copy', 'Copy part numbers'), b('plist', 'print', 'Print pick list')];
+  }
+  var clr = el('button', { class: 'rop-clr', type: 'button', text: 'Clear', onClick: function (e) { e.stopPropagation(); ropSelReset(); pxClosePop(); render(); } });
+  return el('div', { class: 'rop-sb', role: 'toolbar', 'aria-label': L.length ? 'Selected operations' : 'Selected parts' }, [el('span', { class: 'rop-sbi', html: info })].concat(acts).concat([el('span', { class: 'rop-sp' }), clr]));
+}
+
+/* ---------- the page ---------- */
+function ropBuild(page, stash, slotEl) {
+  if (ROPS.ro !== RO.id) { ropSelReset(); ROPS.ro = RO.id; ROPU.msgAll = false; ROPU.histAll = false; ROPU.fcOp = null; ROPT.ed = null; ROPT.add = null; ROPT.note = null; ROPT.padd = null; }
+  /* the job tile list stays out of sight with the classic page (Next step went with it, as picked) */
+  if (slotEl) stash.appendChild(slotEl);
+  var ops = pxOps(stash); ropDecorOps(ops);
+  var col = el('div', { class: 'px-ro__col rop-col' + (ropAny() ? ' rop-any' : '') }, [ops]);
+  [ropParts, ropDtc, ropPhotos, ropInbox, ropHistory, ropWarranty, ropCustomer, ropEstimate, ropReady].forEach(function (f) { try { var x = f(); if (x) col.appendChild(x); } catch (e) { console.error(e); } });
+  var bar = ropSelBar(); if (bar) col.appendChild(bar);
+  try { HOST.classList.toggle('rop-picking', !!bar); } catch (e) {}   /* the toasts rise above the bar */
+  if (bar) requestAnimationFrame(function () { try { document.body.style.setProperty('--rop-sbh', (bar.offsetHeight || 52) + 'px'); } catch (e) {} });
+  var mainEl = el('main', { class: 'px-ro__main' }, [col]);
+  var keepTop = UI.ivScroll && UI.ivScroll.ro === RO.id ? UI.ivScroll.top : 0;
+  mainEl.addEventListener('scroll', function () { UI.ivScroll = { ro: RO.id, top: mainEl.scrollTop }; }, { passive: true });
+  var pro = el('div', { class: 'px-ro rop-ro' }, [mainEl, ropRail()]);
+  pro.addEventListener('scroll', function () { UI.ivScroll = { ro: RO.id, top: pro.scrollTop, one: 1 }; }, { passive: true });
+  var root = el('div', { class: 'pxr rop-r' }, [pxHeader(), pro]);
+  page.appendChild(root); page.appendChild(stash);
+  requestAnimationFrame(function () { if (UI.ivScroll && UI.ivScroll.ro === RO.id && UI.ivScroll.one) pro.scrollTop = UI.ivScroll.top; else mainEl.scrollTop = keepTop; });
+}

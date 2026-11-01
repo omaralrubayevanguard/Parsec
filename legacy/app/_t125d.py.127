@@ -1,0 +1,218 @@
+# Parsec 12.5 fork D — the Inventory page
+import asyncio, os, sys, json
+from playwright.async_api import async_playwright
+H = os.path.dirname(os.path.abspath(__file__)); OUT = os.path.join(H, "shots125d"); os.makedirs(OUT, exist_ok=True)
+PAGE = sys.argv[1] if len(sys.argv) > 1 else "t125d.html"
+Q = '[data-pg="inventory"] '
+FAILS = []
+def ok(c, m):
+    print(("ok   " if c else "FAIL ") + m)
+    if not c: FAILS.append(m)
+async def setup(p, w=1440, h=900, phone=False):
+    b = await p.chromium.launch()
+    ctx = await b.new_context(viewport={"width": w, "height": h}, is_mobile=phone, has_touch=phone)
+    pg = await ctx.new_page(); pg.set_default_timeout(6000); errs = []
+    pg.on("pageerror", lambda e: errs.append(str(e)[:300]))
+    pg.on("console", lambda m: errs.append("console: " + m.text[:200]) if m.type == "error" and "ERR_" not in m.text and "Failed to load resource" not in m.text else None)
+    await pg.route("**/fonts.g*/**", lambda r: r.abort())
+    if phone: await pg.add_init_script("try{ localStorage.setItem('tec_device','phone'); }catch(e){}")
+    await pg.goto("file://" + H + "/" + PAGE); await pg.wait_for_timeout(1200)
+    await pg.evaluate("__tg.loadSample25()"); await pg.evaluate("__tg.ensureDemoTeam()"); await pg.wait_for_timeout(300)
+    return b, pg, errs
+async def go(pg):
+    await pg.evaluate("__tg.PG.go('inventory')"); await pg.wait_for_timeout(500)
+async def n(pg, sel): return await pg.evaluate(f"document.querySelectorAll({json.dumps(sel)}).length")
+async def txt(pg, sel): return await pg.evaluate(f"(document.querySelector({json.dumps(sel)})||{{}}).textContent||''")
+ITEM = "(id=>__tg.STATE().inventory.find(x=>x.id===id))"
+async def desktop(p):
+    print("— desktop")
+    b, pg, errs = await setup(p)
+    # the sidebar: right after Parts
+    order = await pg.evaluate("[...document.querySelectorAll('.px-rail .pxr-row[data-view]')].map(b=>b.dataset.view)")
+    print("   sidebar:", order)
+    ok("inventory" in order and order.index("inventory") == order.index("parts") + 1 and order[order.index("inventory") + 1] == "warranty", "Inventory sits right after Parts, before Warranty")
+    ok(await pg.evaluate("!!document.querySelector('.px-rail .pxr-row[data-view=\"inventory\"] svg')"), "the sidebar row has its icon")
+    await pg.click('.px-rail .pxr-row[data-view="inventory"]'); await pg.wait_for_timeout(500)
+    ok(await n(pg, Q.strip()) == 1, "the page opens from the sidebar")
+    rows = await n(pg, Q + ".ivn-r[data-a=sel]"); ok(rows > 5, f"the stock list has rows ({rows})")
+    I = await pg.evaluate("__tg.INVPG.items().filter(x=>!x.kit).map(x=>({id:x.id,pn:x.pn,desc:x.desc,oh:x.oh,st:x.st,min:x.min,need:x.need,ord:x.ord}))")
+    print("   parts:", len(I), "statuses:", {s: sum(1 for x in I if x["st"] == s) for s in set(x["st"] for x in I)})
+    ok(sum(1 for x in I if x["min"]) > 3, "the sample parts got mins and counts")
+    facts = await txt(pg, Q + ".tg-facts"); print("   facts:", facts.strip()); ok("on the shelves" in facts, "the header says what the shelves hold")
+    await pg.screenshot(path=os.path.join(OUT, "a1_stock.png"))
+    # glance pane
+    ok("At a glance" in await txt(pg, Q + ".ivn-pane"), "the pane shows the shelves at a glance before a pick")
+    # search
+    x0 = next(x for x in I if x["pn"] and x["min"])
+    await pg.fill(Q + '[data-in="q"]', x0["pn"]); await pg.wait_for_timeout(300)
+    ok(await n(pg, Q + ".ivn-r[data-a=sel]") >= 1 and x0["pn"] in await txt(pg, Q + ".ivn-tbl"), f"search finds {x0['pn']}")
+    ok(await pg.evaluate(f"document.activeElement && document.activeElement.dataset.in === 'q'"), "the search box keeps focus while typing")
+    await pg.keyboard.press("Enter"); await pg.wait_for_timeout(300)
+    pane = await txt(pg, Q + ".ivn-pane"); ok(x0["desc"] in pane and "On hand" in pane and "Needed on ROs" in pane, "Enter opens the first match in the pane")
+    await pg.screenshot(path=os.path.join(OUT, "a2_pane.png"))
+    # receive
+    oh0 = await pg.evaluate(f"+{ITEM}('{x0['id']}').oh || 0")
+    await pg.click(Q + '[data-a="pop"][data-p="rcv"]'); await pg.wait_for_timeout(250)
+    await pg.fill(Q + '.tg-pop [data-in="pf"][data-f="q"]', "3"); await pg.wait_for_timeout(150)
+    await pg.fill(Q + '.tg-pop [data-in="pf"][data-f="ref"]', "PO 5512")
+    await pg.screenshot(path=os.path.join(OUT, "a3_receive.png"))
+    await pg.click(Q + '.tg-pop [data-a="rcvgo"]'); await pg.wait_for_timeout(300)
+    it = await pg.evaluate(f"(()=>{{ const it={ITEM}('{x0['id']}'); return {{oh:+it.oh, log:it.log}}; }})()")
+    ok(it["oh"] == oh0 + 3 and it["log"][-1]["k"] == "rcv" and it["log"][-1]["ref"] == "PO 5512", f"Receive adds 3 and logs it ({oh0} → {it['oh']})")
+    await pg.evaluate("__tg.undoLast()"); await pg.wait_for_timeout(300)
+    ok(await pg.evaluate(f"+{ITEM}('{x0['id']}').oh || 0") == oh0, "Undo takes the receipt back")
+    # adjust: set the count, with a reason
+    await pg.click(Q + '[data-a="pop"][data-p="adj"]'); await pg.wait_for_timeout(250)
+    await pg.fill(Q + '.tg-pop [data-in="pf"][data-f="to"]', "1"); await pg.wait_for_timeout(150)
+    await pg.click(Q + '.tg-pop [data-a="awhy"][data-v="Damaged"]'); await pg.wait_for_timeout(150)
+    await pg.fill(Q + '.tg-pop [data-in="pf"][data-f="note"]', "Dropped one")
+    await pg.screenshot(path=os.path.join(OUT, "a4_adjust.png"))
+    await pg.click(Q + '.tg-pop [data-a="adjgo"]'); await pg.wait_for_timeout(300)
+    it = await pg.evaluate(f"(()=>{{ const it={ITEM}('{x0['id']}'); return {{oh:+it.oh, l:it.log[it.log.length-1]}}; }})()")
+    ok(it["oh"] == 1 and it["l"]["why"] == "Damaged" and it["l"]["note"] == "Dropped one", f"Adjust sets 1 with the reason ({it['l']})")
+    ok("Damaged" in await txt(pg, Q + ".ivn-pane"), "the adjustment shows in the part's history")
+    aud = await pg.evaluate("(__tg.STATE().auditLog||__tg.STATE().audit||[]).slice(-1)[0]")
+    print("   audit:", aud)
+    # edit: min and max
+    await pg.click(Q + '.ivn-pane [data-a="pop"][data-p="edit"]'); await pg.wait_for_timeout(250)
+    await pg.fill(Q + '.tg-pop [data-in="pf"][data-f="min"]', "4"); await pg.fill(Q + '.tg-pop [data-in="pf"][data-f="max"]', "10"); await pg.fill(Q + '.tg-pop [data-in="pf"][data-f="bin"]', "c7")
+    await pg.screenshot(path=os.path.join(OUT, "a5_edit.png"))
+    await pg.keyboard.press("Enter"); await pg.wait_for_timeout(300)
+    it = await pg.evaluate(f"(()=>{{ const it={ITEM}('{x0['id']}'); return {{min:+it.min,max:+it.max,bin:it.bin}}; }})()")
+    ok(it == {"min": 4, "max": 10, "bin": "C7"}, f"Edit saves min, max and the bin ({it})")
+    # reorder: it's below its min now
+    await pg.click(Q + '.tg-views [data-v="reorder"]'); await pg.wait_for_timeout(300)
+    ro = await txt(pg, Q + ".ivn-full"); ok(x0["desc"] in ro, "the part is on the reorder list")
+    q9 = await pg.evaluate(f"(__tg.INVPG.reorder().R.find(r=>r.x.id==='{x0['id']}')||{{}}).q")
+    ok(q9 == 9, f"it orders back up to max — 10 − 1 = 9 ({q9})")
+    await pg.screenshot(path=os.path.join(OUT, "a6_reorder.png"))
+    nR = await pg.evaluate("__tg.INVPG.reorder().R.length")
+    await pg.click(Q + '[data-a="ordered"]'); await pg.wait_for_timeout(300)
+    so = await pg.evaluate(f"+{ITEM}('{x0['id']}').onOrder")
+    ok(so == 9 and await pg.evaluate("__tg.INVPG.reorder().R.length") < nR, f"Mark ordered puts it on order ({so}) and the list empties")
+    # receive takes it off the order again
+    await pg.evaluate(f"(()=>{{ const U=__tg.INVPG.U(); U.view='stock'; U.sel='{x0['id']}'; __tg.render(); }})()"); await pg.wait_for_timeout(300)
+    await pg.click(Q + '[data-a="pop"][data-p="rcv"]'); await pg.wait_for_timeout(250)
+    ok(await pg.evaluate(f"document.querySelector({json.dumps(Q + '.tg-pop [data-f=q]')}).value") == "9", "Receive starts with what's on order")
+    await pg.click(Q + '.tg-pop [data-a="rcvgo"]'); await pg.wait_for_timeout(300)
+    it = await pg.evaluate(f"(()=>{{ const it={ITEM}('{x0['id']}'); return {{oh:+it.oh, so:+(it.onOrder||0)}}; }})()")
+    ok(it == {"oh": 10, "so": 0}, f"receiving clears the stock order ({it})")
+    # new part
+    await pg.click(Q + '[data-a="pop"][data-p="new"]:not([data-kit])'); await pg.wait_for_timeout(250)
+    for f, v in [("pn", "TEST-9001"), ("desc", "Test air filter"), ("bin", "b2"), ("oh", "5"), ("min", "2"), ("price", "48.50")]:
+        await pg.fill(Q + f'.tg-pop [data-in="pf"][data-f="{f}"]', v)
+    await pg.screenshot(path=os.path.join(OUT, "a7_new.png"))
+    await pg.click(Q + '.tg-pop [data-a="newgo"]'); await pg.wait_for_timeout(300)
+    nw = await pg.evaluate("(()=>{ const it=__tg.STATE().inventory.find(x=>x.pn==='TEST-9001'); return it ? {oh:+it.oh,min:+it.min,max:+it.max,bin:it.bin,sel:__tg.INVPG.U().sel===it.id} : null; })()")
+    ok(nw == {"oh": 5, "min": 2, "max": 4, "bin": "B2", "sel": True}, f"New part is added and opened ({nw})")
+    await pg.click(Q + '[data-a="pop"][data-p="new"]:not([data-kit])'); await pg.wait_for_timeout(250)
+    await pg.fill(Q + '.tg-pop [data-in="pf"][data-f="pn"]', "test-9001"); await pg.click(Q + '.tg-pop [data-a="newgo"]'); await pg.wait_for_timeout(300)
+    ok(await pg.evaluate("__tg.STATE().inventory.filter(x=>x.pn && x.pn.toUpperCase()==='TEST-9001').length") == 1, "the same part # twice opens the one on the list")
+    # kits
+    await pg.click(Q + '.ivn-chips [data-v="kits"]'); await pg.wait_for_timeout(300)
+    kr = await n(pg, Q + ".ivn-r[data-a=sel]"); ok(kr > 0, f"Kits filter lists the kits ({kr})")
+    await pg.click(Q + '.ivn-r[data-a=sel] .ivn-car'); await pg.wait_for_timeout(250)
+    ok(await n(pg, Q + ".ivn-r.kid") > 0, "a kit opens to its parts")
+    await pg.click(Q + '.ivn-r[data-a=sel] .d'); await pg.wait_for_timeout(250)
+    kid = await pg.evaluate("__tg.INVPG.U().sel"); k0 = await pg.evaluate(f"({ITEM}('{kid}').children||[]).length")
+    await pg.click(Q + '.ivn-pane [data-a="pop"][data-p="kadd"]'); await pg.wait_for_timeout(250)
+    await pg.fill(Q + '.tg-pop [data-in="kq"]', "Test air"); await pg.wait_for_timeout(250)
+    await pg.screenshot(path=os.path.join(OUT, "a8_kit.png"))
+    await pg.click(Q + '.tg-pop [data-a="kpick"][data-v]:not([data-v=""])'); await pg.wait_for_timeout(300)
+    ok(await pg.evaluate(f"({ITEM}('{kid}').children||[]).length") == k0 + 1 and "Test air filter" in await txt(pg, Q + ".ivn-pane"), "Add a part puts it in the kit")
+    # count a shelf
+    await pg.click(Q + '.tg-views [data-v="count"]'); await pg.wait_for_timeout(300)
+    await pg.click(Q + '.ivn-shf [data-v="B"]'); await pg.wait_for_timeout(300)
+    ins = await pg.evaluate(f"[...document.querySelectorAll({json.dumps(Q + '[data-in=cnt]')})].map(i=>i.dataset.id)")
+    ok(len(ins) >= 1, f"shelf B lists its parts ({len(ins)})")
+    await pg.click(Q + f'[data-in="cnt"][data-id="{ins[0]}"]'); await pg.keyboard.type("7"); await pg.wait_for_timeout(200)
+    if len(ins) > 1: await pg.keyboard.press("Enter"); await pg.keyboard.type(str(int(await pg.evaluate(f"+{ITEM}('{ins[1]}').oh||0")))); await pg.wait_for_timeout(200)
+    await pg.screenshot(path=os.path.join(OUT, "a9_count.png"))
+    await pg.click(Q + '[data-a="csave"]'); await pg.wait_for_timeout(300)
+    c0 = await pg.evaluate(f"(()=>{{ const it={ITEM}('{ins[0]}'); return [+it.oh, it.log[it.log.length-1].k]; }})()")
+    ok(c0 == [7, "cnt"], f"Save count fixes on hand and logs the count ({c0})")
+    # activity
+    await pg.click(Q + '.tg-views [data-v="act"]'); await pg.wait_for_timeout(300)
+    na = await n(pg, Q + ".ivn-al"); ok(na >= 4, f"Activity lists the movements ({na})")
+    await pg.screenshot(path=os.path.join(OUT, "a10_activity.png"))
+    # delete + undo
+    await pg.evaluate("(()=>{ const U=__tg.INVPG.U(); const it=__tg.STATE().inventory.find(x=>x.pn==='TEST-9001'); U.view='stock'; U.flt='all'; U.q=''; U.sel=it.id; __tg.render(); })()"); await pg.wait_for_timeout(300)
+    await pg.click(Q + '.ivn-pane [data-a="pop"][data-p="del"]'); await pg.wait_for_timeout(250)
+    await pg.click(Q + '.tg-pop [data-a="delgo"]'); await pg.wait_for_timeout(300)
+    ok(await pg.evaluate("!__tg.STATE().inventory.some(x=>x.pn==='TEST-9001')"), "Delete takes the part off the list")
+    await pg.evaluate("__tg.undoLast()"); await pg.wait_for_timeout(300)
+    ok(await pg.evaluate("__tg.STATE().inventory.some(x=>x.pn==='TEST-9001')"), "Undo brings it back")
+    # the import opens the app's parts-list reader
+    await pg.click(Q + '[data-a="pop"][data-p="more"]'); await pg.wait_for_timeout(250)
+    await pg.click(Q + '.tg-pop [data-action="inv-extract"]'); await pg.wait_for_timeout(400)
+    ok(await pg.evaluate("!!document.getElementById('inv-x-text')"), "Import a parts list opens the reader (paste, screenshot, PDF)")
+    await pg.evaluate("(()=>{ const t=document.getElementById('inv-x-text'); t.value='TEST-7777 Wiper blade x2 $19.90'; t.dispatchEvent(new Event('input',{bubbles:true})); })()"); await pg.wait_for_timeout(300)
+    b2 = await pg.query_selector("#inv-x-go");
+    if b2: await b2.click(); await pg.wait_for_timeout(300)
+    ok(await pg.evaluate("__tg.STATE().inventory.some(x=>x.pn==='TEST-7777')"), "…and its parts land on the list")
+    # Parts → Catalog links here
+    await pg.evaluate("__tg.PG.go('parts')"); await pg.wait_for_timeout(400)
+    await pg.click('[data-pg="parts"] .tg-views [data-v="cat"]'); await pg.wait_for_timeout(300)
+    ok(await n(pg, '[data-pg="parts"] [data-action="nav"][data-view="inventory"]') == 1, "Parts › Catalog has Open Inventory")
+    # themes
+    await pg.evaluate("__tg.PG.go('inventory')"); await pg.wait_for_timeout(300)
+    await pg.evaluate(f"(()=>{{ const U=__tg.INVPG.U(); U.view='stock'; U.sel='{x0['id']}'; __tg.render(); }})()"); await pg.wait_for_timeout(300)
+    for th in ["ivl", "ivd", "vvl", "vvd"]:
+        await pg.click(f'.px-rail .pxr-thm button[data-theme="{th}"]'); await pg.wait_for_timeout(350)
+        await pg.screenshot(path=os.path.join(OUT, f"t_{th}.png"))
+    await pg.click('.px-rail .pxr-thm button[data-theme="ivl"]'); await pg.wait_for_timeout(200)
+    # narrow desktop
+    await pg.set_viewport_size({"width": 1100, "height": 800}); await pg.wait_for_timeout(400)
+    await pg.screenshot(path=os.path.join(OUT, "a11_1100.png"))
+    print("ERRORS", errs[:6]); ok(not errs, "desktop: no console errors")
+    await b.close()
+async def roles(p):
+    print("— who gets it")
+    b, pg, errs = await setup(p)
+    def sign(role): return f"""(()=>{{ const T=__tg.staffList().filter(s=>s.role==='{role}'); if(!T.length) return null; localStorage.setItem('tec_viewas', T[0].id); localStorage.removeItem('tec_out'); __tg.pxSignedIn(); try{{ __tg.CX.U().skipMorning = __tg.todayStr(); }}catch(e){{}} __tg.render(); return T[0].name; }})()"""
+    for role, want in [("Parts", True), ("Manager", True), ("Foreman", True), ("Technician", False), ("Service writer", False)]:
+        nm = await pg.evaluate(sign(role)); await pg.wait_for_timeout(300)
+        if not nm: print("   no", role); continue
+        has = await pg.evaluate("__tg.navPages().some(p=>p[0]==='inventory')")
+        ok(has == want, f"{role} ({nm}): Inventory {'in' if has else 'not in'} their pages")
+        if role == "Parts":
+            await go(pg); ok(await n(pg, Q + '[data-a="pop"][data-p="new"]') > 0, "Parts can add and change stock")
+    # a technician the manager gave the page to sees it, view only
+    await pg.evaluate("(()=>{ const s=__tg.staffList().find(s=>s.role==='Technician'); s.pages=s.pages||{}; s.pages.inventory=true; localStorage.setItem('tec_viewas', s.id); __tg.pxSignedIn(); try{ __tg.CX.U().skipMorning = __tg.todayStr(); }catch(e){} __tg.render(); })()"); await pg.wait_for_timeout(300)
+    await go(pg)
+    ro = await txt(pg, Q + ".tg-head"); ok("View only" in ro and await n(pg, Q + '[data-a="pop"][data-p="new"]') == 0, "a technician with the page sees it view only")
+    await pg.click(Q + ".ivn-r[data-a=sel]"); await pg.wait_for_timeout(300)
+    ok(await n(pg, Q + '.ivn-pane [data-p="rcv"], ' + Q + '.ivn-pane [data-p="adj"]') == 0, "…no Receive or Adjust on the part")
+    print("ERRORS", errs[:6]); ok(not errs, "roles: no console errors")
+    await b.close()
+async def phone(p):
+    print("— phone")
+    b, pg, errs = await setup(p, 390, 844, True)
+    await go(pg)
+    more = await pg.evaluate("(window.PM_GROUPS||null)")
+    ok(await n(pg, Q.strip()) == 1, "the page opens on the phone")
+    await pg.screenshot(path=os.path.join(OUT, "p1_list.png"))
+    over = await pg.evaluate(f"(()=>{{ const out=[]; document.querySelectorAll({json.dumps(Q + '.ivn-r, ' + Q + '.ivn-bar')}).forEach(x=>{{ const r=x.getBoundingClientRect(); if(r.right > innerWidth + 1) out.push(x.className + ':' + Math.round(r.right)); }}); return out; }})()")
+    ok(not over, f"nothing runs off the screen ({over[:3]})")
+    await pg.click(Q + ".ivn-r[data-a=sel]"); await pg.wait_for_timeout(400)
+    pos = await pg.evaluate(f"(()=>{{ const p=document.querySelector({json.dumps(Q + '.ivn-pane')}); const r=p.getBoundingClientRect(); return [getComputedStyle(p).position, Math.round(r.width), Math.round(r.left)]; }})()")
+    ok(pos[0] == "fixed" and pos[1] >= 380, f"a part opens full screen ({pos})")
+    await pg.screenshot(path=os.path.join(OUT, "p2_part.png"))
+    await pg.click(Q + ".ivn-pane .ivn-back"); await pg.wait_for_timeout(300)
+    ok(await pg.evaluate("!__tg.INVPG.U().sel"), "the back arrow returns to the list")
+    await pg.click(Q + ".ivn-r[data-a=sel]"); await pg.wait_for_timeout(300)
+    await pg.click(Q + '.ivn-pane [data-a="pop"][data-p="adj"]'); await pg.wait_for_timeout(300)
+    await pg.screenshot(path=os.path.join(OUT, "p3_adjust.png"))
+    pp = await pg.evaluate(f"(()=>{{ const p=document.querySelector({json.dumps(Q + '.tg-pop')}); if(!p) return null; const r=p.getBoundingClientRect(); return [Math.round(r.left), Math.round(r.right), Math.round(r.bottom)]; }})()")
+    ok(pp and pp[0] >= 0 and pp[1] <= 391 and pp[2] <= 845, f"Adjust is a sheet on the screen ({pp})")
+    await pg.keyboard.press("Escape"); await pg.wait_for_timeout(200)
+    await pg.evaluate("(()=>{ const U=__tg.INVPG.U(); U.sel=null; U.view='reorder'; __tg.render(); })()"); await pg.wait_for_timeout(300)
+    await pg.screenshot(path=os.path.join(OUT, "p4_reorder.png"))
+    # the More sheet lists it after Parts
+    print("ERRORS", errs[:6]); ok(not errs, "phone: no console errors")
+    await b.close()
+async def main():
+    async with async_playwright() as p:
+        await desktop(p); await roles(p); await phone(p)
+    print("FAILS", len(FAILS), FAILS)
+asyncio.run(main())

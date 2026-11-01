@@ -1,0 +1,89 @@
+/tmp/claude-0/-home-claude/febe01e4-e12e-554d-9dc2-ccfd769708e9/scratchpad/app/_t160a.py:214: SyntaxWarning: invalid escape sequence '\/'
+  P15 = await E("""const S=T.S(), D=__tg.pd16Info().dirs; const r=S.ros.find(x=>/^Open\//.test(D[x.id]||'') && x.id!==""" + json.dumps(leaf[0]) + """);
+/tmp/claude-0/-home-claude/febe01e4-e12e-554d-9dc2-ccfd769708e9/scratchpad/app/_t160a.py:216: SyntaxWarning: invalid escape sequence '\/'
+  const pg=(data,title)=>'<!doctype html><html><head><title>'+title+'</title></head><body><main>old page</main><script type="application/json" id="parsec-data">'+JSON.stringify(data).replace(/</g,'\\u003c')+'<\/script></body></html>';
+ok   a new folder starts in layout 16 (16)
+ok   layout.json: layout 16, a write id, the shop's id
+ok   Shop/people.json is there
+ok   Shop/settings.json is there
+ok   Shop/inventory.json is there
+ok   Shop/inbox.json is there
+ok   Shop/library.json is there
+ok   Shop/time.json is there
+ok   Shop/completed.json is there
+ok   Shop/lists.json is there
+ok   Shop/other.json is there
+ok   Shop/deleted.json is there
+ok   the day clock by month: Shop/clock/<YYYY-MM>.json
+ok   the activity by month: Shop/activity/<YYYY-MM>.json
+ok   no Shop.html in layout 16
+ok   one folder per RO: 24 open + 123 closed = 147 ROs
+ok   closed ROs are under Closed/<year> as ro.json.gz (123)
+ok   a readable page beside each ro.json (147)
+ok   the page has no data inside it
+ok   a closed RO's ro.json.gz is compressed
+ok   a kind nobody placed lands in Shop/other.json
+ok   pdTopicMap places the 9 kinds; others → other.json
+ok   STATE.rlLayout came back from the folder
+ok   STATE.rlViews came back from the folder
+ok   STATE.rlCustom came back from the folder
+ok   STATE.tcDone came back from the folder
+ok   STATE.tlAirWhy came back from the folder
+ok   STATE.perm came back from the folder
+ok   STATE.tlReq came back from the folder
+ok   STATE.handover came back from the folder
+ok   STATE.pages128 came back from the folder
+ok   the unplaced kind came back from Shop/other.json
+ok   all 147 ROs came back
+ok   one RO edited → only its ro.json, its page and layout.json were written (ROs/Open/RO-39290 - Rick's Freight LLC/RO-39290 Repair Order.html, ROs/Open/RO-39290 - Rick's Freight LLC/ro.json, layout.json)
+ok   the edit got updatedAt and updatedBy (Admin)
+ok   released → the RO's folder moved to Closed/2026 (Closed/2026/RO-39290 - Rick's Freight LLC)
+ok   its attachment moved with it
+ok   closed: ro.json.gz, no ro.json
+ok   the Open folder is gone
+ok   the attachment record points at the new folder
+ok   reopened → back in Open with the attachment (Open/RO-39290 - Rick's Freight LLC)
+ok   open again: ro.json, no .gz
+ok   nothing left behind under Closed
+ok   a deleted punch leaves a mark {kind, id, deletedAt, by}
+ok   the mark is in Shop/deleted.json
+ok   a deleted operation's mark names its RO (parentId)
+ok   pdTombsClear(ids) clears just those
+ok   another computer changed RO A, this one RO B → both kept, nobody asked ({'a': 'THEIRS-A', 'b': 'MINE-B', 'clash': False})
+ok   the folder holds both changes after the save (['THEIRS-A', 'MINE-B'])
+ok   the merge left an Activity line: Merged another computer’s changes — 1 RO
+ok   Undo takes the merge back (RO A: U-ONLY-ME)
+ok   both changed RO C's key tag → one row to decide (1)
+ok   the row shows both values, Keep this / Keep that
+ok   the newer one is picked for you (the other computer's)
+ok   saving waits while the question is open
+ok   Keep this → this computer's value, in memory and in the folder (TAG-MINE / TAG-MINE)
+ok   RO B deleted on the other computer (after this one's last edit) → gone here too
+ok   a layout 15 folder to start from (Shop/Shop.html, ROs/<RO>/…)
+ok   moved to layout 16 (no problems)
+ok   layout.json written only after the read-back matched
+ok   a backup was made first: ['Backups/2026-10/data-2026-10-31 before Parsec 16 11-55.json.gz']
+ok   then the old Shop.html, the old RO pages and the copied attachments went
+ok   the attachment is in the new folder (Open/RO-34477 - Rick's Freight LLC)
+ok   its record points there
+ok   nothing lost in the move (keys that differ: [])
+ok   a save writes layout.json first (saving: true), then again when done (saving: false)
+ok   layout.json remembers the backup made before the move: Backups/2026-10/data-2026-10-31 before Parsec 16 11-55.json.gz
+ok   its changes were merged: the edited RO, the new RO, the shop note ({'unit': 'FROM-15', 'added': True, 'note': 'saved by Parsec 15'})
+ok   then its Shop.html and RO pages were removed
+ok   the new RO is saved in layout 16 (Open/RO-99915 - Fifteen Freight)
+ok   and the edited RO's ro.json has the change
+ok   the banner: A computer still on Parsec 15 saved here — its changes were merged. Update every computer to Parsec 16.OK
+ok   an Activity line: Merged changes saved by a computer still on Parsec 15 — 2 ROs, 1 setting
+ok   OK closes the banner (shown once)
+ok   a mismatch: not moved — The new layout didn't read back the same as what was written (test), so the old files were kept.
+ok   nothing of layout 16 is left behind
+ok   every old file is still there
+ok   a clear message: Your data wasn’t moved to the new layout. The new layout didn't read back the same as what was written (test), so the ol
+ok   and it keeps saving in the old layout (Shop.html rewritten)
+ok   no page errors ([])
+ok   the data check passes on the app: data check: 72 kinds · 72 saved · 0 left out
+ok   a fake STATE.zzz stops the build: FAILED: data check failed — kinds of data with no home in the folder: zzz
+
+all passed
+exit 0

@@ -1,0 +1,280 @@
+<script>
+/* ---------- permissions, as the Admin page sees them ---------- */
+function rHas(role, k){ var x = V.roleX[role + '|' + k]; return x != null ? !!x : roleHas(role, k); }
+function eff(p, k){ var o = (V.ov[p.id] || {})[k]; if(V.model !== 'roleonly' && o === 1) return true; if(V.model !== 'roleonly' && o === -1) return false; return rHas(p.r, k); }
+function changed(p, k){ return V.model === 'role' && (V.ov[p.id] || {})[k] != null; }
+function lvl(p, k){ var x = V.lv[p.id + '|' + k]; if(x && V.model !== 'roleonly') return x; var o = (V.ov[p.id] || {})[k]; if(V.model !== 'roleonly' && o === 1) return 'edit'; if(V.model !== 'roleonly' && o === -1) return 'none'; if(!rHas(p.r, k)) return 'none'; return (' ' + (VIEWONLY[p.r] || '') + ' ').indexOf(' ' + k + ' ') >= 0 ? 'view' : 'edit'; }
+function nChanged(p){ return V.model === 'role' ? Object.keys(V.ov[p.id] || {}).length + Object.keys(V.lv).filter(function(x){ return x.indexOf(p.id + '|') === 0; }).length : 0; }
+
+/* ---------- the login page ---------- */
+function nowTxt(){ var d = new Date(); return { t: d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(/\s?[AP]M$/i, ''), ap: d.getHours() < 12 ? 'am' : 'pm', d: d.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' }) }; }
+function brandHtml(){
+  var n = nowTxt(), run = P.filter(function(p){ return p.on === 'job'; });
+  return '<aside class="ln-brand"><div class="lg2">' + LOGO + 'Parsec</div><div class="shop">Vanguard Truck Center · Greensboro</div>'
+    + (V.side.clock ? '<div class="ln-time"><b>' + n.t + '<span style="display:inline;font-size:22px;margin-left:6px;color:var(--ink3)">' + n.ap + '</span></b><span>' + n.d + '</span></div>' : '<div class="ln-time"></div>')
+    + (V.side.clocks ? '<div class="ln-clk"><small>' + run.length + ' clocks running</small>' + run.map(function(p){ return '<div><i></i><b>' + esc(p.n.split(' ')[0]) + '</b> on ' + p.ro + '<em>since ' + p.since + '</em></div>'; }).join('') + '<div style="color:var(--ink3);font-size:12px">Signing in or out never stops one.</div></div>' : '') + '</aside>';
+}
+function tilesHtml(list, cls){ return '<div class="ln-tiles' + (cls || '') + '">' + list.map(function(p){ return '<button class="tile" data-who="' + p.id + '">' + av(p, 46, 1) + '<b>' + esc(p.n) + '</b>' + subOf(p) + (V.check !== 'none' ? '<span class="lk" title="' + (needsPw(p) ? 'Password' : 'PIN') + '">' + ic(needsPw(p) ? 'key' : 'lock', 12) + '</span>' : '') + '</button>'; }).join('') + '</div>'; }
+function people(){ return P.filter(function(p){ return !p.admin && !p.off; }); }
+function groupsHtml(){
+  var h = '';
+  if(V.side.recent) h += '<div class="ln-gl">Recent on this computer</div>' + tilesHtml(RECENT.map(pBy));
+  DEPT.forEach(function(d){ var g = people().filter(function(p){ return p.r === d[0] && !(V.side.recent && RECENT.indexOf(p.id) >= 0); }); if(g.length) h += '<div class="ln-gl">' + d[1] + '</div>' + tilesHtml(g); });
+  if(!V.side.adm) h += '<div class="ln-gl">Admin</div>' + tilesHtml([pBy('admin')]);
+  return h;
+}
+function footHtml(){ return '<div class="ln-foot">' + (V.side.adm ? '<a data-who="admin">' + ic('shield', 13) + ' Admin</a><span>·</span>' : '') + '<span>' + (V.check === 'none' ? 'Each person sees the pages the admin gave them.' : 'Forgot your PIN? The admin can reset it.') + '</span></div>'; }
+function loginMain(){
+  var lay = V.lay, h = '', pinw = V.check === 'none' ? '' : ', then your ' + (V.check === 'mixed' ? 'PIN or password' : 'PIN');
+  if(lay === 'tiles') h = '<h3>Who’s signing in?</h3><p>Pick your name' + pinw + '.</p>' + groupsHtml();
+  if(lay === 'faces'){
+    h = '<h3>Welcome back</h3><p>Tap your face' + pinw + '.</p><div class="faces">' + RECENT.map(function(id){ var p = pBy(id); return '<button class="face" data-who="' + id + '">' + av(p, V.dev === 'phone' ? 70 : 84, 1) + '<b>' + esc(p.n.split(' ')[0]) + '</b>' + subOf(p) + '</button>'; }).join('')
+      + '<button class="face more" data-faceall>' + '<span class="av" style="width:' + (V.dev === 'phone' ? 70 : 84) + 'px;height:' + (V.dev === 'phone' ? 70 : 84) + 'px">' + ic('users', 28) + '</span><b>Someone else</b><small>' + people().length + ' people</small></button></div>';
+    if(V.faceAll) h += '<div class="ln-gl">Everyone <em>· type to find</em></div>' + tilesHtml(people().filter(function(p){ return RECENT.indexOf(p.id) < 0; }));
+  }
+  if(lay === 'type'){
+    var q = V.typed.trim().toLowerCase(), L = q ? people().concat([pBy('admin')]).filter(function(p){ return p.n.toLowerCase().indexOf(q) >= 0 || ini(p.n).toLowerCase() === q; }) : RECENT.map(pBy);
+    h = '<h3>Sign in</h3><p>Start typing your name' + pinw + '.</p><div class="form"><label class="fl"><span>Your name</span><span class="inp">' + ic('user') + '<input id="nm" placeholder="e.g. Dana" autocomplete="off" value="' + esc(V.typed) + '"></span></label><div class="sugg" id="sugg">' + suggHtml(L, q) + '</div></div>';
+  }
+  if(lay === 'badge'){
+    h = '<h3>Scan your badge</h3><p>Hold it up to the camera' + (V.check === 'none' ? '.' : ' — then your PIN.') + '</p><button class="scanb" data-scanbox aria-label="Scan (demo)"><span class="scan" style="margin:0;width:100%"><span class="fr"></span><span class="ln2"></span><small>Looking for a badge… (click to try)</small></span></button>'
+      + '<div class="badge"><span class="qr"></span><span><b style="color:var(--ink)">Badges print from Admin → People</b><br>No camera, or no badge on you? <a data-faceall style="cursor:pointer;text-decoration:underline">Pick your name</a></span></div>';
+    if(V.faceAll) h += '<div class="ln-gl">Everyone</div>' + tilesHtml(people());
+  }
+  return '<section class="ln-main">' + h + footHtml() + '</section>';
+}
+function suggHtml(L, q){ if(!L.length) return '<button disabled><span style="color:var(--ink3)">No one by that name</span></button>'; return (q ? '' : '<div style="padding:8px 12px 2px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)">Recent on this computer</div>') + L.slice(0, 6).map(function(p, i){ return '<button data-who="' + p.id + '"' + (i === 0 && q ? ' class="on"' : '') + '>' + av(p, 26, 1) + esc(p.n) + '<small>' + esc(p.r) + '</small></button>'; }).join(''); }
+function loginHtml(){ return '<div class="ln">' + brandHtml() + loginMain() + '</div>' + pinOverlay(); }
+
+/* ---------- the PIN pad ---------- */
+function pinCore(p, opts){
+  opts = opts || {}; var pw = needsPw(p), n = PINLEN(), wait = V.waitTill > Date.now();
+  var h = (opts.back !== false ? '<button class="btn gh sm back" data-pinx>' + ic('back', 13) + (opts.backTxt || 'Not you?') + '</button>' : '') + av(p, 58) + '<h4>' + esc(p.n) + '</h4><p>' + (opts.sub || (pw ? 'Your password' : 'Your ' + n + '-digit PIN')) + '</p>';
+  if(p.on === 'job' && V.side.clocks && !opts.noClock) h += '<div class="clkn"><i></i>Your clock is running · ' + p.ro + ' since ' + p.since + '</div>';
+  if(pw) h += '<div class="pw"><span class="inp">' + ic('key') + '<input id="pwin" type="password" placeholder="Password" autocomplete="off"></span></div><div class="msg' + (V.pinSt === 'bad' ? ' bad' : '') + '">' + esc(V.pinMsg || 'Demo: parsec') + '</div><button class="btn pri" style="width:100%;height:38px" data-pw>Sign in</button>';
+  else {
+    h += '<div class="dots' + (V.pinSt ? ' ' + V.pinSt : '') + '">' + Array.apply(null, Array(n)).map(function(_, i){ return '<i' + (i < V.pin.length ? ' class="f"' : '') + '></i>'; }).join('') + '</div>'
+      + '<div class="msg' + (V.pinSt === 'bad' || wait ? ' bad' : '') + '">' + esc(V.pinMsg || ('Demo PIN: ' + (n === 6 ? '123456' : '1234'))) + '</div>'
+      + '<div class="pad">' + [1, 2, 3, 4, 5, 6, 7, 8, 9].map(function(d){ return '<button data-pad="' + d + '"' + (wait ? ' disabled style="opacity:.4"' : '') + '>' + d + '</button>'; }).join('') + '<button class="k" data-pad="forgot">Forgot?</button><button data-pad="0"' + (wait ? ' disabled style="opacity:.4"' : '') + '>0</button><button class="k" data-pad="del" aria-label="Delete">' + ic('del', 20) + '</button></div>';
+  }
+  return h;
+}
+function pinOverlay(){ if(!V.pinFor) return ''; var p = pBy(V.pinFor); return '<div class="pinw' + (V.an ? ' an' : '') + '" data-pinbg><div class="pin" role="dialog" aria-label="' + esc(p.n) + '">' + pinCore(p, { sub: V.scr === 'switch' && !V.swLogin ? (needsPw(p) ? 'Switch to ' + p.n.split(' ')[0] + ' — password' : 'Switch to ' + p.n.split(' ')[0] + ' — PIN') : null }) + '</div></div>'; }
+
+/* ---------- switching ---------- */
+var ME = 'mike';
+function appHtml(){
+  var me = pBy(ME), ph = V.dev === 'phone';
+  var sb = '<aside class="sb"><div class="lg2">' + LOGO + 'Parsec</div><div class="clkr"><i></i><span><b>On the clock · 0:53</b><small>' + me.ro + ' · Op 1</small></span></div>'
+    + [['ro', 'RO List'], ['wrench', 'Technician', 1], ['clock', 'Time Log'], ['list', 'Career'], ['box', 'Parts']].map(function(x){ return '<div class="it' + (x[2] ? ' on' : '') + '">' + ic(x[0], 15) + x[1] + '</div>'; }).join('')
+    + '<button class="me' + (V.menu ? ' on' : '') + '" data-me>' + av(me, 32) + '<span style="flex:1;min-width:0"><b>' + esc(me.n) + '</b><small>Technician</small></span>' + ic('chevD', 14) + '</button></aside>';
+  var pg = '<section class="pg">' + (ph ? '<div style="display:flex;align-items:center;gap:10px"><b style="font:500 22px/1 var(--serif)">Technician</b><span class="sp"></span><button class="me" data-me style="margin:0;padding:4px">' + av(me, 30) + '</button></div>' : '<h3>Technician</h3>')
+    + '<div class="sk" style="height:58px"></div><div style="display:grid;grid-template-columns:' + (ph ? '1fr' : '1fr 1.4fr') + ';gap:12px"><div class="sk" style="height:' + (ph ? 160 : 420) + 'px"></div><div class="sk" style="height:' + (ph ? 260 : 420) + 'px"></div></div></section>';
+  var menu = V.menu ? menuHtml(me, ph) : '';
+  return '<div class="app">' + sb + pg + '</div>' + (ph ? '<div class="ptab">' + [['ro', 'ROs'], ['wrench', 'My ROs', 1], ['clock', 'Time'], ['more', 'More']].map(function(x){ return '<span' + (x[2] ? ' class="on"' : '') + '>' + ic(x[0], 18) + x[1] + '</span>'; }).join('') + '</div>' : '') + menu + lockHtml() + pinOverlay();
+}
+function menuHtml(me, ph){
+  var others = RECENT.filter(function(id){ return id !== ME; }).map(pBy).concat([pBy('jenna')]);
+  var h = '<div class="menu' + (V.an ? ' an' : '') + '" style="' + (ph ? 'left:10px;right:10px;width:auto;bottom:74px' : '') + '"><div class="mh">' + av(me, 36) + '<span><b>' + esc(me.n) + '</b><small>On the clock · ' + me.ro + '</small></span></div>';
+  if(V.sw === 'quick') h += '<div class="ml">Switch to</div><div class="pp">' + others.map(function(p){ return '<button data-who="' + p.id + '">' + av(p, 34, 1) + esc(p.n.split(' ')[0]) + '</button>'; }).join('') + '<button data-swlogin><span class="av" style="width:34px;height:34px;background:var(--fill);color:var(--ink2);box-shadow:inset 0 0 0 1.5px var(--border)">' + ic('users', 16) + '</span>Someone else</button></div><div class="sep"></div>';
+  else h += '<button class="mi" data-swlogin>' + ic('swap') + 'Switch user…</button>';
+  if(V.away.lockbtn) h += '<button class="mi" data-step>' + ic('moon') + 'Step away — lock<small>Ctrl L</small></button>';
+  h += '<button class="mi" data-signout>' + ic('out') + 'Sign out</button>';
+  if(V.away.keep) h += '<div style="padding:6px 8px 4px;font-size:12px;color:var(--ink3)">Your clock keeps running on ' + me.ro + ' either way.</div>';
+  return h + '</div>';
+}
+function lockHtml(){
+  if(!V.locked) return ''; var me = pBy(ME);
+  return '<div class="lock' + (V.an ? ' an' : '') + '"><div class="pin" style="box-shadow:none;background:transparent">' + pinCore(me, { back: false, sub: (V.locked === 'idle' ? 'Locked after 15 minutes with no one on it' : 'Locked at 12:04 pm') + ' — your page is where you left it', noClock: false }) + '<div class="row" style="justify-content:center"><a data-unlockswitch>Not ' + me.n.split(' ')[0] + '? Switch user</a></div></div></div>';
+}
+
+/* ---------- the Admin page ---------- */
+function whoTxt(){ return V.who === 'admin' ? 'Only the Admin sees this page' : V.who === 'mgr' ? 'The Admin and managers see this page — Tom Brandt' : 'Anyone given “Manage people and PINs” sees this page — today: the Admin, Tom Brandt'; }
+function adminHtml(){
+  var ph = V.dev === 'phone', tabs = [['people', 'People', people().length + 1]];
+  if(V.model !== 'person') tabs.push(['roles', 'Roles', ROLES.length]);
+  tabs.push(['rules', 'Sign-in rules'], ['log', 'Sign-in log']);
+  if(V.adTab === 'roles' && V.model === 'person') V.adTab = 'people';
+  var h = '<div class="ad"><div class="ad-h"><h3>Admin</h3><small style="color:var(--ink3)">People and permissions</small><span class="sp"></span>' + (ph ? '' : '<button class="btn sm" data-go="Add a person">' + ic('plus', 13) + 'Add a person</button>') + '</div>'
+    + '<div class="ad-tabs">' + tabs.map(function(t){ return '<button data-adt="' + t[0] + '" aria-pressed="' + (V.adTab === t[0]) + '">' + t[1] + (t[2] ? '<em>' + t[2] + '</em>' : '') + '</button>'; }).join('') + '</div>';
+  if(V.adTab === 'people') h += '<div class="ad-b">' + peopleList() + '<section class="ad-r"><div class="ad-bar">' + ic('shield', 14) + whoTxt() + '</div>' + personHtml(pBy(V.adSel)) + '</section></div>';
+  if(V.adTab === 'roles') h += '<div class="ad-sc" style="padding:16px 24px 24px">' + rolesHtml() + '</div>';
+  if(V.adTab === 'rules') h += '<div class="ad-sc" style="padding:16px 24px 24px">' + rulesHtml() + '</div>';
+  if(V.adTab === 'log') h += '<div class="ad-sc" style="padding:12px 24px 24px">' + logHtml() + '</div>';
+  return h + '</div>';
+}
+function pinState(p){ return p.off ? ['Sign-in off', 'off'] : p.id === 'sofia' ? ['Temporary PIN', 'w'] : p.id === 'derek' ? ['No PIN yet', 'w'] : null; }
+function peopleList(){
+  return '<nav class="ad-l"><div class="srch">' + ic('search', 14) + 'Find a person</div>' + P.map(function(p){ var st = pinState(p), n = nChanged(p);
+    return '<button class="pr" data-adp="' + p.id + '" aria-pressed="' + (V.adSel === p.id) + '"' + (p.off ? ' style="opacity:.6"' : '') + '>' + av(p, 30) + '<span><b>' + esc(p.n) + '</b><small>' + esc(p.r) + (n ? ' · ' + n + ' changed' : '') + '</small></span>' + (st ? '<span class="tg ' + st[1] + '">' + st[0] + '</span>' : '') + '</button>'; }).join('') + '</nav>';
+}
+function sw(on, label, attrs, chg, dis){ return '<button class="sw" ' + attrs + ' aria-pressed="' + !!on + '"' + (dis ? ' style="opacity:.55;cursor:not-allowed"' : '') + '><i></i>' + label + (chg ? '<em>changed</em>' : '') + '</button>'; }
+function personHtml(p){
+  if(!p) return '';
+  var role = V.model !== 'person', lock = V.model === 'roleonly', n = nChanged(p), st = pinState(p);
+  var h = '<div class="ph">' + av(p, 54) + '<span style="flex:1;min-width:0"><b>' + esc(p.n) + '</b><small>' + esc(p.r) + ' · ' + (p.off ? 'sign-in turned off Oct 2 — history kept' : 'last signed in today, 7:02 am, on this computer') + '</small></span>' + (V.lay === 'badge' ? '<button class="btn sm" data-go="Print badge">' + ic('scan', 13) + 'Print badge</button>' : '') + '</div>';
+  /* sign-in */
+  h += '<div class="card"><h5>' + ic('lock', 13) + 'Sign-in</h5><div class="kv">'
+    + (role ? '<span>Role</span><span><span class="sel" data-go="Pick a role">' + esc(p.r) + ic('chevD', 13) + '</span></span>' : '')
+    + (V.check === 'none' ? '<span>PIN</span><span style="color:var(--ink3)">No PINs — they pick their name</span>' : '<span>' + (needsPw(p) ? 'Password' : 'PIN') + '</span><span style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">' + (st && st[1] === 'w' ? '<span style="color:var(--warn)">' + st[0] + (p.id === 'sofia' ? ' — changes it at first sign-in' : '') + '</span>' : '<span class="pinbx">' + (needsPw(p) ? '••••••••' : Array(PINLEN() + 1).join('•')) + '</span><span style="color:var(--ink3);font-size:12px">set Sep 12</span>') + '<button class="btn sm" data-go="Reset ' + (needsPw(p) ? 'password' : 'PIN') + ' — ' + (V.newp === 'temp' ? 'a temporary one, changed at their next sign-in' : V.newp === 'set' ? 'you type the new one' : 'they pick one at their next sign-in') + '">' + ic('key', 13) + 'Reset</button></span>')
+    + '<span>Can sign in</span><span>' + sw(!p.off, p.off ? 'Off — their punches, notes and ROs keep their name' : 'On', 'data-go="Turn sign-in on or off"') + '</span></div></div>';
+  /* pages */
+  h += '<div class="card"><h5>' + ic('ro', 13) + 'Pages' + (role && !lock ? '<em>· from ' + esc(p.r) + (V.model === 'role' ? ', change any for ' + esc(p.n.split(' ')[0]) + ' alone' : '') + '</em>' : lock ? '<em>· set by the role — change it on Roles</em>' : '') + (V.model === 'role' && n ? '<span class="leg"><span><i></i>changed for ' + esc(p.n.split(' ')[0]) + '</span></span>' : '') + '</h5>';
+  if(V.depth === 'levels') h += PAGES.map(function(pg){ var l = lvl(p, pg[0]), chg = V.model === 'role' && (V.lv[p.id + '|' + pg[0]] || (V.ov[p.id] || {})[pg[0]] != null); return '<div class="prow">' + pg[1] + (chg ? '<em style="font-style:normal;font-size:11px;font-weight:600;color:var(--warn);background:var(--warn-t);padding:1px 7px;border-radius:999px">changed</em>' : '') + '<span class="lvl">' + ['none', 'view', 'edit'].map(function(x){ return '<button data-lvl="' + pg[0] + '" data-v="' + x + '" aria-pressed="' + (l === x) + '">' + { none: 'No', view: 'View', edit: 'Edit' }[x] + '</button>'; }).join('') + '</span></div>'; }).join('');
+  else h += '<div class="pchips">' + PAGES.map(function(pg){ var on = eff(p, pg[0]); return '<button class="pc' + (changed(p, pg[0]) ? ' ov' : '') + '" data-pgk="' + pg[0] + '" aria-pressed="' + on + '"' + (lock ? ' style="cursor:not-allowed"' : '') + '>' + (on ? ic('check', 13) : '') + pg[1] + '</button>'; }).join('') + '</div>';
+  h += '</div>';
+  /* actions */
+  if(V.depth !== 'pages') h += '<div class="card"><h5>' + ic('shield', 13) + 'What they can do</h5><div class="perm">' + ACTS.map(function(g){ return '<div class="pg2"><b>' + g[0] + '</b>' + g[1].map(function(a){ return sw(eff(p, a[0]), a[1], 'data-act="' + a[0] + '"', changed(p, a[0]), lock); }).join('') + '</div>'; }).join('') + '</div></div>';
+  h += '<div style="display:flex;gap:8px;flex-wrap:wrap">' + (V.model === 'role' && n ? '<button class="btn sm" data-backrole>' + ic('undo', 13) + 'Back to the ' + esc(p.r) + ' role</button>' : '') + '<span class="sp"></span>' + (p.admin ? '' : V.leave === 'off' ? '<button class="btn sm bad" data-go="Turn off sign-in — their history stays">Turn off sign-in</button>' : '<button class="btn sm bad" data-go="Delete — asks first">Delete ' + esc(p.n.split(' ')[0]) + '</button>') + '</div>';
+  return h;
+}
+function rolesHtml(){
+  var rows = [['Pages', PAGES]]; if(V.depth !== 'pages') rows = rows.concat(ACTS);
+  return '<div class="card" style="padding:0;overflow:auto"><table class="mx"><thead><tr><th></th>' + ROLES.map(function(r){ return '<th>' + r + '<div style="font-weight:500;color:var(--ink4)">' + P.filter(function(p){ return p.r === r; }).length + '</div></th>'; }).join('') + '</tr></thead><tbody>'
+    + rows.map(function(g){ return '<tr class="gr"><td colspan="' + (ROLES.length + 1) + '">' + g[0] + '</td></tr>' + g[1].map(function(a){ return '<tr><td>' + a[1] + '</td>' + ROLES.map(function(r){ var on = rHas(r, a[0]), v = V.depth === 'levels' && g[0] === 'Pages' && on && (' ' + (VIEWONLY[r] || '') + ' ').indexOf(' ' + a[0] + ' ') >= 0;
+      return '<td><button class="ck' + (v ? ' v' : '') + '" data-rx="' + r + '|' + a[0] + '" aria-pressed="' + (on && !v) + '" aria-label="' + r + ': ' + a[1] + '"' + (r === 'Admin' ? ' disabled style="opacity:.5;cursor:default"' : '') + '></button></td>'; }).join('') + '</tr>'; }).join(''); }).join('') + '</tbody></table></div>'
+    + '<p class="note">Changing a role changes everyone in it' + (V.model === 'role' ? ', except what was changed for one person.' : '.') + ' The Admin always has everything.</p>';
+}
+function segFor(key, opts){ return '<span class="seg">' + opts.map(function(o){ return '<button data-rset="' + key + '" data-v="' + o[0] + '" aria-pressed="' + (V[key] === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</span>'; }
+function rulesHtml(){
+  return '<div class="rules">'
+    + '<div class="card"><h5>' + ic('lock', 13) + 'Showing it’s you</h5>' + segFor('check', [['pin4', '4-digit PIN'], ['pin6', '6-digit PIN'], ['mixed', 'Password + PIN'], ['none', 'No PIN']]) + '<p class="note">PINs are kept scrambled in the file, never as typed.</p></div>'
+    + '<div class="card"><h5>' + ic('x', 13) + 'A wrong PIN</h5>' + segFor('wrong', [['lock5', '5 tries, wait a minute'], ['tell', '5 tries, tell the admin'], ['nolim', 'No limit']]) + '</div>'
+    + '<div class="card"><h5>' + ic('moon', 13) + 'When nobody’s touched it</h5>' + segFor('idle', [['lock15', 'Lock · 15 min'], ['out15', 'Sign out · 15 min'], ['out60', 'Sign out · 1 h'], ['never', 'Never']]) + '</div>'
+    + '<div class="card"><h5>' + ic('clock', 13) + 'End of the shop day</h5>' + sw(V.away.eod, 'Sign everyone out at 4:30 pm — running clocks keep running', 'data-awayt="eod"') + '</div>'
+    + '<div class="card"><h5>' + ic('plus', 13) + 'A new person</h5>' + segFor('newp', [['temp', 'Temporary PIN'], ['set', 'Admin sets it'], ['self', 'They pick it']]) + '</div>'
+    + '<div class="card"><h5>' + ic('users', 13) + 'Who can open Admin</h5>' + segFor('who', [['admin', 'Admin only'], ['mgr', 'Admin + managers'], ['flag', 'By permission']]) + '</div></div>';
+}
+function logHtml(){
+  var L = [['7:02', 'dana', 'Signed in', 'ok'], ['7:05', 'mike', 'Signed in', 'ok'], ['9:41', 'luis', 'Wrong PIN ×2', 'bad'], ['9:42', 'luis', 'Signed in', 'ok'], ['11:30', 'frank', 'Switched to Tom Brandt', ''], ['12:15', 'jenna', V.idle === 'lock15' ? 'Locked — 15 min, no one on it' : V.idle === 'never' ? 'Signed out' : 'Signed out — idle', ''], ['12:20', 'admin', 'Reset Sofia Alvarez’s PIN (temporary)', ''], ['12:31', 'tom', 'Gave Dana Kowalski: Inventory, Order parts', ''], ['Yest.', 'admin', V.away.eod ? 'Everyone signed out — end of the day (2 clocks kept running)' : 'Admin signed out', '']];
+  return '<div class="card" style="padding:4px 12px"><div class="log">' + L.map(function(x){ var p = pBy(x[1]); return '<div class="lr"><span class="t">' + x[0] + '</span>' + av(p, 26) + '<span><b style="font-weight:600">' + esc(p.n) + '</b> · ' + esc(x[2]) + '</span><span class="k ' + x[3] + '">' + (x[3] === 'bad' ? 'Failed' : x[3] === 'ok' ? 'Sign-in' : 'Change') + '</span></div>'; }).join('') + '</div></div>';
+}
+
+/* ---------- the page ---------- */
+var CAPS = { login: ['Login page', 'when someone signs out, or the app opens'], switch: ['Switch user', 'off the name in the sidebar'], admin: ['Admin page', 'people and what each can do'] };
+var NOTES = {
+  login: '<b>Try it:</b> pick a name — PIN 1234 (6-digit: 123456; password: parsec). Five wrong tries shows the limit. Everything stays in the one Parsec file: PINs are stored scrambled, never as typed. It keeps each person on their own pages; it isn’t a lock against someone who opens the file itself.',
+  switch: '<b>Try it:</b> pick someone in the switcher, or Step away to see the lock screen. Mike’s clock keeps running whoever signs in.',
+  admin: '<b>Try it:</b> flip a page or an action for Dana — with roles, what’s changed for her alone gets a dot and “Back to the role” undoes it. The Roles tab sets everyone in a role at once.'
+};
+function screenHtml(){ return V.scr === 'login' ? loginHtml() : V.scr === 'switch' ? (V.swLogin ? loginHtml() : appHtml()) : adminHtml(); }
+function chsHtml(){
+  return '<div class="chs">' + CH.map(function(c){ var k = c[1], multi = c[5];
+    return (c[0] ? '<div class="hd" data-hd="' + c[1] + '">' + c[0] + '</div>' : '') + '<div class="ch"><b>' + c[2] + '</b>' + (c[3] ? '<small>' + c[3] + '</small>' : '') + '<div class="ol">' + c[4].map(function(o){ var on = multi ? !!V[k][o[0]] : V[k] === o[0];
+      return '<button class="opt' + (multi ? ' sq' : '') + '" data-ch="' + k + '" data-v="' + o[0] + '" aria-pressed="' + on + '"><i></i><span><b>' + o[1] + (o[4] ? '<em>SUGGESTED</em>' : '') + '</b>' + (o[2] || '') + '</span></button>'; }).join('') + '</div></div>'; }).join('') + '</div>';
+}
+function draw(){
+  var y = window.scrollY, cap = CAPS[V.scr], c0 = $('.chs'), cy = c0 ? c0.scrollTop : 0;
+  $('#pg').innerHTML = '<div class="wrap"><div class="two"><div><div class="cap"><h2>' + cap[0] + '</h2><small>' + cap[1] + '</small>' + (V.scr === 'switch' && V.swLogin ? '<span class="sp"></span><button class="btn sm gh" data-swback>' + ic('back', 13) + 'Back to Mike’s page</button>' : '') + '</div><div class="stage' + (V.dev === 'phone' ? ' phone' : '') + '" id="stage">' + screenHtml() + '</div><p class="note">' + NOTES[V.scr] + '</p></div>' + chsHtml() + '</div></div>';
+  window.scrollTo(0, y); var c1 = $('.chs'); if(c1) c1.scrollTop = cy; sync(); pkDraw(); V.an = false;
+  var pwin = $('#pwin'); if(pwin) pwin.focus();
+}
+function sync(){
+  [['th', 'th'], ['scr', 'scr'], ['dev', 'dev']].forEach(function(x){ $$('.mk button[data-' + x[0] + ']').forEach(function(b){ b.setAttribute('aria-pressed', String(b.getAttribute('data-' + x[0]) === V[x[1]])); }); });
+  D.documentElement.setAttribute('data-th', V.th);
+}
+function pkText(){
+  var L = ['Parsec · Login page and Admin page — my picks'];
+  CH.forEach(function(c){ var k = c[1], vals;
+    if(c[5]) vals = c[4].filter(function(o){ return V[k][o[0]]; }).map(function(o){ return o[1]; }).join(', ') || 'none';
+    else vals = c[4].filter(function(o){ return o[0] === V[k]; })[0][1];
+    if(c[0]) L.push(c[0].charAt(0) + c[0].slice(1).toLowerCase() + ':');
+    L.push('· ' + c[2] + ': ' + vals); });
+  if(V.note.trim()) L.push('Notes: ' + V.note.trim());
+  return L.join('\n');
+}
+function pkDraw(){ var w = $('#picks'); w.hidden = !V.picks; if(!V.picks) return;
+  var ta = $('#pk-note'); if(ta && D.activeElement === ta){ var pre = $('#picks pre'); if(pre) pre.textContent = pkText(); return; }
+  w.innerHTML = '<div class="pk-h"><b>Your picks</b><button class="x" data-pk="x" aria-label="Close">' + ic('x', 15) + '</button></div><pre>' + esc(pkText()) + '</pre><div class="pk-r"><span>Anything else</span><textarea id="pk-note" placeholder="e.g. Parts people get the Inventory page by default">' + esc(V.note) + '</textarea></div><button class="btn pri" data-pk="copy">' + ic('copy') + 'Copy for the chat</button>'; }
+function toast(m){ var t = $('.toast'); if(t) t.remove(); t = D.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = m; D.body.appendChild(t); clearTimeout(toast.h); toast.h = setTimeout(function(){ t.remove(); }, 2800); }
+
+/* ---------- the PIN, working ---------- */
+function openPin(id){
+  var p = pBy(id); V.pin = ''; V.pinMsg = ''; V.pinSt = ''; V.menu = false;
+  if(V.check === 'none'){ signedIn(p); return; }
+  V.pinFor = id; V.an = true; draw();
+}
+function signedIn(p){
+  var sw0 = V.scr === 'switch';
+  V.pinFor = null; V.pin = ''; V.pinMsg = ''; V.pinSt = ''; V.tries = 0; V.locked = false; V.swLogin = false; V.faceAll = false; V.typed = '';
+  if(sw0 && p.id !== ME) toast('Switched to ' + p.n + ' — their pages open.' + (V.away.keep ? ' Mike’s clock keeps running on RO 1356.' : ''));
+  else if(sw0) toast('Welcome back, Mike — right where you left it.');
+  else toast('Signed in as ' + p.n + (p.admin ? ' — every page' : ' — their pages open') + '.');
+  V.menu = sw0 ? false : V.menu; draw();
+}
+function padKey(k){
+  var who = V.locked ? ME : V.pinFor; if(!who) return; var p = pBy(who), n = PINLEN();
+  if(V.waitTill > Date.now()) return;
+  if(k === 'forgot'){ toast('The admin' + (V.who === 'admin' ? '' : ' (or Tom Brandt)') + ' resets it from Admin → People.'); return; }
+  if(V.pinSt){ V.pinSt = ''; V.pin = ''; }
+  if(k === 'del') V.pin = V.pin.slice(0, -1); else if(V.pin.length < n) V.pin += k;
+  V.pinMsg = '';
+  if(V.pin.length === n){
+    if(V.pin === (n === 6 ? '123456' : '1234')){ V.pinSt = 'ok'; draw(); setTimeout(function(){ signedIn(p); }, 450); return; }
+    V.tries++; V.pinSt = 'bad';
+    if(V.wrong !== 'nolim' && V.tries >= 5){ V.waitTill = Date.now() + 60000; V.pinMsg = V.wrong === 'tell' ? 'Five wrong tries — the admin has been told. Wait a minute.' : 'Five wrong tries — wait a minute, then try again.'; V.tries = 0; setTimeout(function(){ V.waitTill = 0; V.pinMsg = ''; V.pinSt = ''; V.pin = ''; draw(); }, 60000); }
+    else V.pinMsg = 'Not right — try again' + (V.wrong !== 'nolim' ? ' (' + (5 - V.tries) + ' left)' : '');
+  }
+  draw();
+}
+
+/* ---------- events ---------- */
+D.addEventListener('click', function(e){
+  var t = e.target, b;
+  if((b = t.closest('.mk button[data-th]'))){ V.th = b.getAttribute('data-th'); sync(); return; }
+  if((b = t.closest('.mk button[data-scr]'))){ V.scr = b.getAttribute('data-scr'); V.pinFor = null; V.locked = false; V.swLogin = false; V.menu = true; V.an = V.scr === 'switch'; draw();
+    var hd = $('.chs [data-hd="' + { login: 'lay', switch: 'sw', admin: 'model' }[V.scr] + '"]'), chs = $('.chs'); if(hd && chs && chs.scrollHeight > chs.clientHeight + 4) chs.scrollTop = hd.offsetTop - chs.offsetTop - 4; else if(hd && window.innerWidth <= 1180) hd.scrollIntoView({ block: 'start' }); return; }
+  if((b = t.closest('.mk button[data-dev]'))){ V.dev = b.getAttribute('data-dev'); draw(); return; }
+  if(t.closest('#pk-open')){ V.picks = !V.picks; pkDraw(); return; }
+  if((b = t.closest('[data-pk]'))){ var a = b.getAttribute('data-pk'); if(a === 'x'){ V.picks = false; pkDraw(); }
+    if(a === 'copy'){ var tx = pkText(); (navigator.clipboard ? navigator.clipboard.writeText(tx) : Promise.reject()).then(function(){ toast('Copied — paste it in the chat.'); }, function(){ var ta = D.createElement('textarea'); ta.value = tx; D.body.appendChild(ta); ta.select(); try{ D.execCommand('copy'); toast('Copied — paste it in the chat.'); }catch(er){} ta.remove(); }); }
+    return; }
+  if((b = t.closest('[data-ch]'))){ var k2 = b.getAttribute('data-ch'), v = b.getAttribute('data-v'), c = CH.filter(function(x){ return x[1] === k2; })[0];
+    if(c[5]) V[k2][v] = V[k2][v] ? 0 : 1; else V[k2] = v;
+    if(k2 === 'check'){ V.pin = ''; V.pinSt = ''; V.pinMsg = ''; }
+    if(k2 === 'sw'){ V.menu = true; V.swLogin = false; }
+    draw(); return; }
+  if((b = t.closest('[data-who]'))){ openPin(b.getAttribute('data-who')); return; }
+  if((b = t.closest('[data-pad]'))){ padKey(b.getAttribute('data-pad')); return; }
+  if(t.closest('[data-pinx]')){ V.pinFor = null; draw(); return; }
+  if(t.matches && t.matches('[data-pinbg]')){ V.pinFor = null; draw(); return; }
+  if(t.closest('[data-pw]')){ var pi = $('#pwin'), p0 = pBy(V.locked ? ME : V.pinFor); if(pi && pi.value === 'parsec') signedIn(p0); else { V.pinSt = 'bad'; V.pinMsg = 'That’s not it — try again'; draw(); } return; }
+  if(t.closest('[data-faceall]')){ V.faceAll = !V.faceAll; draw(); return; }
+  if(t.closest('[data-scanbox]')){ toast('Badge read — Dana Kowalski'); setTimeout(function(){ openPin('dana'); }, 500); return; }
+  if(t.closest('[data-me]')){ V.menu = !V.menu; V.an = V.menu; draw(); return; }
+  if(t.closest('[data-step]')){ V.menu = false; V.an = true; V.locked = 'step'; V.pin = ''; V.pinSt = ''; V.pinMsg = ''; draw(); return; }
+  if(t.closest('[data-unlockswitch]')){ V.locked = false; if(V.sw === 'quick'){ V.menu = true; } else V.swLogin = true; draw(); return; }
+  if(t.closest('[data-signout]')){ V.menu = false; V.swLogin = true; toast('Signed out.' + (V.away.keep ? ' Your clock keeps running on RO 1356.' : '')); draw(); return; }
+  if(t.closest('[data-swlogin]')){ V.menu = false; V.swLogin = true; draw(); return; }
+  if(t.closest('[data-swback]')){ V.swLogin = false; V.menu = true; V.pinFor = null; draw(); return; }
+  if((b = t.closest('[data-adt]'))){ V.adTab = b.getAttribute('data-adt'); draw(); return; }
+  if((b = t.closest('[data-adp]'))){ V.adSel = b.getAttribute('data-adp'); draw(); return; }
+  if((b = t.closest('[data-pgk]')) || (b = t.closest('[data-act]'))){
+    var k3 = b.getAttribute('data-pgk') || b.getAttribute('data-act'), p3 = pBy(V.adSel);
+    if(V.model === 'roleonly'){ toast('Set by the ' + p3.r + ' role — change it on the Roles tab.'); return; }
+    if(p3.admin){ toast('The Admin always has everything.'); return; }
+    var nv = !eff(p3, k3), o = V.ov[p3.id] = V.ov[p3.id] || {}; if(nv === rHas(p3.r, k3)) delete o[k3]; else o[k3] = nv ? 1 : -1; draw(); return; }
+  if((b = t.closest('[data-lvl]'))){ var p4 = pBy(V.adSel); if(V.model === 'roleonly'){ toast('Set by the role — change it on the Roles tab.'); return; } if(p4.admin){ toast('The Admin always has everything.'); return; } var kk = p4.id + '|' + b.getAttribute('data-lvl'), lv0 = b.getAttribute('data-v'); delete V.lv[kk]; if(V.ov[p4.id]) delete V.ov[p4.id][b.getAttribute('data-lvl')]; if(lvl(p4, b.getAttribute('data-lvl')) !== lv0) V.lv[kk] = lv0; draw(); return; }
+  if(t.closest('[data-backrole]')){ var p5 = pBy(V.adSel); delete V.ov[p5.id]; Object.keys(V.lv).forEach(function(x){ if(x.indexOf(p5.id + '|') === 0) delete V.lv[x]; }); toast(p5.n + ' is back to the ' + p5.r + ' role.'); draw(); return; }
+  if((b = t.closest('[data-rx]'))){ if(b.disabled) return; var rk = b.getAttribute('data-rx'), parts = rk.split('|'); V.roleX[rk] = !rHas(parts[0], parts[1]); draw(); return; }
+  if((b = t.closest('[data-rset]'))){ V[b.getAttribute('data-rset')] = b.getAttribute('data-v'); draw(); return; }
+  if((b = t.closest('[data-awayt]'))){ var ak = b.getAttribute('data-awayt'); V.away[ak] = V.away[ak] ? 0 : 1; draw(); return; }
+  if((b = t.closest('[data-go]'))){ toast(b.getAttribute('data-go')); return; }
+});
+D.addEventListener('input', function(e){
+  if(e.target.id === 'pk-note'){ V.note = e.target.value; var pre = $('#picks pre'); if(pre) pre.textContent = pkText(); return; }
+  if(e.target.id === 'nm'){ V.typed = e.target.value; var q = V.typed.trim().toLowerCase(), L = q ? people().concat([pBy('admin')]).filter(function(p){ return p.n.toLowerCase().indexOf(q) >= 0 || ini(p.n).toLowerCase() === q; }) : RECENT.map(pBy); $('#sugg').innerHTML = suggHtml(L, q); }
+});
+D.addEventListener('keydown', function(e){
+  if(e.target.id === 'nm' && e.key === 'Enter'){ var f = $('#sugg button[data-who]'); if(f) openPin(f.getAttribute('data-who')); return; }
+  if(e.target.id === 'pwin' && e.key === 'Enter'){ var pb = $('[data-pw]'); if(pb) pb.click(); return; }
+  var padOn = (V.pinFor || V.locked) && !(pBy(V.locked ? ME : V.pinFor) || {}).admin && !needsPw(pBy(V.locked ? ME : V.pinFor));
+  if(padOn && /^[0-9]$/.test(e.key) && !/^(INPUT|TEXTAREA)$/.test(e.target.tagName)){ e.preventDefault(); padKey(e.key); return; }
+  if(padOn && e.key === 'Backspace' && !/^(INPUT|TEXTAREA)$/.test(e.target.tagName)){ e.preventDefault(); padKey('del'); return; }
+  if(e.key === 'Escape'){ if(V.picks){ V.picks = false; pkDraw(); } else if(V.pinFor){ V.pinFor = null; draw(); } else if(V.menu && V.scr === 'switch'){ V.menu = false; draw(); } }
+  if((e.ctrlKey || e.metaKey) && (e.key === 'l' || e.key === 'L') && V.scr === 'switch' && V.away.lockbtn){ e.preventDefault(); V.menu = false; V.locked = 'step'; V.pin = ''; draw(); }
+});
+setInterval(function(){ if(V.scr !== 'admin' && !V.pinFor && V.side.clock){ var b = $('.ln-time b'); if(b){ var n = nowTxt(); b.firstChild.nodeValue = n.t; } } }, 20000);
+draw();
+</script>
+</body></html>

@@ -1,0 +1,34 @@
+Case # 5102334
+Pinecrest Logistics - Cust# 30981
+RO Number: RA0001241190	Status: Waiting on Parts
+ETR: 11/02/2026 4:00 PM	Follow-up: 10/30/2026 8:00 AM
+Created By: CHO, JENNA	Asset Checked In: 10/28/2026 6:55 AM
+PO #: PO-61007	Auth #: A-88120
+
+Asset
+Make: Volvo	Model: VNL64T860	Year: 2021
+VIN: 4V4NC9EH5MN290121	Unit #: P-114
+Engine: Volvo D13TC 455 HP	ESN: 21987654
+Odometer: 288,412 mi	Engine Hours: 9,870
+Tag #: 112	Location: Lot E3
+
+OPERATIONS
+Op #	Operation	Labor Hours	Labor Rate	Labor	Parts	Misc	Sublet	Total	Approval Status
+1	Replace EGR cooler	6.2	$210.00	$1,302.00	$2,100.40	$35.00		$3,437.40	Approved
+Part #	Description	Qty	List	Disc	Net	Core	Ext	Salesman
+VOL-23125678	EGR cooler kit	1	$1,980.00	10%	$1,782.00	$250.00	$2,032.00	Ryan Burke
+VOL-21412345	Gasket set	2	$38.00	10%	$34.20	$0.00	$68.40	Ryan Burke
+2	Warranty - replace NOx sensor outlet	1.3	$165.00	$214.50	$548.00	$0.00	$0.00	$762.50	Approved
+Part #	Description	Qty	List	Disc	Net	Core	Ext	Salesman
+VOL-22827993	NOx sensor, outlet	1	$548.00	0%	$548.00	$0.00	$548.00	Ryan Burke
+3	Align front end	0.5	$210.00	$105.00	$0.00	$0.00	$185.00	$290.00	Pending
+
+Totals Summary
+Labor	$1,621.50
+Parts	$2,398.40
+Core	$250.00
+Shop Supplies	$35.00
+Sublet	$185.00
+Environmental Fee	$12.50
+Tax	$96.42
+Total	$4,598.82

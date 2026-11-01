@@ -1,0 +1,7 @@
+# Parsec 16 — the words that describe where Parsec saves now match layout 16 (Open / Closed by year, ro.json, the Shop topic files,
+# end-of-day compressed backups). Runs inside build12.py after the 16 forks: uses js, rep, LOG.
+js = rep(js, "' · each RO in its own folder, shop data in Shop/Shop.html</small></span>",
+             "' · open ROs in ROs/Open, closed ones in ROs/Closed by year, shop data in Shop by topic</small></span>")
+js = rep(js, "'<div class=\"hint\">Each RO saves to its own folder in <span class=\"mono\">Parsec Data/ROs/</span> — its Repair Order page plus an <span class=\"mono\">Attachments</span> folder. Shop-wide data goes to <span class=\"mono\">Parsec Data/Shop/Shop.html</span>, plus a dated copy in <span class=\"mono\">Parsec Data/Backups/</span> once a day.</div></div></div>'",
+             "'<div class=\"hint\">Each RO has its own folder — <span class=\"mono\">Parsec Data/ROs/Open/</span> while it’s open, <span class=\"mono\">ROs/Closed/&lt;year&gt;/</span> once it’s released — with its data (<span class=\"mono\">ro.json</span>), a page you can read and print, and an <span class=\"mono\">Attachments</span> folder. Shop-wide data is split by topic in <span class=\"mono\">Parsec Data/Shop/</span>, and a compressed copy of everything goes to <span class=\"mono\">Parsec Data/Backups/</span> at the end of each working day.</div></div></div>'")
+LOG.append("Parsec 16: the save-location words describe layout 16")

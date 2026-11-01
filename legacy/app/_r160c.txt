@@ -1,0 +1,31 @@
+ok   gzip round trip (6500 → 64 bytes), plain files still read
+ok   before the shop's end time: no backup
+ok   end of day → Parsec Data/Backups/2026-10/data-2026-10-31.json.gz
+ok   the backup is compressed and holds every RO (148)
+ok   only once a day by the clock
+ok   at open: the last working day's backup → Parsec Data/Backups/2026-10/data-2026-10-30.json.gz
+ok   …and not again once it's there
+ok   keep 30 days: the 40-day-old .json.gz went (1); other files stayed
+ok   the backups list: ['2026-10/data-2026-10-31.json.gz', '2026-10/data-2026-10-30.json.gz', 'data-2026-09-21.json']
+ok   restore reads both ([148, 1])
+ok   a one-off copy: 2026-10/data-2026-10-31 test 11-54.json.gz
+ok   the RO's folder is there (["RO-37359 - Rick's Freight LLC"])
+ok   Export for the server ran
+ok   manifest counts: ros 148, ops 321, parts 380, punches 364, shifts 249, attachments 2
+ok   every kind of data has a table (34 of 34)
+ok   16 tables + schema.json + README.txt listed (20 files)
+ok   an attachment's sha-256 checks out independently
+ok   money in whole cents (price_cents)
+ok   schema.json: columns and links
+ok   round trip: identical; the export's own log line isn't a later edit (later: [])
+ok   manifest keeps the data's fingerprint at export time
+ok   the export/check toasts offer no Undo
+ok   the card on Your data shows the export and the result
+ok   a changed line is refused and named: tables/punches.jsonl: line 5 (pn_56wribdzwyy) is different
+ok   a missing file is refused and named: attachments/ro_aoz17vpzwyv/photo.jpg: missing
+ok   the export still checks identical; a change made after it is listed as later work (['state.ros[0].customerName'])
+ok   the card says later edits aren't in the export
+ok   tables that don't rebuild to the fingerprint fail (2 differences listed)
+ok   no page errors: 
+FAILS 0
+exit 0

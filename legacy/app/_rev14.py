@@ -1,0 +1,18 @@
+import os; exec(open('/tmp/claude-0/-home-claude/febe01e4-e12e-554d-9dc2-ccfd769708e9/scratchpad/app/_revlib.py').read())
+async def main():
+    async with async_playwright() as p:
+        b, pg, errs = await setup(p)
+        rid = await mkro(pg); await flow_approve(pg, rid); await flow_order(pg, rid); await flow_receive(pg, rid); await flow_send_fm(pg, rid)
+        await flow_assign(pg, rid)
+        print("toast", await toast(pg))
+        print(await pg.evaluate(RO(rid, "return [r.assignedTech, r.location, r.status.status, r.route&&r.route.to, r.route&&r.route.who, r.route&&r.route.state];")))
+        await fsel(pg)
+        print("hdr", await txt(pg, ".tg-main .tg-top"))
+        na = await lst(pg, ".tg-list .tg-it", 40); print("FOREMAN needs:", [x[:110] for x in na])
+        await shot(pg, "g5_assigned")
+        await go(pg, 'rolist')
+        row = await pg.evaluate("[...document.querySelectorAll('[data-pg=rolist] .rq-row')].map(x=>x.innerText.replace(/\\s+/g,' ')).find(t=>/8877/.test(t))")
+        print("RL row:", row)
+        print("ERR", errs)
+        await b.close()
+asyncio.run(main())

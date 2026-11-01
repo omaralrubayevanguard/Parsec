@@ -1,0 +1,20 @@
+import os; exec(open('/tmp/claude-0/-home-claude/febe01e4-e12e-554d-9dc2-ccfd769708e9/scratchpad/app/_revlib.py').read())
+async def main():
+    async with async_playwright() as p:
+        b, pg, errs = await setup(p)
+        rid = await upto_assign(pg); await flow_tech_start(pg, rid); await done_cur(pg)
+        await start_next(pg, 2); await done_cur(pg)
+        await pick_all(pg)
+        await start_next(pg, 3); await watch_toasts(pg); await done_cur(pg); await pg.wait_for_timeout(600)
+        print("toasts", await seen(pg)); print("pops", await anypop(pg))
+        print(await pg.evaluate(RO(rid, "return [r.status.status, r.status.sub, r.operations.map(o=>[o.jobStatus&&o.jobStatus.status, (o.parts||[]).map(x=>x.status).join(',')])];")))
+        await shot(pg, "i1_all_done_tech")
+        await signin(pg, "Admin") if False else None
+        await admin(pg); await go(pg, 'rolist')
+        row = await pg.evaluate("[...document.querySelectorAll('[data-pg=rolist] .rq-row')].map(x=>x.innerText.replace(/\\s+/g,' ')).find(t=>/8877/.test(t))")
+        print("RL row:", row)
+        await tri(pg, rid); await shot(pg, "i2_triage_done")
+        na = await lst(pg, ".tg-list .tg-it", 40); print("TRIAGE needs 8877:", [x[:110] for x in na if '8877' in x])
+        print("ERR", errs)
+        await b.close()
+asyncio.run(main())

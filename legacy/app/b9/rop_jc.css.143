@@ -1,0 +1,365 @@
+/* ===== Parsec 12: the RO page in your layout (the RO page mock-up) and picking (the selecting mock-up) ===== */
+.rop-r .px-ro { position: relative; }
+.pxr .rop-rail { width: 324px; gap: 16px; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; padding: 16px 18px 32px; scrollbar-width: thin; }
+.rop-top { display: flex; flex-direction: column; gap: 16px; }
+.rop-rail > .px-props { margin-top: 0; }
+/* the truck band, stacked: the picture, then who and what */
+.rop-band .px-trk { grid-template-columns: minmax(0, 1fr); align-items: start; margin: 0; padding: 12px 14px 14px; min-height: 0; border-radius: 16px; }
+.rop-band .px-trk__pic { order: -1; justify-self: center; width: 100%; max-width: 270px; margin: 0 0 8px; }
+.rop-band .px-trk__pic.is-model { margin-bottom: 6px; }
+.rop-band .px-trk__pic.is-photo { width: 100%; max-width: none; height: 150px; margin: 0 0 12px; }
+.rop-band .px-trk__pic.is-framed { margin-bottom: 12px; }
+.rop-band .px-trk__pic.is-none { width: 100%; margin: 4px 0 8px; }
+.rop-band .px-trk__pic.is-none > svg { width: 160px; }
+.rop-band .px-trk > .px-titleblock { padding-bottom: 0; }
+.rop-band .px-ro__eyebrow { flex-wrap: wrap; gap: 4px 8px; font-size: 12px; }
+.rop-band .px-ro__title { margin: 6px 0 4px; font-size: 23px; line-height: 28px; overflow-wrap: anywhere; }
+.rop-band .px-ro__sub { font-size: 13px; line-height: 19px; }
+.rop-band .px-ro__status { margin-top: 12px; flex-wrap: wrap; row-gap: 6px; }
+.rop-band .px-ro__status .px-with { white-space: normal !important; flex: 1 1 auto !important; }
+.rop-band .px-status--button { max-width: 100%; min-width: 0; }
+.rop-band .px-status--button > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rop-band .px-status--button > svg { flex: none; }
+.rop-acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.rop-acts .px-btn { width: auto; flex: 1 1 auto; gap: 6px; }
+.rop-band { position: relative; }
+/* the stage bar, compact: the stage it's on, the bar — the names are on each segment's tip */
+.rop-stg .px-stage { gap: 8px; }
+.rop-stg .px-stage__top { flex-wrap: wrap; row-gap: 2px; font-size: 12.5px; }
+.rop-stg .px-stage__top .px-stage__eta { margin-left: 0; flex-basis: 100%; }
+.rop-stg .px-stage__track { gap: 3px; }
+.rop-stg .px-stage__seg { padding: 2px 0; gap: 0; }
+.rop-stg .px-stage__seg span { display: none; }
+.rop-stg .px-stage__seg i { height: 5px; }
+.rop-rblk { display: flex; flex-direction: column; }
+.rop-rh { font-size: 12px; font-weight: 500; color: var(--ink-3); margin: 0 0 8px; }
+.rop-who { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.rop-wh { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 10px; align-items: center; width: 100%; font-size: 13px; }
+.rop-wh b { display: block; font-weight: 500; color: var(--ink); }
+.rop-wh small { display: block; font-size: 12px; color: var(--ink-3); }
+.rop-age { font: 500 12px/1 var(--font-mono); padding: 4px 7px; border-radius: 6px; background: var(--fill); color: var(--ink-2); white-space: nowrap; }
+.rop-age.w { background: color-mix(in srgb, var(--warn) 14%, transparent); color: var(--warn); }
+.rop-age.b { background: color-mix(in srgb, var(--bad) 14%, transparent); color: var(--bad); }
+.rop-who .px-btn { width: auto; gap: 6px; }
+
+/* ---------- the middle ---------- */
+.pxr .rop-col { padding-bottom: 120px; }
+.rop-blk { display: flex; flex-direction: column; min-width: 0; }
+.rop-blk > .rop-sech { margin: 44px 0 6px; }
+.rop-blk > .rop-sech .px-btn { margin-left: auto; }
+.rop-none { padding: 10px 0; font-size: 13px; color: var(--ink-3); }
+.rop-mu { color: var(--ink-3); font-size: 12.5px; }
+.rop-ell { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rop-nm { all: unset; box-sizing: border-box; cursor: pointer; display: flex; flex-direction: column; min-width: 0; }
+.rop-nm b { font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rop-nm small { font-size: 12px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rop-nm:hover b { text-decoration: underline; text-underline-offset: 3px; }
+.rop-nm:focus-visible { box-shadow: var(--shadow-focus); border-radius: 6px; }
+.px-li.rop-pr { grid-template-columns: minmax(0, 1fr) 170px; }
+.rop-pl.is-ext .px-li.rop-pr { grid-template-columns: minmax(0, 1fr) 80px 110px 170px; }
+.rop-plh { display: grid; grid-template-columns: minmax(0, 1fr) 80px 110px 170px; gap: var(--space-4); padding: 4px 0; font-size: 11.5px; font-weight: 600; color: var(--ink-3); box-shadow: inset 0 -1px 0 var(--hairline); }
+.rop-plh .r, .rop-pth .r { text-align: right; }
+.px-li.rop-dc { grid-template-columns: 136px minmax(0, 1fr) 28px; }
+.rop-code { font: 500 12.5px/18px var(--font-mono); color: var(--ink); }
+.rop-dt { min-width: 0; } .rop-dt b { display: block; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .rop-dt small { display: block; font-size: 12px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rop-x { all: unset; box-sizing: border-box; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 6px; color: var(--ink-3); cursor: pointer; }
+.rop-x:hover { background: var(--fill); color: var(--ink); } .rop-x:focus-visible { box-shadow: var(--shadow-focus); }
+.rop-in { display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 6px 0 12px; margin-top: 10px; border-radius: var(--radius-lg); background: var(--raised); box-shadow: inset 0 0 0 1px var(--border); color: var(--ink-3); cursor: text; }
+.rop-in:focus-within { box-shadow: inset 0 0 0 1px var(--accent), 0 0 0 3px var(--accent-tint); }
+.rop-in > span { display: inline-flex; }
+.rop-in__i { all: unset; flex: 1 1 auto; min-width: 0; height: 38px; font: 400 13.5px/38px var(--font-sans); color: var(--ink); }
+.rop-in__i::placeholder { color: var(--ink-3); }
+.pxr .rop-in .rop-in__i:focus, .pxr .rop-in .rop-in__i:focus-visible { box-shadow: none !important; outline: none !important; }
+.rop-sel { all: unset; box-sizing: border-box; height: 28px; padding: 0 22px 0 9px; border-radius: 7px; background: var(--fill) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23888' stroke-width='1.4' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 8px center; font: 500 12.5px/28px var(--font-sans); color: var(--ink-2); cursor: pointer; }
+.rop-sel:focus-visible { box-shadow: var(--shadow-focus); }
+.rop-ph { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; margin: 8px 0 10px; }
+.rop-th { all: unset; box-sizing: border-box; position: relative; aspect-ratio: 4 / 3; border-radius: 10px; overflow: hidden; background: var(--fill); box-shadow: inset 0 0 0 1px var(--hairline); cursor: pointer; display: grid; place-items: center; }
+.rop-th img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.rop-th em { position: absolute; left: 6px; bottom: 6px; padding: 2px 6px; border-radius: 5px; background: rgba(0, 0, 0, .56); color: #fff; font: 500 10.5px/14px var(--font-sans); font-style: normal; }
+.rop-th.is-file { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--ink-3); }
+.rop-th.is-file small { font-size: 11px; max-width: 90%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rop-th.is-gone img { display: none; }
+.rop-th:focus-visible { box-shadow: var(--shadow-focus); }
+.px-li.rop-ms { grid-template-columns: 20px minmax(0, 1fr) auto; align-items: start; }
+.rop-ms > span { min-width: 0; } .rop-ms b { display: block; font-weight: 500; font-size: 13px; } .rop-ms small { display: block; color: var(--ink-2); font-size: 13px; overflow-wrap: anywhere; } .rop-ms time { font-size: 12px; color: var(--ink-3); white-space: nowrap; }
+.rop-to { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 12px; font-size: 12px; color: var(--ink-3); }
+.rop-to > span { margin-right: 2px; }
+.rop-to button { all: unset; box-sizing: border-box; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: 999px; background: var(--fill); color: var(--ink-2); font-size: 12.5px; box-shadow: inset 0 0 0 1px var(--hairline); }
+.rop-to button small { color: var(--ink-3); font-size: 11.5px; }
+.rop-to button.is-on { background: var(--accent-tint); color: var(--accent-text); box-shadow: inset 0 0 0 1px var(--accent); }
+.rop-to button:focus-visible { box-shadow: var(--shadow-focus); }
+.px-li.rop-hr { appearance: none; border: 0; background: none; font: inherit; color: inherit; text-align: left; width: calc(100% + 12px); margin: 0 -6px; padding: 8px 6px; border-radius: 8px; grid-template-columns: 64px minmax(0, 1fr) auto; cursor: pointer; }
+.px-li.rop-hr:hover { background: var(--fill); } .px-li.rop-hr:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+.rop-hr > span:nth-child(2) { min-width: 0; } .rop-hr b { display: block; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .rop-hr b em { font-style: normal; color: var(--ink-3); font-weight: 400; } .rop-hr small { display: block; font-size: 12px; color: var(--ink-3); }
+.rop-tag { font-size: 11.5px; font-weight: 600; padding: 3px 8px; border-radius: 6px; background: var(--fill); color: var(--ink-2); white-space: nowrap; }
+.rop-tag.w { background: color-mix(in srgb, var(--warn) 14%, transparent); color: var(--warn); }
+.rop-tag.g { background: var(--good-tint, color-mix(in srgb, var(--good) 14%, transparent)); color: var(--good); }
+.rop-tag.a { background: var(--accent-tint); color: var(--accent-text); }
+.px-li.rop-wa { display: block; padding: 12px 0; }
+.rop-wa .h { display: flex; align-items: center; justify-content: space-between; gap: 10px; } .rop-wa .h b { font-weight: 500; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rop-wst { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 4px; margin-top: 10px; }
+.rop-wst span { display: flex; flex-direction: column; gap: 6px; font-size: 11px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rop-wst i { display: block; height: 4px; border-radius: 2px; background: var(--hairline); }
+.rop-wst .d i { background: var(--ink-2); } .rop-wst .n i { background: var(--accent); } .rop-wst .n { color: var(--accent-text); font-weight: 600; }
+.rop-props { display: flex; flex-direction: column; margin-top: 2px; }
+.rop-props .px-prop { grid-template-columns: 110px 1fr; }
+.rop-cu { display: flex; flex-direction: column; gap: 2px; margin: 8px 0 4px; } .rop-cu small { font-size: 12.5px; color: var(--ink-3); }
+.rop-es { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 0; font-size: 13.5px; padding: 8px 0 4px; }
+.rop-es > span { color: var(--ink-2); min-width: 0; } .rop-es > b { padding-left: 16px; font-weight: 500; text-align: right; font-variant-numeric: tabular-nums; }
+.rop-es .t { font-weight: 600; color: var(--ink); padding-top: 8px; box-shadow: inset 0 1px 0 var(--hairline); }
+.rop-es em { font-style: normal; font-size: 12px; margin-left: 4px; } .rop-es em.g { color: var(--good); } .rop-es em.w { color: var(--warn); } .rop-es em.b { color: var(--bad); }
+.rop-es .rop-asist { padding: 1px 6px; border-radius: 5px; background: var(--fill); color: var(--ink-2); font-size: 11.5px; }
+.rop-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+.rop-row .px-btn { margin-left: auto; width: auto; gap: 6px; }
+.rop-rdb { height: 4px; border-radius: 2px; background: var(--hairline); overflow: hidden; margin: 6px 0 2px; } .rop-rdb i { display: block; height: 100%; background: var(--good); border-radius: 2px; }
+.px-li.rop-ck { appearance: none; border: 0; background: none; font: inherit; color: inherit; text-align: left; width: 100%; grid-template-columns: 18px minmax(0, 1fr); gap: 12px; cursor: pointer; }
+.px-li.rop-ck[disabled] { cursor: default; } .px-li.rop-ck:not([disabled]):hover b { text-decoration: underline; text-underline-offset: 3px; }
+.rop-ck > i { width: 14px; height: 14px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--border); } .rop-ck.is-ok > .px-ico { color: var(--good); }
+.rop-ck b { display: block; font-weight: 500; } .rop-ck small { display: block; font-size: 12px; color: var(--ink-3); }
+.rop-ck.is-ok b { color: var(--ink-2); }
+.rop-go { width: auto !important; gap: 6px; }
+
+/* ---------- an open operation's Time tab (12.3): each punch from its start to its stop, its notes in between, edited in place ----------
+   The line and the start dot wear the start reason's color (--lc), the stop dot the stop reason's (--ec): --rc-* (b9/v123_jc.css). */
+.rop-dbar { display: flex; flex-direction: column; gap: 5px; padding: 12px 0 2px; }
+.rop-dbt { display: flex; gap: 2px; height: 6px; border-radius: 3px; overflow: hidden; }
+.rop-dsg { min-width: 3px; background: var(--c, var(--ink-4)); font-size: 0; color: transparent; overflow: hidden; }
+.rop-dsg.is-live { background: repeating-linear-gradient(90deg, var(--c) 0 8px, color-mix(in srgb, var(--c) 55%, transparent) 8px 12px); background-size: 24px 100%; animation: rop-run 1.2s linear infinite; }
+@keyframes rop-run { to { background-position: 24px 0; } }
+.rop-dgap { flex: 0 0 8px; background: none; }
+.rop-dbl { display: flex; justify-content: space-between; gap: 8px; font: 500 11.5px/14px var(--font-sans); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.rop-dbl > span:nth-child(2) { color: var(--ink-2); }
+.rop-tl { display: flex; flex-direction: column; gap: 8px; padding: 10px 0 4px; }
+.rop-tday { font-size: 12px; font-weight: 600; color: var(--ink-3); margin-top: 6px; }
+.rop-tl > .rop-tday:first-child { margin-top: 0; }
+.rop-tp { position: relative; display: flex; flex-direction: column; gap: 6px; padding-left: 20px; }
+.rop-tp::before { content: ""; position: absolute; left: 5px; top: 12px; bottom: 12px; width: 2px; border-radius: 1px; background: var(--lc, var(--hairline)); opacity: .55; }
+.rop-tp.is-live::before { opacity: .8; background: linear-gradient(var(--lc), var(--ec)); }
+.rop-te { position: relative; display: grid; grid-template-columns: 70px minmax(0, 1fr) auto; gap: 10px; align-items: center; min-height: 26px; font-size: 13px; color: var(--ink-2); }
+.rop-te > i { position: absolute; left: -19px; top: 50%; margin-top: -5px; width: 10px; height: 10px; border-radius: 50%; background: var(--lc, var(--ink-3)); box-shadow: 0 0 0 2px var(--panel); }
+.rop-te.is-e > i { background: var(--ec, var(--ink-3)); }
+.rop-tp.is-live .rop-te.is-e > i { animation: rop-pulse 1.8s ease-out infinite; }
+@keyframes rop-pulse { 0% { box-shadow: 0 0 0 2px var(--panel), 0 0 0 2px color-mix(in srgb, var(--ec) 45%, transparent); } 100% { box-shadow: 0 0 0 2px var(--panel), 0 0 0 9px transparent; } }
+.rop-te b { font: 500 12.5px/18px var(--font-mono); color: var(--ink); white-space: nowrap; }
+.rop-te > span { min-width: 0; }
+.rop-te em { font: 500 12.5px/18px var(--font-mono); font-style: normal; color: var(--ink); }
+.rop-tw { display: flex; align-items: center; flex-wrap: wrap; gap: 2px 6px; white-space: nowrap; }
+.rop-twl { white-space: nowrap; }
+.rop-tm { all: unset; box-sizing: border-box; cursor: pointer; justify-self: start; height: 24px; padding: 0 5px; margin-left: -5px; border-radius: 6px; font: 500 12.5px/24px var(--font-mono); color: var(--ink); white-space: nowrap; transition: background-color .12s ease-out; }
+.rop-tm:hover { background: var(--fill); box-shadow: inset 0 -1px 0 var(--ink-3); }
+.rop-tm:focus-visible { box-shadow: var(--shadow-focus); }
+.rop-tin { all: unset; box-sizing: border-box; justify-self: start; width: 96px; height: 26px; padding: 0 6px; margin-left: -6px; border-radius: 7px; background: var(--raised); box-shadow: inset 0 0 0 1px var(--accent), 0 0 0 3px var(--accent-tint); font: 500 12.5px/26px var(--font-mono); color: var(--ink); color-scheme: light dark; }
+.rop-rs { all: unset; box-sizing: border-box; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 6px 0 7px; border-radius: 7px; color: var(--ink); font: 500 12.5px/1 var(--font-sans); white-space: nowrap; background: color-mix(in srgb, var(--c) 11%, transparent); transition: background-color .12s ease-out; }
+.rop-rs > i { width: 7px; height: 7px; border-radius: 50%; background: var(--c); flex: none; }
+.rop-rs .px-ico { width: 10px; height: 10px; color: var(--ink-3); }
+.rop-rs:hover { background: color-mix(in srgb, var(--c) 20%, transparent); }
+.rop-rs:focus-visible { box-shadow: var(--shadow-focus); }
+.rop-ttools { display: inline-flex; align-items: center; gap: 0; opacity: 0; transition: opacity .12s ease-out; }
+.rop-tp:hover .rop-ttools, .rop-tp:focus-within .rop-ttools { opacity: 1; }
+.rop-tn { display: grid; grid-template-columns: 70px minmax(0, 1fr) auto; gap: 10px; align-items: start; padding: 7px 6px 7px 10px; margin-left: -10px; border-radius: 9px; background: var(--raised); box-shadow: inset 0 0 0 1px var(--hairline); font-size: 13.5px; line-height: 20px; color: var(--ink); }
+.rop-tn small { font: 500 12px/20px var(--font-mono); color: var(--ink-3); }
+.rop-tn > span { min-width: 0; overflow-wrap: anywhere; }
+.rop-tn .rop-tnx { width: 22px; height: 22px; margin: -1px 0; opacity: 0; }
+.rop-tn:hover .rop-tnx, .rop-tnx:focus-visible { opacity: 1; }
+.rop-tn.is-add { grid-template-columns: 70px minmax(0, 1fr); align-items: center; box-shadow: inset 0 0 0 1px var(--accent), 0 0 0 3px var(--accent-tint); }
+.rop-nin { all: unset; box-sizing: border-box; width: 100%; height: 22px; font: 400 13.5px/22px var(--font-sans); color: var(--ink); }
+.rop-nin::placeholder { color: var(--ink-3); }
+.rop-tn.is-none { display: block; background: none; box-shadow: none; padding: 0 0 0 80px; margin: 0; color: var(--ink-3); font-size: 12.5px; }
+.rop-tn.is-solo { margin-left: 10px; grid-template-columns: 70px minmax(0, 1fr); }
+.rop-tn.is-solo em { font-style: normal; font-weight: 600; margin-right: 6px; color: var(--ink-2); }
+.rop-ta { min-height: 44px !important; }
+/* a + between punches: a new time entry right there */
+.rop-addb { all: unset; box-sizing: border-box; position: relative; display: flex; align-items: center; height: 18px; margin: -5px 0; padding-left: 0; cursor: pointer; color: var(--ink-3); font: 500 11.5px/1 var(--font-sans); opacity: 0; transition: opacity .12s ease-out, color .12s; }
+.rop-addb > span { display: inline-flex; align-items: center; gap: 6px; }
+.rop-addb .px-ico { width: 10px; height: 10px; padding: 1px; border-radius: 50%; background: var(--panel); box-shadow: inset 0 0 0 1.5px currentColor; stroke-width: 2.4; }
+.rop-addb::after { content: ""; flex: 1; height: 0; margin-left: 8px; border-top: 1px dashed var(--border); }
+.rop-tl:hover .rop-addb { opacity: .7; }
+.rop-addb:hover, .rop-addb:focus-visible { opacity: 1; color: var(--ink); }
+.rop-addb:focus-visible { box-shadow: var(--shadow-focus); border-radius: 6px; }
+/* the new time entry, opened in place */
+.rop-tf { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 12px; padding: 12px; border-radius: 12px; background: var(--raised); box-shadow: inset 0 0 0 1px var(--border), var(--shadow-raised, 0 4px 14px rgba(0,0,0,.06)); animation: px-unfold .18s cubic-bezier(.2,.8,.2,1) both; }
+.rop-tf label { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.rop-tf label > span { font-size: 11.5px; font-weight: 500; color: var(--ink-3); }
+.rop-tf input, .rop-tf select { all: unset; box-sizing: border-box; width: 100%; height: 30px; padding: 0 8px; border-radius: 7px; background: var(--panel); box-shadow: inset 0 0 0 1px var(--border); font: 400 13px/30px var(--font-sans); color: var(--ink); color-scheme: light dark; }
+.rop-tf input[type=time], .rop-tf input[type=date] { font-family: var(--font-mono); font-size: 12.5px; }
+.rop-tf select { padding-right: 22px; background: var(--panel) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23888' stroke-width='1.4' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 8px center; cursor: pointer; }
+.rop-tf input:focus, .rop-tf select:focus { box-shadow: inset 0 0 0 1px var(--accent), 0 0 0 3px var(--accent-tint); }
+.rop-tff { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; margin-top: 2px; }
+.rop-tff small { flex: 1; min-width: 0; font-size: 12px; color: var(--ink-3); }
+.rop-tff .px-btn { width: auto; flex: none; gap: 6px; }
+
+/* ---------- icon buttons: the name shows when you point at it ---------- */
+.rop-ib { all: unset; box-sizing: border-box; position: relative; flex: none; display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 7px; color: var(--ink-3); cursor: pointer; transition: background-color .12s ease-out, color .12s ease-out; }
+.rop-ib:hover { background: var(--fill); color: var(--ink); }
+.rop-ib:active { transform: scale(.94); }
+.rop-ib:focus-visible { box-shadow: var(--shadow-focus); color: var(--ink); }
+.rop-ib .px-ico { width: 15px; height: 15px; }
+.rop-ib.is-dng:hover { color: var(--bad); background: color-mix(in srgb, var(--bad) 10%, transparent); }
+.rop-ib.has-n { width: auto; grid-auto-flow: column; gap: 4px; padding: 0 7px; }
+.rop-ibn { font: 500 11.5px/1 var(--font-sans); font-variant-numeric: tabular-nums; }
+.rop-tacts { display: inline-flex; align-items: center; gap: 2px; margin-left: auto; flex: none; }
+.rop-blk > .rop-sech .rop-ib, .rop-blk > .rop-sech .rop-tacts { margin-left: auto; }
+.rop-more { justify-content: center; margin-top: 2px; }
+.px-sec > .rop-addop { margin-left: auto; }
+.px-pg__act.rop-ib { width: 26px; height: 26px; }
+/* each tab's actions, at the right of the tab row — only the open tab's */
+.rop-tabrow { display: flex; align-items: center; gap: 8px; box-shadow: inset 0 -1px 0 var(--hairline); }
+.rop-tabrow > .px-tabs { flex: 1 1 auto; min-width: 0; box-shadow: none; }
+.rop-tabrow > .rop-tacts { padding-bottom: 2px; animation: rop-in .16s ease-out both; }
+@keyframes rop-in { from { opacity: 0; transform: translateX(4px); } }
+.rop-padd { margin-top: 8px; }
+
+/* ---------- the operation's header row (12.3): the job type a dropdown, the status and ⋯ in the row ---------- */
+.px-row.rop-orow { outline: none; }
+.px-row.rop-orow:focus-visible { box-shadow: var(--shadow-focus); }
+.px-tag.rop-jt { appearance: none; border: 0; margin: 0; cursor: pointer; flex: none; gap: 5px; padding: 0 5px 0 7px; background: color-mix(in srgb, var(--jc) 13%, transparent); color: color-mix(in srgb, var(--jc) 72%, var(--ink)); transition: background-color .12s ease-out; }
+.px-tag.rop-jt::before { background: var(--jc); }
+.px-tag.rop-jt .px-ico { width: 10px; height: 10px; opacity: .7; }
+.px-tag.rop-jt:hover { background: color-mix(in srgb, var(--jc) 22%, transparent); }
+.px-tag.rop-jt:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+.rop-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; margin-right: 2px; }
+.rop-dot.sq { border-radius: 2px; }
+.px-pop.rop-rspop, .px-pop.rop-jtpop { width: 250px; max-height: 360px; overflow-y: auto; }
+.rop-rspop .px-menu__item.rop-mi, .rop-jtpop .px-menu__item.rop-mi { min-height: 32px; gap: 8px; }
+.rop-stpop .px-menu__item .px-si { width: 13px; height: 13px; flex: none; }
+.rop-octl { flex: none; display: inline-flex; align-items: center; gap: 2px; margin: 0 -4px 0 2px; cursor: default; }
+.rop-st { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 7px; height: 26px; padding: 0 8px 0 8px; border-radius: 8px; background: var(--raised); box-shadow: inset 0 0 0 1px var(--border); color: var(--ink); font: 500 12.5px/1 var(--font-sans); white-space: nowrap; cursor: pointer; transition: background-color .12s ease-out; }
+.rop-st:hover { background: var(--fill); }
+.rop-st:focus-visible { box-shadow: inset 0 0 0 1px var(--border), var(--shadow-focus); }
+.rop-st .px-si { width: 13px; height: 13px; flex: none; }
+.rop-st > .px-ico { width: 10px; height: 10px; color: var(--ink-3); }
+.px-pop.rop-stpop { width: 250px; }
+.px-pop.rop-opmenu { width: 220px; }
+.rop-octl .rop-more1 { width: 26px; height: 26px; }
+.rop-ren { all: unset; box-sizing: border-box; flex: 1 1 auto; min-width: 80px; height: 28px; padding: 0 8px; margin-left: -8px; border-radius: 7px; background: var(--raised); box-shadow: inset 0 0 0 1px var(--accent), 0 0 0 3px var(--accent-tint); font: 500 14px/28px var(--font-sans); color: var(--ink); cursor: text; }
+.px-ophead.rop-olinks { margin: 0 !important; min-height: 0; gap: 6px !important; }
+/* narrow: two lines — the name and ⋯, then the job type, the status and the time */
+@container (max-width: 620px) {
+  .px-row.rop-orow { flex-wrap: wrap; height: auto; min-height: var(--row); padding-top: 8px; padding-bottom: 8px; row-gap: 6px; }
+  .rop-orow > .px-row__t { flex: 1 1 0; white-space: normal; line-height: 20px; }
+  .rop-orow > .px-row__m, .rop-orow > .px-mini, .rop-orow > .px-av { display: none; }
+  .rop-orow > .rop-octl { display: contents; }
+  .rop-orow > .rop-octl > .rop-more1 { order: 1; }
+  .rop-orow::after { content: ""; order: 2; flex: 0 0 100%; height: 0; }
+  .px-row.rop-orow { column-gap: 8px; }
+  .rop-orow > .rop-jt { order: 3; margin-left: 22px; }
+  .rop-orow > .rop-octl > .rop-st { order: 4; }
+  .rop-orow > .px-row__time { order: 5; width: auto; margin-left: auto; }
+  .rop-orow > .rop-cb { top: 20px; }
+}
+
+/* ---------- an operation's chips ---------- */
+.rop-chip { flex: none; display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: var(--radius-sm); background: var(--fill); color: var(--ink-2); font: 500 11.5px/1 var(--font-sans); white-space: nowrap; }
+.rop-chip.is-a { color: var(--good); background: var(--good-tint, color-mix(in srgb, var(--good) 14%, transparent)); }
+.rop-chip.is-p { color: var(--warn); background: color-mix(in srgb, var(--warn) 14%, transparent); }
+.rop-chip.is-d { color: var(--bad); background: color-mix(in srgb, var(--bad) 14%, transparent); }
+
+/* ---------- picking ---------- */
+.rop-col .px-row { position: relative; }
+.rop-cb { position: absolute; z-index: 2; left: -30px; top: 50%; width: 18px; height: 18px; margin-top: -9px; border-radius: 5px; display: grid; place-items: center; background: var(--raised); box-shadow: inset 0 0 0 1.5px var(--border); color: var(--panel); opacity: 0; transition: opacity .12s ease-out, background-color .12s; cursor: pointer; }
+.rop-cb .px-ico { width: 11px; height: 11px; stroke-width: 2.4; }
+.rop-cb:hover { box-shadow: inset 0 0 0 1.5px var(--ink-3); }
+.rop-cb:focus-visible { opacity: 1; outline: none; box-shadow: inset 0 0 0 1.5px var(--border), var(--shadow-focus); }
+.rop-cb.is-on { background: var(--accent); box-shadow: none; color: #fff; opacity: 1; }
+.rop-cb.is-mid { opacity: 1; } .rop-cb.is-mid i { width: 8px; height: 2px; border-radius: 1px; background: var(--accent); }
+.rop-col .px-row:hover > .rop-cb, .rop-prow:hover > .rop-cb, .rop-pth:hover > .rop-cb, .rop-sech0:hover > .rop-cb, .rop-any .rop-cb { opacity: 1; }
+.rop-col .px-row.is-sel { background: var(--accent-tint); }
+.rop-sech0 { position: relative; }
+.rop-sech0 > .rop-cb { left: -30px; }
+.px-li.rop-prow, .px-li.rop-pth { position: relative; }
+.rop-prow > .rop-cb, .rop-pth > .rop-cb { left: -26px; }
+.px-li.rop-prow.is-sel { background: var(--accent-tint); box-shadow: none; border-radius: 8px; }
+.px-li.rop-pth { grid-template-columns: 1fr 120px 32px 150px; min-height: 28px; padding: 4px 0; font-size: 11.5px; font-weight: 600; color: var(--ink-3); }
+.px-li.rop-pth.is-ext, .px-li.px-li--part.rop-prow.is-ext { grid-template-columns: minmax(0, 1fr) 104px 32px 76px 96px 150px; }
+.rop-sb { position: sticky; bottom: 16px; z-index: 6; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 28px; padding: 8px 10px; border-radius: 14px; background: var(--raised); box-shadow: var(--shadow-raised), inset 0 0 0 1px var(--border); animation: px-up .18s cubic-bezier(.2,.8,.2,1) both; }
+.rop-sbi { display: flex; flex-direction: column; margin-right: 6px; line-height: 16px; } .rop-sbi b { font-size: 13px; font-weight: 600; } .rop-sbi small { font-size: 11.5px; color: var(--ink-3); }
+.rop-sb .px-btn { width: auto; flex: none; gap: 6px; height: 28px; padding: 0 9px; font-size: 12.5px; }
+:host(.rop-picking) .toast, :host(.rop-picking) .jcToast { bottom: calc(var(--rop-sbh, 52px) + 72px) !important; }
+:host(.rop-picking[data-device=phone]) .toast, :host(.rop-picking[data-device=phone]) .jcToast { bottom: calc(var(--rop-sbh, 150px) + 96px) !important; }
+.rop-col > div:first-child > .px-sec { margin-top: 0; }
+.rop-sb .px-btn[disabled] { opacity: .45; }
+.rop-sp { flex: 1; }
+.rop-clr { all: unset; cursor: pointer; font-size: 12.5px; color: var(--ink-3); padding: 0 6px; } .rop-clr:hover { color: var(--ink); text-decoration: underline; } .rop-clr:focus-visible { box-shadow: var(--shadow-focus); border-radius: 4px; }
+.px-pop.rop-pop { width: 320px; }
+.rop-poph { padding: 6px 10px 8px; } .rop-poph b { display: block; font-size: 13px; font-weight: 600; } .rop-poph small { font-size: 12px; color: var(--ink-3); }
+.px-menu__item.rop-mi { height: auto; min-height: 36px; padding: 6px 10px; align-items: center; }
+.rop-mi > span:last-child { min-width: 0; } .rop-mi b { display: block; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .rop-mi small { display: block; font-size: 12px; color: var(--ink-3); }
+.rop-what { white-space: pre-line; font-size: 12.5px; line-height: 18px; color: var(--ink-2); padding: 8px 10px; border-radius: 8px; background: var(--fill); }
+
+/* ---------- one column: a narrow window or a phone — the truck first, then the work, then the facts ---------- */
+@container (max-width: 880px) {
+  .rop-r .px-ro { flex-direction: column; overflow-y: auto; overscroll-behavior: contain; }
+  .rop-r .px-ro__main { overflow: visible; flex: none; order: 1; }
+  .pxr .rop-r .rop-rail, .rop-r .rop-rail { display: contents; }
+  .rop-r .rop-top { order: 0; padding: 20px 48px 0; }
+  .rop-r .rop-rail > .px-props { order: 2; padding: 12px 48px 40px; box-shadow: inset 0 1px 0 var(--hairline); }
+  .rop-r .rop-band .px-trk { grid-template-columns: minmax(0, 1fr) 240px; }
+  .rop-r .rop-band .px-trk__pic { order: 0; align-self: end; width: 240px; margin-bottom: 0; }
+  .rop-r .px-ro__col { padding-top: 0; }
+}
+:host([data-device=phone]) .rop-r .px-ro { flex-direction: column !important; overflow: visible !important; }
+:host([data-device=phone]) .rop-r .px-ro__main { order: 1; }
+:host([data-device=phone]) .rop-r .rop-rail { display: contents !important; }
+:host([data-device=phone]) .rop-r .rop-top { order: 0; padding: 12px 16px 0; }
+:host([data-device=phone]) .rop-r .rop-rail > .px-props { order: 2; padding: 8px 16px 24px; box-shadow: inset 0 1px 0 var(--hairline); }
+:host([data-device=phone]) .rop-r .rop-band .px-trk { grid-template-columns: minmax(0, 1fr) !important; margin: 0 !important; padding: 12px 14px 14px !important; border-radius: 16px !important; box-shadow: inset 0 0 0 1px var(--hairline) !important; }
+:host([data-device=phone]) .rop-r .rop-band .px-trk__pic { order: -1; justify-self: center; width: min(300px, 86%) !important; }
+:host([data-device=phone]) .rop-blk > .rop-sech { margin-top: 32px; }
+:host([data-device=phone]) .rop-col .px-row { padding-left: 34px; }
+:host([data-device=phone]) .rop-col .px-row > .rop-cb { left: 8px; }
+:host([data-device=phone]) .px-li.rop-prow, :host([data-device=phone]) .px-li.rop-pth { padding-left: 30px; }
+:host([data-device=phone]) .rop-prow > .rop-cb, :host([data-device=phone]) .rop-pth > .rop-cb { left: 2px; }
+:host([data-device=phone]) .rop-sech0 { padding-left: 30px; }
+:host([data-device=phone]) .rop-sech0 > .rop-cb { left: 0; }
+:host([data-device=phone]) .rop-cb { opacity: 1; }
+:host([data-device=phone]) .px-li.rop-pr, :host([data-device=phone]) .rop-pl.is-ext .px-li.rop-pr { grid-template-columns: minmax(0, 1fr) auto; }
+:host([data-device=phone]) .rop-pl.is-ext .rop-pr > .rop-mu, :host([data-device=phone]) .rop-plh { display: none; }
+:host([data-device=phone]) .px-li.rop-dc { grid-template-columns: minmax(0, 1fr) 28px; }
+:host([data-device=phone]) .rop-dc .rop-code { grid-column: 1 / -1; }
+:host([data-device=phone]) .px-li.rop-pth.is-ext, :host([data-device=phone]) .px-li.px-li--part.rop-prow.is-ext { grid-template-columns: minmax(0, 1fr) 32px 150px; }
+:host([data-device=phone]) .rop-prow.is-ext > span:nth-child(3), :host([data-device=phone]) .rop-prow.is-ext > span:nth-child(5), :host([data-device=phone]) .rop-prow.is-ext > span:nth-child(6), :host([data-device=phone]) .rop-pth.is-ext > span:nth-child(3), :host([data-device=phone]) .rop-pth.is-ext > span:nth-child(5), :host([data-device=phone]) .rop-pth.is-ext > span:nth-child(6) { display: none; }
+:host([data-device=phone]) .rop-sb { position: fixed; left: 12px; right: 12px; bottom: 84px; margin: 0; max-height: 46vh; overflow: auto; }
+:host([data-device=phone]) .rop-te, :host([data-device=phone]) .rop-tn { grid-template-columns: 62px minmax(0, 1fr) auto; }
+:host([data-device=phone]) .rop-tn.is-add, :host([data-device=phone]) .rop-tn.is-solo { grid-template-columns: 62px minmax(0, 1fr); }
+:host([data-device=phone]) .rop-tn.is-none { padding-left: 72px; }
+:host([data-device=phone]) .rop-ttools, :host([data-device=phone]) .rop-tn .rop-tnx { opacity: .75; }
+:host([data-device=phone]) .rop-addb { opacity: .6; height: 26px; margin: -3px 0; }
+:host([data-device=phone]) .rop-te.is-s { grid-template-columns: 62px minmax(0, 1fr) auto; }
+:host([data-device=phone]) .rop-tw { white-space: normal; }
+:host([data-device=phone]) .rop-ib { width: 34px; height: 34px; }
+:host([data-device=phone]) .rop-tf { grid-template-columns: minmax(0, 1fr); }
+:host([data-device=phone]) .rop-tf > span:empty { display: none; }
+:host([data-device=phone]) .px-row.rop-orow { flex-wrap: wrap; height: auto; min-height: var(--row); padding-top: 8px; padding-bottom: 8px; row-gap: 6px; }
+:host([data-device=phone]) .rop-orow > .px-row__t { flex: 1 1 0; white-space: normal; line-height: 20px; }
+:host([data-device=phone]) .rop-orow > .px-row__m, :host([data-device=phone]) .rop-orow > .px-mini, :host([data-device=phone]) .rop-orow > .px-av { display: none; }
+:host([data-device=phone]) .rop-orow > .rop-octl { display: contents; }
+:host([data-device=phone]) .rop-orow > .rop-octl > .rop-more1 { order: 1; }
+:host([data-device=phone]) .rop-orow::after { content: ""; order: 2; flex: 0 0 100%; height: 0; }
+:host([data-device=phone]) .px-row.rop-orow { column-gap: 8px; }
+:host([data-device=phone]) .rop-orow > .rop-jt { order: 3; margin-left: 0; }
+:host([data-device=phone]) .rop-col .px-op { padding-left: 0; }
+:host([data-device=phone]) .rop-tw { column-gap: 5px; }
+:host([data-device=phone]) .rop-ttools .rop-ib { width: 30px; height: 30px; }
+:host([data-device=phone]) .rop-orow > .rop-octl > .rop-st { order: 4; }
+:host([data-device=phone]) .rop-orow > .px-row__time { order: 5; width: auto; margin-left: auto; }
+:host([data-device=phone]) .rop-orow > .rop-cb { top: 20px; }
+:host([data-device=phone]) .rop-tw > .rop-twl { color: var(--ink-3); }
+/* Parsec 12.2: Delete on the picking bar; the road test and truck checks on the band */
+.rop-sb .px-btn.rop-del { color: var(--px-bad, #A8402E); }
+.rop-sb .px-btn.rop-del:hover { background: var(--px-bad-t, rgba(168,64,46,.1)); }
+.rop-delp { margin: 0 0 10px; padding: 9px 11px; border-radius: 10px; background: var(--px-fill, rgba(128,128,128,.1)); font-size: 13px; line-height: 19px; white-space: pre-line; }
+.rop-delp2 { margin: 0; font-size: 12.5px; color: var(--px-ink3, #67625A); }
+@media (prefers-reduced-motion: reduce) { .rop-dsg.is-live, .rop-tp.is-live .rop-te.is-e > i, .rop-tabrow > .rop-tacts, .rop-tf { animation: none !important; } }
+/* Parsec 12.7: change a clock while it runs — the running punch's "now" stops it earlier (then why), the clock moves to another operation */
+.rop-tm.rop-now { color: var(--status-working, var(--ink)); font-weight: 600; box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--status-working, var(--ink-3)) 45%, transparent); }
+.rop-tm.rop-now:hover { background: var(--fill); }
+.rop-why { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 8px 6px 8px 10px; margin-left: -10px; border-radius: 9px; background: var(--raised); box-shadow: inset 0 0 0 1px var(--accent), 0 0 0 3px var(--accent-tint); animation: rop-whyin .16s ease-out; }
+@keyframes rop-whyin { from { opacity: 0; transform: translateY(-3px); } }
+.rop-whyh { flex: 0 0 100%; display: flex; align-items: center; gap: 6px; min-height: 24px; font-size: 12.5px; color: var(--ink-2); } .rop-whyh b { font: 600 12.5px/18px var(--font-mono); color: var(--ink); }
+.rop-why .rop-rs { height: 26px; }
+.rop-why .rop-whyx { margin: -4px -2px -4px auto; width: 26px; height: 26px; }
+.px-pop.rop-mvpop { width: 320px; max-height: min(420px, 70vh); overflow-y: auto; }
+.rop-mvh { padding: 8px 10px 3px; font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-3); }
+.rop-mvpop .px-menu__item.rop-mi { min-height: 34px; }
+:host([data-device=phone]) .rop-why .rop-rs { height: 32px; }
+@media (prefers-reduced-motion: reduce) { .rop-why { animation: none; } }

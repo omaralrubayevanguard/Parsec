@@ -1,0 +1,18 @@
+import os; exec(open('/tmp/claude-0/-home-claude/febe01e4-e12e-554d-9dc2-ccfd769708e9/scratchpad/app/_revlib.py').read())
+async def main():
+    async with async_playwright() as p:
+        b, pg, errs = await setup(p)
+        rid = await mkro(pg); await flow_approve(pg, rid); await flow_order(pg, rid); await flow_receive(pg, rid); await flow_send_fm(pg, rid)
+        await fsel(pg)
+        await pg.click(".tg-main button:has-text('Decide')"); await pg.wait_for_timeout(600)
+        await shot(pg, "g3_decide")
+        print("POP", (await txt(pg, ".tg-pop") or '')[:900])
+        print("POPB", await pg.evaluate("[...document.querySelectorAll('.tg-pop button, .tg-pop input, .tg-pop select')].map(b=>(b.textContent.trim()||b.placeholder||'').replace(/\\s+/g,' ').slice(0,30)+'|'+(b.dataset.a||b.dataset.in||''))"))
+        await pg.keyboard.press("Escape"); await pg.wait_for_timeout(300)
+        await pg.click(".tg-main button:has-text('Assign')"); await pg.wait_for_timeout(600)
+        await shot(pg, "g4_assign")
+        print("POP2", (await txt(pg, ".tg-pop") or '')[:900])
+        print("POPB2", await pg.evaluate("[...document.querySelectorAll('.tg-pop button')].map(b=>b.textContent.trim().replace(/\\s+/g,' ').slice(0,30)+'|'+(b.dataset.a||''))"))
+        print("ERR", errs)
+        await b.close()
+asyncio.run(main())

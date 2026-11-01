@@ -1,0 +1,10 @@
+Case # 4988201
+Customor	Summit Freightways - Cust# 20417	RO Numben.	RA0001238877
+Status	Waiting on Parts	ETIR	10/30/2026 11:00 AM
+Follow-up	10/28/2026 09:00 AM	Created By	Jenna Cho
+Asset Chockodl In	10/26/2026 07:42 AM	PO #	PO-55120
+Parts
+Part #	Doscrlptlon	Qty	UnK	Coro	6xt	Salosman
+VOL-850 13702	Clutch kit 15.5"	1	1,240.00	150.00	1,390.00	Ryan Burke
+VOL-205 18417	Pilot bearing	1	38.50	0.00	38.50	Ryan Burke
+VOL-21899123	Release bearing	2	98.00	0.00	192.00	Ryan Burke

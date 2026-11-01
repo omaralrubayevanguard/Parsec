@@ -1,0 +1,35 @@
+/* Parsec 14 (T) — the road test toggle on the RO's truck card (the RO page and the Technician page) */
+.rtt{display:flex;align-items:center;gap:10px;min-height:28px;margin-top:8px;padding:0 2px;font-size:12.5px;color:var(--tg-ink2,var(--ink-2,#57534B));}
+.rtt .rtt-l{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rtt:not(.on) .rtt-l{color:var(--tg-ink3,var(--ink-3,#67625A));}
+.rtt-sw{flex:none;position:relative;width:30px;height:18px;padding:0;border:0;border-radius:999px;background:var(--tg-border,var(--line,#D9D4CA));cursor:pointer;transition:background-color .15s ease;}
+.rtt-sw i{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--tg-raised,#fff);box-shadow:0 1px 2px rgba(0,0,0,.18);transition:transform .15s ease;}
+.rtt.on .rtt-sw{background:var(--tg-st-working,var(--st-ok,#3A8C60));}
+.rtt.on .rtt-sw i{transform:translateX(12px);}
+.rtt-sw:focus-visible{outline:2px solid var(--tg-acc,#86643A);outline-offset:2px;}
+@media (prefers-reduced-motion:reduce){.rtt-sw,.rtt-sw i{transition:none;}}
+/* the RO page's own status icons, in the shared colors */
+.px-si[data-t]{color:var(--tg-st-hold,var(--st-hold,#857F75));opacity:1;}
+.px-si[data-t="run"]{color:var(--tg-st-working,var(--st-ok,#3A8C60));}
+.px-si[data-t="wait"]{color:var(--tg-st-waiting,var(--st-wait,#AD7210));}
+.px-si[data-t="cust"]{color:var(--tg-st-customer,var(--st-teal,#2F8795));}
+.px-si[data-t="tech"]{color:var(--tg-st-support,var(--st-tech,#6C69C8));}
+.px-si[data-t="bad"]{color:var(--tg-st-problem,var(--st-bad,#C0503F));}
+.px-si[data-t="acc"]{color:var(--tg-acc,var(--st-acc,#86643A));}
+/* the old pills' own looks give way to the shared one */
+.pgst.m.rop-st,.pgst.m.px-pstat,.pgst.m.px-status--button,.pgst.m.tch-rst,.pgst.m.tch-stb{box-shadow:none;}
+.pgst.px-status--button:not(.m){padding:0;height:auto;background:none;cursor:default;}
+.pgst.px-status--button{font-size:13px;}
+.pgst.px-status--button .pgst-s{font-weight:400;}
+.rop-rtt{width:100%;}
+.rop-rtt .rtt{margin-top:10px;}
+.pgst.pgst-io{gap:0;}
+.px-status--button .pgst-l{flex:none;}
+.tg-top .r1 .tg-stg{white-space:nowrap;color:var(--tg-ink2);}
+/* Triage Desk's RO status menu (a native select): the shared pill */
+.tg-stsel{height:26px;padding:0 8px 0 7px;gap:6px;border-radius:999px;box-shadow:none;border:1px solid var(--tg-border);}
+.tg-stsel:hover{border-color:var(--tg-bs);}
+.tg-stsel select{height:24px;font:500 12.5px/1 var(--tg-sans);}
+.tg-stsel > .tg-ic{right:7px;width:11px;height:11px;margin-top:-5.5px;}
+.tg-top .r1 .pgst.wa-claimst,.wa-oph .pgst.wa-claimst{flex:none;}
+.tg-top .r1 .pgst.wa-claimst .pgst-l{overflow:visible;}

@@ -1,0 +1,77 @@
+file pop: file
+causal pop: causal
+back to: file Causal part: Axle flange gasket.
+tag pop: tag
+back to: file Tag FP-1004 · shelf W1 — print it from the Parts view.
+after upload: file Automation · RO status: RO → Complete – Road test
+copy pop: copy
+copied: [1,2] clipboard: 171000
+back: file
+  gaps: []
+filed: {"snz":false,"vol":null,"ws":"06-23-2025","vin":"4V4NC9EH6KN296930","ops":[["submitted","W2690001","",null,null,"pt_il95xvaht38","","3.0","","","","","",[null,["FP-1004","W1","","2026-11-21"]]]],"files":"dashpic:0 pics:1"}
+undo file -> ready
+decide pop: decide
+  after 2: {"type":"decide","ro":"ro_1nahuclht38","op":"op_rlauoi2ht38","d":"appeal"} TEXTAREA
+  before go: {"type":"decide","ro":"ro_1nahuclht38","op":"op_rlauoi2ht38","d":"appeal","ap":"Photo attached; the extra 0.3 h was seized bolts"}
+  after go: null Appeal sent for W2657489 — it waits under Waiting on Volvo.
+srt pop: srt
+cov pop: cov
+follow pop: follow volvo
+paid pop: paid
+need why: True
+paid short: [['paid', 'W2668332', '300.00', [137.02, 'Labor cut to the SRT', ''], None, '', '', '2.1', '', '', '', '', '', []], ['submitted', 'W2682239', '', None, None, 'pt_z7nzb76ht38', '', '3.4', '', '', '', '', '', [['FP-1003', 'W1', '', '2026-11-14'], None]]]
+item now: volvo
+part pop: part
+red mesa item: ["tech","Correction not written · Priya finished it 10/9"]
+ask pop: ask
+asked: {"route":["tech","Priya Shah","pending","Warranty info"],"snz":false,"vol":null,"ws":"06-23-2025","vin":"4V4NC9EH3NN858576","ops":[["ready","","",null,["Priya Shah","correction,photo"],"","","","","","","","",[null]]],"files":""}
+item: ["tech","Asked Priya just now for the correction and photo · not written yet","Nudge"]
+nudge toast: Nudged Priya Shah — it turns late again in 4 h if nothing’s written.
+   B {"snz":false,"vol":null,"ws":"06-23-2025","vin":"4V4NC9EH3NN858576","ops":[["ready","","",null,null,"","","","","","","","",[null]]],"files":""} 
+   A {"route":["tech","Priya Shah","pending","Warranty info"],"snz":false,"vol":null,"ws":"06-23-2025","vin":"4V4NC9EH3NN858576","ops":[["ready","","",null,["Priya Shah","correction,photo"],"","","","","","","","",[null]]],"files":""} 
+   U {"route":["tech","Priya Shah","pending","Warranty info"],"snz":false,"vol":null,"ws":"06-23-2025","vin":"4V4NC9EH3NN858576","ops":[["ready","","",null,["Priya Shah","correction,photo"],"","","","","","","","",[null]]],"files":""}
+xfer: xfer
+hidden after send: True 31767 to Parts · Send the failed part back — it comes back here when they send it on.
+ws fix button: True
+field pop: field p:v
+stmt rows: [["W2668332","437.02"],["W2682239","962.29"]]
+matched: {"no":"CM-88444","total":"412.02","hit":1,"miss":["W9999999"],"on":{"ro_yd8yjcqht38:op_lpvylnwht38":true},"amt":{"ro_yd8yjcqht38:op_lpvylnwht38":"412.02"}}
+print: {"title":"RO-32143 — warranty packet","at":1792678540842,"printed":1792678540902} | Warranty claim packet
+Vanguard Truck Center · Greensboro
+RO-32143
+W2657489
+Printed 10/22/2026
+Customer
+Highplains Grain
+Unit
+T-898 · 2018 Volvo VNL 670
+Engine
+D
+csv: Warranty claims 2026-10-22.csv RO,Customer,Op,Complaint,Type,Claim #,Status,Filed,Approved,Paid on,Claimed,Paid 9
+tip: Oct so far · claimed $2,156 · paid $1,056
+search rows: 3 sel: Northline Transport
+cfg file: 45
+modal: shortcuts None
+tags print: {"title":"Failed-part tags","at":1792678545829,"printed":1792678545889}
+badge on triage: ["Warranty4"] 4
+wcRo link: Silverline LTL claims
+
+RESULTS
+OK  accept sent (sent) | changed True | undo True | RO-32036 accepted — it’s with you now. 
+OK  file claim | changed True | undo None | Claim filed for RO-31767 · W2690001. 
+OK  decide appeal | changed True | undo True | Appeal sent for W2657489 — it waits under Waiting on Volvo. 
+OK  decide write-off → manager | changed True | undo True | Over $500 — Tom Brandt signs off first. It comes back here. 
+OK  SRT claim the SRT | changed True | undo True | The claim says 2.3 h — 0.3 h stays with the shop. 
+OK  SRT claim with a reason | changed True | undo True | Claiming 2.6 h — the reason goes on the claim. 
+OK  SRT ask Volvo | changed True | undo True | Pre-approval asked — it waits under Waiting on Volvo. 
+OK  coverage → engine | changed True | undo True |  
+OK  follow up · called | changed True | undo True | Logged — back in 3 days if Volvo hasn’t answered. 
+OK  short pay accept | changed True | undo True | $137.02 written off on W2668332 — the claim is closed. 
+OK  mark paid short (undo) | changed True | undo True |  
+OK  ship failed part | changed True | undo True | Tag FP-1001 shipped · 1Z999AA10123456784 — the RA closes. 
+BAD ask the tech | changed True | undo False | Undone: nudge 
+OK  send to parts | changed True | undo True | 31767 to Parts · Send the failed part back — it comes back here when they send it on. hidden
+OK  snooze | changed True | undo True | Midway Auto Transport snoozed until Fri 08:00. hidden
+OK  add warranty start | changed True | undo True | Warranty start date saved on RO-31664. 
+OK  statement → paid | changed True | undo True | 1 claim marked paid · $412.02 — 1 short, under Paid short. 
+

@@ -1,0 +1,18 @@
+/* Parsec 15 (C): the Time tab's notes that aren't on a punch, and where a deleted entry was */
+.rop-tn.is-solo { position: relative; }
+.rop-tn.is-solo.is-ed { grid-template-columns: 70px minmax(0, 1fr) auto; }
+:host([data-device=phone]) .rop-tn.is-solo.is-ed { grid-template-columns: 62px minmax(0, 1fr) auto; }
+.rop-tn.is-solo .rop-ntools { display: inline-flex; align-items: center; gap: 0; margin: -1px 0; opacity: 0; transition: opacity .12s ease-out; flex: none; }
+.rop-tn.is-solo:hover .rop-ntools, .rop-tn.is-solo:focus-within .rop-ntools { opacity: 1; }
+.rop-tn.is-solo .rop-nmore { display: none; }
+.rop-tn.is-solo .rop-ib.is-off { opacity: .4; cursor: not-allowed; }
+.rop-tned { font-style: normal; margin-left: 6px; padding: 0 6px; border-radius: 999px; background: var(--fill, rgba(0,0,0,.05)); color: var(--muted, #888); font-size: 10.5px; font-weight: 600; }
+.rop-tnb { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
+.rop-tnb .rop-nined { flex: 1; min-width: 0; }
+.rop-tn.is-hole { color: var(--muted, #888); }
+.rop-tn.is-hole em { color: #2F8795; }
+:host([data-device=phone]) .rop-tn.is-solo .rop-ntools { opacity: 1; }
+:host([data-device=phone]) .rop-tn.is-solo .rop-nmore { display: inline-grid; }
+:host([data-device=phone]) .rop-tn.is-solo:not(.is-tools) .rop-ntools .rop-ib:not(.rop-nmore) { display: none; }
+@media (pointer: coarse) { .rop-tn.is-solo .rop-ntools { opacity: 1; } .rop-tn.is-solo .rop-nmore { display: inline-grid; } .rop-tn.is-solo:not(.is-tools) .rop-ntools .rop-ib:not(.rop-nmore) { display: none; } }
+.rop-tn.is-solo .rop-ntools .rop-ib { width: 24px; height: 24px; }

@@ -1,0 +1,93 @@
+/* Parsec 12.6 — parts stages on the Parts and Foreman pages (b9/v126.js) */
+.pst{margin:14px 0 4px;position:relative;}
+.pst-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;font-size:12.5px;color:var(--tg-ink2);}
+.pst-h > b{font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--tg-ink3);}
+.pst-h .lbl{font-weight:600;color:var(--sc);}
+.pst-h .sp{flex:1;}
+.pst-pend{font-size:12px;color:var(--tg-ink3);}
+.pst-i{width:13px;height:13px;flex:none;}
+.pst-pr{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--tg-ink2);}
+.pst-pr b{font-weight:600;color:var(--tg-ink);}
+.pst-pr .pst-i{color:var(--tg-ink3);}
+.pst-pr.r b{color:var(--tg-bad);} .pst-pr.r .pst-i{color:var(--tg-bad);}
+.pst-pr.ok b{color:var(--tg-good);} .pst-pr.ok .pst-i{color:var(--tg-good);}
+.pst-q{display:flex;align-items:center;gap:6px;margin:12px 0 2px;font-size:12.5px;color:var(--tg-ink3);}
+.pst-q b{font-weight:500;color:var(--tg-ink2);}
+.pst-q .pst-i{color:var(--tg-ink4);}
+/* the steps, like the Warranty page — every step in its part status color */
+.pst-t{list-style:none;margin:0;padding:0;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);}
+.pst-t li{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;min-width:0;}
+.pst-t li::before{content:"";position:absolute;top:7px;right:50%;width:100%;height:2px;background:var(--tg-hair);z-index:0;}
+.pst-t li:first-child::before{display:none;}
+.pst-t li.d::before,.pst-t li.c::before{background:var(--dc);}
+.pst-t li.c::before{background:linear-gradient(90deg,var(--tg-ink3),var(--sc));}
+.pst-stp{all:unset;box-sizing:border-box;cursor:pointer;position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:5px;padding:0 4px 3px;border-radius:8px;max-width:100%;}
+.pst-stp:focus-visible{outline:2px solid var(--tg-acc);outline-offset:2px;}
+.pst-t li:not(.has) .pst-stp{cursor:default;}
+.pst-t .dot{width:16px;height:16px;border-radius:50%;display:grid;place-items:center;background:var(--tg-raised,var(--tg-panel));box-shadow:inset 0 0 0 1.5px var(--tg-border);transition:transform .15s ease;}
+.pst-t li.has .pst-stp:hover .dot{transform:scale(1.15);}
+.pst-t li.d .dot{background:var(--dc);box-shadow:none;}
+.pst-t li.d .dot svg{width:10px;height:10px;fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}
+.pst-t li.c .dot{background:var(--sc);box-shadow:0 0 0 4px color-mix(in srgb,var(--sc) 20%,transparent);}
+.pst-t li.c .dot::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--tg-raised,#fff);}
+.pst-t li.c.prob .dot{animation:pst-pulse 1.8s ease-out infinite;}
+@keyframes pst-pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--sc) 45%,transparent)}100%{box-shadow:0 0 0 9px transparent}}
+.pst-t .lb{font-size:12.5px;line-height:16px;color:var(--tg-ink3);}
+.pst-t li.d .lb{color:var(--tg-ink2);}
+.pst-t li.c .lb{color:var(--sc);font-weight:600;}
+.pst-t small{font-size:11.5px;line-height:15px;color:var(--tg-ink3);max-width:100%;overflow-wrap:anywhere;}
+.pst-t small .a1,.pst-held .a1{color:var(--tg-warn);font-weight:500;}
+.pst-t small .a2,.pst-held .a2{color:var(--tg-bad);font-weight:600;}
+.pst-t li.fo .pst-stp{background:var(--tg-fill);box-shadow:0 0 0 4px var(--tg-fill);}
+.pst-act{position:relative;z-index:1;margin-top:3px;}
+.pst-act .btn{height:26px;padding:0 10px;font-size:12px;white-space:nowrap;}
+.pst-act .btn .pst-i{width:12px;height:12px;margin-right:2px;}
+/* point at a step for its parts */
+.pst-pop{display:none;position:absolute;top:calc(100% + 4px);left:50%;transform:translateX(-50%);z-index:6;min-width:190px;max-width:280px;padding:8px 10px;border-radius:10px;background:var(--tg-raised,var(--tg-panel));box-shadow:0 0 0 1px var(--tg-hair),0 8px 24px rgba(0,0,0,.14);text-align:left;font-size:12.5px;color:var(--tg-ink2);pointer-events:none;}
+.pst-pop b{display:block;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--tg-ink3);margin-bottom:4px;}
+.pst-pop span{display:block;padding:1px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pst-pop em.r{font-style:normal;color:var(--tg-bad);font-weight:500;}
+.pst-t li.has:hover .pst-pop,.pst-t li.has:focus-within .pst-pop{display:block;}
+.pst-t li:first-child .pst-pop{left:0;transform:none;}
+.pst-t li:last-child .pst-pop{left:auto;right:0;transform:none;}
+/* the part that holds the stage */
+.pst-held{display:flex;align-items:flex-start;gap:8px;margin-top:12px;padding:8px 10px 8px 12px;border-radius:10px;background:color-mix(in srgb,var(--sc) 8%,var(--tg-fill));font-size:12.5px;color:var(--tg-ink2);}
+.pst-held i{width:8px;height:8px;border-radius:50%;background:var(--sc);flex:none;margin-top:5px;}
+.pst-held > span{flex:1;min-width:0;}
+.pst-held b{font-weight:600;color:var(--tg-ink);}
+/* the Foreman's list of one step's parts */
+.pst-list{margin-top:10px;border-radius:12px;box-shadow:inset 0 0 0 1px var(--tg-hair);overflow:hidden;}
+.pst-lh{display:flex;align-items:center;gap:6px;padding:8px 12px;font-size:12.5px;color:var(--tg-ink2);background:var(--tg-fill);}
+.pst-lh b{font-weight:600;color:var(--tg-ink);} .pst-lh .sp{flex:1;}
+.pst-li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 10px;align-items:center;padding:8px 12px;box-shadow:inset 0 1px 0 var(--tg-hair);font-size:13px;}
+.pst-li .pst-chip{grid-row:1 / span 2;}
+.pst-li b{font-weight:500;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pst-li small{font-size:12px;color:var(--tg-ink3);}
+.pst-none{padding:10px 12px;font-size:12.5px;color:var(--tg-ink3);box-shadow:inset 0 1px 0 var(--tg-hair);}
+.pst-chip{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 8px;border-radius:999px;font-size:11.5px;font-weight:500;white-space:nowrap;background:color-mix(in srgb,var(--sc) 13%,transparent);color:color-mix(in srgb,var(--sc) 82%,var(--tg-ink));}
+.pst-chip i{width:6px;height:6px;border-radius:50%;background:var(--sc);}
+.pst-clr{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:500;color:var(--tg-acctx,var(--tg-acc));padding:2px 6px;border-radius:6px;}
+.pst-clr:hover{background:var(--tg-raised,var(--tg-panel));}
+.pst-clr .pst-i{width:12px;height:12px;}
+/* the Parts page: one step's parts, the part that holds the stage, the operation's mini stage, the Needs action pill */
+.pst-fbar{display:flex;align-items:center;gap:8px;margin:0 0 10px;padding:8px 12px;border-radius:10px;font-size:12.5px;color:var(--tg-ink2);background:var(--tg-fill);}
+.pst-fbar b{font-weight:600;color:var(--tg-ink);} .pst-fbar .sp{flex:1;}
+.pst-hl{background:color-mix(in srgb,var(--sc) 7%,transparent);box-shadow:inset 3px 0 0 var(--sc);}
+.pst-gone{display:none !important;}
+.pst-hold{display:block;margin-top:1px;font-size:10px;font-weight:700;letter-spacing:.04em;color:var(--sc);text-transform:uppercase;white-space:nowrap;}
+.pst-om{display:inline-flex;align-items:center;gap:5px;height:20px;padding:0 7px;border-radius:999px;font-size:11.5px;font-weight:500;white-space:nowrap;background:color-mix(in srgb,var(--sc) 11%,transparent);color:color-mix(in srgb,var(--sc) 82%,var(--tg-ink));flex:none;}
+.pst-om i{width:6px;height:6px;border-radius:50%;background:var(--sc);}
+.fm-opp .pst-om{height:16px;padding:0 6px;font-size:10.5px;margin-left:2px;}
+.pst-rp{display:inline-flex;align-items:center;gap:4px;height:18px;padding:0 6px;border-radius:999px;font-size:11px;font-weight:600;white-space:nowrap;background:color-mix(in srgb,var(--sc) 14%,transparent);color:color-mix(in srgb,var(--sc) 82%,var(--tg-ink));flex:none;margin-left:2px;}
+.pst-rp i{width:5px;height:5px;border-radius:50%;background:var(--sc);}
+.pst-rp.prob{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--tg-bad) 45%,transparent);}
+@media (max-width:760px){
+  .pst-t small{display:none;}
+  .pst-t li.c small{display:block;white-space:normal;}
+  .pst-t .lb{font-size:11.5px;line-height:14px;}
+  .pst-h{gap:4px 8px;}
+}
+:root[data-device="phone"] .pst-t small{display:none;}
+:root[data-device="phone"] .pst-t li.c small{display:block;white-space:normal;}
+:root[data-device="phone"] .pst-t .lb{font-size:11.5px;line-height:14px;}
+@media (prefers-reduced-motion:reduce){ .pst-t li.c.prob .dot{animation:none;} .pst-t .dot{transition:none;} }

@@ -1,0 +1,612 @@
+{
+ "removed_functions": [
+  [
+   "ivAssemble",
+   6292
+  ],
+  [
+   "renderHoldCard",
+   985
+  ],
+  [
+   "closeStrip",
+   3115
+  ],
+  [
+   "actFab",
+   2902
+  ],
+  [
+   "buildProgressV1",
+   17910
+  ],
+  [
+   "roadFor",
+   264
+  ],
+  [
+   "jobStatusDot",
+   595
+  ],
+  [
+   "clockTime",
+   103
+  ],
+  [
+   "entryPlace",
+   277
+  ],
+  [
+   "entryFields",
+   1406
+  ],
+  [
+   "entryAttach",
+   2840
+  ],
+  [
+   "hoverOpen",
+   177
+  ],
+  [
+   "themeBtn",
+   301
+  ],
+  [
+   "navBtn",
+   306
+  ],
+  [
+   "pageNavHtml",
+   1534
+  ],
+  [
+   "viewAsPillHtml",
+   304
+  ],
+  [
+   "rlTopHtml",
+   1072
+  ],
+  [
+   "tySelBlockHtml",
+   870
+  ],
+  [
+   "tyStepsHtml",
+   404
+  ],
+  [
+   "tyNewRo",
+   2526
+  ],
+  [
+   "tyNeeds",
+   2278
+  ],
+  [
+   "tySide",
+   3531
+  ],
+  [
+   "tyBar",
+   2393
+  ],
+  [
+   "tyFlow",
+   1565
+  ],
+  [
+   "tyLotPlan",
+   2634
+  ],
+  [
+   "tyCtx",
+   307
+  ],
+  [
+   "viewTriageV1",
+   7896
+  ],
+  [
+   "triageLanesHtml",
+   2376
+  ],
+  [
+   "lotFoldHtml",
+   535
+  ],
+  [
+   "bayFoldHtml",
+   638
+  ],
+  [
+   "yardEditHtml",
+   932
+  ],
+  [
+   "yardTrayHtml",
+   700
+  ],
+  [
+   "yardLotHtml",
+   1665
+  ],
+  [
+   "yardFloorHtml",
+   1238
+  ],
+  [
+   "yardZoneHtml",
+   371
+  ],
+  [
+   "yardCanvasClose",
+   53
+  ],
+  [
+   "yardCanvasOpen",
+   332
+  ],
+  [
+   "yardZoomBtnHtml",
+   430
+  ],
+  [
+   "addRoBtnHtml",
+   288
+  ],
+  [
+   "navDockHtml",
+   1225
+  ],
+  [
+   "viewWarrantyOld",
+   3228
+  ],
+  [
+   "waBulFiles",
+   206
+  ],
+  [
+   "roCtxHtmlUnused",
+   1302
+  ],
+  [
+   "themeBtnHtml",
+   377
+  ],
+  [
+   "todayChipHtml",
+   1194
+  ],
+  [
+   "rtInboxHtmlV1",
+   3166
+  ],
+  [
+   "rtModalFootV1",
+   445
+  ],
+  [
+   "rtModalBodyV1",
+   2651
+  ],
+  [
+   "rtCardHtmlV1",
+   2441
+  ],
+  [
+   "rtSendV1",
+   898
+  ],
+  [
+   "railNarrow",
+   65
+  ],
+  [
+   "loadSampleData",
+   323
+  ],
+  [
+   "loadSample20",
+   1166
+  ],
+  [
+   "saveLogEntry",
+   409
+  ],
+  [
+   "teamStackHtml",
+   786
+  ],
+  [
+   "techLoadHtml",
+   974
+  ],
+  [
+   "newRoBtnHtml",
+   184
+  ],
+  [
+   "dataStatusBtnHtml",
+   400
+  ],
+  [
+   "miniTile",
+   157
+  ],
+  [
+   "activeRosHtml",
+   2007
+  ],
+  [
+   "headerHtml",
+   2133
+  ],
+  [
+   "islandHtml",
+   3568
+  ],
+  [
+   "shortTouched",
+   235
+  ],
+  [
+   "moneyShort",
+   140
+  ],
+  [
+   "isShopRo",
+   62
+  ],
+  [
+   "ivHeader",
+   3365
+  ],
+  [
+   "ivGroup",
+   1068
+  ],
+  [
+   "holdItems",
+   1650
+  ],
+  [
+   "roadForm",
+   3090
+  ],
+  [
+   "closeChecks",
+   2191
+  ],
+  [
+   "fabAddPart",
+   326
+  ],
+  [
+   "completeOp",
+   603
+  ],
+  [
+   "fabJob",
+   233
+  ],
+  [
+   "pgWatch",
+   351
+  ],
+  [
+   "pgSegHtml",
+   997
+  ],
+  [
+   "pgMerge",
+   986
+  ],
+  [
+   "pgTimePct",
+   268
+  ],
+  [
+   "pgDay",
+   228
+  ],
+  [
+   "rdBuild",
+   2155
+  ],
+  [
+   "hoverClose",
+   235
+  ],
+  [
+   "shiftBtnHtml",
+   1053
+  ],
+  [
+   "shiftChipHtml",
+   198
+  ],
+  [
+   "tyCloseHtml",
+   3080
+  ],
+  [
+   "tyFormVal",
+   76
+  ],
+  [
+   "tyCardXfer",
+   957
+  ],
+  [
+   "tyCardStatus",
+   1803
+  ],
+  [
+   "tyCardStages",
+   1103
+  ],
+  [
+   "tyWhereTxt",
+   203
+  ],
+  [
+   "tySeg",
+   297
+  ],
+  [
+   "tyUsed",
+   113
+  ],
+  [
+   "tyZone",
+   271
+  ],
+  [
+   "tySlot",
+   388
+  ],
+  [
+   "t2YardHtml",
+   2181
+  ],
+  [
+   "yardElseAddHtml",
+   901
+  ],
+  [
+   "yardPickBanner",
+   434
+  ],
+  [
+   "yardFreeBarHtml",
+   1007
+  ],
+  [
+   "yardCount",
+   147
+  ],
+  [
+   "yardSpotHtml",
+   422
+  ],
+  [
+   "wcDetail",
+   2642
+  ],
+  [
+   "wcMatch",
+   374
+  ],
+  [
+   "rtSentWhen",
+   46
+  ],
+  [
+   "buildSample20",
+   17246
+  ],
+  [
+   "buildSampleData",
+   11653
+  ],
+  [
+   "deleteLogEntry",
+   268
+  ],
+  [
+   "dvClockHtml",
+   1075
+  ],
+  [
+   "autoPendingCount",
+   97
+  ],
+  [
+   "roLateParts",
+   235
+  ],
+  [
+   "pgWaitText",
+   367
+  ],
+  [
+   "pgModel",
+   2516
+  ],
+  [
+   "pgItemProg",
+   212
+  ],
+  [
+   "rdUpdate",
+   2411
+  ],
+  [
+   "rdSceneIdx",
+   192
+  ],
+  [
+   "tySpotLbl",
+   213
+  ],
+  [
+   "tyTile",
+   1913
+  ],
+  [
+   "yardChipHtml",
+   4230
+  ],
+  [
+   "wcOpCard",
+   5903
+  ],
+  [
+   "wcTrack",
+   878
+  ],
+  [
+   "wcUsd",
+   143
+  ],
+  [
+   "wcMoney",
+   122
+  ],
+  [
+   "wcStage",
+   125
+  ],
+  [
+   "wcRoPct",
+   186
+  ],
+  [
+   "wcRoStatus",
+   174
+  ],
+  [
+   "fcDur",
+   171
+  ],
+  [
+   "rdDot",
+   101
+  ],
+  [
+   "tyShort",
+   85
+  ],
+  [
+   "tyWait",
+   250
+  ],
+  [
+   "wcChip",
+   105
+  ],
+  [
+   "warrChipHtml",
+   493
+  ]
+ ],
+ "log": [
+  "code nothing calls: 128 functions, 186 KB",
+  "old themes (Mist, Atd, Glacier, Atl): 145 rules out, 6 selectors rewritten, 48 KB",
+  "classes nothing draws any more: brand-ico brand-mark brand-sub di-act di-act-ic di-act-t di-act-tx di-btn di-compact di-cur di-cur-ic di-cur-l di-dot di-full di-ic di-l di-live di-new di-pages di-pg di-pulse di-t dv-bdg dv-btns dv-clock dv-dot dv-foot dv-foot-btns dv-ic dv-l dv-list dv-live dv-lt dv-new dv-pg dv-t dv-tip hdr-acts hdr-find hdr-me-t pnav pnav-add pnav-bell pnav-clock pnav-foot pnav-gear pnav-ico pnav-item pnav-lbl pnav-list pnav-new pnav-sep tb-add tb2 tm-all tm-av tm-ph va-pill vbar",
+  "old page nav, island bar, top bar: 224 rules out, 11 selectors rewritten, 23 KB",
+  "later values Chrome refuses (left alone): 0 []",
+  "styles written twice: 461 declarations out (86 rules emptied)",
+  "version notes moved to the changelog: 322"
+ ],
+ "rewritten": [
+  [
+   "old themes (Mist, Atd, Glacier, Atl)",
+   "html:not([data-device=phone]) :is(.main, .main.wide, .main.main-long)",
+   "html:not([data-device=phone]) :is(.main,.main.wide,.main.main-long)"
+  ],
+  [
+   "old themes (Mist, Atd, Glacier, Atl)",
+   ":root:is([data-theme=\"ivd\"],[data-theme=\"mist\"],[data-theme=\"atd\"]) .tg",
+   ":root[data-theme=\"ivd\"] .tg"
+  ],
+  [
+   "old themes (Mist, Atd, Glacier, Atl)",
+   ":root[data-theme=\"ivd\"] .iv-side .iv-n.tg-lt , :root:is([data-theme=\"mist\"],[data-theme=\"atd\"]) .pz-tab .iv-n.tg-lt",
+   ":root[data-theme=\"ivd\"] .iv-side .iv-n.tg-lt"
+  ],
+  [
+   "old themes (Mist, Atd, Glacier, Atl)",
+   ":root[data-theme=\"ivd\"] .iv-side .iv-n.fm-nb , :root:is([data-theme=\"mist\"],[data-theme=\"atd\"]) .pz-tab .iv-n.fm-nb",
+   ":root[data-theme=\"ivd\"] .iv-side .iv-n.fm-nb"
+  ],
+  [
+   "old themes (Mist, Atd, Glacier, Atl)",
+   ":root[data-theme=\"ivd\"] .iv-side .iv-n.fm-nb.late , :root:is([data-theme=\"mist\"],[data-theme=\"atd\"]) .pz-tab .iv-n.fm-nb.late",
+   ":root[data-theme=\"ivd\"] .iv-side .iv-n.fm-nb.late"
+  ],
+  [
+   "old themes (Mist, Atd, Glacier, Atl)",
+   ":root:is([data-theme=\"ivd\"],[data-theme=\"mist\"],[data-theme=\"atd\"]) .wa-mv",
+   ":root[data-theme=\"ivd\"] .wa-mv"
+  ],
+  [
+   "old page nav, island bar, top bar",
+   ".pnav , .pnav-lbl , .pnav-set-btn",
+   ".pnav-set-btn"
+  ],
+  [
+   "old page nav, island bar, top bar",
+   "html.big-touch .icon-btn , html.big-touch .topbar.tb2 .icon-btn",
+   "html.big-touch .icon-btn"
+  ],
+  [
+   "old page nav, island bar, top bar",
+   ".topbar , .topbar.tb2",
+   ".topbar"
+  ],
+  [
+   "old page nav, island bar, top bar",
+   "html[data-device=tablet] #app , html[data-device=tablet] #app:has(.pnav-list:hover) , html[data-device=tablet] #app:has(.pnav-list :focus-visible)",
+   "html[data-device=tablet] #app"
+  ],
+  [
+   "old page nav, island bar, top bar",
+   "html[data-device=phone] #app , html[data-device=phone] #app:has(.pnav-list:hover) , html[data-device=phone] #app:has(.pnav-list :focus-visible)",
+   "html[data-device=phone] #app"
+  ],
+  [
+   "old page nav, island bar, top bar",
+   ".tm-av svg , .tm-av img , .pf-big svg , .pf-big img , .pf-sm svg , .pf-sm img , .pf-btn svg , .pf-btn img , .ri-av svg , .ri-av img , .mg-av svg , .mg-av img , .rg-av svg , .rg-av img",
+   ".pf-big svg , .pf-big img , .pf-sm svg , .pf-sm img , .pf-btn svg , .pf-btn img , .ri-av svg , .ri-av img , .mg-av svg , .mg-av img , .rg-av svg , .rg-av img"
+  ],
+  [
+   "old page nav, island bar, top bar",
+   "button:hover > svg.i3 , button:hover .i3 , .pnav-item:hover svg.i3",
+   "button:hover > svg.i3 , button:hover .i3"
+  ],
+  [
+   "old page nav, island bar, top bar",
+   "html.yd-roam .pnav , html.yd-roam .topbar , html.yd-roam .day-ribbon , html.yd-roam .assist-fab , html.yd-roam #dev-readout , html.yd-roam #dev-hover-tag , html.yd-roam .assist-panel , html.yd-roam .ro-edge-tab , html.yd-roam .alert-bar",
+   "html.yd-roam .topbar , html.yd-roam .day-ribbon , html.yd-roam .assist-fab , html.yd-roam #dev-readout , html.yd-roam #dev-hover-tag , html.yd-roam .assist-panel , html.yd-roam .ro-edge-tab , html.yd-roam .alert-bar"
+  ],
+  [
+   "old page nav, island bar, top bar",
+   ".rel-it.on .rel-box , .tm-av.on",
+   ".rel-it.on .rel-box"
+  ],
+  [
+   "old page nav, island bar, top bar",
+   ".brand-sub , .hdr-me-t , .hdr .hdr-data",
+   ".hdr .hdr-data"
+  ],
+  [
+   "old page nav, island bar, top bar",
+   "html[data-size=floor] .btn.ib , html[data-size=floor] .btn.btn-sm.ib , html[data-size=floor] .icon-btn , html[data-size=floor] .topbar.tb2 .icon-btn",
+   "html[data-size=floor] .btn.ib , html[data-size=floor] .btn.btn-sm.ib , html[data-size=floor] .icon-btn"
+  ]
+ ]
+}

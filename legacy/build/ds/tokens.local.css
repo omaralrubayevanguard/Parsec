@@ -1,0 +1,116 @@
+:root, [data-theme="light"] {
+  --canvas: #F2F0EA;
+  --panel: #FBFAF7;
+  --raised: #FFFFFF;
+  --fill: #F0EDE6;
+  --selected: #E8E4DA;
+  --hairline: #E6E2D8;
+  --border: #D6D0C3;
+  --border-strong: #8F897C;
+  --ink: #1D1C1A;
+  --ink-2: #57534B;
+  --ink-3: #67625A;
+  --ink-4: #A8A398;
+  --accent: #86643A;
+  --accent-text: #7A5A32;
+  --accent-tint: #F4EDE1;
+  --accent-line: #D9C5A3;
+  --on-accent: #FFFFFF;
+  --primary: #1D1C1A;
+  --on-primary: #FBFAF7;
+  --status-hold: #857F75;
+  --status-working: #3A8C60;
+  --status-waiting: #AD7210;
+  --status-customer: #2F8795;
+  --status-support: #6C69C8;
+  --status-problem: #C0503F;
+  --good: #2C7350;
+  --good-tint: #E7F1EA;
+  --warn: #8C5B0B;
+  --warn-tint: #F8EEDC;
+  --bad: #A8402E;
+  --bad-tint: #F8E9E5;
+  --scrim: rgba(29,28,26,.28);
+  --shadow-panel: 0 0 0 1px rgba(29,28,26,.06), 0 1px 3px rgba(29,28,26,.04);
+  --shadow-raised: 0 0 0 1px rgba(29,28,26,.07), 0 2px 4px rgba(29,28,26,.04), 0 12px 32px -8px rgba(29,28,26,.18);
+  --shadow-focus: 0 0 0 2px #FBFAF7, 0 0 0 4px #86643A;
+}
+[data-theme="dark"] {
+  --canvas: #0E0E0D;
+  --panel: #151514;
+  --raised: #1D1D1B;
+  --fill: #222220;
+  --selected: #2A2A27;
+  --hairline: #262624;
+  --border: #363532;
+  --border-strong: #6E6A62;
+  --ink: #EDEBE6;
+  --ink-2: #B0ACA3;
+  --ink-3: #9A968D;
+  --ink-4: #5E5B55;
+  --accent: #D1B184;
+  --accent-text: #D6B88D;
+  --accent-tint: #2A241B;
+  --accent-line: #6B5A40;
+  --on-accent: #1A1610;
+  --primary: #EDEBE6;
+  --on-primary: #151514;
+  --status-hold: #8D897F;
+  --status-working: #5BBE8B;
+  --status-waiting: #E2A84C;
+  --status-customer: #58B3C0;
+  --status-support: #9E9DF0;
+  --status-problem: #EC7F6C;
+  --good: #63C291;
+  --good-tint: #16261E;
+  --warn: #E0A64A;
+  --warn-tint: #2A2114;
+  --bad: #EE8270;
+  --bad-tint: #2D1916;
+  --scrim: rgba(0,0,0,.6);
+  --shadow-panel: 0 0 0 1px rgba(255,255,255,.06);
+  --shadow-raised: 0 0 0 1px rgba(255,255,255,.07), 0 16px 40px -8px rgba(0,0,0,.7);
+  --shadow-focus: 0 0 0 2px #151514, 0 0 0 4px #D1B184;
+}
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 999px;
+  --control-sm: 28px;
+  --control-md: 32px;
+  --control-lg: 40px;
+  --row: 40px;
+  --header: 48px;
+  --sidebar: 236px;
+  --rail: 300px;
+  --measure: 760px;
+  --font-sans: "Geist", "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-serif: "Newsreader", "Iowan Old Style", Charter, Georgia, serif;
+  --font-mono: "Geist Mono", "Cascadia Mono", Consolas, ui-monospace, monospace;
+}
+.display-lg { font-family: var(--font-serif); font-size: 32px; line-height: 38px; font-weight: 500; letter-spacing: -0.015em; }
+.display { font-family: var(--font-serif); font-size: 24px; line-height: 30px; font-weight: 500; letter-spacing: -0.01em; }
+.title { font-family: var(--font-sans); font-size: 17px; line-height: 24px; font-weight: 600; letter-spacing: -0.01em; }
+.heading { font-family: var(--font-sans); font-size: 15px; line-height: 22px; font-weight: 600; letter-spacing: -0.005em; }
+.body { font-family: var(--font-sans); font-size: 14px; line-height: 21px; font-weight: 400; }
+.body-medium { font-family: var(--font-sans); font-size: 14px; line-height: 21px; font-weight: 500; }
+.small { font-family: var(--font-sans); font-size: 13px; line-height: 19px; font-weight: 400; }
+.label { font-family: var(--font-sans); font-size: 12px; line-height: 16px; font-weight: 500; }
+.micro { font-family: var(--font-sans); font-size: 11px; line-height: 14px; font-weight: 600; letter-spacing: 0.02em; }
+.timer { font-family: var(--font-sans); font-size: 30px; line-height: 36px; font-weight: 500; letter-spacing: -0.02em; }
+.stat { font-family: var(--font-sans); font-size: 18px; line-height: 24px; font-weight: 500; letter-spacing: -0.01em; }
+.id { font-family: var(--font-mono); font-size: 13px; line-height: 18px; font-weight: 500; }
+.id-sm { font-family: var(--font-mono); font-size: 11.5px; line-height: 16px; font-weight: 500; letter-spacing: 0.04em; }

@@ -1,0 +1,302 @@
+/* ============================== Parsec 12.1 — Triage: transfer step by step, the road test and the truck checks ==============================
+   From the Triage mock-up picks. Transfer: one pop-over, one step at a time — Department → Employee (who's free, on the clock or
+   out, and their load; or the department's queue) → Why → Back by (starts on the department's goal). It's theirs when you send it;
+   past back by it moves to Held too long with a red countdown. Road test: a button on the RO, a Road test group in Needs action and
+   the Ready to close card — send someone, or log the result (anyone can); a fail goes back to the tech who did the work. Truck
+   checks: Triage does them on every RO — Parsec's own checks and the walk-around list (the shop edits it); Release before every
+   check is done is allowed with a reason (the Release pop-up asks for it). */
+var TRX_QC_TRIAGE = true;   /* the truck checks are Triage's — the Foreman's QC group is off */
+var TRX_DN = { tech: "Technicians", foreman: "Foreman", parts: "Parts", writer: "Service writers", warranty: "Warranty", manager: "Manager" };
+var TRX_DSUB = { tech: "the repair", foreman: "bays, second opinions", parts: "order, check in, returns", writer: "approvals, the customer", warranty: "claims, tech support", manager: "sign-off, pricing" };
+var TRX_WHY = { tech: ["Repair — approved", "Parts arrived", "Recheck", "Road test"], foreman: ["Tech + bay", "Second opinion", "Comeback", "Road test"],
+  parts: ["Parts needed", "Wrong part", "Core return", "Price check"], writer: ["Approval needed", "Estimate ready", "Customer question", "End-of-shift hand-off"],
+  warranty: ["Warranty claim", "Tech support case", "Policy question"], manager: ["Sign-off", "Customer complaint", "Pricing call"] };
+var TRX_WALK0 = ["Tools out of the truck", "Covers and caps on", "No leaks under the truck", "Cab clean — no grease on the seat or wheel", "Keys in the key box", "Paperwork in the cab"];
+var TRX_RTCHK = ["Brakes", "Steering", "Shifts clean", "Power and boost", "No codes after", "No leaks", "No noise", "Cruise and A/C"];
+var TRX_FAILW = ["Same complaint", "New fault code", "Noise", "Leak", "Warning light"];
+/* the icons this needs that the Triage set doesn't have yet (the Foreman's and Warranty's sets have some) */
+(function(){ try{
+  var add = { users: '<path d="M16 19v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 17.5V19"/><circle cx="10" cy="7.5" r="3.5"/><path d="M20 19v-1.5a3.5 3.5 0 0 0-2.5-3.35M15.5 4.2a3.5 3.5 0 0 1 0 6.6"/>',
+    chevL: '<path d="M15 6l-6 6 6 6"/>' };
+  for(var k in add) if(!TG_IC[k]) TG_IC[k] = add[k];
+  ["road", "pencil"].forEach(function(k){ if(!TG_IC[k] && typeof FM_IC !== "undefined" && FM_IC[k]) TG_IC[k] = FM_IC[k]; });
+  ["info"].forEach(function(k){ if(!TG_IC[k] && typeof WA_IC !== "undefined" && WA_IC[k]) TG_IC[k] = WA_IC[k]; });
+  if(typeof IVI !== "undefined" && !IVI.road && TG_IC.road) IVI.road = TG_IC.road;   /* the RO page and the Technician page draw with these */
+}catch(e){} })();
+function trxWalk(){ if(!Array.isArray(STATE.truckCheckList)) STATE.truckCheckList = TRX_WALK0.slice(); return STATE.truckCheckList; }
+
+/* ---------- who's in each department, and how they are right now ---------- */
+function trxRoles(k){ return k === "writer" ? ["Service writer", "Triage"] : [RT_ROLE[k]]; }
+function trxStatus(k, n){
+  var rp = STATE.punches.filter(function(p){ return !p.stop && techSame(punchWho(p), n); })[0];
+  var sh = []; try{ sh = shiftList().filter(function(s){ return s && s.by && techSame(s.by, n); }); }catch(e){}
+  var open = sh.filter(function(s){ return !s.out; })[0], last = sh.filter(function(s){ return s.out; }).sort(function(a, b){ return new Date(b.out) - new Date(a.out); })[0];
+  var load = k === "tech" ? STATE.ros.filter(function(r){ return !r.shop && r.id !== SHOP_RO_ID && !roIsDone(r) && techSame(r.assignedTech, n); }).length
+    : STATE.ros.filter(function(r){ return !roIsDone(r) && r.route && r.route.to === k && r.route.who && techSame(r.route.who, n); }).length;
+  var st, txt = "", aw = null; try{ var A0 = STATE.ib && STATE.ib.away; aw = A0 && A0[n] && (!A0[n].until || new Date(A0[n].until) > Date.now()) ? A0[n] : null; }catch(e){}
+  if(aw && !rp){ st = "out"; txt = "Away" + (aw.until ? " until " + tgWhen(new Date(aw.until).getTime()) : "") + (aw.cover ? " · " + tgFirst(aw.cover) + " covers" : ""); }
+  else if(rp){ var rr = getRO(rp.roId); st = "job"; txt = isShopPunch(rp) ? "On shop time" : "On the clock · " + (rr ? tgNum(rr) : "a job"); }
+  else if(open){ st = "free"; var t0 = new Date(open.in).getTime();
+    STATE.punches.forEach(function(p){ if(p.stop && techSame(punchWho(p), n)){ var s1 = new Date(p.stop).getTime(); if(s1 > t0 && s1 <= Date.now()) t0 = s1; } });
+    txt = "Free since " + fmtTime(new Date(t0).toISOString()); }
+  else if(last && localDay(last.out) === todayStr()){ st = "out"; txt = (last.outReason || "Out") + (last.backBy ? " · back " + fmtTime(last.backBy) : ""); }
+  else if(k === "tech"){ st = "out"; txt = "Not clocked in today"; }
+  else st = "free";
+  return { n: n, st: st, txt: txt, load: load, o: st === "free" ? 0 : st === "job" ? 1 : 2 };
+}
+function trxPeople(k){
+  var L = staffList().filter(function(s){ return s && s.name && !s.ext && trxRoles(k).indexOf(s.role) > -1; }).map(function(s){ return s.name; });
+  if(k === "tech") try{ rtTechs().forEach(function(n){ if(!L.some(function(x){ return techSame(x, n); })) L.push(n); }); }catch(e){}
+  return L.map(function(n){ return trxStatus(k, n); }).sort(function(a, b){ return a.o - b.o || String(a.n).localeCompare(String(b.n)); });
+}
+function trxLoad(k, p){ return k === "tech" ? p.load + " RO" + (p.load === 1 ? "" : "s") : p.load ? p.load + " with them" : "nothing with them"; }
+function trxNm(n){ return /^Anyone in /.test(n || "") ? n : tgFirst(n); }   /* "Anyone in Parts" stays whole */
+function trxDot(st){ return '<i class="trx-dot ' + (st === "free" ? "g" : st === "job" ? "w" : "o") + '"></i>'; }
+
+/* ---------- transfer: one pop-over, one step at a time ---------- */
+function trxBackOpts(k){ var W = tgWhenOpts(), g = rtGoalMs(k);
+  return [["goal", "Goal · " + tgDur(g), Date.now() + g], ["1h", W[0][0], W[0][1]], ["lunch", W[2][0], W[2][1]], ["eod", W[3][0], W[3][1]], ["tom", "Tomorrow 8 am", W[4][1]], ["pick", "Pick a time", null], ["none", "Not coming back", null]]; }
+function trxBackLbl(A){ if(!A.to || A.bk == null) return ""; if(A.bk === "none") return "Not coming back"; var o = trxBackOpts(A.to).filter(function(x){ return x[0] === A.bk; })[0]; return A.bk === "goal" ? "Goal · " + tgDur(rtGoalMs(A.to)) : A.back != null ? tgWhen(A.back) : o ? o[1] : ""; }
+function trxXferPop(ro, head, style){
+  var A = UI.tgXS || (UI.tgXS = {}), hd = rtHolder(ro); if(A.step == null) A.step = 0;
+  var S = [["Department", A.to ? TRX_DN[A.to] : ""], ["Employee", A.who === "*" ? "Anyone" : A.who ? tgFirst(A.who) : ""], ["Why", A.why || ""], ["Back by", A.why ? trxBackLbl(A) : ""]];
+  var crumbs = '<div class="trx-steps">' + S.map(function(s, i){ var en = i === 0 || !!S[i - 1][1], dn = !!s[1] && i !== A.step;
+    return (i ? '<i>›</i>' : '') + '<button class="' + (i === A.step ? 'on' : dn ? 'dn' : '') + '" data-action="tg-xf" data-f="step" data-v="' + i + '"' + (en ? '' : ' disabled') + '>' + (dn ? tgI("check", 11) + esc(s[1]) : '<em>' + (i + 1) + '</em>' + s[0]) + '</button>'; }).join('') + '</div>';
+  var body = '';
+  if(A.step === 0) body = '<div class="trx-os">' + TG_DESKS.map(function(k, i){ var P = trxPeople(k), fr = P.filter(function(p){ return p.st === "free"; }).length, cur = hd.to === k && !hd.q && k !== "tech" && !hd.who;
+      return '<button class="trx-o' + (A.to === k ? ' on' : '') + '" data-action="tg-xf" data-f="to" data-v="' + k + '"><span class="tg-role">' + (k === "writer" ? "SW" : RT_AB[k]) + '</span><span class="t"><b>' + esc(TRX_DN[k]) + '</b><small>' + esc(cur ? "has it now" : TRX_DSUB[k]) + '</small></span><span class="r">' + (P.length ? trxDot(fr ? "free" : "out") + fr + ' free of ' + P.length : 'nobody yet') + '</span><span class="tg-kbd">' + (i + 1) + '</span></button>'; }).join('') + '</div>';
+  else if(A.step === 1){ var P = trxPeople(A.to);
+    body = '<div class="trx-os"><button class="trx-o' + (A.who === "*" ? ' on' : '') + '" data-action="tg-xf" data-f="who" data-v="*"><span class="tg-role">' + tgI("users", 13) + '</span><span class="t"><b>Anyone in ' + esc(TRX_DN[A.to]) + '</b><small>the first one free takes it</small></span><span class="r">queue</span><span class="tg-kbd">1</span></button>'
+      + P.map(function(p, i){ return '<button class="trx-o' + (A.who && techSame(A.who, p.n) ? ' on' : '') + '" data-action="tg-xf" data-f="who" data-v="' + esc(p.n) + '"><span class="tg-av">' + esc(tgIni(p.n)) + '</span><span class="t"><b>' + esc(p.n) + '</b>' + (p.txt ? '<small>' + esc(p.txt) + '</small>' : '') + '</span><span class="r">' + trxDot(p.st) + esc(trxLoad(A.to, p)) + '</span>' + (i < 8 ? '<span class="tg-kbd">' + (i + 2) + '</span>' : '') + '</button>'; }).join('')
+      + (P.length ? '' : '<p class="tg-none" style="padding:6px 2px">Nobody on the Team in ' + esc(TRX_DN[A.to]) + ' yet — send it to the queue.</p>') + '</div>'; }
+  else if(A.step === 2) body = '<div class="tg-r trx-cs">' + TRX_WHY[A.to].map(function(w, i){ return '<button class="tg-chip' + (A.why === w ? ' on' : '') + '" data-action="tg-xf" data-f="why" data-v="' + esc(w) + '"><span class="tg-kbd">' + (i + 1) + '</span>' + esc(w) + '</button>'; }).join('') + '</div>'
+      + '<input class="tg-wide" data-no-draft data-tg-in="xf-note" placeholder="A note for them (optional)" value="' + esc(A.note || "") + '">';
+  else { var O = trxBackOpts(A.to);
+    body = '<div class="tg-r trx-cs">' + O.map(function(o){ var on = A.bk === o[0]; return '<button class="tg-chip' + (on ? ' on' : '') + '" data-action="tg-xf" data-f="back" data-v="' + o[0] + '">' + esc(o[1]) + (o[2] && o[0] !== "goal" ? ' <small>' + esc(tgWhen(o[2])) + '</small>' : o[0] === "goal" ? ' <small>' + esc(tgWhen(o[2])) + '</small>' : '') + '</button>'; }).join('') + '</div>'
+      + (A.bk === "pick" ? '<input class="tg-wide trx-dt" type="datetime-local" data-no-draft data-tg-in="trx-xback" value="' + esc(A.pick || "") + '">' : '')
+      + '<div class="tg-goal">' + tgI("clock", 12) + esc(TRX_DN[A.to]) + ': the goal is ' + tgDur(rtGoalMs(A.to)) + ' · past back by it moves to Held too long</div>'; }
+  var ok = A.to && A.who && A.why && A.bk && (A.bk !== "pick" || A.back != null);
+  var nm = !A.to ? "" : A.who === "*" ? "Anyone in " + TRX_DN[A.to] : A.who ? tgFirst(A.who) : TRX_DN[A.to];
+  var foot = '<div class="tg-acts">' + (A.step ? '<button class="btn btn-sm tg-gh" data-action="tg-xf" data-f="step" data-v="' + (A.step - 1) + '">' + tgI("chevL", 13) + 'Back</button>' : '<span class="hint">With ' + esc(rtHolderName(hd, ro)) + ' · ' + tgDur(tgHold(ro).held) + '</span>')
+    + '<span class="sp" style="flex:1"></span>' + (A.step < 3 && S[A.step][1] ? '<button class="btn btn-sm" data-action="tg-xf" data-f="step" data-v="' + (A.step + 1) + '">Next' + tgI("chevR", 13) + '</button>' : '')
+    + '<button class="btn btn-sm btn-primary" data-action="tg-xf-go"' + (ok ? '' : ' disabled') + '>' + tgI("swap", 13) + 'Transfer' + (nm ? ' to ' + esc(nm) : '') + (ok ? '<span class="tg-kbd">↵</span>' : '') + '</button></div>';
+  return '<div class="tg-pop xf trx-x" data-tg-keep' + style + '>' + head("Transfer") + crumbs + '<span class="tg-lbl top trx-sl">' + S[A.step][0] + '</span>' + body + foot + '</div>';
+}
+function trxXfSet(f, v){
+  var A = UI.tgXS || (UI.tgXS = {}), P = UI.tgPop, ro = P && tgRoById(P.ro);
+  if(f === "step"){ A.step = Math.max(0, Math.min(3, +v)); return; }
+  if(f === "to"){ if(A.to !== v){ A.who = null; A.why = null; A.note = ""; } A.to = v; A.bk = "goal"; A.back = Date.now() + rtGoalMs(v); A.step = 1; return; }
+  if(f === "who"){ A.who = v; A.step = 2; return; }
+  if(f === "why"){ A.why = v; A.step = 3; if(!A.bk){ A.bk = "goal"; A.back = Date.now() + rtGoalMs(A.to); } return; }
+  if(f === "back"){ A.bk = v; var o = trxBackOpts(A.to).filter(function(x){ return x[0] === v; })[0]; A.back = v === "none" ? null : v === "pick" ? (A.pick ? new Date(A.pick).getTime() : null) : o ? o[2] : null; return; }
+}
+function trxXferGo(){
+  var ro = tgRoById((UI.tgPop || {}).ro), A = UI.tgXS || {}; if(!ro || !A.to || !A.who || !A.why || !A.bk || (A.bk === "pick" && A.back == null)) return;
+  var before = tgFlat(), was = !!tgItemOf(ro.id), q = A.who === "*";
+  pushUndo("transfer");
+  rtSend(ro, A.to, q ? "*" : A.who, A.note || "", null, { reason: A.why, accept: false });
+  if(ro.route){ if(q) ro.route.queue = true; ro.route.back = A.bk !== "none" && A.back != null ? new Date(A.back).toISOString() : null; var hs = ro.handoffs || [], last = hs[hs.length - 1]; if(last){ last.back = ro.route.back; if(q) last.queue = true; } }
+  try{ var to = q ? null : A.who; if(to && typeof IB !== "undefined") IB.send({ to: to, k: "ask", src: "triage", ro: ro.id, t: tgMe() + " sent you " + tgNum(ro) + " — " + A.why, b: (ro.customerName || "") + (A.back != null && A.bk !== "none" ? " · back by " + tgWhen(A.back) : ""), q: A.note || "" }); }catch(e){}
+  delete ro.tgSnz; if(was && !tgItemOf(ro.id)) tgClear(ro, "swap", "To " + (q ? "anyone in " + TRX_DN[A.to] : tgFirst(A.who)));
+  UI.tgPop = null; UI.tgXS = null; tgAfterAct(ro.id, before); scheduleSave(true);
+  pushToast(roLabel(ro) + " to " + (q ? "anyone in " + TRX_DN[A.to] : A.who) + " · " + A.why + (A.bk !== "none" && A.back != null ? " · back by " + tgWhen(A.back) : "") + ".", true);
+}
+function trxXferKey(k){ var A = UI.tgXS || (UI.tgXS = {}), n = +k, ro = tgRoById((UI.tgPop || {}).ro);
+  if(k === "Enter"){ if(A.to && A.who && A.why && A.bk) trxXferGo(); else if(A.step < 3 && [A.to, A.who, A.why][A.step]){ A.step++; render(); } return; }
+  if(k === "Backspace"){ if(A.step > 0){ A.step--; render(); } return; }
+  if(!(n >= 1)) return;
+  if(A.step === 0 && n <= TG_DESKS.length){ trxXfSet("to", TG_DESKS[n - 1]); render(); return; }
+  if(A.step === 1){ if(n === 1){ trxXfSet("who", "*"); render(); return; } var P = trxPeople(A.to); if(P[n - 2]){ trxXfSet("who", P[n - 2].n); render(); } return; }
+  if(A.step === 2 && TRX_WHY[A.to][n - 1]){ trxXfSet("why", TRX_WHY[A.to][n - 1]); render(); return; }
+}
+
+/* ---------- the road test ---------- */
+function trxLive(ro){ try{ return raLive(ro); }catch(e){ return (ro.operations || []).filter(function(o){ return !o.declined; }); } }
+function trxAllDone(ro){ var L = trxLive(ro); return L.length > 0 && L.every(function(op){ return opDoneNow(op); }); }
+function trxPassed(ro){ return !!(ro.roadTest && ro.roadTest.result !== "Fail"); }
+function trxDoneAt(ro){ var t = 0; trxLive(ro).forEach(function(op){ var s = op.jobStatus && op.jobStatus.setAt ? new Date(op.jobStatus.setAt).getTime() : 0; if(s > t) t = s; }); return t; }
+function trxTechOf(ro){   /* the tech who did the work: the last one on the clock on its operations, else the RO's tech */
+  var ids = {}; trxLive(ro).forEach(function(op){ ids[op.id] = 1; });
+  var ps = STATE.punches.filter(function(p){ return p.roId === ro.id && ids[p.opId]; }).sort(function(a, b){ return new Date(b.start) - new Date(a.start); });
+  return (ps[0] && punchWho(ps[0])) || ro.assignedTech || "";
+}
+function trxPlanAt(ro){ var p = ro.fmRt; if(!p) return null; if(p.atMs) return p.atMs; return null; }
+function trxRoadState(ro){
+  var p = ro.fmRt, t = trxPlanAt(ro), now = Date.now();
+  if(trxPassed(ro)) return { k: "pass", txt: "Passed" + (ro.roadTest.miles ? " · " + ro.roadTest.miles + " mi" : "") + (ro.roadTest.at ? " · " + fmtTime(ro.roadTest.at) : "") + (ro.roadTest.driver ? " · " + tgFirst(ro.roadTest.driver) : "") };
+  if(p) return { k: "plan", txt: tgFirst(p.who || "Someone") + " drives " + (t ? (t <= now + 60000 ? "now" : "at " + tgWhen(t) + " · in " + tgDur(t - now)) : p.when || ""), due: t && t <= now };
+  if(ro.roadTest && ro.roadTest.result === "Fail") return { k: "fail", txt: "Failed " + fmtTime(ro.roadTest.at) + (ro.roadTest.why ? " · " + ro.roadTest.why : "") + " — test it again" };
+  if(!trxAllDone(ro)){ var L = trxLive(ro), op = L.filter(function(o){ return !opDoneNow(o); }).length; return { k: "none", txt: L.length ? op + " of " + L.length + " operation" + (L.length === 1 ? "" : "s") + " still open — test it when they’re done" : "No operations yet" }; }
+  return { k: "none", txt: "Every operation done" + (trxDoneAt(ro) ? " " + fmtTime(new Date(trxDoneAt(ro)).toISOString()) : "") + " · nobody set yet" };
+}
+function trxDrivers(ro){ var tech = trxTechOf(ro), L = [], add = function(n, why){ if(n && !L.some(function(x){ return techSame(x.n, n); })) L.push({ n: n, why: why || "" }); };
+  add(tech, "did the work"); try{ rtTechs().forEach(function(n){ add(n); }); }catch(e){} staffList().filter(function(s){ return s && !s.ext && s.role === "Foreman"; }).forEach(function(s){ add(s.name, "foreman"); });
+  add(tgMe(), "you"); return L; }
+function trxRoadPop(ro, head, style){
+  var R = UI.trxR; if(!R || R.ro !== ro.id){ var tech = trxTechOf(ro); R = UI.trxR = { ro: ro.id, m: ro.fmRt && !trxPassed(ro) ? "log" : "send", who: tech || "", when: "now", driver: (ro.fmRt && ro.fmRt.who) || tech || "", mi: "", start: "", res: "Pass", ck: {}, fw: "", note: "", pick: "" }; }
+  var S = trxRoadState(ro);
+  var seg = '<div class="tg-seg3 trx-seg"><button class="' + (R.m === "send" ? 'on' : '') + '" data-action="tg-rt" data-f="m" data-v="send">Send someone</button><button class="' + (R.m === "log" ? 'on' : '') + '" data-action="tg-rt" data-f="m" data-v="log">Log the result</button></div>';
+  var stl = '<div class="tg-goal">' + tgI("road", 12) + esc(S.txt) + '</div>';
+  var body, foot;
+  if(R.m === "send"){ var W = tgWhenOpts(), WH = [["now", "Now", Date.now()], ["1h", W[0][0], W[0][1]], ["lunch", W[2][0], W[2][1]], ["eod", "Before close", W[3][1]], ["pick", "Pick a time", null]];
+    body = '<span class="tg-lbl top">Who drives</span><div class="tg-r trx-cs">' + trxDrivers(ro).map(function(d){ return '<button class="tg-chip' + (R.who && techSame(R.who, d.n) ? ' on' : '') + '" data-action="tg-rt" data-f="who" data-v="' + esc(d.n) + '">' + esc(d.n) + (d.why ? ' <small>' + esc(d.why) + '</small>' : '') + '</button>'; }).join('') + '</div>'
+      + '<span class="tg-lbl top">When</span><div class="tg-r trx-cs">' + WH.map(function(w){ return '<button class="tg-chip' + (R.when === w[0] ? ' on' : '') + '" data-action="tg-rt" data-f="when" data-v="' + w[0] + '">' + esc(w[1]) + (w[2] && w[0] !== "now" ? ' <small>' + esc(tgWhen(w[2])) + '</small>' : '') + '</button>'; }).join('') + '</div>'
+      + (R.when === "pick" ? '<input class="tg-wide trx-dt" type="datetime-local" data-no-draft data-tg-in="trx-rpick" value="' + esc(R.pick || "") + '">' : '');
+    foot = '<div class="tg-acts"><span class="hint">' + (R.who ? esc(tgFirst(R.who)) + ' sees it on ' + esc(trxWhere(R.who)) : '') + '</span><button class="btn btn-sm btn-primary" data-action="tg-rt-go" data-v="send"' + (R.who && (R.when !== "pick" || R.pick) ? '' : ' disabled') + '>' + tgI("road", 13) + 'Send ' + esc(R.who ? tgFirst(R.who) : "") + '</button></div>';
+  } else {
+    body = '<div class="trx-g2"><label><span class="tg-lbl">Driver</span><select data-no-draft data-tg-in="trx-rdriver">' + trxDrivers(ro).map(function(d){ return '<option' + (R.driver && techSame(R.driver, d.n) ? ' selected' : '') + '>' + esc(d.n) + '</option>'; }).join('') + '</select></label>'
+      + '<label><span class="tg-lbl">Miles</span><input data-no-draft data-tg-in="trx-rmi" inputmode="numeric" placeholder="12" value="' + esc(R.mi) + '"></label><label><span class="tg-lbl">Started</span><input data-no-draft data-tg-in="trx-rstart" placeholder="' + esc(fmtTime(nowIso())) + '" value="' + esc(R.start) + '"></label></div>'
+      + '<span class="tg-lbl top">Result</span><div class="tg-r"><button class="tg-chip trx-ok' + (R.res === "Pass" ? ' on' : '') + '" data-action="tg-rt" data-f="res" data-v="Pass">' + tgI("check", 12) + 'Pass</button><button class="tg-chip trx-no' + (R.res === "Fail" ? ' on' : '') + '" data-action="tg-rt" data-f="res" data-v="Fail">' + tgI("flag", 12) + 'Fail</button></div>'
+      + '<span class="tg-lbl top">What was checked</span><div class="tg-r trx-cs">' + TRX_RTCHK.map(function(c){ var on = !!R.ck[c]; return '<button class="tg-chip tick' + (on ? ' on' : '') + '" data-action="tg-rt" data-f="ck" data-v="' + esc(c) + '">' + (on ? tgI("check", 12) : '') + esc(c) + '</button>'; }).join('') + '</div>'
+      + (R.res === "Fail" ? '<span class="tg-lbl top">Why it failed</span><div class="tg-r trx-cs">' + TRX_FAILW.map(function(w){ return '<button class="tg-chip trx-no' + (R.fw === w ? ' on' : '') + '" data-action="tg-rt" data-f="fw" data-v="' + esc(w) + '">' + esc(w) + '</button>'; }).join('') + '</div>' : '')
+      + '<input class="tg-wide" data-no-draft data-tg-in="trx-rnote" placeholder="' + (R.res === "Fail" ? 'What happened — it goes back to ' + esc(tgFirst(trxTechOf(ro) || "the tech")) : 'Anything to add — no leaks, no codes…') + '" value="' + esc(R.note) + '">';
+    var nok = R.res === "Fail" && !R.fw && !String(R.note || "").trim();
+    foot = '<div class="tg-acts"><span class="hint">Anyone can log it · ' + esc(tgMe() || "you") + '</span><button class="btn btn-sm ' + (R.res === "Fail" ? '' : 'btn-primary') + '" data-action="tg-rt-go" data-v="log"' + (nok ? ' disabled' : '') + '>' + (R.res === "Fail" ? tgI("flag", 13) + 'Log fail — back to ' + esc(tgFirst(trxTechOf(ro) || "the tech")) : tgI("check", 13) + 'Log pass') + '</button></div>';
+  }
+  return '<div class="tg-pop xf trx-r" data-tg-keep' + style + '>' + head("Road test") + stl + seg + body + foot + '</div>';
+}
+function trxRtSet(f, v){ var R = UI.trxR; if(!R) return;
+  if(f === "m") R.m = v; else if(f === "who") R.who = v; else if(f === "when") R.when = v; else if(f === "res"){ R.res = v; if(v === "Pass") R.fw = ""; }
+  else if(f === "ck") R.ck[v] = !R.ck[v]; else if(f === "fw") R.fw = R.fw === v ? "" : v; }
+function trxRtGo(mode){
+  var R = UI.trxR, ro = R && tgRoById(R.ro); if(!ro) return; var before = tgFlat(), me = tgMe();
+  if(mode === "send"){
+    var W = tgWhenOpts(), at = R.when === "now" ? Date.now() : R.when === "1h" ? W[0][1] : R.when === "lunch" ? W[2][1] : R.when === "eod" ? W[3][1] : R.pick ? new Date(R.pick).getTime() : null;
+    if(!R.who || !at) return;
+    pushUndo("road test");
+    ro.fmRt = { who: R.who, when: at <= Date.now() + 60000 ? "now" : "at " + tgWhen(at), atMs: at, at: nowIso(), by: me };
+    try{ rtLog(ro, { kind: "note", at: nowIso(), by: me, to: "tech", who: R.who, note: "Road test — " + ro.fmRt.when }); }catch(e){}
+    try{ if(typeof IB !== "undefined" && !techSame(R.who, me)) IB.send({ to: R.who, k: "ask", src: "triage", ro: ro.id, t: "Road test " + tgNum(ro) + " — " + ro.fmRt.when, b: (ro.customerName || "") + " · " + tgSpotLbl(tgSpotOf(ro)) + (ro.keyTag ? " · key tag " + ro.keyTag : ""), q: "" }); }catch(e){}
+    UI.tgPop = null; UI.trxR = null; tgAfterAct(ro.id, before); scheduleSave(true);
+    pushToast(tgFirst(R.who) + " drives " + tgNum(ro) + " " + ro.fmRt.when + (techSame(R.who, me) ? "." : " — it’s on " + trxWhere(R.who) + "."), true); return;
+  }
+  var ck = TRX_RTCHK.filter(function(c){ return R.ck[c]; }), fail = R.res === "Fail";
+  if(fail && !R.fw && !String(R.note || "").trim()) return;
+  pushUndo("road test");
+  ro.roadTest = { miles: String(R.mi || "").replace(/[^\d.]/g, ""), start: String(R.start || "").trim(), result: fail ? "Fail" : "Pass", checks: ck, why: fail ? R.fw || "" : "",
+    checked: ck.join(", ") + (String(R.note || "").trim() ? (ck.length ? " · " : "") + String(R.note).trim() : ""), note: String(R.note || "").trim(), driver: R.driver || "", by: me, at: nowIso() };
+  delete ro.fmRt;
+  try{ audit("road", roLabel(ro) + " road test " + (fail ? "failed" : "passed") + (fail && R.fw ? " — " + R.fw : ""), ro); }catch(e){}
+  if(fail){
+    var tech = trxTechOf(ro), why = "Road test failed" + (R.fw ? " — " + R.fw : "") + (String(R.note || "").trim() ? ": " + String(R.note).trim() : "");
+    /* back to the tech who did the work: the finished operations open again, it's theirs, and they get a note */
+    ro.fmRtOk = ro.roadTest.at;   /* it goes to the tech — the Foreman doesn't have to decide it */
+    trxLive(ro).forEach(function(op){ if(opDoneNow(op)){ if(typeof opReopenMark === "function") opReopenMark(op, ro.id, "Hold tech · road test failed"); op.jobStatus = { status: "Hold Tech", sub: "Road test failed", setAt: nowIso(), hand: true }; } });   /* Parsec 12.8: reopened, on the record */
+    try{ rtSend(ro, "tech", tech || null, why, null, { reason: "Road test failed", accept: false }); }catch(e){}
+    try{ if(tech && typeof IB !== "undefined") IB.send({ to: tech, k: "ask", src: "triage", ro: ro.id, t: "Road test failed on " + tgNum(ro), b: (ro.customerName || "") + (R.fw ? " · " + R.fw : ""), q: String(R.note || "").trim() }); }catch(e){}
+  }
+  UI.tgPop = null; UI.trxR = null; tgAfterAct(ro.id, before); scheduleSave(true);
+  pushToast(fail ? "Road test failed — back to " + (tgFirst(trxTechOf(ro)) || "the tech") + "." : "Road test passed — " + tgNum(ro) + " moves to Truck checks.", true);
+}
+
+/* where a note sent to someone shows up: their own page (Parsec 14 — the Inbox page went in 12.2) */
+function trxWhere(n){ var sf = null; try{ sf = staffForTech(n); }catch(e){} var r = sf ? sf.role : "Technician", f = tgFirst(n);
+  return r === "Technician" ? f + "’s Technician page, under Sent to you" : r === "Foreman" ? f + "’s Foreman page" : (r === "Service writer" || r === "Triage") ? "the Triage page" : r === "Parts" ? "the Parts page" : r === "Warranty" ? "the Warranty page" : "the RO, under Messages"; }
+
+/* ---------- the truck checks ---------- */
+function trxAuto(ro){
+  var L = trxLive(ro), done = L.filter(function(op){ return opDoneNow(op); }).length, pts = [], noStory = 0, q = 0, b = 0;
+  L.forEach(function(op){ opRealParts(op).forEach(function(p){ pts.push(p); }); var c = opStory(op, "cause"), f = opStory(op, "fix"); if(!(c && c.length && f && f.length)) noStory++; q += +op.quoted || 0; try{ b += opCalc(op).burntHrs || 0; }catch(e){} });
+  var inn = pts.filter(function(p){ return p.status === "Installed"; }).length, rt = ro.roadTest;
+  return [
+    { t: "All operations closed", ok: L.length > 0 && done === L.length, d: done + " of " + L.length },
+    { t: "Story on every operation", ok: !noStory, d: noStory ? noStory + " without a cause and correction" : "complaint, cause, correction" },
+    { t: "Parts installed", ok: inn === pts.length, d: pts.length ? inn + " of " + pts.length : "no parts" },
+    { t: "Road test passed", ok: trxPassed(ro), d: trxPassed(ro) ? (rt.miles ? rt.miles + " mi" : "passed") + (rt.at ? " · " + fmtTime(rt.at) : "") : rt && rt.result === "Fail" ? "failed — test it again" : "not logged yet", road: !trxPassed(ro) },
+    { t: "Hours", ok: true, info: true, d: (Math.round(b * 10) / 10) + " of " + (Math.round(q * 10) / 10) + " quoted" }
+  ].filter(function(x){ return x.t !== "Road test passed" || rtNeeded(ro); });
+}
+function trxQc(ro){ var Q = ro.truckChecks && typeof ro.truckChecks === "object" ? ro.truckChecks : null, W = trxWalk(), ticks = Q && Array.isArray(Q.ticks) ? Q.ticks : [];
+  var n = W.filter(function(w){ return ticks.indexOf(w) > -1; }).length, A = trxAuto(ro), an = A.filter(function(x){ return x.ok; }).length;
+  return { ticks: ticks, n: n, of: W.length, all: n === W.length, auto: A, aok: A.every(function(x){ return x.ok; }), total: A.length + W.length, done: an + n, at: Q && Q.doneAt, by: Q && Q.doneBy }; }
+function trxChecksPop(ro, head, style){
+  var E = UI.trxQ || (UI.trxQ = { edit: false, add: "" }), C = trxQc(ro), W = trxWalk();
+  var auto = '<span class="tg-lbl top">Parsec checked</span><div class="trx-cl">' + C.auto.map(function(x){ return '<div class="trx-ck ' + (x.info ? 'info' : x.ok ? 'ok' : 'no') + '">' + tgI(x.info ? "clock" : x.ok ? "check" : "flag", 13) + '<span>' + esc(x.t) + '</span><small>' + esc(x.d) + '</small>' + (x.road ? '<button class="tg-link" data-action="tg-pop" data-p="road" data-ro="' + ro.id + '">Road test…</button>' : '') + '</div>'; }).join('') + '</div>';
+  var walk = '<div class="trx-wh"><span class="tg-lbl top">Walk-around · you tick these</span><span class="sp" style="flex:1"></span><button class="tg-link" data-action="tg-qc" data-f="edit">' + tgI("pencil", 12) + (E.edit ? 'Done' : 'Edit the list') + '</button></div><div class="trx-wl">'
+    + W.map(function(w, i){ var on = C.ticks.indexOf(w) > -1; return '<div class="trx-tk' + (on ? ' on' : '') + '"><button class="trx-tb" data-action="tg-qc" data-f="tick" data-v="' + i + '"><i>' + (on ? tgI("check", 12) : '') + '</i><span>' + esc(w) + '</span></button>' + (E.edit ? '<button class="btn btn-sm ib tg-gh" data-action="tg-qc" data-f="del" data-v="' + i + '" title="Take it off the list" aria-label="Take it off the list">' + tgI("x", 12) + '</button>' : '') + '</div>'; }).join('')
+    + (W.length ? '' : '<p class="tg-none">No walk-around checks — add the shop’s.</p>') + '</div>'
+    + (E.edit ? '<div class="trx-add"><input data-no-draft data-tg-in="trx-qadd" placeholder="Add a check — e.g. Mud flaps on" value="' + esc(E.add || "") + '"><button class="btn btn-sm" data-action="tg-qc" data-f="add">' + tgI("plus", 12) + 'Add</button></div><div class="tg-goal">' + tgI("info", 12) + 'The list is the shop’s — every RO gets it</div>' : '');
+  var left = (C.total - C.done);
+  var foot = '<div class="tg-acts"><span class="hint">' + (C.all && C.aok ? (C.at ? 'Done ' + fmtTime(C.at) + (C.by ? ' · ' + esc(tgFirst(C.by)) : '') : 'Every check done') : left + ' to go — Release asks for a reason') + '</span>'
+    + (C.all && !C.aok ? '' : '') + '<button class="btn btn-sm' + (C.all && C.aok ? ' btn-primary' : '') + '" data-action="tg-qc-go">' + tgI("release", 13) + (C.all && C.aok ? 'Release…' : 'Release anyway…') + '</button></div>';
+  return '<div class="tg-pop xf trx-q" data-tg-keep' + style + '>' + head("Truck checks") + '<div class="trx-qs' + (C.all && C.aok ? ' ok' : '') + '"><b>' + C.done + ' of ' + C.total + '</b><span>' + (C.all && C.aok ? 'ready to release' : 'before release') + '</span></div>' + auto + walk + foot + '</div>';
+}
+function trxQcSet(f, v){
+  var P = UI.tgPop, ro = P && tgRoById(P.ro), E = UI.trxQ || (UI.trxQ = { edit: false, add: "" }), W = trxWalk(); if(!ro) return;
+  if(f === "edit"){ E.edit = !E.edit; return; }
+  if(f === "add"){ var t = String(E.add || "").trim(); if(!t || W.indexOf(t) > -1) return; pushUndo("truck checks list"); W.push(t); E.add = ""; scheduleSave(true); return; }
+  if(f === "del"){ var w0 = W[+v]; if(w0 == null) return; pushUndo("truck checks list"); W.splice(+v, 1); scheduleSave(true); return; }
+  if(f === "tick"){ var w = W[+v]; if(w == null) return; var Q = ro.truckChecks && typeof ro.truckChecks === "object" ? ro.truckChecks : (ro.truckChecks = { ticks: [] }); if(!Array.isArray(Q.ticks)) Q.ticks = [];
+    pushUndo("truck check"); var i = Q.ticks.indexOf(w); if(i > -1) Q.ticks.splice(i, 1); else Q.ticks.push(w);
+    var C = trxQc(ro); if(C.all && C.aok){ if(!Q.doneAt){ Q.doneAt = nowIso(); Q.doneBy = tgMe(); try{ audit("checks", roLabel(ro) + " truck checks done", ro); }catch(e){} } } else { delete Q.doneAt; delete Q.doneBy; }
+    scheduleSave(true); return; }
+}
+function trxQcDone(ro){ var C = trxQc(ro); return C.all && C.aok; }
+/* the Release pop-up counts the truck checks too — the open ones need a reason, like every other check */
+function trxRelCheck(ro){ if(!rtNeeded(ro)) return null; var C = trxQc(ro); /* the operations, parts and road test have their own lines here — this one is the walk-around */
+  return { k: "qc", ok: C.all, t: "Truck checks", d: C.all ? (C.of ? "walk-around done" : "no walk-around list") + (C.at ? " " + fmtTime(C.at) : "") + (C.by ? " · " + tgFirst(C.by) : "") : (C.of - C.n) + " of " + C.of + " walk-around not ticked", fix: "Truck checks" }; }
+
+/* ---------- Needs action: Road test, Truck checks, Ready to go ---------- */
+function trxNeed(ro, c, lt, a){
+  if(c === "arr" || c === "apr") return null;
+  /* past back by comes first: it goes to Held too long */
+  var due = tgDue(ro); if(due){ var hd = tgHold(ro); return { g: "held", pr: 3, ic: "swap", why: "Due back from " + trxNm(hd.who) + " at " + tgWhen(due) + " · " + tgDur(Date.now() - due) + " late", btn: "Nudge", act: "nudge" }; }
+  var st = roStatus(ro).status; if(st === "Declined") return null;
+  var all = trxAllDone(ro), pass = trxPassed(ro), need = rtNeeded(ro);
+  if(c === "rdy" || all){
+    if(!need){ if(!all) return null; return { g: "go", pr: lt ? 1 : 2, ic: "release", why: "Work done · no road test" + " · " + tgSpotLbl(tgSpotOf(ro)) + (lt ? " · waiting " + a : ""), btn: "Release", act: "release" }; }   /* Parsec 14 */
+    if(!pass){ if(!all && c !== "rdy") return null; var S = trxRoadState(ro);
+      return { g: "road", pr: S.due ? 0 : S.k === "plan" ? 3 : 1, ic: "road", why: S.txt, btn: S.k === "plan" ? (S.due ? "Log result" : "Road test") : "Road test", act: "road" }; }
+    if(!trxQcDone(ro)){ var C = trxQc(ro); return { g: "checks", pr: 1, ic: "check", why: "Road test passed" + (ro.roadTest && ro.roadTest.at ? " " + fmtTime(ro.roadTest.at) : "") + " · " + (C.total - C.done) + " check" + (C.total - C.done === 1 ? "" : "s") + " to go", btn: "Check", act: "checks" }; }
+    var C2 = trxQc(ro); return { g: "go", pr: lt ? 1 : 2, ic: "release", why: "Checks done" + (C2.at ? " " + fmtTime(C2.at) : "") + " · " + tgSpotLbl(tgSpotOf(ro)) + (lt ? " · waiting " + a : ""), btn: "Release", act: "release" };
+  }
+  return null;
+}
+/* past back by: a red countdown on the row */
+function trxPill(x){ if(!x || x.g !== "held" || !x.ro) return ''; var due = tgDue(x.ro); if(!due) return ''; return '<span class="trx-late" title="Past back by ' + esc(tgWhen(due)) + '">+' + esc(tgShortDur(Date.now() - due)) + '</span>'; }
+/* the selected RO: Road test and Truck checks buttons, and where each stands */
+function trxBtnsOk(ro){ return !!ro && !ro.shop && ro.id !== SHOP_RO_ID && !ro.dateClosed && tyCat(ro) !== "arr" && rtNeeded(ro); }   /* Parsec 14: none when the RO needs no road test */
+function trxBtns(ro, cls){ if(!trxBtnsOk(ro)) return ''; var all = trxAllDone(ro), c = cls || "btn btn-sm";
+  return '<button class="' + c + ' trx-rtb" data-action="tg-pop" data-p="road" data-ro="' + ro.id + '" title="Road test — send someone or log the result">' + tgI("road", 14) + 'Road test</button>'
+    + '<button class="' + c + ' trx-qcb' + (trxPassed(ro) && !trxQcDone(ro) && all ? ' btn-primary' : '') + '" data-action="tg-pop" data-p="checks" data-ro="' + ro.id + '" title="Truck checks before release">' + tgI("check", 14) + 'Truck checks</button>'; }
+function trxBackRow(ro){ var r = ro && ro.route; if(!r || !r.back || r.state === "pending") return ''; var b = new Date(r.back).getTime(), d = b - Date.now(), hd = tgHold(ro);
+  return '<div class="tg-m sys trx-st' + (d < 0 ? ' late' : '') + '"><span class="gi">' + tgI("clock", 15) + '</span><div class="bd"><div class="hd">Back from <b>' + esc(trxNm(hd.who)) + '</b> by <b>' + esc(tgWhen(b)) + '</b> · ' + (d < 0 ? '<span class="trx-late">+' + esc(tgShortDur(-d)) + '</span> past — in Held too long' : 'in ' + esc(tgDur(d))) + '</div></div></div>'; }
+function trxCards(ro){
+  if(!ro) return ''; var bk = trxBackRow(ro); if(tyCat(ro) === "arr" || !rtNeeded(ro)) return bk; var all = trxAllDone(ro), S = trxRoadState(ro), C = trxQc(ro);
+  if(!all && !ro.roadTest && !ro.fmRt && !C.ticks.length) return bk;
+  var rc = '<div class="tg-m sys trx-st"><span class="gi">' + tgI("road", 15) + '</span><div class="bd"><div class="hd">Road test · <b>' + esc(S.txt) + '</b><button class="tg-link" data-action="tg-pop" data-p="road" data-ro="' + ro.id + '">' + (S.k === "pass" ? 'Change' : S.k === "plan" ? 'Log the result' : 'Road test…') + '</button></div></div></div>';
+  var qc = trxPassed(ro) || C.ticks.length ? '<div class="tg-m sys trx-st"><span class="gi">' + tgI("check", 15) + '</span><div class="bd"><div class="hd">Truck checks · <b>' + (C.all && C.aok ? 'done' + (C.at ? ' ' + fmtTime(C.at) : '') : C.done + ' of ' + C.total) + '</b><button class="tg-link" data-action="tg-pop" data-p="checks" data-ro="' + ro.id + '">' + (C.all && C.aok ? 'Release…' : 'Check') + '</button></div></div></div>' : '';
+  return bk + rc + qc;
+}
+function trxInput(k, v){
+  if(k === "trx-xback"){ var A = UI.tgXS || (UI.tgXS = {}); A.pick = v; A.back = v ? new Date(v).getTime() : null; return; }
+  var R = UI.trxR; if(R){ if(k === "trx-rpick") R.pick = v; else if(k === "trx-rmi") R.mi = v; else if(k === "trx-rstart") R.start = v; else if(k === "trx-rnote") R.note = v; else if(k === "trx-rdriver") R.driver = v; }
+  if(k === "trx-qadd"){ (UI.trxQ || (UI.trxQ = { edit: true, add: "" })).add = v; }
+}
+/* typing in a date or a note: the buttons follow without redrawing the pop-over (the field keeps its focus) */
+function trxSync(){ var P = UI.tgPop; if(!P) return;
+  if(P.type === "xfer"){ var A = UI.tgXS || {}, b = document.querySelector('.tg-pop [data-action="tg-xf-go"]'); if(b) b.disabled = !(A.to && A.who && A.why && A.bk && (A.bk !== "pick" || A.back != null)); }
+  if(P.type === "road"){ var R = UI.trxR || {}, b2 = document.querySelector('.tg-pop [data-action="tg-rt-go"]');
+    if(b2) b2.disabled = R.m === "send" ? !(R.who && (R.when !== "pick" || R.pick)) : (R.res === "Fail" && !R.fw && !String(R.note || "").trim()); }
+}
+function trxFocusAdd(){ setTimeout(function(){ var i = document.querySelector('.tg-pop [data-tg-in="trx-qadd"]'); if(i){ i.value = (UI.trxQ || {}).add || ""; i.focus(); } }, 0); }
+
+/* ---------- Parsec 12.2: the road test and the truck checks from any page ----------
+   Every page's RO has the two buttons; away from Triage the pop-over opens in a layer over the page (Esc or a click outside closes it). */
+var TRX_LT = { road: 1, checks: 1, release: 1 };
+function trxLayerOn(){ var P = UI.tgPop; return !!(P && TRX_LT[P.type] && UI.view !== "triage" && UI.trxLV === UI.view); }
+function trxLayerHtml(){
+  var P = UI.tgPop; if(P && TRX_LT[P.type] && UI.view !== "triage" && UI.trxLV !== UI.view){ UI.tgPop = null; return ''; }   /* left the page it was opened on */
+  if(!trxLayerOn()) return ''; var h = ''; try{ h = tgPopHtml(); }catch(e){ console.error(e); } if(!h) return '';
+  return '<div class="tg tg-tm trx-layer" data-key="trx-layer"><div class="trx-scrim" data-action="tg-pop-x"></div>' + h + '</div>';
+}
+function trxOpen(type, id){ if(!getRO(id)) return; tgOpenPop(type, id); }
+window.addEventListener("keydown", function(e){
+  if(!trxLayerOn()) return;
+  var k = e.key, t = (e.composedPath && e.composedPath()[0]) || e.target, inF = t && (/^(input|textarea|select)$/i.test(t.tagName || "") || t.isContentEditable);
+  var stop = function(){ e.preventDefault(); e.stopPropagation(); };
+  if(k === "Escape"){ stop(); if(UI.tgPop.type === "release" && UI.tgRL && UI.tgRL.fix) UI.tgRL.fix = null; else UI.tgPop = null; render(); return; }
+  if(k === "Enter" && t && t.dataset && t.dataset.tgIn === "trx-qadd"){ stop(); trxQcSet("add"); render(); trxFocusAdd(); return; }
+  if(k === "Tab" || inF || e.ctrlKey || e.metaKey || e.altKey) return;
+  e.stopPropagation();   /* the page's own single keys stay quiet while it's open */
+}, true);

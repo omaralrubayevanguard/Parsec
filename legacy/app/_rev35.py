@@ -1,0 +1,30 @@
+import os; exec(open('/tmp/claude-0/-home-claude/febe01e4-e12e-554d-9dc2-ccfd769708e9/scratchpad/app/_revlib.py').read())
+CASE2 = CASE.replace("RA0001238877","RA0001239911").replace("Case # 4988201","Case # 4988777").replace("Clutch slipping - replace clutch","Clutch slipping again - inspect clutch")
+async def main():
+    async with async_playwright() as p:
+        b, pg, errs = await setup(p)
+        rid = await upto_released(pg)
+        # same case again: import finds the RO?
+        await go(pg, 'rolist'); await pg.click("text=New RO"); await pg.wait_for_timeout(400)
+        await pg.evaluate("t=>__tg.IMPX.addText(t)", CASE); await pg.wait_for_timeout(600)
+        print("same case:", await txt(pg, "#imp-dlg .ix-hd, #imp-dlg header"), "|", await pg.evaluate("[...document.querySelectorAll('#imp-dlg button')].map(b=>b.textContent.trim()).filter(t=>/Create|Apply|Update/.test(t))"))
+        await shot(pg, "l1_same_case")
+        await pg.keyboard.press("Escape"); await pg.wait_for_timeout(300)
+        # a comeback: same VIN, new RO
+        await pg.click("text=New RO"); await pg.wait_for_timeout(400)
+        await pg.evaluate("t=>__tg.IMPX.addText(t)", CASE2); await pg.wait_for_timeout(600)
+        print("comeback dlg:", (await txt(pg, "#imp-dlg") or '')[:400])
+        print("btns", await pg.evaluate("[...document.querySelectorAll('#imp-dlg button')].map(b=>b.textContent.trim()).filter(t=>/Create|Apply|Update/.test(t))"))
+        await shot(pg, "l2_comeback_dlg")
+        await pg.click("#imp-dlg button:has-text('Create RO')"); await pg.wait_for_timeout(800)
+        rid2 = await pg.evaluate("(__tg.STATE().ros.find(x=>/1239911/.test(x.roNumber))||{}).id")
+        print("rid2", rid2)
+        if rid2:
+            await pg.evaluate(f"(()=>{{ const U=__tg.UI(); U.view='ros'; U.selectedRo='{rid2}'; __tg.render(); }})()"); await pg.wait_for_timeout(900)
+            await shot(pg, "l3_comeback_ro")
+            await tri(pg, rid2); await shot(pg, "l4_comeback_triage")
+            print("tri hdr", await txt(pg, ".tg-main .tg-top"))
+            print("ops", await pg.evaluate(RO(rid2, "return r.operations.map(o=>[o.complaint, __tg.S && 0]);")))
+        print("ERR", errs)
+        await b.close()
+asyncio.run(main())

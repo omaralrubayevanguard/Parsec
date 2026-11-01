@@ -1,0 +1,5 @@
+(()=>{ const out={}; const probe=(sel,prop)=>{ const el=document.querySelector(sel); if(!el) return 'none'; const cs=getComputedStyle(el); const val=cs[prop]; const hits=[];
+  for(const sh of document.styleSheets){ let rs; try{ rs=sh.cssRules; }catch(e){ continue; } const walk=(L)=>{ for(const r of L){ if(r.cssRules&&!r.selectorText) walk(r.cssRules); else if(r.selectorText){ try{ if(el.matches(r.selectorText) && r.style.getPropertyValue(prop.replace(/[A-Z]/g,m=>'-'+m.toLowerCase()))) hits.push(r.selectorText.slice(0,160)+' => '+r.style.getPropertyValue(prop.replace(/[A-Z]/g,m=>'-'+m.toLowerCase()))); }catch(e){} } } }; walk(rs); }
+  return [val, hits.slice(-6)]; };
+ out.tb=probe('.dr-shop','background'); out.tdbg=probe('.dr-shop tbody td','background'); out.tr=probe('.dr-shop tbody tr','backgroundColor'); out.table=probe('.dr-shop','backgroundColor'); out.h3=probe('.dr-h3','textTransform'); out.tdcls=document.querySelector('.dr-shop tbody td:nth-child(2)').className; out.tablecls=document.querySelector('.dr-shop').className;
+ return out; })()

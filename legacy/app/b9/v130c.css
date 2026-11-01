@@ -1,0 +1,13 @@
+/* Parsec 13 (C) — a button for something you can't do isn't shown (the click is refused too, with why) */
+.pm-no-ro-new [data-action="open-add-ro"], .pm-no-ro-new [data-action="ty-newro"] { display: none !important; }
+.pm-no-ro-del [data-pg="rolist"] [data-a="pop"][data-p="bdel"], .pm-no-ro-del [data-action="rl-opt"][data-k="delete"] { display: none !important; }
+.pm-no-ro-status [data-pg="rolist"] [data-a="pop"][data-p="bst"] { display: none !important; }
+.pm-no-ro-release [data-action="triage-release"], .pm-no-ro-release [data-action="tg-rl-go"] { display: none !important; }
+.pm-no-t-move [data-action="tx-open"] { display: none !important; }
+.pm-no-t-approve [data-pg="timelog"] [data-a="tapprove"], .pm-no-t-approve [data-pg="timelog"] [data-a="treopen"] { display: none !important; }
+.pm-no-p-order [data-pg="parts"] [data-a="sosend"], .pm-no-p-order [data-pg="parts"] [data-a="setst"][data-v="Ordered"], .pm-no-p-order [data-pg="parts"] [data-a="setst"][data-v="Backordered"], .pm-no-p-order [data-pg="inventory"] [data-a="ordered"] { display: none !important; }
+.pm-no-p-stock [data-pg="inventory"] [data-a="pop"][data-p="adj"], .pm-no-p-stock [data-pg="inventory"] [data-a="pop"][data-p="rcv"], .pm-no-p-stock [data-pg="inventory"] [data-a="pop"][data-p="new"], .pm-no-p-stock [data-pg="inventory"] [data-a="pop"][data-p="edit"], .pm-no-p-stock [data-pg="inventory"] [data-a="pop"][data-p="del"], .pm-no-p-stock [data-pg="inventory"] [data-a="pop"][data-p="kadd"], .pm-no-p-stock [data-pg="inventory"] [data-a="usemin"], .pm-no-p-stock [data-pg="inventory"] [data-a="kdel"], .pm-no-p-stock [data-pg="parts"] [data-a="pullahead"] { display: none !important; }
+.pm-no-w-claim [data-action="wa-do"], .pm-no-w-claim [data-action="wa-st"], .pm-no-w-claim [data-action="wa-gw"], .pm-no-w-claim [data-action="wa-stgo"] { display: none !important; }
+.pm-no-a-settings [data-action="open-automations"], .pm-no-a-settings [data-action="fm-cfg"], .pm-no-a-settings [data-action="fm-bt"] { display: none !important; }
+.pm-no-a-settings [data-fm-in^="c-"], .pm-no-a-settings [data-bind="labor-rate"] { pointer-events: none; opacity: .55; }
+.pm-no-a-data [data-action="export-json"], .pm-no-a-data [data-action="export-csv"], .pm-no-a-data [data-action="open-restore"], .pm-no-a-data [data-action="px-restore-file"], .pm-no-a-data [data-action="restore-backup"], .pm-no-a-data [data-action="clear-sample"], .pm-no-a-data [data-action="load-sample"], .pm-no-a-data [data-action="demo-team"], .pm-no-a-data [data-action="fs-pick"], .pm-no-a-data [data-action="phone-sync"], .pm-no-a-data [data-action="sample-25"] { display: none !important; }

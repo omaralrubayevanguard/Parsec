@@ -1,0 +1,22 @@
+import os; exec(open('/tmp/claude-0/-home-claude/febe01e4-e12e-554d-9dc2-ccfd769708e9/scratchpad/app/_revlib.py').read())
+async def main():
+    async with async_playwright() as p:
+        b = await p.chromium.launch()
+        ctx = await b.new_context(viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True); pg = await ctx.new_page(); pg.set_default_timeout(6000); errs = []
+        pg.on("pageerror", lambda e: errs.append(str(e)[:300]))
+        pg.on("console", lambda m: errs.append("console: " + m.text[:200]) if m.type == "error" and "ERR_" not in m.text and "Failed to load resource" not in m.text else None)
+        await pg.route("**/fonts.g*/**", lambda r: r.abort())
+        await pg.add_init_script("try{ localStorage.setItem('tec_device','phone'); }catch(e){}")
+        await pg.goto("file://" + H + "/t12.html"); await pg.wait_for_timeout(1200)
+        await pg.evaluate("__tg.loadSample25()"); await pg.evaluate("__tg.ensureDemoTeam()"); await pg.wait_for_timeout(300)
+        await signin(pg, "Dana Kowalski")
+        await pg.wait_for_timeout(600)
+        await shot(pg, "q1_phone_home")
+        print("view", await pg.evaluate("__tg.UI().view"))
+        tabs = await pg.evaluate("[...document.querySelectorAll('nav button, .ph-tabs button, [class*=tabbar] button')].filter(b=>b.offsetParent).map(b=>b.textContent.trim().replace(/\\s+/g,' ').slice(0,20))")
+        print("tabs", tabs)
+        btns = await pg.evaluate("[...document.querySelectorAll('button')].filter(b=>b.offsetParent).map(b=>(b.textContent.trim()||b.title||b.getAttribute('aria-label')||'').replace(/\\s+/g,' ').slice(0,24))")
+        print("btns", btns[:40])
+        print("ERR", errs)
+        await b.close()
+asyncio.run(main())

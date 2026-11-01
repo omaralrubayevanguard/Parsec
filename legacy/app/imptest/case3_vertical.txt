@@ -1,0 +1,28 @@
+Case #
+4988201
+RO Number
+RA0001238877
+Status
+Checked In
+Customer
+Summit Freightways - Cust# 20417
+ETR
+10/29/2026 3:00 PM
+Created By
+Jenna Cho
+VIN
+4V4NC9EH7LN758560
+Unit #
+T-807
+Odometer
+412,880
+Engine Hours
+15,206
+Make
+Volvo
+Model
+VNL64T760
+Year
+2020
+Tag #
+68

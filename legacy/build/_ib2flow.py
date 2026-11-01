@@ -1,0 +1,30 @@
+import asyncio, os
+from playwright.async_api import async_playwright
+B = os.path.dirname(os.path.abspath(__file__))
+async def main():
+    async with async_playwright() as p:
+        b = await p.chromium.launch(); pg = await (await b.new_context(viewport={"width": 1480, "height": 1200})).new_page(); errs = []
+        pg.on("pageerror", lambda e: errs.append("PAGEERR " + str(e)))
+        await pg.goto("file://" + B + "/ib2_mock.html"); await pg.wait_for_timeout(400)
+        ev = lambda js: pg.evaluate(js)
+        T = lambda: ev("(document.querySelector('.toast-fm')||{}).textContent||''")
+        U = lambda k: ev(f"JSON.stringify(__ib.U().{k})")
+        H = lambda: ev("document.querySelector('.tg-facts').innerText.replace(/\\n/g,' ')")
+        await pg.click('[data-demo="thread"]'); await pg.keyboard.press("e"); print("E on thread:", await T(), "| sel:", await U("sel"))
+        await pg.click('.toast-fm button'); print("undo:", await U("sel"), await ev("__ib.S().N.filter(n=>['f1','f11','f12'].includes(n.id)).map(n=>n.st).join(',')"))
+        await pg.click('[data-demo="snz"]'); await pg.click('[data-a="snz"][data-e="parts"]'); print("snooze until parts:", await T())
+        await pg.keyboard.press("2"); await ev("__ib.select('FD|37544');__ib.render()"); await pg.click('[data-a="evt"]'); print("it happens:", await T(), await U("view"), "| title:", await ev("document.querySelector('.ib-pane h2').textContent"))
+        await pg.click('[data-a="pop"][data-p="away"]'); await pg.click('[data-a="awc"][data-t="RH"]'); await pg.keyboard.press("Enter"); print("away:", await T(), "|", await H())
+        await pg.click('[data-role="RH"]'); print("Ray covering group:", await ev("[...document.querySelectorAll('.tg-grp')].map(x=>x.textContent).join(' | ')"))
+        await pg.click('[data-role="FD"]'); await pg.click('[data-a="awayoff"] >> nth=0'); print("back:", await T())
+        await pg.click('[data-a="pop"][data-p="eos"]'); await pg.click('[data-a="eost"][data-v="MR"]'); await pg.click('[data-a="eosgo"]'); print("end of shift:", await T(), "|", await H())
+        await pg.click('[data-role="MR"]'); print("Mike gets:", await ev("[...document.querySelectorAll('.ib-it .tg-t b')].slice(0,6).map(x=>x.textContent).join(' | ')"))
+        await ev("__ib.select('SUM');__ib.render()"); print("Mike summary pass:", await ev("(document.querySelector('.ib-card:last-child .ib-sl span')||{}).textContent"))
+        await pg.click('[data-a="sumx"]'); print("sumx:", await T())
+        await pg.click('[data-role="FD"]'); await pg.click('[data-a="bulk"]'); await pg.click('.ib-it >> nth=1'); await pg.click('.ib-it >> nth=2'); await pg.click('[data-a="bk"][data-v="done"]'); print("bulk:", await T())
+        await pg.keyboard.press("4"); await pg.click('.ib-it >> nth=1'); print("sent sel:", await U("sel"))
+        nb = await ev("!!document.querySelector('[data-a=\"nudge\"]')")
+        if nb: await pg.click('[data-a="nudge"]'); print("nudge:", await T())
+        await pg.keyboard.press("1"); await pg.keyboard.press("/"); await pg.keyboard.type("sublet"); await pg.keyboard.press("Enter"); print("search→", await U("sel"), await U("view"))
+        print(errs or "no errors"); await b.close()
+asyncio.run(main())

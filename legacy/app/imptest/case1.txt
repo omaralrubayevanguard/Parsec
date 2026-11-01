@@ -1,0 +1,47 @@
+Case 4988201
+Summit Freightways - Cust# 20417
+RO Number: RA0001238877	Status: Checked In
+ETR: 10/29/2026 3:00 PM	Follow-up: 10/27/2026 9:00 AM
+Created By: CHO, JENNA	Asset Checked In: 10/26/2026 7:42 AM
+PO #: PO-55120	Auth #:
+Tech Support Case #:
+
+Customer Info
+Company: Summit Freightways - Cust# 20417
+
+Asset
+Make: Volvo	Model: VNL64T760	Year: 2020
+Serial #: 758560	Unit #: T-807
+VIN: 4V4NC9EH7LN758560
+Engine: Volvo D13 455 HP	Engine Serial #: 23116577
+Odometer: 412,880 mi	Engine Hours: 15,206
+Tag #: 68	On-site Asset Location: Lot D1
+Department: Service
+
+Case Level Complaint: Clutch slipping under load, burning smell.
+Cause Description:
+Correction Description:
+
+OPERATIONS
+Op #	Operation	Labor Hours	Labor	Approval Status	Label Status
+1	Clutch slipping - replace clutch	8.0	$1,680.00	Approved	Labeled
+Op Code: CL-210	VMRS: 023-001-001	Skill: B	Price Code: L1
+Part #	Description	Qty	Unit	Core	Ext	Salesman
+VOL-85013702	Clutch kit 15.5"	1	$1,240.00	$150.00	$1,390.00	Ryan Burke
+VOL-20518417	Pilot bearing	1	$38.50	$0.00	$38.50	Ryan Burke
+2	Check engine light - NOx sensor fault SPN 3226	1.5	$315.00	Pending	Not Labeled
+Op Code: DG-100	VMRS: 043-006-005	Skill: A	Price Code: D1
+
+Case Level Actions
+
+User Notes
+10/26/2026 7:45 AM	Jenna Cho	Driver is in the lounge - needs the truck by Thursday.
+System Notes
+10/26/2026 7:42 AM	System	Asset checked in - Lot D1
+
+Totals Summary
+Labor	$1,995.00
+Parts	$1,278.50
+Core	$150.00
+Shop Supplies	$45.00
+Total	$3,468.50

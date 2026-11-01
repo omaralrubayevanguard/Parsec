@@ -1,0 +1,46 @@
+layout: {"blocks": ["parts", "dtc", "photos", "inbox", "history", "warranty", "customer", "estimate", "ready"], "rail": ["rop-band", "rop-rblk rop-stg", "rop-rblk"], "groups": ["schedule", "people", "vehicle", "money"], "next": false, "acts": ["Time", "Parts", "Activity", "Files"], "eyebrow": "RO-39876\u00b7Opened Oct 13\u00b713 days open", "ops": 3, "chips": ["Skill B", "ASIST Approved", "ASIST Pending"]}
+vehicle props: VIN, Unit, Make, Model, Model year, Chassis, Engine, Engine serial, Mileage, Engine hours, Key tag, Location, Department
+schedule props: Ready aboutNov 2 8:36 AM | OpenedTue, Oct 13 · 6:44 am | PromisedAdd date | Follow-upTomorrow 10:36 PM | Days open13
+people props: TechnicianDKDana Kowalski | AdvisorJCJenna Cho | ForemanFDFrank Delaney
+customer props: CustomerHighplains Grain | Cust #Add | Case #C-7460 | PO #PO-55120 | Auth #Add auth | Tech supportAdd case | Warranty RO
+overflow: ['rop-blk rop-k-customer:768>760', 'px-props:296>288']
+tabs: time,parts,files | punches: 2 notes in punches: 2
+note saved: Note saved on Op 1 | solo notes: 1
+code: 0 -> 1 | SPN 3226 · FMI 2 added to Op 1
+bad code toast: Type it as SPN/FMI — 3226/2 — or a P-code like P0401.
+message: 0 -> 1 | Sent to Frank — it’s under Messages on this RO. | rows: 1
+bar: 2 operations1.1 h left | Start(off), Hold, Ask Parts, Ask Frank, Note on all, Add a code, Mark done, Print job jacket, Copy the story, Delete
+shift run: 3 of 3
+note on all: Note saved on 3 operations. | offNotes: 3
+hold: 1 on hold — waiting – foreman. Frank has one note about them. | st: Waiting – Foreman
+after toast undo: Hold Tech
+pick all: 3
+bar code: P0401 added to 3 operations.
+papers: [['RO-39876 job jacket', 7978, 3, 9, True]] | story clip: RO-39876 · Highplains Grain
+
+OP 1 — WARR
+COMPLAINT: Coolant leak at water pump
+C | Copied the story for 3 operations — paste it in AS
+mark done: 1 done · not yet — Op 2: 1 part not installed · Op 3: 2 parts not installed.
+part rows: 3 | head: PartNumberQtyCoreSalesmanStatus
+parts bar: 3 parts · Op 11 staged | Picked up · 1, Installed, Ask Parts, Return, Move to…, Copy part numbers, Print pick list
+pns: 21468475	Water pump	1 / 20734235	Water pump gasket	1
+picked: 1 part picked up · 2 skipped (not staged).
+installed: 3 parts installed.
+ctrl part: 1
+move: 1 part moved to Op 2.
+papers now: 2
+cleared on another RO: True
+status menu: True
+O add op modal: Add operation
+files modal: Files on RO-39876
+activity modal: Activity · RO-39876
+band start: Can’t start repairing — Waiting on Mirror assembly - LH · ET | running: False
+ERRORS desk []
+n1180 one column: flex | overflow: ['rop-blk rop-k-customer:532>524', 'px-props:296>288'] | page hscroll: False
+n1180 ERRORS []
+n980 one column: flex | overflow: ['rop-blk rop-k-customer:556>548', 'px-props:296>288'] | page hscroll: True
+n980 ERRORS []
+phone order: px-ro__main:1 rop-top:0 px-props:2 | hscroll: False
+phone bar: ['fixed', 576, 760, 844]
+phone ERRORS []

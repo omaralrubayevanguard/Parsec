@@ -1,0 +1,23 @@
+Case # 4988201
+Customer	Summit Freightways - Cust# 20417	RO Number:	RA0001238877
+Status	Waiting on Parts	ETR	10/30/2026 11:00 AM
+Follow-up	10/28/2026 09:00 AM	Created By	Jenna Cho
+Asset Checked In	10/26/2026 07:42 AM	PO #	PO-55120
+Asset
+VIN	4V4NC9EH7LN758560	Unit #	T-807
+Make	Volvo	Model	VNL64T760
+Year	2020	Engine	Volvo D13 455 HP
+Odometer	413,104 mi	Engine Hours	15,219
+Engine Serial #	100254871
+Tag #	68	Location	UpTime 2
+Operations
+Op	Description	Labor Hours	Labor Price	Approval Status
+1	Clutch slipping - replace clutch	8.0	$1,680.00	Approved
+2	Check engine light - NOx sensor fault SPN 3226	1.5	$315.00	Pending
+3	PM service - level A	2.0	$420.00	Pending
+Parts
+Part #	Description	Qty	Unit	Core	Ext	Salesman
+VOL-85013702	Clutch kit 15.5"	1	1,240.00	150.00	1,390.00	Ryan Burke
+VOL-20518417	Pilot bearing	1	38.50	0.00	38.50	Ryan Burke
+VOL-21899123	Release bearing	2	96.00	0.00	192.00	Ryan Burke
+Totals: Labor $2,415.00 Parts $1,620.50 Total $4,035.50

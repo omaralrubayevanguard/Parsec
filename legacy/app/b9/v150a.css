@@ -1,0 +1,8 @@
+/* Parsec 15 (A): one switch — Collapse all while any section is open, Expand all once they're all folded */
+.rop-fallw { display: flex; justify-content: flex-end; margin: 6px 2px -6px; }
+.rop-fallw[hidden] { display: none; }
+.rop-fallw-rail { margin: 2px 2px 0; }
+.rop-fall { display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 9px; border: 0; border-radius: 7px; background: none; color: var(--ink-3); font: 500 12px/1 var(--font-sans); cursor: pointer; }
+.rop-fall:hover { background: var(--fill); color: var(--ink); }
+.rop-fall:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.rop-fall .px-ico { width: 13px; height: 13px; }

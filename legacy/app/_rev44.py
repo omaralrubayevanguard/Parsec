@@ -1,0 +1,21 @@
+import os; exec(open('/tmp/claude-0/-home-claude/febe01e4-e12e-554d-9dc2-ccfd769708e9/scratchpad/app/_revlib.py').read())
+async def main():
+    async with async_playwright() as p:
+        b, pg, errs = await setup(p)
+        rid = await upto_assign(pg)
+        await signin(pg, "Dana Kowalski"); await tsel(pg)
+        await watch_toasts(pg)
+        await pg.click("[data-pg=tech] button[data-a=trstp]"); await pg.wait_for_timeout(500)
+        await shot(pg, "n5_tech_rostatus")
+        items = await pg.evaluate("[...document.querySelectorAll('.tg-pop button, .tch-mn button')].filter(b=>b.offsetParent).map(b=>b.textContent.trim().replace(/\\s+/g,' ').slice(0,30)+'|'+(b.dataset.a||'')+'|'+(b.disabled?'dis':''))")
+        print("menu", items)
+        await pg.evaluate("(()=>{ const b=[...document.querySelectorAll('.tg-pop button, .tch-mn button')].find(b=>b.offsetParent && /Waiting – Customer/.test(b.textContent)); b&&b.click(); })()"); await pg.wait_for_timeout(500)
+        print("status:", await pg.evaluate(RO(rid, "return r.status.status;")), "toasts", await seen(pg))
+        # parts page order as a tech
+        await go(pg, 'parts')
+        print("parts btns for tech:", await pg.evaluate("[...document.querySelectorAll('[data-pg=parts] button')].filter(b=>b.offsetParent && /Order|Check in|Chase/.test(b.textContent)).map(b=>b.textContent.trim().slice(0,20))"))
+        await pg.evaluate("(()=>{ const it=[...document.querySelectorAll('.tg-list .tg-it')].find(x=>/To order/.test(x.innerText)); const b=it&&[...it.querySelectorAll('button')].find(b=>/Order/.test(b.textContent)); b&&b.click(); })()"); await pg.wait_for_timeout(500)
+        print("order pop as tech:", (await txt(pg, ".tg-pop") or '')[:200], "toasts", await seen(pg))
+        print("ERR", errs)
+        await b.close()
+asyncio.run(main())

@@ -1,0 +1,123 @@
+# Parsec 12.5 (fork C) — the Yard on the Technician page: the shop floor and the parking lot, your trucks lit up
+import asyncio, os, sys, json
+from playwright.async_api import async_playwright
+H = os.path.dirname(os.path.abspath(__file__)); OUT = os.path.join(H, "shots125c"); os.makedirs(OUT, exist_ok=True)
+PAGE = sys.argv[1] if len(sys.argv) > 1 else "t125c.html"
+FAILS = []
+def ok(c, m):
+    print(("ok   " if c else "FAIL ") + m)
+    if not c: FAILS.append(m)
+async def setup(p, w=1440, h=900, phone=False):
+    b = await p.chromium.launch()
+    ctx = await b.new_context(viewport={"width": w, "height": h}, is_mobile=phone, has_touch=phone)
+    pg = await ctx.new_page(); pg.set_default_timeout(6000); errs = []
+    pg.on("pageerror", lambda e: errs.append(str(e)[:300]))
+    pg.on("console", lambda m: errs.append("console: " + m.text[:200]) if m.type == "error" and "ERR_" not in m.text and "Failed to load resource" not in m.text else None)
+    await pg.route("**/fonts.g*/**", lambda r: r.abort())
+    if phone: await pg.add_init_script("try{ localStorage.setItem('tec_device','phone'); }catch(e){}")
+    await pg.goto("file://" + H + "/" + PAGE); await pg.wait_for_timeout(1200)
+    await pg.evaluate("__tg.loadSample25()"); await pg.evaluate("__tg.ensureDemoTeam()"); await pg.wait_for_timeout(300)
+    return b, pg, errs
+SIGN = """(()=>{ const T=__tg.staffList().filter(s=>s.role==='Technician'); const n=s=>__tg.STATE().ros.filter(r=>r.assignedTech===s.name && !r.dateClosed && r.operations.length).length; T.sort((a,b)=>n(b)-n(a)); localStorage.setItem('tec_viewas', T[0].id); localStorage.removeItem('tec_out'); __tg.pxSignedIn(); __tg.CX.U().skipMorning = __tg.todayStr(); __tg.render(); return T[0].name; })()"""
+# your running RO goes to Bay 3, another of yours to the lot; free those spots first
+PREP = """((me)=>{ const S=__tg.STATE(); const mine=S.ros.filter(r=>r.assignedTech===me && !r.dateClosed && !/^Complete/.test(__tg.roStatus(r).status) && r.operations.length && !r.shop);   /* Parsec 14: finished isn't closed until released */
+  S.punches.filter(p=>!p.stop).forEach(p=>{ p.stop=new Date().toISOString(); p.stopReason='Switched job'; });
+  const lot=__tg.yardSpots().filter(s=>s.zone==='lot').map(s=>s.id);
+  const sp=(id)=>{ S.ros.forEach(r=>{ if(r.location && (r.location===id || r.location.replace(/^Lot /,'')===id.replace(/^Lot /,''))) r.location=''; }); };
+  sp('Bay 3'); sp(lot[1]);
+  const a=mine[0], b=mine[1]; a.location='Bay 3'; if(b) b.location=lot[1];
+  const oth=S.ros.filter(r=>r.assignedTech && r.assignedTech!==me && !r.dateClosed && !r.shop).slice(0,8), spots=['Bay 1','Bay 2','Bay 5','UpTime'].concat(lot.slice(3,7));
+  oth.forEach((r,i)=>{ if(spots[i]) r.location=spots[i]; });
+  const op=a.operations[0];
+  S.punches.push({id:'pn_y', roId:a.id, opId:op.id, start:new Date(Date.now()-900e3).toISOString(), stop:null, startReason:'Repairing', stopReason:null, notes:'', by:me});
+  __tg.render(); return [a.id, b ? b.id : null, lot[1], mine.length]; })"""
+Q = "document.querySelector('[data-pg=tech]')"
+async def desktop(p, th):
+    b, pg, errs = await setup(p)
+    me = await pg.evaluate(SIGN)
+    a, b2, lot, n = await pg.evaluate(PREP + "(" + json.dumps(me) + ")")
+    await pg.evaluate("__tg.PG.go('tech')"); await pg.wait_for_timeout(700)
+    if th != "ivl":
+        await pg.click(f'.px-rail .pxr-thm button[data-theme="{th}"]'); await pg.wait_for_timeout(400)
+    tabs = await pg.evaluate(f"[...{Q}.querySelectorAll('.tch-views button')].map(b=>b.textContent.trim()+':'+b.className)")
+    ok(len(tabs) == 3 and "on" in tabs[0] and tabs[2].startswith("ROs"), f"[{th}] header has My ROs / Yard / ROs ({tabs})")   # Parsec 14.3: the ROs tab, last
+    await pg.click("[data-pg=tech] .tch-views button[data-v=yard]"); await pg.wait_for_timeout(1500)
+    info = await pg.evaluate(f"""(()=>{{ const y={Q}.querySelector('.tch-yd'); if(!y) return null; const t=y.querySelector('.tg-s[data-ro="{a}"]'), t2={json.dumps(b2)} ? y.querySelector('.tg-s[data-ro="{b2}"]') : null;
+      return {{ list: !!{Q}.querySelector('.tch-list'), zones: [...y.querySelectorAll('.tg-zh')].map(z=>z.firstChild.textContent.trim()), mine: y.querySelectorAll('.tg-s.tyd-me').length, other: y.querySelectorAll('.tg-s.tyd-ot').length,
+        here: t ? t.className : null, you: t ? !!t.querySelector('.tyd-you') : false, lot: t2 ? t2.className : null, title: t ? t.title : '', drag: y.querySelectorAll('[draggable="true"],[data-tg-drop],[data-action]').length,
+        chips: [...y.querySelectorAll('.tyd-mc')].map(c=>c.textContent.trim().slice(0,40)), now: (y.querySelector('.tyd-now')||{{}}).textContent||'', warr: /Warranty|Released today/.test(y.textContent), leg: (y.querySelector('.tg-leg')||{{}}).textContent||'', tv: y.querySelectorAll('.tg-s .tg-tv img').length }}; }})()""")
+    print("   ", json.dumps(info)[:900])
+    ok(info and not info["list"], f"[{th}] Yard replaces the list and the RO")
+    ok(info and "Shop floor" in info["zones"] and "Parking lot" in info["zones"], f"[{th}] the shop floor and the parking lot ({info and info['zones']})")
+    ok(info and info["mine"] >= 1 and info["other"] >= 1, f"[{th}] yours lit up ({info and info['mine']}), others dimmed ({info and info['other']})")
+    ok(info and info["here"] and "tyd-run" in info["here"] and "tyd-here" in info["here"] and info["you"], f"[{th}] the bay you're in: {info and info['here']}")
+    ok(info and (not b2 or (info["lot"] and "tyd-me" in info["lot"])), f"[{th}] your truck on the lot is yours: {info and info['lot']}")
+    ok(info and info["title"].startswith("RO ") and "Yours" in info["title"], f"[{th}] hover says RO, customer, truck, status: {info and info['title']}")
+    ok(info and info["drag"] == 0, f"[{th}] nothing to drag and no Triage actions ({info and info['drag']})")
+    ok(info and not info["warr"], f"[{th}] no warranty / released rows")
+    ok(info and "You’re in" in info["now"] and "B3" in info["now"], f"[{th}] 'You're in B3': {info and info['now']}")
+    ok(info and info["tv"] > 0, f"[{th}] trucks show their top views ({info and info['tv']})")
+    await pg.screenshot(path=os.path.join(OUT, f"a_{th}_yard.png"))
+    if th == "ivl":
+        # hover / tap someone else's truck → the bar
+        oid = await pg.evaluate(f"(()=>{{ const t={Q}.querySelector('.tch-yd .tg-s.occ.tyd-ot[data-ro]'); return t ? t.dataset.ro : null; }})()")
+        if oid:
+            await pg.click(f'[data-pg=tech] .tch-yd .tg-s[data-ro="{oid}"]'); await pg.wait_for_timeout(400)
+            bar = await pg.evaluate(f"(()=>{{ const b={Q}.querySelector('.tyd-bar'); return b ? b.textContent : null; }})()")
+            ok(bar is not None and len(bar) > 5, f"someone else's truck: the bar says what it is ({(bar or '')[:80]})")
+            ok(await pg.evaluate(f"!!{Q}.querySelector('.tch-yd')"), "…and stays on the Yard")
+            await pg.screenshot(path=os.path.join(OUT, "b_bar.png"), clip={"x": 236, "y": 60, "width": 1204, "height": 260})
+            await pg.keyboard.press("Escape"); await pg.wait_for_timeout(300)
+            ok(await pg.evaluate(f"!{Q}.querySelector('.tyd-bar')"), "Esc closes the bar")
+        # Bring it in for a truck of yours on the lot
+        br = await pg.evaluate(f"{Q}.querySelectorAll('.tyd-bring').length")
+        ok(br == (1 if b2 else 0), f"Bring it in only for your truck on the lot ({br})")
+        if br:
+            await pg.click("[data-pg=tech] .tyd-bring"); await pg.wait_for_timeout(500)
+            ok(await pg.evaluate(f"!!__tg.getRO('{b2}').cxBring && !!{Q}.querySelector('.tyd-asked')"), "Bring it in asks Triage (and says so)")
+        # the view is remembered
+        await pg.reload(); await pg.wait_for_timeout(1200); await pg.evaluate("__tg.PG.go('tech')"); await pg.wait_for_timeout(700)
+        ok(await pg.evaluate(f"!!{Q}.querySelector('.tch-yd')"), "the Yard is remembered on this computer")
+        # a redraw keeps it (morph)
+        await pg.evaluate(f"{Q}.querySelector('.tch-yd')._m=1"); await pg.evaluate("__tg.render()"); await pg.wait_for_timeout(200)
+        ok(await pg.evaluate(f"{Q}.querySelector('.tch-yd')._m===1"), "a redraw keeps the yard in place")
+        # Y goes back to the list; Y again to the yard
+        await pg.keyboard.press("y"); await pg.wait_for_timeout(400)
+        ok(await pg.evaluate(f"!!{Q}.querySelector('.tch-list') && !{Q}.querySelector('.tch-yd')"), "Y switches to the list")
+        await pg.keyboard.press("y"); await pg.wait_for_timeout(400)
+        ok(await pg.evaluate(f"!!{Q}.querySelector('.tch-yd')"), "Y switches back to the Yard")
+        # click your truck → its RO opens in the list
+        tgt = b2 or a
+        await pg.evaluate(f"""(()=>{{ const t={Q}.querySelector('.tch-yd .tg-s[data-ro="{tgt}"]'); t && t.scrollIntoView({{block:'center'}}); }})()""")
+        await pg.click(f'[data-pg=tech] .tch-yd .tg-s[data-ro="{tgt}"]'); await pg.wait_for_timeout(600)
+        sel = await pg.evaluate(f"(()=>{{ const p={Q}.querySelector('.tch-pane'); const on={Q}.querySelector('.tch-it.on'); return [p ? p.dataset.ro : null, on ? on.dataset.id : null]; }})()")
+        ok(sel[0] == tgt and sel[1] == tgt, f"clicking your truck opens its RO ({sel} vs {tgt})")
+        await pg.screenshot(path=os.path.join(OUT, "c_opened.png"))
+    print(f"[{th}] ERRORS", errs[:5]); ok(not errs, f"[{th}] no console errors")
+    await b.close()
+async def phone(p):
+    b, pg, errs = await setup(p, 390, 844, True)
+    me = await pg.evaluate(SIGN)
+    a, b2, lot, n = await pg.evaluate(PREP + "(" + json.dumps(me) + ")")
+    await pg.evaluate("__tg.PG.go('tech')"); await pg.wait_for_timeout(700)
+    await pg.screenshot(path=os.path.join(OUT, "p0_list.png"))
+    await pg.click("[data-pg=tech] .tch-views button[data-v=yard]"); await pg.wait_for_timeout(600)
+    vis = await pg.evaluate(f"(()=>{{ const y={Q}.querySelector('.tch-yd'); if(!y) return null; const r=y.getBoundingClientRect(); return [Math.round(r.width), y.querySelectorAll('.tg-s').length, document.documentElement.scrollWidth]; }})()")
+    ok(vis and vis[0] > 300 and vis[2] <= 392, f"phone: the yard fits the screen ({vis})")
+    await pg.screenshot(path=os.path.join(OUT, "p1_yard.png"), full_page=False)
+    await pg.evaluate("window.scrollTo(0, 600)"); await pg.wait_for_timeout(300)
+    await pg.screenshot(path=os.path.join(OUT, "p2_yard_lot.png"))
+    tgt = b2 or a
+    await pg.evaluate(f"""(()=>{{ const t={Q}.querySelector('.tch-yd .tg-s[data-ro="{tgt}"]'); t && t.scrollIntoView({{block:'center'}}); }})()"""); await pg.wait_for_timeout(200)
+    await pg.tap(f'[data-pg=tech] .tch-yd .tg-s[data-ro="{tgt}"]'); await pg.wait_for_timeout(800)
+    st = await pg.evaluate(f"(()=>{{ const p={Q}.querySelector('.tch-pane'); const m=document.querySelector('[data-pg=tech] .tg-main'); return [p ? p.dataset.ro : null, document.documentElement.classList.contains('pm-det'), m ? getComputedStyle(m).display : null]; }})()")
+    ok(st[0] == tgt and st[1] and st[2] != "none", f"phone: tapping your truck opens its RO ({st})")
+    await pg.screenshot(path=os.path.join(OUT, "p3_opened.png"))
+    print("[phone] ERRORS", errs[:5]); ok(not errs, "phone: no console errors")
+    await b.close()
+async def main():
+    async with async_playwright() as p:
+        for th in ["ivl", "ivd", "vvl", "vvd"]: await desktop(p, th)
+        await phone(p)
+    print("FAILS", len(FAILS), FAILS)
+asyncio.run(main())

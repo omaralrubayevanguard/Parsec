@@ -1,0 +1,5 @@
+Part Number	Description	Qty	List Price	Net Price	Core	Ext
+21707134	Oil filter	6	48.50	36.38	0.00	218.28
+85013702	Clutch kit 15.5"	1	1,980.00	1,485.00	250.00	1,735.00
+23125678	EGR cooler kit	1	$1,980.00	$1,782.00	$250.00	$2,032.00
+	Shop rags (box)	2	12.00	9.00	0.00	18.00

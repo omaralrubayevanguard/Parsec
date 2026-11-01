@@ -1,0 +1,416 @@
+{
+ "v": 3,
+ "layout": "files",
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-10-21T23:56:59Z"
+ },
+ "title": "Parsec",
+ "namespace": "Parsec",
+ "libraries": [],
+ "sections": {},
+ "groups": [
+  "Logos",
+  "Icons"
+ ],
+ "assetGroups": {
+  "Logos": {
+   "name": "Logos",
+   "tile": "m",
+   "order": [
+    "parsec-mark-light.svg",
+    "parsec-mark-dark.svg"
+   ],
+   "files": {
+    "parsec-mark-dark.svg": {
+     "name": "parsec-mark-dark.svg",
+     "blob": "9afbe5b8ec55a59473f5d99bfc85f8ab",
+     "size": 551,
+     "type": "image/svg+xml"
+    },
+    "parsec-mark-light.svg": {
+     "name": "parsec-mark-light.svg",
+     "blob": "d0a96260a04b71c47397dc926cf7b746",
+     "size": 551,
+     "type": "image/svg+xml"
+    }
+   }
+  },
+  "Icons": {
+   "name": "Icons",
+   "tile": "xs",
+   "order": [
+    "console.svg",
+    "ros.svg",
+    "triage.svg",
+    "inbox.svg",
+    "foreman.svg",
+    "warranty.svg",
+    "manager.svg",
+    "parts.svg",
+    "timelog.svg",
+    "fixes.svg",
+    "career.svg",
+    "gear.svg",
+    "search.svg",
+    "bell.svg",
+    "play.svg",
+    "stop.svg",
+    "clock.svg",
+    "history.svg",
+    "swap.svg",
+    "user.svg",
+    "unit.svg",
+    "keyTag.svg",
+    "addJob.svg",
+    "addPart.svg",
+    "note.svg",
+    "pencil.svg",
+    "clip.svg",
+    "copy.svg",
+    "link.svg",
+    "print.svg",
+    "save.svg",
+    "trash.svg",
+    "eye.svg",
+    "chat.svg",
+    "check.svg",
+    "x.svg",
+    "plus.svg",
+    "newRo.svg",
+    "chevD.svg",
+    "chevU.svg",
+    "chevR.svg",
+    "more.svg",
+    "sidebar.svg",
+    "exit.svg",
+    "sun.svg",
+    "moon.svg",
+    "today.svg",
+    "camera.svg",
+    "mic.svg",
+    "sync.svg",
+    "chevL.svg"
+   ],
+   "files": {
+    "addJob.svg": {
+     "name": "addJob.svg",
+     "blob": "6cbc3f03e646528e2665b3e6f77507e1",
+     "size": 358,
+     "type": "image/svg+xml"
+    },
+    "addPart.svg": {
+     "name": "addPart.svg",
+     "blob": "cd2d9607858dc615f87b0b4dbe370f07",
+     "size": 299,
+     "type": "image/svg+xml"
+    },
+    "bell.svg": {
+     "name": "bell.svg",
+     "blob": "59c2fa52f3dc380b0791fb3d1cc999cf",
+     "size": 281,
+     "type": "image/svg+xml"
+    },
+    "career.svg": {
+     "name": "career.svg",
+     "blob": "a13e0e3d88214c706cc90f7fca00aba6",
+     "size": 242,
+     "type": "image/svg+xml"
+    },
+    "chat.svg": {
+     "name": "chat.svg",
+     "blob": "62f7540f74d23c063ee28c70a194b2bb",
+     "size": 339,
+     "type": "image/svg+xml"
+    },
+    "check.svg": {
+     "name": "check.svg",
+     "blob": "c7b2a9cab6b1b20694c104c35a5ecfed",
+     "size": 219,
+     "type": "image/svg+xml"
+    },
+    "chevD.svg": {
+     "name": "chevD.svg",
+     "blob": "894721013c859c3af20801b2bbda3a65",
+     "size": 219,
+     "type": "image/svg+xml"
+    },
+    "chevR.svg": {
+     "name": "chevR.svg",
+     "blob": "a20866a21b477a0c9a71d728d14667fb",
+     "size": 220,
+     "type": "image/svg+xml"
+    },
+    "chevU.svg": {
+     "name": "chevU.svg",
+     "blob": "477b5ac64f5b3671f831182d45bfdefe",
+     "size": 219,
+     "type": "image/svg+xml"
+    },
+    "clip.svg": {
+     "name": "clip.svg",
+     "blob": "1681b7d6c7985ea1284b0e8b8ad8e19e",
+     "size": 303,
+     "type": "image/svg+xml"
+    },
+    "clock.svg": {
+     "name": "clock.svg",
+     "blob": "05f49d5b6277d8ca4df1112c9fdfc398",
+     "size": 244,
+     "type": "image/svg+xml"
+    },
+    "console.svg": {
+     "name": "console.svg",
+     "blob": "de95116d7208bb969321144cc29284e8",
+     "size": 401,
+     "type": "image/svg+xml"
+    },
+    "copy.svg": {
+     "name": "copy.svg",
+     "blob": "fdbc3a0ec74a45697f7adca0d81015a7",
+     "size": 303,
+     "type": "image/svg+xml"
+    },
+    "exit.svg": {
+     "name": "exit.svg",
+     "blob": "28eb7c20a93ea3376154676fab55b36b",
+     "size": 263,
+     "type": "image/svg+xml"
+    },
+    "eye.svg": {
+     "name": "eye.svg",
+     "blob": "3775b6b5cc1ad4cee9967e83d54fa1ed",
+     "size": 304,
+     "type": "image/svg+xml"
+    },
+    "fixes.svg": {
+     "name": "fixes.svg",
+     "blob": "8fc05e070e49e7a7e4e729323bae94c2",
+     "size": 349,
+     "type": "image/svg+xml"
+    },
+    "foreman.svg": {
+     "name": "foreman.svg",
+     "blob": "5db2a398c523d31c3002b490b7d4f1e2",
+     "size": 339,
+     "type": "image/svg+xml"
+    },
+    "gear.svg": {
+     "name": "gear.svg",
+     "blob": "cd9e125f028e91f70844d06e4bec68a7",
+     "size": 302,
+     "type": "image/svg+xml"
+    },
+    "history.svg": {
+     "name": "history.svg",
+     "blob": "26dee1091333ca42f68250d9e2b21ded",
+     "size": 274,
+     "type": "image/svg+xml"
+    },
+    "inbox.svg": {
+     "name": "inbox.svg",
+     "blob": "32a957a6db2f6beb74413829312de552",
+     "size": 373,
+     "type": "image/svg+xml"
+    },
+    "keyTag.svg": {
+     "name": "keyTag.svg",
+     "blob": "03fe9b3739ab6d15a31d738d77363485",
+     "size": 273,
+     "type": "image/svg+xml"
+    },
+    "link.svg": {
+     "name": "link.svg",
+     "blob": "d4d2b1d88b6c5becbacd7d747173bec3",
+     "size": 313,
+     "type": "image/svg+xml"
+    },
+    "manager.svg": {
+     "name": "manager.svg",
+     "blob": "ff756797d18fb98df6fbc4c89ed5685b",
+     "size": 361,
+     "type": "image/svg+xml"
+    },
+    "moon.svg": {
+     "name": "moon.svg",
+     "blob": "bb2cd8eb208d0797b9e5373d7d965268",
+     "size": 246,
+     "type": "image/svg+xml"
+    },
+    "more.svg": {
+     "name": "more.svg",
+     "blob": "de56eae4fcc3d2e94ff144e1cf8944ce",
+     "size": 249,
+     "type": "image/svg+xml"
+    },
+    "newRo.svg": {
+     "name": "newRo.svg",
+     "blob": "d4b986adb381f37ddc417078d00c9e45",
+     "size": 244,
+     "type": "image/svg+xml"
+    },
+    "note.svg": {
+     "name": "note.svg",
+     "blob": "deda442d4bafbc3848cc3579c7e5f75a",
+     "size": 371,
+     "type": "image/svg+xml"
+    },
+    "parts.svg": {
+     "name": "parts.svg",
+     "blob": "937dfbffff1ae5fc023360216b8291fb",
+     "size": 271,
+     "type": "image/svg+xml"
+    },
+    "pencil.svg": {
+     "name": "pencil.svg",
+     "blob": "59516f4e1463530199ba786685c38947",
+     "size": 299,
+     "type": "image/svg+xml"
+    },
+    "play.svg": {
+     "name": "play.svg",
+     "blob": "f40227c60bc9c46a5190f8cbbca7810d",
+     "size": 277,
+     "type": "image/svg+xml"
+    },
+    "plus.svg": {
+     "name": "plus.svg",
+     "blob": "8d3d9fbeafccf1e5e927105daafe22de",
+     "size": 213,
+     "type": "image/svg+xml"
+    },
+    "print.svg": {
+     "name": "print.svg",
+     "blob": "6cdb98ad17e3b4c95d3177b71265b2e6",
+     "size": 292,
+     "type": "image/svg+xml"
+    },
+    "ros.svg": {
+     "name": "ros.svg",
+     "blob": "6d271f3be49f6b810044825ba5ecacf8",
+     "size": 365,
+     "type": "image/svg+xml"
+    },
+    "save.svg": {
+     "name": "save.svg",
+     "blob": "13ac946e536f45699dc3d52d42c0e733",
+     "size": 328,
+     "type": "image/svg+xml"
+    },
+    "search.svg": {
+     "name": "search.svg",
+     "blob": "dd1693221666a8c6bf4058d323c19b94",
+     "size": 244,
+     "type": "image/svg+xml"
+    },
+    "sidebar.svg": {
+     "name": "sidebar.svg",
+     "blob": "5f0123dc311e5fb5f7121f7d62493f3c",
+     "size": 273,
+     "type": "image/svg+xml"
+    },
+    "stop.svg": {
+     "name": "stop.svg",
+     "blob": "379a551e9adc4694ee2860401d11935f",
+     "size": 237,
+     "type": "image/svg+xml"
+    },
+    "sun.svg": {
+     "name": "sun.svg",
+     "blob": "bc84b8d094c33a1e1b04c755617d4860",
+     "size": 338,
+     "type": "image/svg+xml"
+    },
+    "swap.svg": {
+     "name": "swap.svg",
+     "blob": "1114b25985f337d73419495ab36abc65",
+     "size": 230,
+     "type": "image/svg+xml"
+    },
+    "timelog.svg": {
+     "name": "timelog.svg",
+     "blob": "07697dae3ab0e68013fb335bee92ab73",
+     "size": 250,
+     "type": "image/svg+xml"
+    },
+    "trash.svg": {
+     "name": "trash.svg",
+     "blob": "d75fa478b3b0c916c806202d2f7ea79d",
+     "size": 323,
+     "type": "image/svg+xml"
+    },
+    "triage.svg": {
+     "name": "triage.svg",
+     "blob": "68648f7efba7b8f498dd5ba671766b82",
+     "size": 338,
+     "type": "image/svg+xml"
+    },
+    "unit.svg": {
+     "name": "unit.svg",
+     "blob": "7f0131b2b92ce03c2f64d0bdd7603206",
+     "size": 409,
+     "type": "image/svg+xml"
+    },
+    "user.svg": {
+     "name": "user.svg",
+     "blob": "0e8f6b3c4c818f87196f6facd09ac5c6",
+     "size": 284,
+     "type": "image/svg+xml"
+    },
+    "warranty.svg": {
+     "name": "warranty.svg",
+     "blob": "284d96d084cf74cb5693723b71f4602c",
+     "size": 290,
+     "type": "image/svg+xml"
+    },
+    "x.svg": {
+     "name": "x.svg",
+     "blob": "af2298c0f213ee24765b304d96622e75",
+     "size": 217,
+     "type": "image/svg+xml"
+    },
+    "today.svg": {
+     "name": "today.svg",
+     "blob": "f2d9f62589beac32d46ea599c29b4a1b",
+     "size": 313,
+     "type": "image/svg+xml"
+    },
+    "camera.svg": {
+     "name": "camera.svg",
+     "blob": "b97b4579d8a49bef7536b697efeb9a51",
+     "size": 378,
+     "type": "image/svg+xml"
+    },
+    "mic.svg": {
+     "name": "mic.svg",
+     "blob": "5da521379f24bb384bbef9101599c990",
+     "size": 292,
+     "type": "image/svg+xml"
+    },
+    "sync.svg": {
+     "name": "sync.svg",
+     "blob": "f3da5a8add996f7d29f1cd6b053b3a2a",
+     "size": 297,
+     "type": "image/svg+xml"
+    },
+    "chevL.svg": {
+     "name": "chevL.svg",
+     "blob": "fbc40e96950034ab60d30f5dc742999b",
+     "size": 219,
+     "type": "image/svg+xml"
+    }
+   }
+  }
+ },
+ "blobs": {},
+ "docs": {
+  "readme": "project/README.md",
+  "sections": []
+ },
+ "lastChange": {
+  "by": "Soonie",
+  "at": "2026-10-22T02:11:30Z",
+  "via": "Claude (Cowork)",
+  "note": "Parsec Mobile: PhoneApp, ClockBar and DayStrip components, Phone section, running job in the sidebar, five phone icons"
+ }
+}

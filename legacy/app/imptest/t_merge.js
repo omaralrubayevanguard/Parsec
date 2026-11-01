@@ -1,0 +1,21 @@
+const fs=require('fs'),vm=require('vm'),D=__dirname;
+const ctx={console,Date,Math,JSON};vm.createContext(ctx);
+vm.runInContext(fs.readFileSync(D+'/helpers.js','utf8').replace(/module.exports=.*$/m,''),ctx);
+ctx.document={addEventListener(){},documentElement:{classList:{add(){},remove(){}}}};
+vm.runInContext(fs.readFileSync(D+'/../b9/imp1.js','utf8')+';this.IMPX=IMPX;',ctx);
+const X=ctx.IMPX; let A=X.blankAcc(), fails=0; const ok=(c,m)=>{ if(!c){fails++;console.log('FAIL',m);} };
+for(const f of ['case3_vertical.txt','shot_op1.txt','shot_parts.txt','shot_notes.txt','shot_op1.txt','shot_notes.txt']) X.mergeInto(A, X.parse(fs.readFileSync(D+'/'+f,'utf8')));
+console.log(JSON.stringify(A.f)); A.ops.forEach(o=>console.log('op',o.no,o.name,o.parts.length)); console.log('loose',A.parts.length,'notes',A.notes.length);
+ok(A.ops.length===1,'one op after merging op1 twice'); ok(A.ops[0].parts.length===1,'op1 parts not doubled'); ok(A.parts.length===2,'2 loose parts'); ok(A.notes.length===2,'notes not doubled');
+let B=X.blankAcc(); X.mergeInto(B, X.parse(fs.readFileSync(D+'/case1.txt','utf8'))); X.mergeInto(B, X.parse(fs.readFileSync(D+'/case1_ocr.txt','utf8')));
+ok(B.ops.length===2,'case + its OCR copy = 2 ops, got '+B.ops.length); ok(B.ops[0].parts.length===2,'parts merged'); ok(B.f.status==='Checked In','status');
+let C=X.blankAcc(); X.mergeInto(C, X.parse(fs.readFileSync(D+'/case1.txt','utf8'))); X.mergeInto(C, X.parse(fs.readFileSync(D+'/case2.txt','utf8')));
+ok(C.ops.length===3,'3 ops'); ok(C.notes.length===5,'5 notes, got '+C.notes.length); ok(C.f.status==='Waiting on Parts','later status wins'); ok(C.ops[1].approval==='Approved','op2 approved');
+ok(X.mapStatus('Waiting on Parts')==='Waiting – Parts' && X.mapStatus('Checked In')==='Hold Tech' && X.mapStatus('Awaiting Approval')==='Waiting – Customer' && X.mapStatus('Repair Complete')==='Complete – Road test' && X.mapStatus('In Repair')==='Working','status map');
+ok(X.parseWhen('Oct 29, 2026 3:00 PM')===new Date(2026,9,29,15,0).toISOString(),'month date'); ok(X.parseWhen('2026-10-29 15:30')===new Date(2026,9,29,15,30).toISOString(),'iso date'); ok(X.parseWhen('10/29/26 12:05 AM')===new Date(2026,9,29,0,5).toISOString(),'12 am');
+const P1=X.parse(fs.readFileSync(D+'/case1.txt','utf8')), P2=X.parse(fs.readFileSync(D+'/case2.txt','utf8')), PO=X.parse(fs.readFileSync(D+'/case1_ocr.txt','utf8'));
+for(const [P,nm] of [[P1,'clean'],[PO,'ocr']]){ const f=P.f; ok(f.caseNo==='4988201'&&f.roNumber==='RA0001238877'&&f.customer==='Summit Freightways'&&f.custNo==='20417'&&f.createdBy==='Jenna Cho'&&f.po==='PO-55120'&&f.model==='VNL64T760'&&f.year==='2020'&&f.vin==='4V4NC9EH7LN758560'&&f.unit==='T-807'&&f.chassis==='758560'&&f.engineSerial==='23116577'&&f.miles==='412880'&&f.engHours==='15206'&&f.tag==='68'&&f.location==='Lot D1'&&f.dept==='Service', nm+' header and asset');
+  ok(P.ops.length===2&&P.ops[0].name==='Clutch slipping - replace clutch'&&P.ops[0].hours===8&&P.ops[0].price===1680&&P.ops[0].opCode==='CL-210'&&P.ops[0].vmrs==='023-001-001'&&P.ops[0].skill==='B'&&P.ops[0].priceCode==='L1', nm+' ops'); ok(P.ops[0].parts.length===2&&P.ops[0].parts[0].core===150&&P.ops[0].parts[0].salesman==='Ryan Burke', nm+' parts'); }
+ok(P1.ops[0].label==='Labeled'&&P1.ops[1].label==='Not Labeled','label status'); ok(P1.notes.length===2&&P1.notes[0].by==='Jenna Cho'&&P1.notes[1].kind==='system','notes'); ok(P1.totals&&P1.totals.total===3468.5&&P1.totals.misc===45,'totals');
+ok(P2.f.auth==='A-77310'&&P2.f.ts==='1180944'&&P2.f.cause&&P2.f.correction&&P2.ops.length===3&&P2.ops[0].storyBy==='Mike Rodriguez'&&/^Removed the transmission/.test(P2.ops[0].story)&&P2.ops[1].parts[0].pn==='VOL-22827993','second import');
+console.log(fails?fails+' FAILED':'all parser and merge checks pass');

@@ -1,0 +1,15 @@
+Case # 5102334
+Customor	Pinecrest Logistics - Cust# 30981	RO Numben.	RA0001241 190
+Assot
+VIN	4V4NC9EH5MN29012 1	Unit #	P-114
+Year	2021	Englno	Volvo DI3TC 455 HP
+Englno SorIeI #	21987654	Englno Hours	9,870
+Oporations
+Op	Descrlptlon	ILabor Hours	Labor Rate	Labor	Parts	MIsc	Sublet	Total	Approval Status
+1	Replace EGR cooler	6.2	$210.00	$1,302.00	$2,100.40	$35.00	$3,437.40	Approved
+2	Warranty - replace NOx sensor outlet	1.3	$ 165.00	$2 14.50	$548.00	$0.00	$0.00	$782.50	Approved
+3	Align front end	0.5	$210.00	$105.00	$0.00	$0.00	$185.00	$290.00	Pending
+Parts
+Part #	DoscHptlon	QIy	Liw	DIsc	Nef	Core	Ext	Salesman
+VOL-23125678	EGR cooler kit	1	1,980.00	10%	1,782.00	250.00	2,032.00	Ryan Burke
+Totals: Labor $1.62 1.50 Parts $2,398.40 Core $250.00 Shop Supplies $35.00 Sublet $185.00 Environmental Fee $12.50 Tax $96.42 Total $4,598.82

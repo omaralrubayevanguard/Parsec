@@ -1,0 +1,72 @@
+/* ===== Parsec 9 — the page modules fill the panel, like Triage ===== */
+.main:is(__PAGES__){padding:0 !important;}
+:root:is([data-theme="ivl"],[data-theme="ivd"]):not([data-device="phone"]) .main:is(__PAGES__){padding:0 !important;flex:0 0 auto !important;height:calc(100vh - 16px) !important;min-height:0 !important;overflow:hidden;}
+:root:is([data-theme="ivl"],[data-theme="ivd"]):not([data-device="phone"]) .main:is(__PAGES__) > [data-pg]{height:100%;min-height:0;box-shadow:none;}
+[data-pg] .tg-av.sm{width:22px;height:22px;font-size:9.5px;}
+[data-pg] .tg-av.ib-sys{background:var(--tg-ink);color:var(--tg-canvas);}
+/* the hover tip sits on the page, outside the panel */
+#pg-tip{position:fixed;z-index:9000;max-width:300px;padding:8px 10px;border-radius:9px;background:#FFFFFF;color:#1D1C1A;font:500 12px/17px "Geist","Inter","Segoe UI",system-ui,sans-serif;pointer-events:none;box-shadow:0 0 0 1px rgba(29,28,26,.08),0 2px 4px rgba(29,28,26,.05),0 12px 32px -8px rgba(29,28,26,.22);}
+:root[data-theme="ivd"] #pg-tip{background:#1D1D1B;color:#EDEBE6;box-shadow:0 0 0 1px rgba(255,255,255,.08),0 12px 32px -8px rgba(0,0,0,.6);}
+#pg-tip[hidden]{display:none;}
+#pg-tip *{position:static;float:none;}
+#pg-tip b{display:block;font-weight:600;}
+#pg-tip small{display:block;margin-top:2px;font-size:11.5px;line-height:16px;color:#67625A;}
+:root[data-theme="ivd"] #pg-tip small{color:#9A968D;}
+#pg-tip small.nt{margin-top:4px;}
+#pg-tip .rw{display:flex;align-items:center;gap:6px;margin-top:2px;color:#57534B;}
+:root[data-theme="ivd"] #pg-tip .rw{color:#B0ACA3;}
+#pg-tip .rw i{display:inline-block;flex:none;width:8px;height:8px;border-radius:2px;background:#86643A;}
+:root[data-theme="ivd"] #pg-tip .rw i{background:#D1B184;}
+#pg-tip .rw i.pv,#pg-tip .rw i.un{background:#A8A398;}
+#pg-tip .rw i.un{opacity:.45;}
+#pg-tip .rw i.gl{background:none;border-top:1.5px dashed currentColor;height:0;border-radius:0;}
+#pg-tip .rw b{display:inline;margin-left:auto;padding-left:12px;font:500 12px/1 "Geist Mono",ui-monospace,Menlo,monospace;color:inherit;}
+/* printing the timesheet: only the paper */
+@media print{ html.pg-print body *{visibility:hidden !important;} html.pg-print .tk-paper, html.pg-print .tk-paper *{visibility:visible !important;} html.pg-print .tk-paper{position:absolute;left:0;top:0;width:100%;box-shadow:none !important;} }
+@media print{ html.pg-print2 body *{visibility:hidden !important;} html.pg-print2 .pg-printme, html.pg-print2 .pg-printme *{visibility:visible !important;} html.pg-print2 .pg-printme{position:absolute;left:0;top:0;width:100%;box-shadow:none !important;} }
+/* Career: whose page (foreman, manager), the one-column popover form */
+[data-pg="career"] .cr-pick{gap:6px;}
+[data-pg="career"] .cr-pick select{border:0;background:transparent;font:inherit;font-weight:500;color:var(--tg-ink);cursor:pointer;padding:0 2px;max-width:200px;}
+[data-pg="career"] .cr-pick select:focus-visible{outline:2px solid var(--tg-acc);border-radius:4px;}
+[data-pg="career"] .cr-pf1{display:grid;gap:10px;padding:6px 10px 4px;}
+[data-pg="career"] .cr-pf1 label{display:flex;flex-direction:column;gap:4px;}
+[data-pg="career"] .cr-pf1 small{font-size:11.5px;color:var(--tg-ink3);}
+[data-pg="career"] .cr-pf1 textarea,[data-pg="career"] .cr-pf1 select,[data-pg="career"] .cr-pf1 input,[data-pg="career"] .cr-pf select{width:100%;box-sizing:border-box;padding:7px 9px;border:1px solid var(--tg-border);border-radius:8px;background:var(--tg-raised);color:var(--tg-ink);font:400 13px/1.4 var(--tg-sans);resize:vertical;}
+[data-pg="career"] .cr-pf select{height:32px;padding:0 8px;}
+[data-pg="career"] .cr-sk .btn.ib{margin-left:auto;}
+[data-pg] .mq-cb > svg.mq-svg:not(.spk){max-width:100%;height:auto;}
+[data-pg="career"] .cr-wy{grid-template-columns:minmax(0,1fr) 104px 64px 60px;}
+[data-pg="career"] .cr-wy .n{overflow:hidden;}
+[data-pg="career"] .cr-wy .n small{overflow:hidden;text-overflow:ellipsis;}
+
+@media print{ html.pg-print2 .rq-print{display:block !important;} }
+/* Manager: shop settings, the Team details with pay, remove */
+[data-pg="manager"] .mq-setf{grid-template-columns:minmax(0,1fr);gap:12px;padding:4px 2px 10px;}
+[data-pg="manager"] .mq-setf label{display:grid;grid-template-columns:132px minmax(0,1fr);align-items:center;gap:10px;font-size:12.5px;color:var(--tg-ink2);}
+[data-pg="manager"] .mq-setf .in{display:flex;flex-direction:column;gap:3px;min-width:0;}
+[data-pg="manager"] .mq-setf .in small{font-size:11px;color:var(--tg-ink3);}
+[data-pg="manager"] .mq-setf input,[data-pg="manager"] .mq-setf select{height:30px;}
+[data-pg="manager"] .mq-setf .in .btn{align-self:flex-start;}
+[data-pg="manager"] .mq-fs{font-size:12.5px;color:var(--tg-ink);}
+[data-pg="manager"] .mq-form:not(.mq-setf):has(> label:nth-child(4)){grid-template-columns:repeat(4,minmax(0,1fr));}
+[data-pg="manager"] .mq-rmp{margin:2px 4px 10px;font-size:13px;line-height:18px;color:var(--tg-ink2);}
+[data-pg="manager"] .btn.mq-danger{background:var(--tg-bad) !important;border-color:var(--tg-bad) !important;color:#fff !important;}
+/* the shop folder screen, before sign-in */
+.pxs-fs p{max-width:520px;}
+.pxs-fsb{display:flex;gap:8px;justify-content:center;margin:14px 0 6px;}
+.pxs-fsb .px-btn{height:36px;padding:0 16px;}
+.pxs-fsn{margin-top:-2px !important;font-size:12px !important;color:var(--px-ink3);}
+.pin-adm{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--px-fill,#F0EDE6);color:var(--px-ink2,#57534B);flex:none;}
+/* the folder screen: what went wrong, in words */
+.pxs-err{display:flex;flex-direction:column;gap:3px;max-width:520px;margin:12px auto 0;padding:10px 14px;border-radius:10px;background:var(--px-bad-t,#F6E3DF);color:var(--px-ink,#1d1c1a);text-align:left;font-size:13px;line-height:18px;}
+.pxs-err b{font-weight:600;color:var(--px-bad,#A8402E);}
+.pxs-err span{color:var(--px-ink2,#57534B);}
+.pxs-err small{margin-top:2px;font:500 11px/15px var(--px-mono,ui-monospace,monospace);color:var(--px-ink3,#8F897C);word-break:break-word;}
+.pxs-err.soft{background:var(--px-fill,#F0EDE6);} .pxs-err.soft b{color:var(--px-ink,#1d1c1a);}
+:root[data-theme="ivd"] .pxs-err{background:#2a1b17;} :root[data-theme="ivd"] .pxs-err.soft{background:#222220;}
+:root[data-theme="ivd"] .pxs-err span{color:#c9c4b9;} :root[data-theme="ivd"] .pxs-err b{color:#e8836f;} :root[data-theme="ivd"] .pxs-err.soft b{color:#f0ede6;}
+/* the folder and sign-in screens sit in the middle of the window — no room kept for the sidebar */
+:root.px-out:is([data-theme="ivl"],[data-theme="ivd"]):not([data-device="phone"]) body{padding-left:0 !important;}
+/* Phone sync: whose phone */
+.psy-who{display:flex;align-items:center;gap:10px;margin:0 0 12px;font-size:13px;color:var(--px-ink3,#67625a);}
+.psy-who select{height:32px;padding:0 10px;border-radius:8px;border:0;box-shadow:inset 0 0 0 1px var(--px-border,#d6d0c3);background:var(--px-raised,#fff);color:var(--px-ink,#1d1c1a);font:500 13.5px/1 var(--px-sans,inherit);}

@@ -1,0 +1,31 @@
+/* ===== Parsec 9.7: the truck — the small picture in lists, and Your data › Truck pictures ===== */
+.trk-th{position:relative;display:grid;place-items:center;width:56px;height:32px;line-height:0;flex:none;overflow:visible}
+.trk-th img{display:block;max-width:56px;max-height:32px;object-fit:contain}
+.trk-th.fr img,.trk-th.ph img{width:100%;height:100%;object-fit:cover;border-radius:6px;box-shadow:0 0 0 1px var(--px-hair,rgba(0,0,0,.08))}
+.trk-th.ph{background:var(--px-fill,#eee);border-radius:6px}
+.trk-th.no{color:var(--px-ink4,#aaa);opacity:.55}
+.trk-th.no svg{width:44px;height:auto}
+.rq-row > .rq-trk,.rq-head > .rq-trk{overflow:visible;display:flex;align-items:center}
+@media (max-width:1440px){:root:not([data-device="phone"]) .rq:not(.is-peek) .rq-row > .rq-trk .trk-th{width:48px;height:28px}:root:not([data-device="phone"]) .rq:not(.is-peek) .rq-row > .rq-trk .trk-th img{max-width:48px;max-height:28px}:root:not([data-device="phone"]) .rq:not(.is-peek) .rq-row > .rq-trk .trk-th.no svg{width:40px}}
+/* the list of model pictures */
+.px-trkl{display:flex;flex-direction:column;margin:2px 0 8px}
+.px-trkr{display:grid;grid-template-columns:96px minmax(0,1fr) auto;align-items:center;gap:12px;padding:8px 0;box-shadow:inset 0 -1px 0 var(--px-hair)}
+.px-trkr:last-child{box-shadow:none}
+.px-trkr__pic{display:grid;place-items:center;width:96px;height:52px;line-height:0}
+.px-trkr__pic img{display:block;max-width:96px;max-height:52px;object-fit:contain}
+.px-trkr__pic.fr img{width:100%;height:100%;object-fit:cover;border-radius:8px}
+.px-trkr__f{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) minmax(0,1fr);gap:4px 6px;min-width:0}
+.px-trkr__f input{box-sizing:border-box;width:100%;min-width:0;height:30px;padding:0 8px;border:0;border-radius:7px;background:var(--px-raised);box-shadow:inset 0 0 0 1px var(--px-border);font:400 13px/1 var(--px-sans);color:var(--px-ink);outline:none}
+.px-trkr__f input:focus{box-shadow:inset 0 0 0 1.5px var(--px-focus,var(--px-primary))}
+.px-trkr__f input::placeholder{color:var(--px-ink3)}
+.px-trkr__n{grid-column:1 / -1;font-size:12px;line-height:16px;color:var(--px-ink3);white-space:nowrap}
+.px-trkr__b{display:flex;gap:4px}
+.px-hint{font-size:12.5px;color:var(--px-ink3)}
+p.px-hint{margin:6px 0 8px}
+:root[data-device="phone"] .px-trkr{grid-template-columns:84px minmax(0,1fr);grid-template-areas:"pic f" "b b";row-gap:6px}
+:root[data-device="phone"] .px-trkr__pic{grid-area:pic;width:84px;height:46px}
+:root[data-device="phone"] .px-trkr__pic img{max-width:84px;max-height:46px}
+:root[data-device="phone"] .px-trkr__f{grid-area:f;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+:root[data-device="phone"] .px-trkr__f input[data-f="years"]{grid-column:1 / -1}
+:root[data-device="phone"] .px-trkr__f input{height:40px;font-size:16px}
+:root[data-device="phone"] .px-trkr__b{grid-area:b;justify-self:end}

@@ -1,0 +1,6 @@
+['part', 'RO-33227', 'Volvo wants the water pump back · ship by Tue 10/27 · RA 88213', 'Ship…', False]
+['back', 'RO-31921', 'Resubmit by 10/30 · Causal part photo missing, and labor is over the SRT — add the tech support case.', 'Decide', False]
+['ready', 'RO-39940', 'File by 11/21 · finished 1 h ago · $646.60 · missing causal part, part photo, part tag', 'File', False]
+['volvo', 'RO-39556', 'Claim W2611822 filed 17 d ago · no answer', 'Follow up', True]
+badge 2 ros 7
+

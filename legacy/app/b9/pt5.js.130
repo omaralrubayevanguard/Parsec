@@ -1,0 +1,171 @@
+  /* ---------- doing things ---------- */
+  const rd = () => { flush(); PG.keepScroll(render); };
+  const save = l => pushUndo(l || 'parts');
+  const fin = msg => { scheduleSave(true); flush(); if(msg) pushToast(msg, true); rd(); };
+  function openPop(type, ex, el){ U.pop = Object.assign({ type }, ex || {}); if(el) PG.anchor(U, el); rd(); }
+  function tellWriter(r, t, b){ if(typeof IB === 'undefined' || !r.wr) return; IB.send({ to: r.wr, k: 'fyi', src: 'parts', ro: r.id, t, b: b || '' }); r.ro.ptTold = nowIso(); }
+  function cleared(r, why){ doneStore()[r.id] = { at: nowIso(), why }; U.ask = (U.ask || []).filter(x => x !== r.id); flush(); const L = flat(); U.sel = L[0] || r.id; }
+  function allIn(r){ const L = lines(r); return L.length && L.every(inHand); }
+  function stageLine(q, r, b){ setSt(q, 'Staged', { bin: b || binOf(r) || nextBin() }); }
+  function sendFm(r, note){ const fmn = PG.person('Foreman'); try{ rtSend(r.ro, 'foreman', '', note || '', null, {}); }catch(e){ console.error(e); } logIt(r, `Parts → <b>${esc(F(fmn || 'Foreman'))}</b> · “${esc(note || '')}”`); cleared(r, `Sent to ${F(fmn || 'Foreman')}${note ? ' · ' + note : ''}`); }
+  function doIt(id, el){ const r = get(id); if(!r) return; U.sel = id; const st = stateOf(r);
+    if(st === 'counter') return openPop('counter', { ro: id }, el);
+    if(st === 'sent'){ save('accept'); rtAccept(r.ro); logIt(r, 'Parts accepted'); return fin(`Accepted — ${r.no} is with Parts now.`); }
+    if((st === 'order' || st === 'late') && typeof permOk === 'function' && !permOk('p.order')) return;   /* Parsec 13 */
+    if(st === 'order') return openPop('order', { ro: id, tell: true }, el);
+    if(st === 'late') return openPop('chase', { ro: id, tell: true }, el);
+    if(st === 'in'){ const rc = rcvd(r); if(rc.length){ save('stage'); const b = binOf(r) || nextBin(); rc.forEach(p => stageLine(p, r, b)); logIt(r, `Staged · ${rc.map(p => esc(p.desc)).join(', ')} · bin ${esc(b)}`); U.ask = [r.id]; return fin(`Staged in ${b} — every part for ${r.no} is on its bin.`); } return openPop('hand', { ro: id }, el); }
+    if(st === 'ret'){ const t = retsOf(r).find(needs); if(t) return openPop(retAct(t)[0], { tid: t.id, ro: id }, el); }
+    U.view = 'desk'; rd(); }
+  function mkRet(o){ const T = retStore(), pre = o.kind === 'core' ? 'C-' : o.kind === 'warranty' ? 'FP-' : 'R-', base = o.kind === 'core' ? 2000 : o.kind === 'warranty' ? 1000 : 3000;
+    const n = T.filter(x => x.id.indexOf(pre) === 0).length + 1, t = Object.assign({ id: pre + (base + n), qty: 1, credit: 0, at: nowIso(), by0: PG.me().name }, o); T.push(t); return t; }
+  const H = {
+    sel: (t, ev) => { if(ev.target.closest('.tg-go')) return; U.sel = t.dataset.ro; U.kb = false; U.pop = null; rd(); },
+    do: t => { U.pop = null; doIt(t.dataset.ro, t); },
+    view: t => { U.view = t.dataset.v; U.pop = null; rd(); },
+    hf: t => { const k = t.dataset.k; if(k === 'due'){ U.view = 'order'; return rd(); } if(k === 'rets'){ U.view = 'ret'; return rd(); } const G = grouped(); if(G[k] && G[k].length){ U.view = 'desk'; U.sel = G[k][0].id; rd(); } },
+    pop: t => { const p = U.pop; if(p && p.type === t.dataset.p && !t.dataset.pid){ U.pop = null; return rd(); } const ex = {}; ['pid', 'ro', 'tid', 'bin'].forEach(k => { if(t.dataset[k]) ex[k] = t.dataset[k]; }); if(t.dataset.p === 'chk') ex.sel = {}; openPop(t.dataset.p, ex, t);
+      if(t.dataset.p === 'srch' || t.dataset.p === 'chk') setTimeout(() => { const i = document.querySelector('[data-pg="parts"] .tg-pop [data-in="sq"], [data-pg="parts"] .tg-pop [data-in="scan"]'); if(i) i.focus(); }, 20); },
+    popx: () => { U.pop = null; rd(); },
+    open: t => { if(t.dataset.k === 'ro'){ U.view = 'desk'; U.sel = t.dataset.ro; U.pop = null; const r = get(t.dataset.ro), st = r && stateOf(r); if(st === 'way' || st === 'tech' || st === 'done') U.open[st] = true; rd(); } else if(t.dataset.k === 'cat'){ U.view = 'cat'; U.cq = t.dataset.pn || ''; U.pop = null; rd(); } else { U.open[t.dataset.k] = !U.open[t.dataset.k]; rd(); } },
+    openro: t => PG.openRo(t.dataset.ro),
+    addpart: t => PG.openRo(t.dataset.ro, t.dataset.opid),
+    setst: t => { const f = findLine(t.dataset.pid); if(!f) return; save('part status'); const v = t.dataset.v, q = f.q, ex = {};
+      if(v === 'Staged' && !q.bin) ex.bin = binOf(f.r) || nextBin();
+      if(v === 'Ordered' && !q.raw.po){ ex.sup = q.raw.sup || 'pdc'; ex.po = nextPO(); ex.ordAt = nowIso(); ex.eta = q.raw.eta || ETA(ex.sup); ex.eta0 = ex.eta; }
+      setSt(q, v, ex); logIt(f.r, `${esc(q.desc)} → ${stTxt[v]}${v === 'Staged' ? ' · bin ' + esc(q.raw.bin) : ''}`); U.pop = null;
+      if(allIn(f.r) && v !== 'Installed' && v !== 'Picked up') U.ask = [f.r.id]; fin(`${q.desc} · ${stTxt[v]}${v === 'Staged' ? ' · bin ' + q.raw.bin : ''}.`); },
+    rcv1: t => { const f = findLine(t.dataset.pid); if(!f) return; save('check in'); stageLine(f.q, f.r); f.q.raw.rcvAt = nowIso(); logIt(f.r, `Checked in · ${esc(f.q.desc)} · staged in ${esc(f.q.raw.bin)}`); const full = allIn(f.r); if(full) U.ask = [f.r.id]; fin(`${f.q.desc} checked in · staged in ${f.q.raw.bin}${full ? ' — every part is in.' : '.'}`); },
+    stage1: t => H.stageto(t),
+    stageto: t => { const f = findLine(t.dataset.pid); if(!f) return; save('stage'); stageLine(f.q, f.r, t.dataset.bin); logIt(f.r, `Staged · ${esc(f.q.desc)} · bin ${esc(f.q.raw.bin)}`); if(allIn(f.r)) U.ask = [f.r.id]; fin(`${f.q.desc} staged in ${f.q.raw.bin}.`); },
+    pk1: t => { const f = findLine(t.dataset.pid); if(!f) return; save('picked up'); const b = f.q.bin; setSt(f.q, 'Picked up'); logIt(f.r, `<b>${esc(F(f.r.tech))}</b> picked up ${esc(f.q.desc)}${b ? ' · bin ' + esc(b) : ''}`); fin(`${F(f.r.tech)} picked up the ${lc(f.q.desc)}.`); },
+    pickup: t => { const b = t.dataset.bin, X = allLines().filter(x => x.q.st === 'Staged' && x.q.bin === b); if(!X.length) return; save('picked up'); X.forEach(x => setSt(x.q, 'Picked up')); const r = X[0].r; logIt(r, `<b>${esc(F(r.tech))}</b> picked up bin ${esc(b)} · ${X.length} part${X.length > 1 ? 's' : ''}`); U.pop = null; fin(`Bin ${b} picked up by ${F(r.tech)} — ${X.length} part${X.length > 1 ? 's' : ''}. The bin is free.`); },
+    notyet: t => { U.ask = []; U.pop = null; pushToast(`OK — ${get(t.dataset.ro) ? get(t.dataset.ro).no : 'it'} stays under Arrived until you send it.`); rd(); },
+    askno: () => { U.ask = []; pushToast('OK — they stay under Arrived until you send them.'); rd(); },
+    asksend: t => { const r = get(t.dataset.ro); if(!r || stateOf(r) !== 'in') return; save('send to foreman'); sendFm(r, `All parts in${binOf(r) ? ' — bin ' + binOf(r) : ''}.`); fin(`Sent to ${fm()} — ${r.no} is in their Inbox.`); },
+    askall: () => { const L = (U.ask || []).map(get).filter(r => r && stateOf(r) === 'in'); if(!L.length) return; save('send to foreman'); L.forEach(r => sendFm(r, `All parts in${binOf(r) ? ' — bin ' + binOf(r) : ''}.`)); fin(`Sent to ${fm()} — ${L.map(r => r.no).join(' and ')}.`); },
+    hgo: () => { const r = get(U.pop.ro); if(!r) return; save('send to foreman'); const n = U.pop.n != null ? U.pop.n : `All parts in${binOf(r) ? ' — bin ' + binOf(r) : ''}.`; U.pop = null; sendFm(r, n); fin(`Sent to ${fm()} — ${r.no} is in their Inbox.`); },
+    rdo: t => { const x = getT(t.dataset.tid), ac = x && retAct(x); if(ac) openPop(ac[0], { tid: x.id }, t); },
+    rsel: t => { U.view = 'ret'; U.rsel = t.dataset.tid; U.pop = null; rd(); setTimeout(() => { const el = document.querySelector(`[data-pg="parts"] .pt-rr[data-tid="${U.rsel}"]`); if(el) el.scrollIntoView({ block: 'center' }); }, 30); },
+    rflt: t => { U.rflt = t.dataset.v; rd(); },
+    rulem: t => { const rl = rtCfg().rules.find(x => x.k === t.dataset.k); if(!rl) return; save('hand-off rule'); rl.mode = t.dataset.v; fin(`${rl.when} → ${RT_LBL[rl.to] || rl.to}: ${t.dataset.v === 'ask' ? 'asks first' : t.dataset.v === 'auto' ? 'automatic' : 'off'}.`); },
+    nrk: t => { U.pop.k = t.dataset.k; rd(); },
+    nrw: t => { U.pop.why = t.dataset.v; rd(); },
+    nrgo: () => { const p = U.pop, c = newCands().find(x => x.k === p.k); if(!c || !p.why) return; save('start return'); const core = p.why === 'Core', war = p.why === 'Warranty — failed part', fee = (parseFloat(set().ret_fee) || 15) / 100;
+      const days = s => parseInt(set()[s], 10) || 30;
+      const t = mkRet({ kind: core ? 'core' : war ? 'warranty' : 'supplier', desc: c.desc, pn: c.pn, qty: c.qty, ro: c.ro || null, st: core ? 'ship' : war ? 'hold' : 'ra', by: core ? addD(TODAY(), days('ret_core')) : war ? addD(TODAY(), days('ret_hold')) : null,
+        shelf: war ? binList('bin_w', 'W', 6)[0] : core ? binList('bin_k', 'K', 4)[0] : binList('bin_r', 'R', 4)[0], to: war ? 'Volvo · warranty' : c.to, why: p.why, credit: war ? 0 : Math.round(c.price * c.qty * (core ? 1 : 1 - fee) * 100) / 100, claimAmt: war ? c.price * c.qty : 0 });
+      if(c.ro){ const r = get(c.ro), f = findLine(c.pid); if(r && f){ if(p.why === 'Wrong part' || p.why === 'Damaged'){ setSt(f.q, 'Not Ordered'); logIt(r, `${esc(f.q.desc)} going back (${p.why.toLowerCase()}) · ${t.id} · needs ordering again`); }
+        else if(p.why === 'Not needed — job declined'){ r.ops.forEach(o => { o.op.parts = (o.op.parts || []).filter(x => x.id !== c.pid); }); logIt(r, `${esc(f.q.desc)} going back · ${t.id} · not needed`); }
+        else logIt(r, `${esc(f.q.desc)} going back · ${t.id} · ${esc(p.why.toLowerCase())}`); } }
+      else { const cc = catAll().find(x => x.id === c.cid); if(cc) cc.raw.oh = Math.max(0, (+cc.raw.oh || 0) - c.qty); }
+      U.pop = null; U.view = 'ret'; U.rsel = t.id; fin(`${t.id} started — ${core ? 'ready to ship' : war ? 'held for Volvo' : 'ask ' + t.to + ' for an RA'}.${c.ro && (p.why === 'Wrong part' || p.why === 'Damaged') ? ' The RO needs a new one — it’s under To order.' : ''}`); },
+    rago: () => { const p = U.pop, t = getT(p.tid), v = String(p.ra || '').trim(); if(!t) return; if(!v){ pushToast('Type the RA # first — or pick “Asked — waiting on them”.'); return; } save('RA'); t.ra = v; t.st = 'ship'; t.by = t.by || addD(TODAY(), 14); U.pop = null; fin(`${t.id} · RA ${v} — ready to ship.`); },
+    raask: () => { const t = getT(U.pop.tid); if(!t) return; save('RA asked'); t.asked = nowIso(); U.pop = null; fin(`${t.id} · asked ${t.to} for an RA — it stays under To do.`); },
+    crgo: () => { const p = U.pop, t = getT(p.tid); if(!t) return; save('credit in'); const v = parseFloat(p.cr) || +t.credit || 0; t.st = 'credited'; t.credited = md(TODAY()); t.creditedAt = nowIso(); t.credit = v; t.memo = p.cm || ''; U.pop = null; fin(`${t.id} · ${usd(v)} credit in — closed.`); },
+    hogo: () => { const p = U.pop, t = getT(p.tid); if(!t || p.o == null) return; save('done holding'); if(p.o === 0) t.st = 'scrapped'; else if(p.o === 1) t.by = addD(TODAY(), 14); else t.st = 'back'; U.pop = null; fin(`${t.id} · ${p.o === 0 ? 'scrapped' : p.o === 1 ? 'kept until ' + short(t.by) : 'given back to the customer'}.`); },
+    oset: t => { U.pop.o = +t.dataset.o; if(U.pop.type === 'order') U.pop.eta = ETA(SUPK[U.pop.o]); rd(); },
+    dset: t => { U.pop.d = t.dataset.d; rd(); },
+    ogo: () => { const p = U.pop, r = get(p.ro); if(!r) return; const no = r.ops.filter(o => o.appr).flatMap(o => o.parts).filter(x => x.st === 'Not Ordered'), buy = no.filter(x => !((cat(x.pn) || {}).oh >= x.qty)); if(buy.length && p.o == null) return; save('order parts');
+      const sup = SUPK[p.o] || 'pdc', po = String(p.po != null ? p.po : nextPO()), eta = /^\d{4}-\d{2}-\d{2}$/.test(p.eta || '') ? p.eta : ETA(sup); if(p.po != null && +p.po >= (+set().poNext || 0)) set().poNext = +p.po + 1; let b = binOf(r);
+      no.forEach(x => { const c = cat(x.pn); if(c && c.oh >= x.qty){ c.raw.oh = c.oh - x.qty; b = b || nextBin(); setSt(x, 'Staged', { sup: 'stock', bin: b }); } else setSt(x, 'Ordered', { sup, po, ordAt: nowIso(), eta, eta0: eta }); });
+      const stk = no.length - buy.length; if(stk) logIt(r, `${stk} pulled from stock · bin ${esc(b)}`);
+      if(buy.length){ logIt(r, `Ordered ${buy.length} · PO ${esc(po)} · ${esc(supName(sup))} · due ${eta === TODAY() ? 'today' : short(eta)}`); if(p.tell !== false) tellWriter(r, `Parts ordered for ${r.no} — due ${eta === TODAY() ? 'today' : short(eta)}`, `${buy.map(x => x.desc).join(', ')} · ${supName(sup)} · PO ${po}. For the customer update.`); }
+      if(!buy.length && allIn(r)) U.ask = [r.id]; U.pop = null;
+      fin(buy.length ? `Ordered ${buy.length}${stk ? ` · ${stk} pulled from stock` : ''} — due ${eta === TODAY() ? 'today' : short(eta)}${p.tell !== false && r.wr ? `. ${F(r.wr)} has the ETA.` : '.'}` : `Pulled ${stk} from stock — staged in ${b}.`); },
+    cgo: () => { const p = U.pop, r = get(p.ro); if(!r) return; const x = lines(r).find(late); if(!x || p.o == null) return; save('chase part');
+      if(p.o === 0){ setSt(x, 'Ordered', { eta: p.d }); logIt(r, `${esc(supName(x.sup))}: new date ${short(p.d)}`); }
+      else if(p.o === 1){ setSt(x, 'Backordered', { eta: '' }); logIt(r, `${esc(supName(x.sup))}: backordered, no date`); }
+      else { const po = nextPO(); setSt(x, 'Ordered', { sup: 'fp', po, ordAt: nowIso(), eta: TODAY(), eta0: TODAY(), price: String(Math.round(x.price * 105) / 100) }); logIt(r, `Re-ordered from ${esc(supName('fp'))} · PO ${po} · due today`); }
+      if(p.tell !== false) tellWriter(r, `Parts delayed on ${r.no}`, `${x.desc}: ${p.o === 0 ? 'new date ' + short(p.d) : p.o === 1 ? 'backordered, no date yet' : 'coming from ' + supName('fp') + ' today'}. For the customer update.`);
+      U.pop = null; fin(`${p.o === 0 ? 'New date ' + short(p.d) : p.o === 1 ? 'Marked backordered' : 'Coming from ' + supName('fp') + ' today'}${p.tell !== false && r.wr ? ` — ${F(r.wr)} has it for the customer.` : '.'}`); },
+    rset: t => { U.pop.why = t.dataset.v; rd(); },
+    rgo: () => { const p = U.pop, r = get(p.ro); if(!r || !p.why) return; save('send back'); try{ rtReturn(r.ro, p.why); }catch(e){} logIt(r, `Sent back to <b>${esc(F(r.route && r.route.by))}</b> · ${esc(p.why)}`); cleared(r, `Sent back · ${p.why}`); U.pop = null; fin(`Sent back — “${p.why}”.`); },
+    cset: t => { U.pop.c = t.dataset.v; rd(); },
+    sgo: () => { const p = U.pop, t = getT(p.tid); if(!t || !p.c) return; save('ship return'); t.shipped = `${md(TODAY())} · ${p.c}`; t.shippedAt = nowIso(); t.st = 'shipped'; if(p.tr) t.trk = p.tr; const ro = t.ro && getRO(t.ro); if(ro){ const r = get(ro.id); if(r) logIt(r, `${t.id} shipped · ${esc(p.c)}${p.tr ? ' · ' + esc(p.tr) : ''}`); }
+      if(t.kind === 'warranty' && typeof IB !== 'undefined'){ const wa = PG.person('Warranty admin'); if(wa) IB.send({ to: wa, k: 'fyi', src: 'parts', ro: t.ro, t: `${t.id} shipped back to Volvo`, b: `${t.desc}${t.claim ? ' · claim ' + t.claim : ''} · ${p.c}${p.tr ? ' · ' + p.tr : ''}` }); }
+      U.pop = null; fin(t.kind === 'warranty' ? `${t.id} shipped — Warranty sees it.` : `${t.id} shipped — ${usd(t.credit)} credit due once it lands.`); },
+    ckl: (t, ev) => { ev.preventDefault(); const p = U.pop; p.sel[t.dataset.pid] = !p.sel[t.dataset.pid]; p.hit = null; rd(); },
+    kgo: () => { const p = U.pop, L = dueLines().filter(x => p.sel[x.p.id]); if(!L.length) return; save('check in delivery'); const done = new Set(); const SL = p.mode === 'slip' ? parseSlip(p.slip || '').filter(x => x.stock) : [];
+      SL.forEach(x => { x.stock.raw.oh = (+x.stock.raw.oh || 0) + x.q; });
+      const stg = p.stage !== false, tmp = {};
+      L.forEach(x => { const b = stg ? (binOf(x.r) || tmp[x.r.id] || (tmp[x.r.id] = nextBin())) : ''; const cv = parseFloat(String((p.cost || {})[x.p.id] || '').replace(/[$,\s]/g, '')); const ex = cv > 0 ? { cost: cv } : {}; if(stg) setSt(x.p, 'Staged', Object.assign({ bin: b, rcvAt: nowIso() }, ex)); else setSt(x.p, 'Received', Object.assign({ rcvAt: nowIso() }, ex)); if(cv > 0){ const c = cat(x.p.pn); if(c && !(c.cost > 0)) c.raw.cost = cv; } flush(); done.add(x.r.id); logIt(x.r, `Checked in · ${esc(x.p.desc)}${stg ? ' · staged in ' + esc(b) : ' · at receiving'}`); });
+      flush(); const full = [...done].filter(id => { const r = get(id); return r && allIn(r) && !rcvd(r).length; });
+      U.pop = null; U.ask = full; if(full.length){ U.view = 'desk'; U.sel = full[0]; }
+      fin(`${L.length} part${L.length > 1 ? 's' : ''} checked in${stg ? ' and staged' : ' — waiting at receiving'}${SL.length ? ` · ${SL.map(x => '+' + x.q + ' ' + x.stock.desc.toLowerCase()).join(', ')} to stock` : ''}.`); },
+    sgadd: t => { const r = get(t.dataset.ro); if(!r) return; const x = suggest(r)[+t.dataset.i]; if(!x) return; save('add part'); x.op.op.parts = x.op.op.parts || []; x.op.op.parts.push({ id: uid('pt'), description: x.desc, partNumber: x.pn, qty: String(x.qty), price: x.price ? String(x.price) : '', status: 'Not Ordered', statusChangedAt: nowIso() }); logIt(r, `Added from past jobs · ${esc(x.desc)}`); fin(`Added the ${lc(x.desc)} — it goes on the same order.`); },
+    sgall: t => { const r = get(t.dataset.ro); if(!r) return; const L = suggest(r); if(!L.length) return; save('add parts'); L.forEach(x => { x.op.op.parts = x.op.op.parts || []; x.op.op.parts.push({ id: uid('pt'), description: x.desc, partNumber: x.pn, qty: String(x.qty), price: x.price ? String(x.price) : '', status: 'Not Ordered', statusChangedAt: nowIso() }); }); logIt(r, `Added from past jobs · ${L.map(x => esc(x.desc)).join(', ')}`); fin(`Added ${L.length} parts — they go on the same order.`); },
+    sgno: t => { U.sg[t.dataset.ro] = 1; pushToast('Hidden for this RO.'); rd(); },
+    pullahead: t => { const r = get(t.dataset.ro); if(!r) return; save('pull ahead'); const L = r.ops.filter(o => o.appr).flatMap(o => o.parts).filter(p => p.st === 'Not Ordered' && (cat(p.pn) || {}).oh >= p.qty), b = binOf(r) || nextBin();
+      L.forEach(p => { const c = cat(p.pn); c.raw.oh = c.oh - p.qty; setSt(p, 'Staged', { sup: 'stock', bin: b }); flush(); }); logIt(r, `Pulled ahead · ${L.map(p => esc(p.desc)).join(', ')} · bin ${esc(b)}`); fin(`Pulled ${L.length} to ${b}.`); },
+    sosend: () => { save('stock order'); set().soSent = nowIso(); const low = catAll().filter(c => c.min && c.oh < c.min); low.forEach(c => { c.raw.onOrder = c.min * 2 - c.oh; c.raw.onOrderAt = nowIso(); }); fin(`Stock order sent to ${supName('pdc')} — ${low.length} line${low.length === 1 ? '' : 's'}.`); },
+    ccsave: t => { const ch = []; save('shelf count'); catAll().forEach(c => { const v = U.cc[c.id]; if(v !== '' && v != null && +v !== c.oh){ ch.push(`${c.desc.toLowerCase()} ${c.oh} → ${+v}`); c.raw.oh = +v; } }); set().counted = { day: TODAY(), at: nowIso(), sh: t.dataset.sh }; U.cc = {}; fin(ch.length ? `Shelf ${t.dataset.sh} counted — ${ch.join(', ')}. On hand fixed.` : `Shelf ${t.dataset.sh} counted — everything matches.`); },
+    cmode: t => { U.pop.mode = t.dataset.v; if(U.pop.mode === 'slip' && U.pop.slip) slipSel(U.pop); rd(); },
+    cflt: t => { U.cflt = t.dataset.v; rd(); },
+    kit: t => { U.kopen[t.dataset.id] = !U.kopen[t.dataset.id]; rd(); },
+    reorder: t => { const c = catAll().find(x => x.id === t.dataset.id); if(!c) return; pushToast(`${c.desc} · ${Math.max(1, c.min * 2 - c.oh)} on the next stock order — it goes with Send on the Catalog.`); rd(); },
+    sendto: t => { const r = get(U.pop.ro), k = t.dataset.k; if(!r) return; save('send'); try{ rtSend(r.ro, k, k === 'tech' ? r.tech : '', 'From Parts', null, {}); }catch(e){ console.error(e); } logIt(r, `Parts → <b>${esc(RT_LBL[k] || k)}</b>`); U.pop = null; fin(`Sent to ${RT_LBL[k] || k} — it shows in their Inbox.`); },
+    askdone: t => { const r = get(t.dataset.ro || U.pop.ro), a = r && counterAsk(r); if(!a) return; save('handed over'); const st = IB.store().st; st[a.key] = Object.assign(st[a.key] || {}, { done: nowIso(), how: 'handed over at the counter' }); IB.flush(); logIt(r, `<b>${esc(F(a.from))}</b> helped at the counter`); U.pop = null; fin(`Done — ${F(a.from)} has it.`); },
+    cpick: t => { U.pop.cid = t.dataset.id; rd(); },
+    cgive: () => { const p = U.pop, r = get(p.ro), a = r && counterAsk(r), c = catAll().find(x => x.id === p.cid); if(!r || !c) return; save('counter part');
+      const op = (a && a.op && r.ops.find(o => o.id === a.op)) || r.ops[0]; if(!op){ pushToast('This RO has no operation to put the part on.'); return; }
+      op.op.parts = op.op.parts || []; op.op.parts.push({ id: uid('pt'), description: c.desc, partNumber: c.pn, qty: '1', price: c.price ? String(c.price) : '', status: 'Picked up', statusChangedAt: nowIso(), sup: 'stock', pkAt: nowIso(), rcvAt: nowIso() });
+      c.raw.oh = Math.max(0, c.oh - 1);
+      if(a){ const st = IB.store().st; st[a.key] = Object.assign(st[a.key] || {}, { done: nowIso(), how: 'handed over — ' + c.desc }); IB.flush(); }
+      logIt(r, `Counter · ${esc(c.desc)} to <b>${esc(F(a ? a.from : r.tech))}</b> · from stock${c.bin ? ' bin ' + esc(c.bin) : ''}`); U.pop = null; fin(`${c.desc} handed over — on ${r.no}, Op ${r.ops.indexOf(op) + 1}. ${Math.max(0, c.oh - 1)} left on the shelf.`); },
+    npgo: () => { const p = U.pop; if(!String(p.pn || p.desc || '').trim()){ pushToast('Give it a part # or a description.'); return; } save('new part'); const it = invBlank(false); it.pn = String(p.pn || '').trim(); it.desc = String(p.desc || '').trim(); it.price = String(priceOf(p.price) || ''); const cst = parseFloat(String(p.cost || '').replace(/[$,\s]/g, '')); if(cst > 0) it.cost = cst; it.bin = String(p.bin || '').trim(); const oh = String(p.oh || '').split(/[·,\/ ]+/).filter(Boolean); it.oh = +oh[0] || 0; it.min = +oh[1] || 0; invList().unshift(it); U.pop = null; U.cq = it.pn || it.desc; fin(`${it.desc || it.pn} is on the Parts list.`); },
+    oldparts: () => openPop('newpart', {}),
+    ordcsv: () => { const R = [['RO', 'Customer', 'Part', 'Part #', 'Qty', 'Supplier', 'PO', 'Ordered', 'ETA', 'Status']].concat(allLines().filter(x => x.q.st === 'Ordered' || x.q.st === 'Backordered').map(x => [x.r.no, x.r.cust, x.q.desc, x.q.pn, x.q.qty, supName(x.q.sup), x.q.po, x.q.ord, x.q.eta, x.q.st]));
+      const csv = R.map(r => r.map(v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"').join(',')).join('\n'); const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'parts-on-order-' + TODAY() + '.csv'; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); pushToast('Saved — every open order line.'); },
+    ordprint: () => printSel('.pt-print'),
+    labprint: () => printSel('.pt-print1'),
+    binsprint: () => { const b = BINS().find(x => usedBins().has(x)); if(!b){ pushToast('No bin has parts on it.'); return; } U.pop = { type: 'label', bin: b }; rd(); }
+  };
+  function printSel(sel){ const el = document.querySelector('[data-pg="parts"] ' + sel); if(!el) return; el.classList.add('pg-printme'); document.documentElement.classList.add('pg-print2'); setTimeout(() => { try{ window.print(); } finally { el.classList.remove('pg-printme'); document.documentElement.classList.remove('pg-print2'); } }, 30); }
+  /* ---------- typing and keys ---------- */
+  function input(t){ const d = t.dataset.in, p = U.pop;
+    if(d === 'cq'){ U.cq = t.value; const pos = t.selectionStart; rd(); const f = document.querySelector('[data-pg="parts"] [data-in="cq"]'); if(f){ f.focus(); try{ f.setSelectionRange(pos, pos); }catch(e){} } return; }
+    if(d === 'cc'){ const c = catAll().find(x => x.id === t.dataset.id); U.cc[t.dataset.id] = t.value; const s = t.nextElementSibling; if(s && c){ const v = t.value, df = v === '' ? null : (+v - c.oh); s.textContent = df == null ? '' : df === 0 ? 'matches' : (df > 0 ? '+' : '') + df; s.className = 'dv' + (df == null ? '' : df ? ' off' : ' ok'); } return; }
+    if(d === 'set'){ set()[t.dataset.k] = t.value; const c = t.parentNode.querySelector('.pt-ph'); if(c){ c.textContent = t.value ? 'set' : 'default'; c.classList.toggle('set', !!t.value); } return; }
+    if(!p) return;
+    if(d === 'slip'){ p.slip = t.value; slipSel(p); const pos = t.selectionStart; rd(); const f = document.querySelector('[data-pg="parts"] [data-in="slip"]'); if(f){ f.focus(); try{ f.setSelectionRange(pos, pos); }catch(e){} } return; }
+    if(d === 'sq' || d === 'cpq'){ p.q = t.value; rd(); const f = document.querySelector(`[data-pg="parts"] [data-in="${d}"]`); if(f){ f.focus(); f.setSelectionRange(f.value.length, f.value.length); } return; }
+    if(d === 'np'){ p[t.dataset.f] = t.value; return; }
+    if(d === 'cst' && p){ (p.cost = p.cost || {})[t.dataset.pid] = t.value; return; }
+    if(['hn', 'ra', 'cr', 'cm', 'po', 'tr', 'scan', 'eta'].includes(d)) p[d === 'hn' ? 'n' : d === 'scan' ? 'q' : d] = t.value; }
+  function change(t){ const d = t.dataset.in, p = U.pop;
+    if(d === 'set'){ scheduleSave(true); return; }
+    if(d === 'cat'){ const c = catAll().find(x => x.id === t.dataset.id); if(!c) return; save('catalog'); const f = t.dataset.f; c.raw[f] = f === 'bin' ? t.value.trim().toUpperCase() : Math.max(0, parseFloat(t.value) || 0); c.raw.editedAt = nowIso(); fin(); return; }
+    if(d === 'tell' && p){ p.tell = t.checked; return; }
+    if(d === 'stg' && p){ p.stage = t.checked; rd(); } }
+  function scanHit(){ const p = U.pop, q = String(p.q || '').replace(/\s/g, ''); if(!q) return; const k = invPnKey(q), x = dueLines().find(y => invPnKey(y.p.pn) === k || (q.length >= 4 && invPnKey(y.p.pn).endsWith(k)));
+    if(x){ p.sel[x.p.id] = true; p.hit = x.p.id; p.q = ''; } else { p.q = ''; pushToast(`${q} isn’t on any open order — check the packing slip.`); } rd(); setTimeout(() => { const f = document.querySelector('[data-pg="parts"] [data-in="scan"]'); if(f) f.focus(); }, 10); }
+  function fieldKey(t, ev){ const d = t.dataset.in, k = ev.key;
+    if(k === 'Escape'){ t.blur(); if(U.pop){ U.pop = null; rd(); } ev.preventDefault(); return true; }
+    if(k === 'Enter' && d === 'scan'){ ev.preventDefault(); if(String(U.pop.q || '').trim()) scanHit(); else { const b = document.querySelector('[data-pg="parts"] .tg-pop .btn-primary:not([disabled])'); if(b) b.click(); } return true; }
+    if(k === 'Enter' && (d === 'sq' || d === 'cpq')){ ev.preventDefault(); const b = document.querySelector('[data-pg="parts"] .tg-pop .pt-srr'); if(b) b.click(); return true; }
+    if(k === 'Enter' && (d === 'cat' || d === 'cc' || d === 'set')){ ev.preventDefault(); t.blur(); return true; }
+    if(k === 'Enter' && t.tagName !== 'TEXTAREA' && U.pop){ ev.preventDefault(); const b = document.querySelector('[data-pg="parts"] .tg-pop .btn-primary:not([disabled])'); if(b) b.click(); return true; }
+    return false; }
+  function move(d){ const L = flat(); if(!L.length) return; U.kb = true; const i = L.indexOf(U.sel); U.sel = i < 0 ? L[0] : L[Math.max(0, Math.min(L.length - 1, i + d))]; U.pop = null; rd(); PG.kbScroll(); }
+  function keydown(ev){
+    const k = ev.key; if(ev.ctrlKey || ev.metaKey || ev.altKey || PG.typing(ev)) return;
+    const stop = () => { ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation(); };
+    const p = U.pop;
+    if(p){ if(k === 'Escape'){ U.pop = null; rd(); return stop(); }
+      if(k === 'Enter'){ const b = document.querySelector('[data-pg="parts"] .tg-pop .btn-primary:not([disabled])'); if(b){ b.click(); return stop(); } }
+      const n = +k; if(n >= 1 && n <= 4){ const b = document.querySelector(`[data-pg="parts"] .tg-pop [data-a="oset"][data-o="${n - 1}"]:not([disabled])`) || [...document.querySelectorAll('[data-pg="parts"] .tg-pop .tg-mi:not([disabled])')][n - 1]; if(b){ b.click(); return stop(); } } return; }
+    if(k === 'j' || k === 'k'){ if(U.view !== 'desk') U.view = 'desk'; move(k === 'j' ? 1 : -1); return stop(); }
+    if(k === 'Enter' && U.view === 'desk' && U.sel){ const b = document.querySelector(`[data-pg="parts"] .tg-it[data-ro="${U.sel}"] .tg-go`); if(b){ doIt(U.sel, b); return stop(); } }
+    if(k === 'c'){ const b = document.querySelector('[data-pg="parts"] [data-a="pop"][data-p="chk"]'); if(b){ H.pop(b); return stop(); } }
+    if(k === '/'){ const b = document.querySelector('[data-pg="parts"] [data-a="pop"][data-p="srch"]'); if(b){ H.pop(b); return stop(); } }
+    if(k >= '1' && k <= '5'){ U.view = ['desk', 'order', 'shelf', 'ret', 'cat'][+k - 1]; U.pop = null; rd(); return stop(); }
+  }
+  function after(){ PG.placePop(U); if(U.kb) PG.kbScroll(); }
+  /* the Inbox: what Parts should know without opening the page */
+  if(typeof IB !== 'undefined') IB.DERIVE.push((me, role) => { if(role !== 'Parts') return []; const L = [];
+    retStore().forEach(t => { if(needs(t) && retLate(t)) L.push({ key: 'ret:' + t.id + ':' + t.st, from: 'Parsec', k: 'rem', src: 'parts', at: nowIso(), ro: t.ro, t: `${t.id} · ${retWhy(t)}`, b: retNext(t), acts: [['Open in Parts', 'page']] }); });
+    return L; });
+  PG.reg('parts', { H, U: () => U, input, change, fieldKey, keydown, after });
+  return { view, U: () => U, flush, rows, stateOf, grouped };
+})();
