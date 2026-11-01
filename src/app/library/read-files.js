@@ -13,6 +13,7 @@ function libReadFile(file){
   if(/pdf/i.test(file && file.type || "") || /\.pdf$/i.test(name)) return libReadPdf(file);
   if(/^image\//.test(file && file.type || "") || /\.(png|jpe?g|webp|bmp)$/i.test(name))
     return ocrImages([file]).then(function(t){ return { text: cleanOcrText(t), pages: null }; }, function(){ return { text: "", pages: null }; });
+  if(/^text\//.test(file && file.type || "") || /\.(txt|csv)$/i.test(name)) return file.text().then(function(t){ return { text: t, pages: null }; }, function(){ return { text: "", pages: null }; });   /* 17.1: a code list saved as text */
   return Promise.resolve({ text: "", pages: null });
 }
 function libReadPdf(file){

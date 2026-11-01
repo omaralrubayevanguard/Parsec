@@ -120,9 +120,9 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | file | what it is | KB | functions | constants |
 |---|---|---:|---:|---:|
 | `codes.js` | Fault codes in every form (P105E, P1050 FTB 17, 3226/2, MID 128 PID 110 FMI 0): reading what was typed, the label and chip text, what a code means from the Library or the built-in J1939 list. | 7 | 11 | 3 |
-| `intake.js` | Filing a document, always asked first: libIntake reads each file, shows what was found to check or change, then files it in the Library and, from an RO, links it to the operation. | 11 | 6 | 1 |
+| `intake.js` | Filing a document, always asked first: libIntake reads each file, shows what was found to check or change, then files it in the Library and, from an RO, links it to the operation. | 13 | 6 | 1 |
 | `models.js` | The Library’s Models tab: the truck pictures moved out of Settings, one row per model (Make, Model, Years, Body, Open ROs) with the view from above, Replace and Remove; the catalog and Add a picture. | 4 | 2 | 0 |
-| `read-docs.js` | Reading a document: its kind from its number (CBR, TSB, FSB, Recall, Procedure), number, release, date, title, function group, model, model years, the codes it mentions, a DTC bulletin’s code table with FTBs, and an Impact procedure’s steps, warnings, tools and torques; Volvo’s function groups. | 23 | 18 | 7 |
+| `read-docs.js` | Reading a document: its kind from its number (CBR, TSB, FSB, Recall, Procedure), number, release, date, title, function group, model, model years, the codes it mentions, a DTC bulletin’s code table with FTBs, and an Impact procedure’s steps, warnings, tools and torques; Volvo’s function groups. | 24 | 18 | 7 |
 | `read-files.js` | Reading a file for the Library: a PDF’s text and where each piece sits on the page (pdf.js), a screenshot through the built-in reader. | 3 | 3 | 0 |
 | `store.js` | The Library’s records and files: STATE.libDocs / libCodes / libRules, the files in Parsec Data/Library/<kind>/, adding without doubles, and documents on an RO’s operations (op.docs) with a copy in Attachments. | 10 | 25 | 3 |
 | `viewer.js` | A document open in a panel beside the page (libOpen): its facts, the PDF, Open in a tab; a procedure’s steps ticked from its operation; on Warranty, the documents per operation and the claim folder. | 12 | 6 | 1 |

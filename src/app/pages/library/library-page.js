@@ -83,17 +83,17 @@
     const G = {}; src.forEach(x => { const g = String(x.fgrp || '').charAt(0) || '-'; G[g] = (G[g] || 0) + 1; });
     const fgs = Object.keys(G).sort((a, b) => (a === '-') - (b === '-') || a.localeCompare(b));
     const chip = (v, t, n) => `<button class="tg-chip${U.fg === v ? ' on' : ''}" data-a="fg" data-v="${v}">${esc(t)}${n != null ? `<small>${n}</small>` : ''}</button>`;
-    return `<div class="lib-tools"><label class="lib-q">${ic('search', 15)}<input id="lib-q" data-in="q" value="${esc(U.q)}" placeholder="${U.tab === 'codes' ? 'Search codes — P1050, 3226, clutch, slow gear changes' : U.tab === 'models' ? 'Find a model — VNL 760, VHD, 2019' : U.tab === 'proc' ? 'Search procedures — clutch, 4134, VN' : 'Search number, title, code, truck'}" autocomplete="off" spellcheck="false" aria-label="Search the Library"></label>
+    return `<div class="lib-tools"><label class="lib-q">${ic('search', 15)}<input id="lib-q" data-in="q" value="${esc(U.q)}" placeholder="${U.tab === 'codes' ? 'Search codes — P1050, 3226, clutch, slow gear changes' : U.tab === 'models' ? 'Find a model — VNL 760, VHD, 2019' : U.tab === 'proc' ? 'Search procedures — clutch, 4134, VN' : U.tab === 'diag' ? 'Search diagnostics — no crank, 2841, MID 128' : 'Search number, title, code, truck'}" autocomplete="off" spellcheck="false" aria-label="Search the Library"></label>
       ${fgs.length > 1 || U.fg ? `<div class="lib-fgs" role="group" aria-label="Function group">${chip('', 'All')}${fgs.map(g => chip(g, g === '-' ? 'No group' : g + ' ' + LIB_FG[g], G[g])).join('')}</div>` : ''}
       ${C ? `<div class="lib-ctx">For <b>RO ${esc(C.ro.roNumber || '')}</b>${C.op ? ` · OP ${(C.ro.operations || []).indexOf(C.op) + 1} ${esc(String(C.op.complaint || '').slice(0, 40))}` : ''}${C.model ? ' · ' + esc(C.model) : ''} — its codes, function groups${U.tab === 'recall' ? ' and recalls' : ''}<button class="lib-ctx-x" data-a="all" title="Show the whole Library">Show all ${ic('x', 12)}</button></div>` : ''}</div>`;
   }
-  function list(){ return U.tab === 'codes' ? codesList() : U.tab === 'models' ? libModelsHtml(U.q) : U.tab === 'proc' ? procList() : docsList(); }
+  function list(){ return U.tab === 'codes' ? codesList() : U.tab === 'models' ? libModelsHtml(U.q) : U.tab === 'proc' || U.tab === 'diag' ? procList(U.tab) : docsList(); }
 
   /* procedures: Impact's table with Model and Year, under function group headings; a column header sorts, again reverses */
   const PCOLS = [['fgrp', 'Fgrp'], ['title', 'Title'], ['info', 'Info type'], ['num', 'ID / Operation'], ['model', 'Model'], ['years', 'Year']];
-  function procList(){
-    const L = docsOf('proc'), sk = U.sk, sd = U.sd;
-    if(!L.length) return empty(libKind('proc'));
+  function procList(kind){
+    const L = docsOf(kind), sk = U.sk, sd = U.sd;
+    if(!L.length) return empty(libKind(kind));
     const val = d => sk === 'num' ? (d.opNo || d.num || '') : sk === 'years' ? String(d.years || '').replace(/\D.*$/, '') : String(d[sk] || '').toLowerCase();
     L.sort((a, b) => String(a.fgrp || '~').slice(0, 2).localeCompare(String(b.fgrp || '~').slice(0, 2)) || (val(a) < val(b) ? -sd : val(a) > val(b) ? sd : 0));
     let last = null, h = '';
@@ -152,7 +152,7 @@
         const on = U.open === r.key, F = keys(r.ftb), D = r.builtIn ? [] : libDocsForCode(r.key);
         h += `<div class="lib-row lib-code${on ? ' on' : ''}" data-a="code" data-k="${esc(r.key)}" role="button" tabindex="0" aria-expanded="${on}">
           <span class="lib-c-code"><span class="lib-fc"><i></i><span class="mono">${esc(r.key)}</span></span></span>
-          <span class="lib-c-t"><b>${esc(r.title)}</b>${(r.alt || []).length ? `<small>also: ${esc(r.alt.join(' · '))}</small>` : ''}</span>
+          <span class="lib-c-t"><b>${esc(r.title || 'See the document')}</b>${(r.alt || []).length ? `<small>also: ${esc(r.alt.join(' · '))}</small>` : ''}</span>
           <span class="lib-c-ftb">${F.length ? F.map(n => `<span class="lib-ftb mono" title="FTB ${esc(n)} — ${esc(r.ftb[n].d || '')}">${esc(n)}</span>`).join('') : (r.builtIn ? '<small>FMI</small>' : '')}</span>
           <span class="lib-c-u">${D.length ? pl(D.length, 'document') : ''}</span>${ic('chev', 13)}</div>`;
         if(on) h += `<div class="lib-ftbs">${F.map(n => `<div class="lib-ftb-r"><b class="mono">FTB ${esc(n)}</b><span>${esc(r.ftb[n].d || '—')}${r.ftb[n].s ? `<small>${esc(r.ftb[n].s)}</small>` : ''}</span></div>`).join('')

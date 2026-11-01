@@ -23,7 +23,7 @@ function libOpen(d, page, ctx){
   var k = libKind(d.kind) || {}, w = document.createElement("aside");
   w.className = "lib-view"; w.setAttribute("aria-label", libDocChipText(d));
   var facts = [d.date, d.fgrp ? "Fgrp " + d.fgrp + (libFgName(d.fgrp) ? " · " + libFgName(d.fgrp).replace(/^\d+ /, "") : "") : "", d.model, (d.codes || []).length ? d.codes.length + (d.codes.length === 1 ? " code" : " codes") : ""].filter(Boolean);
-  if(d.kind === "proc" && d.proc){ libProcView(w, d, ctx); return; }
+  if((d.kind === "proc" || d.kind === "diag") && d.proc){ libProcView(w, d, ctx); return; }
   w.innerHTML = '<header class="lib-view-h"><span class="lib-chip k-' + libE(d.kind) + '"><i></i>' + libE(k.one || "Document") + '</span>'
     + '<div class="lib-view-t"><b class="mono">' + libE(libDocLabel(d)) + '</b><span>' + libE(d.title || "") + '</span></div>'
     + '<button type="button" class="lib-view-b" data-lv="tab" title="Open it in a new browser tab">Open in a tab</button>'

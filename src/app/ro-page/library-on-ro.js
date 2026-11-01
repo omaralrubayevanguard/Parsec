@@ -94,10 +94,10 @@ function libDocStrip() {
 function libProcsFor(job) {
   var txt = [job.complaint, job.work, job.cause, job.correction].concat((job.offNotes || []).map(function (n) { return n.text; })).join(' ');
   var nums = {}; String(txt || '').replace(/\b(\d{4}-\d{2}-\d{2}-\d{2})\b/g, function (m, n) { nums[n] = 1; return m; });
-  var fg = libOpFgrp(job).slice(0, 2), P = libDocs().filter(function (d) { return d && d.kind === 'proc'; }), out = [];
+  var fg = libOpFgrp(job).slice(0, 2), P = libDocs().filter(function (d) { return d && (d.kind === 'proc' || d.kind === 'diag'); }), out = [];
   P.forEach(function (d) { if (nums[d.opNo || d.num]) out.push({ d: d, why: 'its operation number ' + (d.opNo || d.num) + ' · ' + (d.title || '') }); });
   if (fg) P.forEach(function (d) { if (!nums[d.opNo || d.num] && String(d.fgrp || '').slice(0, 2) === fg) out.push({ d: d, why: (d.title || '') + ' · function group ' + fg }); });
   return out;
 }
 /* " · 23/80" on a procedure's chip: the steps ticked on this operation */
-function libStepsTxt(op, d) { if (!d || d.kind !== 'proc' || !d.proc) return ''; var n = libProcDone(op, d).length; return ' \u00b7 ' + n + '/' + d.proc.steps.length; }
+function libStepsTxt(op, d) { if (!d || (d.kind !== 'proc' && d.kind !== 'diag') || !d.proc) return ''; var n = libProcDone(op, d).length; return ' \u00b7 ' + n + '/' + d.proc.steps.length; }

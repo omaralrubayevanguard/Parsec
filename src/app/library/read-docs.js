@@ -13,13 +13,14 @@
 
 /* the kinds, and the numbers that say which kind a document is (the shop's own rules; more are learned in STATE.libRules) */
 var LIB_KINDS = [
-  { k: "codes",  tab: "Fault codes", one: "Fault code", dir: "", page: true },
+  { k: "codes",  tab: "Fault codes", one: "Fault codes", dir: "Fault codes", page: true, file: true },   /* 17.1: a page of codes, and a kind you file (a DTC list) — the codes are read only for this kind */
   { k: "cbr",    tab: "CBRs",        one: "CBR",        dir: "CBR" },
   { k: "tsb",    tab: "TSBs",        one: "TSB",        dir: "TSB" },
   { k: "fsb",    tab: "FSBs",        one: "FSB",        dir: "FSB" },
   { k: "recall", tab: "Recalls",     one: "Recall",     dir: "Recalls" },
   { k: "models", tab: "Models",      one: "Model",      dir: "", page: true },   /* the truck pictures (trucks/), not documents */
-  { k: "proc",   tab: "Procedures",  one: "Procedure",  dir: "Procedures" }
+  { k: "proc",   tab: "Procedures",  one: "Procedure",  dir: "Procedures" },
+  { k: "diag",   tab: "Diagnostics", one: "Diagnostic", dir: "Diagnostics" }   /* 17.1: Impact's fault tracing and diagnostic steps, read like a procedure */
 ];
 var LIB_NUM_RULES = [
   [/^(RVXX\d{4}|S\d{4}|C\d{4})$/, "recall"],               /* recalls: RVXX2601, S1234, C1234 */
@@ -141,6 +142,7 @@ function libDocRead(text, fileName, pages){
   }
   if(!r.rel && (m = /\brel(?:ease)?\.?\s*:?\s*(\d{1,2})\b/i.exec(name + " " + one))) r.rel = ("0" + m[1]).slice(-2);
   r.kind = libKindOf(r.num);
+  if(r.kind === "proc" && /diagnos|fault trac|troubleshoot/i.test(r.info || "")) r.kind = "diag";   /* 17.1: Impact's Info type says Diagnostics */
   if(r.kind === "tsb" && !r.fgrp && (m = /^V-(\d{3})/.exec(r.num))) r.fgrp = m[1];
 
   /* the title: Subject:, Impact's line, else the first line that isn't page furniture */
@@ -161,13 +163,14 @@ function libDocRead(text, fileName, pages){
   if(md){ var seen = {}; r.model = md.map(function(x){ return x.replace(/\s/g, ""); }).filter(function(x){ if(seen[x]) return false; seen[x] = 1; return true; }).slice(0, 4).join(", "); }
 
   r.years = libYears(one);
-  if(r.kind === "proc") r.proc = libProcRead(raw);   /* an Impact procedure: steps, warnings, tools, torques */
+  if(r.kind === "proc" || r.kind === "diag") r.proc = libProcRead(raw);   /* an Impact procedure: steps, warnings, tools, torques */
   r.table = libDocCodeTable(T);
   /* with the page positions, the FTB wording comes straight from its column */
   if(pages && r.table.length){ var byPos = libFtbFromPages(pages);
     r.table.forEach(function(row){ var F = byPos[row.key]; if(F && Object.keys(F).length) row.ftb = F; }); }
   r.codes = libCodesIn(T, r.num);
   r.table.forEach(function(row){ if(r.codes.indexOf(row.key) < 0) r.codes.push(row.key); });
+  if(r.table.length >= 2){ r.numKind = r.kind; r.kind = "codes"; }   /* 17.1: a DTC list files as Fault codes — the codes are read only for that kind */
   return r;
 }
 

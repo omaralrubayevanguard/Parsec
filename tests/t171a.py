@@ -36,7 +36,7 @@ async def main():
         d = await pg.evaluate(f"(()=>{{ const r=__tg.libDocRead({json.dumps(DEALER)}, 'x.pdf'); return [r.kind, r.num, r.date, r.title]; }})()")
         ok(d == ["fsb", "SNM23-002", "2023-08-23", "EGR Cooler"], f"a dealer bulletin: FSB SNM23-002, its date and subject ({d})")
         t = await pg.evaluate(f"(()=>{{ const r=__tg.libDocRead({json.dumps(BULLETIN)}, 'tcm.pdf'); return {{ k:r.kind, n:r.num, rel:r.rel, fg:r.fgrp, mod:r.mod, title:r.title, rows:r.table.map(x=>[x.key, x.title, Object.keys(x.ftb).join(','), (x.ftb['17']||{{}}).d]) }}; }})()")
-        ok(t["k"] == "tsb" and t["n"] == "430-13" and t["rel"] == "01" and t["fg"] == "430" and t["mod"] == "TCM", f"a Service Bulletin: TSB 430-13 rel 01, group 430, TCM ({t['k']} {t['n']} {t['rel']} {t['fg']} {t['mod']})")
+        ok(t["k"] == "codes" and t["n"] == "430-13" and t["rel"] == "01" and t["fg"] == "430" and t["mod"] == "TCM", f"a DTC bulletin (Service Bulletin 430-13 rel 01, group 430, TCM) files as Fault codes ({t['k']} {t['n']} {t['rel']} {t['fg']} {t['mod']})")
         ok(len(t["rows"]) == 2 and t["rows"][0][:3] == ["P1050", "Transmission Range, Position", "17,18"], f"its code table, FTBs included ({t['rows']})")
         ok(t["rows"][0][3] == "Voltage above normal, or shorted to high source", f"FTB 17's wording ({t['rows'][0][3]})")
         f2 = await pg.evaluate("__tg.libDocRead('', 'RVXX2601 rel 02 Potential vehicle roll.pdf')")
@@ -44,7 +44,7 @@ async def main():
 
         # ---- filing: asked first, from the Library page
         await pg.evaluate("(()=>{ localStorage.removeItem('tec_viewas'); localStorage.removeItem('tec_out'); __tg.pxSignedIn(); const U=__tg.UI(); U.view='library'; __tg.render(); })()"); await pg.wait_for_timeout(500)
-        ok(await pg.evaluate("['codes','cbr','tsb','fsb','recall','models','proc'].every(k=>!!document.querySelector('[data-pg=library] .lib-tab.k-'+k))"), "the Library: its tabs, Models and Procedures too")
+        ok(await pg.evaluate("['codes','cbr','tsb','fsb','recall','models','proc','diag'].every(k=>!!document.querySelector('[data-pg=library] .lib-tab.k-'+k))"), "the Library: its tabs, Models, Procedures and Diagnostics too")
         await pg.evaluate(f"__tg.libIntake([new File([{json.dumps(DEALER)}], 'SNM23-002 EGR Cooler.txt', {{type:'text/plain'}})], null, ()=>{{}})"); await pg.wait_for_timeout(500)
         card = await pg.evaluate("(()=>{ const w=document.querySelector('.lib-ask'); return w ? [w.querySelector('#lib-f-num').value, (w.querySelector('.lib-kd.on')||{dataset:{}}).dataset.kind] : null; })()")
         ok(card == ["SNM23-002", "fsb"], f"the card shows what was found before anything is filed ({card})")
@@ -58,6 +58,25 @@ async def main():
         ok(await pg.evaluate("!document.querySelector('#lib-f-learnw').hidden"), "…and offers to remember EC for Recalls")
         await pg.click(".lib-ask [data-lib=go]"); await pg.wait_for_timeout(500)
         ok(await pg.evaluate("__tg.libKindOf('EC0040')") == "recall", "EC numbers are Recalls from now on")
+        # 17.1: the codes are read only when the kind is Fault codes; any other kind is filed as it is
+        TXT = "TRUCKS DEALER BULLETIN\nBulletin: SNV24-010\nDate: May 2, 2024\nSubject: Boost sensor\nCodes P0101 and P0102 may set after the update."
+        await pg.evaluate(f"__tg.libIntake([new File([{json.dumps(TXT)}], 'SNV24-010.txt', {{type:'text/plain'}})], null, ()=>{{}})"); await pg.wait_for_timeout(500)
+        f1 = await pg.evaluate("(document.querySelector('#lib-f-found')||{}).textContent||''")
+        ok("Filed as it is" in f1 and await pg.evaluate("document.querySelector('.lib-ask .lib-kd.on').dataset.kind") == "fsb", f"an FSB: filed as it is, its codes not read ({f1})")
+        await pg.click(".lib-ask .lib-kd.k-codes"); await pg.wait_for_timeout(150)
+        f2 = await pg.evaluate("document.querySelector('#lib-f-found').textContent")
+        ok("P0101" in f2 and "Fault codes" in f2, f"pick Fault codes: the codes it found ({f2})")
+        await pg.click(".lib-ask .lib-kd.k-fsb"); await pg.wait_for_timeout(150); await pg.click(".lib-ask [data-lib=go]"); await pg.wait_for_timeout(500)
+        ok(not await pg.evaluate("__tg.libCodesAll().some(c=>c.key==='P0101')") and await pg.evaluate("(__tg.libDocs().find(d=>d.num==='SNV24-010')||{}).codes.length") == 0, "filed as an FSB: no codes added")
+        await pg.evaluate("__tg.libIntake([new File(['P0101 Mass air flow sensor range\\nP0102 Mass air flow sensor low'], 'boost codes.txt', {type:'text/plain'})], null, ()=>{})"); await pg.wait_for_timeout(500)
+        await pg.click(".lib-ask .lib-kd.k-codes"); await pg.wait_for_timeout(150)
+        ok(not await pg.evaluate("document.querySelector('.lib-ask [data-lib=go]').disabled"), "a code list needs no number")
+        await pg.click(".lib-ask [data-lib=go]"); await pg.wait_for_timeout(500)
+        ok(await pg.evaluate("__tg.libCodesAll().some(c=>c.key==='P0101')"), "filed as Fault codes: its codes are in Fault codes")
+        # 17.1: Impact's diagnostics go to Diagnostics, read into steps
+        DG = "ID/Operation 2841-03-02-01\nPath 284/Engine/Diagnostics/Service\nPublish date 2024-03-01\nNo crank, fault tracing\n1\tCheck the battery voltage.\n2\tCheck the starter relay."
+        dg = await pg.evaluate(f"(()=>{{ const r=__tg.libDocRead({json.dumps(DG)}, 'diag.pdf'); return [r.kind, r.num, r.info]; }})()")
+        ok(dg[0] == "diag", f"Impact's Info type Diagnostics files under Diagnostics ({dg})")
         # a DTC bulletin: its codes go into Fault codes
         await pg.evaluate(f"(()=>{{ const r=__tg.libDocRead({json.dumps(BULLETIN)}, 'tcm.pdf'); return __tg.libAdd(Object.assign(r, {{}}), new Blob(['%PDF'], {{type:'application/pdf'}}), 'tcm.pdf'); }})()"); await pg.wait_for_timeout(400)
         mean = await pg.evaluate("__tg.libCodeMeaning(__tg.libCodeParse('P1050 FTB 17'))")

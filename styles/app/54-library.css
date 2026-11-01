@@ -3,11 +3,11 @@
    All styles/app files go into one <style id="v190pg"> block, in file-name order; the number keeps that order. */
 
 /* ---------- the kinds' colours: one dot per kind, the same on every page ---------- */
-.tg,.lib-view,.lib-ask{--lk-codes:#2F8795;--lk-cbr:#6C69C8;--lk-tsb:#86643A;--lk-fsb:#AD7210;--lk-recall:#C0503F;--lk-proc:#857F75;}
-:root:is([data-theme="ivd"],[data-theme="vvd"],[data-theme="dark"]) :is(.tg,.lib-view,.lib-ask){--lk-codes:#58B3C0;--lk-cbr:#9E9DF0;--lk-tsb:#D1B184;--lk-fsb:#E2A84C;--lk-recall:#EC7F6C;--lk-proc:#8D897F;}
+.tg,.lib-view,.lib-ask{--lk-codes:#2F8795;--lk-cbr:#6C69C8;--lk-tsb:#86643A;--lk-fsb:#AD7210;--lk-recall:#C0503F;--lk-proc:#857F75;--lk-diag:#3F7FBF;}
+:root:is([data-theme="ivd"],[data-theme="vvd"],[data-theme="dark"]) :is(.tg,.lib-view,.lib-ask){--lk-codes:#58B3C0;--lk-cbr:#9E9DF0;--lk-tsb:#D1B184;--lk-fsb:#E2A84C;--lk-recall:#EC7F6C;--lk-proc:#8D897F;--lk-diag:#7EB0E6;}
 :is(.lib-chip,.lib-tab,.lib-kd).k-codes i{background:var(--lk-codes);} :is(.lib-chip,.lib-tab,.lib-kd).k-cbr i{background:var(--lk-cbr);}
 :is(.lib-chip,.lib-tab,.lib-kd).k-tsb i{background:var(--lk-tsb);} :is(.lib-chip,.lib-tab,.lib-kd).k-fsb i{background:var(--lk-fsb);}
-:is(.lib-chip,.lib-tab,.lib-kd).k-recall i{background:var(--lk-recall);} :is(.lib-chip,.lib-tab,.lib-kd).k-proc i{background:var(--lk-proc);}
+:is(.lib-chip,.lib-tab,.lib-kd).k-recall i{background:var(--lk-recall);} :is(.lib-chip,.lib-tab,.lib-kd).k-proc i{background:var(--lk-proc);} :is(.lib-chip,.lib-tab,.lib-kd).k-diag i{background:var(--lk-diag);}
 
 /* ---------- the page: one panel, full height, like Assets ---------- */
 .main.v-library{padding:0 !important;}
@@ -170,7 +170,7 @@ button.lib-chip:focus-visible{outline:2px solid var(--tg-acc,#86643A);outline-of
 .wa-lib-save{margin-left:auto;}
 
 /* ---------- a procedure beside the page: the steps, ticked as you go ---------- */
-.lib-view .lib-chip.k-proc i{background:var(--lk-proc);}
+.lib-view .lib-chip.k-proc i{background:var(--lk-proc);} .lib-view .lib-chip.k-diag i{background:var(--lk-diag);}
 .lib-view-proc .lib-view-t b{font:600 14px/18px "Geist","Inter","Segoe UI",system-ui,sans-serif;}
 .lib-seg{display:inline-flex;gap:2px;padding:2px;border-radius:8px;background:var(--v-fill);}
 .lib-seg button{all:unset;cursor:pointer;height:26px;padding:0 10px;border-radius:6px;font-size:12.5px;font-weight:500;color:var(--v-ink2);}

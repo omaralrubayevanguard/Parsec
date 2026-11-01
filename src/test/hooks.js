@@ -5,4 +5,4 @@ window.__tg = Object.assign({ S: function(){ return STATE; }, UI: function(){ re
 /* Parsec 17.1: the Library */
 Object.assign(window.__tg, { libCodeParse: libCodeParse, libCodeLabel: libCodeLabel, libCodeShort: libCodeShort, libCodeMeaning: libCodeMeaning, libDocRead: libDocRead, libKindOf: libKindOf, libAdd: libAdd, libAttach: libAttach, libDocs: libDocs, libOpen: libOpen, libClose: libClose, libIntake: libIntake, libOpenFor: libOpenFor, libRoDocs: libRoDocs, libOpFgrp: libOpFgrp, libDocsForCode: libDocsForCode, LIBPG: LIBPG });
 /* Parsec 17.1 (B): the side bar's order and the department tabs */
-Object.assign(window.__tg, { PERM_ACTS: PERM_ACTS, PERM_PAGES: PERM_PAGES, pxaOrder: pxaOrder, pxaHidden: pxaHidden, dpHome: dpHome, dpCareerOk: dpCareerOk });
+Object.assign(window.__tg, { libCodesAll: libCodesAll, libReadFile: libReadFile, PERM_ACTS: PERM_ACTS, PERM_PAGES: PERM_PAGES, pxaOrder: pxaOrder, pxaHidden: pxaHidden, dpHome: dpHome, dpCareerOk: dpCareerOk });
