@@ -241,6 +241,7 @@ function pxMePop(){
     + '<div class="px-sep"></div>'
     
     + sgSizeRow() + ptipMenuRow() + sgThemeRow()
+    + pxaMenuHtml()   /* 17.1: hidden pages, and arranging the side bar */
     + '<div class="px-sep"></div>'
     + '<button class="px-mi" data-action="px-profile" data-s="me">' + pxI("gear", 15) + 'All settings…<span class="meta' + (warn ? ' wt' : '') + '">' + (warn ? '<i></i>' + esc(pxBkShort()) : 'everything, in one place') + '</span></button>';
   if(staffN) h += lgMeMenu(st);   /* Parsec 13: switch to someone, step away, log out */

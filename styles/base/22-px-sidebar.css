@@ -243,3 +243,24 @@ html[data-size=floor] .px-rail .pxr-nav{gap:0;}
 /* ---- Triage: Who has it takes the row when Ready to close isn't showing ---- */
 .tg-two.one{grid-template-columns:minmax(0,1fr);}
 @media (min-width:1401px){ .tg-two.one .tg-kv{grid-template-columns:96px minmax(0,1fr) 96px minmax(0,1fr);} }
+
+/* ---- arranging the side bar (Parsec 17.1 · shell/nav-arrange.js): press and hold a page, drag, a switch per page ---- */
+.px-rail .pxr-nav [data-view]{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;}
+.px-rail .pxr-nav.pxa{gap:3px;}
+.pxa-row{cursor:grab;touch-action:none;background:var(--px-fill);color:var(--px-ink2);}
+.pxa-row:hover{background:var(--px-sel);}
+.pxa-row:focus-visible{outline:2px solid var(--px-acc);outline-offset:-2px;}
+.pxa-row.off{background:transparent;color:var(--px-ink4);box-shadow:inset 0 0 0 1px var(--px-hair);}
+.pxa-row.off .pxr-tl{text-decoration:line-through;text-decoration-color:var(--px-ink4);}
+.pxa-row.drag{cursor:grabbing;z-index:2;background:var(--px-panel);color:var(--px-ink);box-shadow:var(--px-sh-raised),0 0 0 1px var(--px-acc);transform:scale(1.03);}
+.pxr-nav.dragging .pxa-row:not(.drag){cursor:grabbing;}
+.pxa-grip{width:8px;height:14px;margin-right:9px;flex:none;opacity:.55;background:radial-gradient(circle,currentColor 1.1px,transparent 1.4px) 0 0/4px 4.6px;}
+.pxa-sw{all:unset;box-sizing:border-box;position:relative;width:28px;height:16px;border-radius:8px;flex:none;cursor:pointer;background:var(--px-acc);transition:background-color .15s;}
+.pxa-sw i{position:absolute;top:2px;left:14px;width:12px;height:12px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:left .15s;}
+.pxa-sw[aria-checked="false"]{background:var(--px-ink4);} .pxa-sw[aria-checked="false"] i{left:2px;}
+.pxa-sw:focus-visible{outline:2px solid var(--px-acc);outline-offset:2px;}
+.pxa-bar{display:flex;flex-wrap:wrap;gap:6px;flex:none;margin:6px 0 2px;padding:8px;border-radius:10px;background:var(--px-fill);font-size:11.5px;color:var(--px-ink3);}
+.pxa-bar small{flex:1 0 100%;line-height:1.35;}
+.pxa-bar .px-btn{flex:1 1 auto;justify-content:center;}
+.pxa-mh{padding:6px 10px 2px;font-size:11px;font-weight:600;color:var(--px-ink4);text-transform:uppercase;letter-spacing:.04em;}
+@media (prefers-reduced-motion:reduce){ .pxa-row.drag{transform:none;} }

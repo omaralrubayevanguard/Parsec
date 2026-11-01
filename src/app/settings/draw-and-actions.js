@@ -142,6 +142,7 @@ function pxKv(k, v){ return '<div class="px-kv"><span>' + k + '</span><b>' + v +
 /* ---------- actions ---------- */
 function pxAct(a, t, e){
   if(a.indexOf("px-sg-") === 0) return sgAct(a, t, e);
+  if(a.indexOf("px-arr-") === 0) return pxaAct(a, t);   /* 17.1: arranging the side bar */
   switch(a){
     case "px-side": pxSideToggle(); return true;
     case "px-shin": case "px-shin-x": case "px-shin-go": return rcPxAct(a);

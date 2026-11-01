@@ -158,6 +158,7 @@ access/admin-page/_close.js
 access/admin-page/view.js
 
 shell/nav-rail.js
+shell/nav-arrange.js
 shell/rail-popovers.js
 
 kit/tooltip-engine.js

@@ -52,7 +52,8 @@ function pmShellHtml(){
 function pmMoreHtml(){
   var a = pmAllowed(), me = viewAsStaff(), nm = typeof pxMeName === "function" ? pxMeName() : (me ? me.name : "Admin"), role = typeof pxMeRole === "function" ? pxMeRole() : (me ? me.role : "Admin");
   var sh = null; try{ sh = openShift(); }catch(e){}
-  var grid = PM_GROUPS.map(function(g){ var L = g[1].filter(function(k){ return a[k]; }); if(!L.length) return '';
+  var ord = typeof pxaOrder === "function" ? pxaOrder() : [], rk = function(k){ var i = ord.indexOf(k); return i < 0 ? 999 : i; };   /* 17.1: the side bar's order */
+  var grid = PM_GROUPS.map(function(g){ var L = g[1].filter(function(k){ return a[k]; }).sort(function(x, y){ return rk(x) - rk(y); }); if(!L.length) return '';
     return (g[0] ? '<div class="pm-gh">' + esc(g[0]) + '</div>' : '') + '<div class="pm-grid">' + L.map(function(k){ var b = pmBadge(k);
       return '<button class="pm-pg' + (pmIsOn(k) && UI.view !== "profile" ? ' on' : '') + '" data-action="nav" data-view="' + k + '">' + pmIco(k, 24) + '<span>' + esc(PM_NAME[k] === "ROs" ? "RO list" : PM_NAME[k] || a[k]) + '</span>' + (b ? '<em>' + b + '</em>' : '') + '</button>'; }).join('') + '</div>'; }).join('');
   var clock = sh ? '<div class="pm-clk"><i class="on"></i><span><b>On the clock since ' + esc(fmtTime(sh.in)) + '</b><small>Clock out for lunch, a break or the day</small></span><button class="pm-btn" data-action="shift-out">Clock out</button></div>'

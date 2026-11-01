@@ -415,6 +415,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `live-time.js` | The second-by-second tick: tickLive patches only the figures that move (clocks, elapsed), never a full render while you are typing (safeToRedraw). | 3 | 3 | 2 |
 | `modals.js` | modalHtml: the app's pop-up dialogs drawn from UI.modal (new RO, edit punch, PIN, reasons, backups, …) and the small date helpers they share. | 34 | 6 | 0 |
 | `motion.js` | The micro-interactions (Parsec 10): MI holds what is animating; pmBeforeRender / pmAfterRender glide cards between renders; pmStageNotice flashes a stage. | 6 | 6 | 2 |
+| `nav-arrange.js` | Arranging the side bar: press and hold a page, then drag; a switch hides a page (the name menu keeps it); the shop’s order (the manager) and each person’s own. | 11 | 27 | 2 |
 | `nav-rail.js` | The nav rail: one column, every icon in the same box; PX_GROUPS orders the pages; the narrow (folded) state, the clock row, and who is signed in. | 7 | 12 | 2 |
 | `page-search.js` | The page search window (Ctrl K and each page's search icon): PSM finds ROs, people and parts, draws the results, and jumps to one (psmPick). | 9 | 9 | 1 |
 | `rail-popovers.js` | The two pop-overs off the rail (the clock, the person) and the tooltip mode row (PTIP_MODES / ptipSetMode). | 4 | 6 | 1 |

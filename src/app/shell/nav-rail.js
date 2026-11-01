@@ -54,11 +54,12 @@ function pxRailHtml(badgeCount){
   try{ wcNeed = wcNeedCount(); }catch(e){}
   try{ nOpen = STATE.ros.filter(function(r){ return r.id !== SHOP_RO_ID && !r.shop && !roIsDone(r); }).length; }catch(e){}
   var badge = { warranty: wcNeed, rolist: nOpen, ros: nOpen, triage: UI.view !== "triage" ? (UI.tgBadgeN || 0) : 0, foreman: UI.view !== "foreman" ? (UI.fmBadgeN || 0) : 0 };
-  var seen = { inbox: 1 }, groups = PX_GROUPS.map(function(g){ return [g[0], g[1].filter(function(k){ seen[k] = 1; return allowed[k]; })]; });
+  var arr = PXA.on, seen = { inbox: 1 }, groups = [["", pxaOrder()]].map(function(g){ return [g[0], g[1].filter(function(k){ seen[k] = 1; return allowed[k] && (arr || !pxaIsHidden(k)); })]; });   /* 17.1: your order, your hidden pages (nav-arrange.js) */
   var extra = Object.keys(allowed).filter(function(k){ return !seen[k]; });
   if(extra.length) groups.push(["More", extra]);
   var row = function(k){
     var p = allowed[k], on = !prof && cur && p[0] === cur[0], b = badge[k] || 0;
+    if(arr) return pxaRow(k, p, ivIco(IV_NAV_IC[k], 18) || NAV_ICONS[k] || '');
     var bc = k === "rolist" || k === "ros" ? ' n' : k === "triage" ? ' tg-lt' + (UI.tgBump ? ' bump' : '') : k === "foreman" ? (UI.fmBadgeLate ? ' late' : '') : '';
     var bt = k === "triage" ? b + ' late on the yard' : k === "foreman" ? (UI.fmBadgeTip || '') : k === "warranty" ? b + ' to file or fix' : b + ' open';
     return '<button class="pxr-row" data-action="nav" data-view="' + k + '" title="' + esc(p[1]) + '"' + (on ? ' aria-current="page"' : '') + '>'
@@ -72,13 +73,13 @@ function pxRailHtml(badgeCount){
     return g[1].map(row).join('');   /* Parsec 12.2: no Inbox row, no lines or headings */
   }).join('');
   var mini = document.documentElement.classList.contains("iv-mini") || (pxNarrow() && !UI.pxPeek);
-  return '<header class="pz-hdr iv-side px-rail" data-key="pz-hdr">'
+  return '<header class="pz-hdr iv-side px-rail' + (arr ? ' px-arr' : '') + '" data-key="pz-hdr">'
     + '<div class="pxr-top"><button class="pxr-row pxr-brand" data-action="px-side" title="' + (mini ? 'Open the sidebar  [' : 'Parsec') + '" aria-label="' + (mini ? 'Open the sidebar' : 'Parsec') + '">'
     +   '<span class="pxr-ic"><span class="lg">' + PX_LOGO + '</span><span class="ex">' + pxI("sidebar", 18) + '</span></span><span class="pxr-tl"><b>Parsec</b></span></button>'
     +   '<button class="pxr-col" data-action="px-side" title="Close the sidebar  [" aria-label="Close the sidebar">' + pxI("sidebar", 16) + '</button></div>'
     + '<button class="pxr-row pxr-find" data-action="open-palette" title="Search — RO, VIN, unit, customer or part  Ctrl K"><span class="pxr-ic">' + pxI("search", 18) + '</span><span class="pxr-tl">Search</span><span class="pxr-kbd">Ctrl K</span></button>'
     + pxClockRow()
-    + '<nav class="pxr-nav" aria-label="Pages">' + nav + '</nav>'
+    + '<nav class="pxr-nav' + (arr ? ' pxa' : '') + '" aria-label="Pages"' + (arr ? ' role="list"' : '') + '>' + nav + '</nav>' + (arr ? pxaBar() : '')
     + pxThemeStrip(mini) + pxMeRow()
     + '</header>';
 }
