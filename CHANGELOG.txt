@@ -1,5 +1,25 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 16.2 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 16.3 is the newest.
+
+Parsec 16.3 — every RO number opens its RO · one picture per RO · shop buttons by department · the customer contact
+  (Your picks from "Parsec RO global settings ideas mock-up.html".)
+  RO numbers:
+  · Every RO number on every page opens its RO — RO list, Technician, Foreman, Parts, Warranty, Triage, Manager, Time Log, messages, Fixes, Assets, Career. Plain until you point at it, then a small ↗; Back returns to where you were
+  · Point at an RO number for half a second for a peek: the picture, RO · opened, customer, truck, status, tech and contact. Click opens it
+  · On the RO page itself the number (header and truck card) copies on click — "Copied RO-31677"
+  Pictures:
+  · The RO's picture now also shows on Parts, Warranty, message, Fixes and Career rows and the Manager's Needs-you cards (Time Log rows keep just the linked number — they're too dense)
+  · Shop view bays show a top view of the same truck as the side picture; no matching top view → the side picture
+  · When an RO's first check-in photo arrives, Parsec asks once: "Show the model picture or this photo?"
+  Shop buttons:
+  · Settings → The shop → Shop buttons: a table of departments × Start op, Road test, Truck checks, Transfer, Release. All on to start; only the manager can change it, with Reset and Recently changed/Undo
+  · The truck card's buttons sit under the RO's department ("Service · shop") and follow the table; so do the Foreman and Parts headers
+  · Technician, Foreman and Parts cards have a ⋯ with every shop function (Start op, Transfer…, Road test, Truck checks, Release…), following the same rules
+  Customer contact:
+  · The RO header shows the contact name and phone; click for Copy the number · Edit the contact · Copy a text (your Triage templates, filled in). No contact → Add contact
+  · Point at the customer's name on RO cards to see the contact
+  · New RO reads the contact's name, phone and email, plus the driver's name and phone, from ASIST text or a screenshot; phones read as (336) 555-0142. The truck card's Customer section has the new rows
+  · No contact found → "Last used on RO-29880 · May 12 — Dave Miller · (336) 555-0142 [Use]" from the same customer's earlier RO
 
 Parsec 16.2 — one Settings page · six new automations and a What ran log · rules as sentences
   (Your picks from "Parsec settings and automations ideas mock-up.html".)
