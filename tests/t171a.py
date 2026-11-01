@@ -44,7 +44,7 @@ async def main():
 
         # ---- filing: asked first, from the Library page
         await pg.evaluate("(()=>{ localStorage.removeItem('tec_viewas'); localStorage.removeItem('tec_out'); __tg.pxSignedIn(); const U=__tg.UI(); U.view='library'; __tg.render(); })()"); await pg.wait_for_timeout(500)
-        ok(await pg.evaluate("!!document.querySelector('[data-pg=library] .lib-tab.k-recall') && !!document.querySelector('.lib-tab.soon')"), "the Library: its tabs, Procedures marked soon")
+        ok(await pg.evaluate("['codes','cbr','tsb','fsb','recall','models','proc'].every(k=>!!document.querySelector('[data-pg=library] .lib-tab.k-'+k))"), "the Library: its tabs, Models and Procedures too")
         await pg.evaluate(f"__tg.libIntake([new File([{json.dumps(DEALER)}], 'SNM23-002 EGR Cooler.txt', {{type:'text/plain'}})], null, ()=>{{}})"); await pg.wait_for_timeout(500)
         card = await pg.evaluate("(()=>{ const w=document.querySelector('.lib-ask'); return w ? [w.querySelector('#lib-f-num').value, (w.querySelector('.lib-kd.on')||{dataset:{}}).dataset.kind] : null; })()")
         ok(card == ["SNM23-002", "fsb"], f"the card shows what was found before anything is filed ({card})")
