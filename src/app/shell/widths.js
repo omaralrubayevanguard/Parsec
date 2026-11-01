@@ -1,7 +1,7 @@
 /* Parsec · shell · widths.js
    Widths you set by dragging: the side bar's edge, the panes (lists, the RO list's side panel, the Library's document panel); the folded side bar opens on hover over its expand button.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   pxwWho pxwGet pxwSet pxwPhone pxwZ pxwRailApply pxwFolded pxwKey pxwFit pxwSize pxwAfter PXW … (11 functions, 3 constants)
+   declares   pxwWho pxwGet pxwSet pxwPhone pxwZ pxwRailApply pxwFolded pxwKey pxwRoots pxwT pxwFit pxwSize … (13 functions, 3 constants)
    uses       access/ kit/ state/
    at load    on document mouseover · on document click · on document pointerdown · on document dblclick
 */
@@ -37,8 +37,11 @@ document.addEventListener("click", function(e){ if(e.target && e.target.closest 
 
 /* ---------- the panes ---------- */
 /* [selector, key, the edge you drag ('r' = right, 'l' = left), smallest, largest share of the window] */
-var PXW_PANES = [[".tg-body > .tg-list", "list", "r", 220, .5], [".px-body > .px-list", "plist", "r", 220, .45], [".rq-peek", "peek", "l", 300, .6], [".lib-view", "libv", "l", 380, .8]];
-function pxwKey(el, k){ var pg = el.closest("[data-pg]"); return k + ":" + (pg ? pg.getAttribute("data-pg") : UI.view); }
+var PXW_PANES = [[".tg-body > .tg-list", "list", "r", 220, .5], [".px-body > .px-list", "plist", "r", 220, .45], [".rq-peek", "peek", "l", 300, .6], [".lib-view", "libv", "l", 380, .8], [".px-ro__rail", "rorail", "l", 300, .5]];
+/* the page's own key — the RO page's right column (in its shadow root) by the page it sits on, so each page remembers */
+function pxwKey(el, k){ if(el.getRootNode && el.getRootNode() !== document) return k + ":" + UI.view; var pg = el.closest("[data-pg]"); return k + ":" + (pg ? pg.getAttribute("data-pg") : UI.view); }
+function pxwRoots(){ var L = [document]; document.querySelectorAll(".jc-host").forEach(function(h){ if(h.shadowRoot) L.push(h.shadowRoot); }); return L; }
+function pxwT(e){ return e.composedPath ? e.composedPath()[0] : e.target; }
 function pxwFit(w, P){ var max = Math.round(window.innerWidth / pxwZ() * P[4]); return Math.max(P[3], Math.min(max, w)); }
 function pxwSize(el, w){ el.style.setProperty("flex-basis", w + "px"); el.style.setProperty("width", w + "px"); el.style.setProperty("max-width", "none"); }
 /* after each draw: the saved widths back on, and the drag edges */
@@ -48,17 +51,17 @@ function pxwAfter(){
   var rail = document.querySelector(".px-rail");
   if(rail && !rail.querySelector(":scope > .pxr-rs")){ var r = document.createElement("div"); r.className = "pxr-rs"; r.setAttribute("aria-hidden", "true"); rail.appendChild(r); }
   PXW_PANES.forEach(function(P){
-    document.querySelectorAll(P[0]).forEach(function(el){
+    pxwRoots().forEach(function(root){ root.querySelectorAll(P[0]).forEach(function(el){
       var k = pxwKey(el, P[1]), w = pxwGet(k);
       if(w) pxwSize(el, pxwFit(w, P));
       if(!el.querySelector(":scope > .pxw-rs")){ var h = document.createElement("div"); h.className = "pxw-rs " + P[2]; h.setAttribute("aria-hidden", "true"); h.setAttribute("data-pxw", P[1]); el.appendChild(h); }
-    });
+    }); });
   });
 }
 /* dragging an edge */
 document.addEventListener("pointerdown", function(e){
   if(e.button !== 0 || pxwPhone()) return;
-  var t = e.target, rail = t.closest && t.closest(".pxr-rs"), pane = !rail && t.closest && t.closest(".pxw-rs");
+  var t = pxwT(e), rail = t.closest && t.closest(".pxr-rs"), pane = !rail && t.closest && t.closest(".pxw-rs");
   if(!rail && !pane) return;
   e.preventDefault(); e.stopPropagation();
   var de = document.documentElement, z = pxwZ(), x0 = e.clientX, d;
@@ -83,7 +86,7 @@ document.addEventListener("pointerdown", function(e){
 }, true);
 /* a double-click on an edge puts the width back */
 document.addEventListener("dblclick", function(e){
-  var t = e.target, rail = t.closest && t.closest(".pxr-rs"), pane = !rail && t.closest && t.closest(".pxw-rs");
+  var t = pxwT(e), rail = t.closest && t.closest(".pxr-rs"), pane = !rail && t.closest && t.closest(".pxw-rs");
   if(rail){ pxwSet("rail", 0); pxwRailApply(); return; }
   if(pane){ var P = PXW_PANES.filter(function(p){ return p[1] === pane.getAttribute("data-pxw"); })[0], el = pane.parentNode; pxwSet(pxwKey(el, P[1]), 0); ["flex-basis", "width", "max-width"].forEach(function(p){ el.style.removeProperty(p); }); }
 }, true);

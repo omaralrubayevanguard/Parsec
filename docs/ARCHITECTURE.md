@@ -103,6 +103,7 @@ Library/<kind>/<number> - <title> (rel NN).pdf   the Library's documents (Fault 
 | Questions | `ro/flow-gates.js` `pgAsk()` | the shared "are you sure / which one" dialog |
 | Trucks | `trucks/` | `trkPick(ro)`: the RO's own picture, else the catalog body for its model/year, else the check-in photo |
 | Clock | `clock/` | day clocks (shifts) and punches per person; the clock only reminds, never stops anything |
+| One RO panel | `ro/ro-panel.js` | the RO list's side panel and the RO page's right column share its pieces and order: small picture, status, stage, Time · Parts · Files on one line, operations, folded details, buttons by role at the bottom; `rpFold` keeps each person's folds |
 | Widths | `shell/widths.js` `pxwAfter()` | drag edges on the side bar and the panes, the hover-open side bar; localStorage per person, never shop data |
 | Phone | `phone/` | the phone layout, and sync by QR codes (no network) |
 | Sample data | `sample/` | 25 ROs with six weeks of history; `loadSample25()` |

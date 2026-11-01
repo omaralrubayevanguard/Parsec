@@ -1,0 +1,21 @@
+/* ---- 17.1 · the one RO panel (ro/ro-panel.js) on the RO list and the Technician's ROs tab ---- */
+.rq-peek.rp{padding-bottom:0;gap:14px;}
+.rp-nm{display:flex;align-items:center;gap:10px;min-width:0;}
+.rp-nm .trk-th{width:56px;height:36px;} .rp-nm .trk-th img{max-width:56px;max-height:36px;}
+.rq-peek.rp .rp-nm h2{margin:0;min-width:0;}
+.rq-peek.rp .sub{margin-top:-8px;}
+.rp-stg{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--tg-ink3);}
+.rp-stg b{color:var(--tg-ink);font-weight:500;}
+.rp-bars{display:flex;gap:2px;flex:none;} .rp-bars i{width:14px;height:5px;border-radius:3px;background:var(--tg-hair);} .rp-bars i.d{background:var(--tg-ink2);} .rp-bars i.c{background:var(--tg-acc,#86643A);} .rp-bars i.w{background:var(--tg-warn,#AD7210);}
+.rp-facts{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 6px;font-size:13px;color:var(--tg-ink2);}
+.rp-facts b{color:var(--tg-ink);font-weight:600;font-variant-numeric:tabular-nums;} .rp-facts i{font-style:normal;color:var(--tg-ink4);}
+.rp-gh{all:unset;cursor:pointer;display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--tg-ink3);}
+.rp-gh i{width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid currentColor;transition:transform .15s;}
+.rp-ops.shut .rp-gh i{transform:rotate(-90deg);} .rp-gh small{font-weight:500;color:var(--tg-ink4);}
+.rp-opl{display:flex;flex-direction:column;gap:1px;margin-top:4px;}
+.rp-op{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:16px 16px minmax(0,1fr) auto;align-items:center;gap:6px;padding:5px 6px;border-radius:8px;font-size:13px;color:var(--tg-ink);}
+.rp-op:hover{background:var(--tg-fill);} .rp-op .n{color:var(--tg-ink3);} .rp-op .t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rp-op .h{font:500 11.5px/1 var(--tg-mono);color:var(--tg-ink3);white-space:nowrap;}
+.rp-none{font-size:12.5px;color:var(--tg-ink3);}
+.rp-foot{position:sticky;bottom:0;z-index:3;margin:auto -24px 0;padding:12px 24px 14px;background:var(--tg-panel);box-shadow:0 -1px 0 var(--tg-hair),0 -10px 18px -14px rgba(0,0,0,.35);}
+.rp-acts{display:flex;flex-wrap:wrap;gap:6px;}

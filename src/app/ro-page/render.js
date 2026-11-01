@@ -40,6 +40,7 @@ function render() {
   var prev = OPEN_PREV;
   renderNow();
   try { pmDetailRendered(R, RO); } catch (e) {}
+  try { pxwAfter(); } catch (e) {}   /* 17.1: the right column's width, and its drag edge (shell/widths.js) */
   OPEN_PREV = openState();
   revealOpened(prev, OPEN_PREV);
   if (ATT.open && !ATT.renaming) attRender();

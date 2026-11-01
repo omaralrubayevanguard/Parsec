@@ -81,10 +81,10 @@ function roFldSet(ro, k, v){
 function roFldEdit(ro, k){ var f = roFld(k); if(!f) return null; return { type: f.o.dt ? "datetime-local" : f.o.type || "text", get: function(){ return roFldGet(ro, f); }, set: function(v){ if(f.o.set) f.o.set(ro, v); else { v = roFldTrim(v); if(v) ro[k] = v; else delete ro[k]; } try{ audit("ro", roLabel(ro) + ": " + f.l + " → " + (roFldShow(ro, f) || "cleared"), ro); }catch(e){} } }; }
 /* the groups as HTML for the RO list pane and the Technician pane (light DOM; the click handler below edits) */
 function roDetailsHtml(ro, o){
-  o = o || {}; var fold = UI.rodFold || (UI.rodFold = { vehicle: false, customer: true, people: false, schedule: false, paperwork: true }), ed = o.readOnly ? false : roFldCanEdit(ro);
+  o = o || {}; var fold = { get: function(k){ return rpFold(k); } }, ed = o.readOnly ? false : roFldCanEdit(ro);
   var av = function(n){ var i = ""; try{ i = ivInit(n); }catch(e){ i = String(n || "").split(/\s+/).map(function(w){ return w[0] || ""; }).join("").slice(0, 2).toUpperCase(); } return '<span class="rod-av">' + v141E(i) + "</span>" + v141E(n); };
   return '<section class="rod' + (ed ? " ed" : "") + '" data-rod-ro="' + v141E(ro.id) + '">' + ROFLD.filter(function(G){ return !o.groups || o.groups.indexOf(G[0]) > -1; }).map(function(G){
-    var shut = !!fold[G[0]], F = G[2].filter(function(fd){ return !(fd[2] && fd[2].hideEmpty && !roFldGet(ro, { k: fd[0], o: fd[2] })); });
+    var shut = fold.get(G[0]), F = G[2].filter(function(fd){ return !(fd[2] && fd[2].hideEmpty && !roFldGet(ro, { k: fd[0], o: fd[2] })); });
     var sum = G[0] === "vehicle" ? [ro.year, ro.model].filter(Boolean).join(" ") : G[0] === "customer" ? ro.customerName || "" : G[0] === "people" ? (ro.assignedTech ? (function(){ try{ return ivInit(ro.assignedTech); }catch(e){ return ""; } })() : "") : G[0] === "schedule" ? (ro.promisedAt ? fcWhen(new Date(ro.promisedAt)) : "") : ro.caseNumber || "";
     return '<div class="rod-g' + (shut ? " shut" : "") + '"><button type="button" class="rod-gh" data-rod-g="' + G[0] + '" aria-expanded="' + (!shut) + '"><i></i><b>' + v141E(G[1]) + '</b><small>' + v141E(sum) + '</small></button>'
       + (shut ? "" : '<div class="rod-rows">' + F.map(function(fd){ var f = { k: fd[0], l: fd[1], o: fd[2] || {} }, v = roFldShow(ro, f), raw = roFldGet(ro, f);
@@ -109,6 +109,6 @@ function roDetailsEdit(row){
 document.addEventListener("click", function(e){
   var t = e.target && e.target.nodeType === 1 ? e.target : e.target && e.target.parentElement; if(!t || !t.closest) return;
   var cp = t.closest(".rod-cp"); if(cp){ e.preventDefault(); e.stopPropagation(); try{ navigator.clipboard.writeText(cp.getAttribute("data-rod-copy")); pushToast("Copied.", false); }catch(err){} return; }
-  var gh = t.closest(".rod-gh"); if(gh){ e.preventDefault(); e.stopPropagation(); var F = UI.rodFold || (UI.rodFold = {}); F[gh.getAttribute("data-rod-g")] = !F[gh.getAttribute("data-rod-g")]; v141Render(); return; }
+  var gh = t.closest(".rod-gh"); if(gh){ e.preventDefault(); e.stopPropagation(); var gk = gh.getAttribute("data-rod-g"); rpFoldSet(gk, !rpFold(gk)); v141Render(); return; }   /* 17.1: stays folded for you, on every page */
   var r = t.closest(".rod-r.ed"); if(r && !t.closest("input")){ e.preventDefault(); e.stopPropagation(); roDetailsEdit(r); }
 }, true);

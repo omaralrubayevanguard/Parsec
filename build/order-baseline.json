@@ -493,6 +493,8 @@
 "shell/ro-rail.js \u00b7 TryStatement \u00b7 on document DOMContentLoaded",
 "ro/stages.js \u00b7 var RS_KEYS",
 "ro/stages.js \u00b7 var RS_NAME",
+"ro/ro-panel.js \u00b7 var RP_FOLD0",
+"ro/ro-panel.js \u00b7 document.addEventListener() \u00b7 on document click (capture)",
 "ro/assist.js \u00b7 var RA_TABS",
 "ro/assist.js \u00b7 var RA_PST",
 "ro/route.js \u00b7 var RT_ROLE",

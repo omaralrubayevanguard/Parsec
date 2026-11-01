@@ -253,7 +253,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 |---|---|---:|---:|---:|
 | `_close.js` | Closes the RO list closure. | 0 | 0 | 0 |
 | `_open.js` | Opens the RO list closure (RL): one flat list of ROs and a peek pane. | 0 | 0 | 1 |
-| `columns.js` | The RO list's columns (13.1): drag into any order, add fields or your own, saved views, the Display pop-over. | 43 | 32 | 19 |
+| `columns.js` | The RO list's columns (13.1): drag into any order, add fields or your own, saved views, the Display pop-over. | 42 | 32 | 19 |
 | `embed.js` | The ROs tab on Triage, Foreman, Parts, Manager and Technician (14.3): rlEmbed puts the RO list inside another page, with Back. | 2 | 9 | 2 |
 | `model.js` | The RO list's model: one RO as the list draws it (info, spot, next step), rows and counts. | 10 | 6 | 24 |
 | `page-base.js` | The RO list page's older base (RL_GROUPS, rlList) and the permission labels and role tables it shares with Admin (permRoles, permState…). | 8 | 11 | 7 |
@@ -327,6 +327,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `lookups.js` | Finding things: getRO(id), the Shop RO (shop time), prices and money per part / operation / RO. | 4 | 16 | 2 |
 | `ordering.js` | How ROs sort: last touched, finished, days open; sortedROs(); pillHtml for the fast-punch pill. | 3 | 8 | 0 |
 | `reopen-question.js` | The question when a completed RO is set back to open: reopen its operations too, or just the RO. | 5 | 13 | 1 |
+| `ro-panel.js` | The one RO side panel's shared pieces: the stage line, Time · Parts · Files on one line, the operations, the buttons by role, and the folds each person keeps. | 6 | 9 | 1 |
 | `road-test-and-release.js` | Road test before release (a switch per RO), what “work done” means, the stage label shown for a status (roStageInfo / pgStRo). | 5 | 14 | 0 |
 | `route.js` | The RO's route between departments: who holds it now (writer, tech, parts, foreman…), the next step for a role (rtNext / rtStepFor). | 7 | 15 | 8 |
 | `stages.js` | The six RO stages (Check-in → Close-out), each with one “done when” rule; roStages(ro) says where an RO stands, stageToggle checks one off by hand. | 12 | 5 | 2 |
@@ -352,7 +353,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `clock-card-model.js` | The operation clock card (Parsec 12.4 / 12.5), the model: the numbers each page counts (ockModel), the shop day, similar jobs and the tech's usual pace, parts on the job, the running punch's notes and splits. | 15 | 36 | 21 |
 | `collapse-expand.js` | Collapse all / Expand all on the sections below the operations (Parsec 15), one switch. | 18 | 20 | 0 |
 | `constants.js` | The RO page's constants: job types, status looks, task kinds. | 3 | 3 | 6 |
-| `declined.js` | Declined on the operation's status menu (14.8 A) and the complaint edited in place while the clock runs or not. | 14 | 13 | 0 |
+| `declined.js` | Declined on the operation's status menu (14.8 A) and the complaint edited in place while the clock runs or not. | 15 | 13 | 1 |
 | `extract-operations.js` | Extract operations into this RO from pasted text or a screenshot (Parsec 14.8 B): complaint, status, quoted time and approval only; matched to existing operations before anything is added. | 20 | 15 | 2 |
 | `fault-codes.js` | Fault codes on each operation (SPN / FMI, P-codes): reading what was typed, what a code means, the chips on the tile and the card, and the note a chip starts. | 7 | 9 | 1 |
 | `header-page.js` | The RO page header (pxHeader): breadcrumb with the RO number (click copies it), the pager, the customer and contact with its menu (16.3 B), the counters (hours, parts, files), the options menu. | 31 | 22 | 1 |
@@ -422,7 +423,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `rail-popovers.js` | The two pop-overs off the rail (the clock, the person) and the tooltip mode row (PTIP_MODES / ptipSetMode). | 4 | 6 | 1 |
 | `render-root.js` | render(): the one place the page is drawn. It picks the view, builds its HTML, morphs it into #app, then runs each area's after-render hooks. histSync keeps the browser history in step. | 8 | 2 | 2 |
 | `ro-rail.js` | The RO list rail beside the RO page (shown / hidden, widths) and, since 16.3, roLnk(): every RO number anywhere becomes a link that opens its RO, with the picture and the ⋯ shop menu on RO rows (rl163Deco runs on every render). | 22 | 29 | 10 |
-| `widths.js` | Widths you set by dragging: the side bar's edge, the panes (lists, the RO list's side panel, the Library's document panel); the folded side bar opens on hover over its expand button. | 6 | 11 | 3 |
+| `widths.js` | Widths you set by dragging: the side bar's edge, the panes (lists, the RO list's side panel, the Library's document panel); the folded side bar opens on hover over its expand button. | 6 | 13 | 3 |
 
 ## state/  — STATE and UI, the folder handle, drafts, undo, data safety
 

@@ -1,7 +1,7 @@
 /* Parsec · ro-page · declined.js
    Declined on the operation's status menu (14.8 A) and the complaint edited in place while the clock runs or not.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   ropDecline ropUndecline ropMenuKeys ropDecMeta ropDecTip ropMine ropBand ropWho ropDT ropFProp ropCfg ropProps … (13 functions)
+   declares   ropDecline ropUndecline ropMenuKeys ropDecMeta ropDecTip ropMine ropBand ropWho ropDT ropFProp ropCfg ropProps … (13 functions, 1 constant)
    state      punches
    uses       access/ clock/ data/ kit/ pages/ pages/triage/ pages/warranty/ ro/ settings/ shell/ state/ trucks/
 */
@@ -62,12 +62,13 @@ function ropBand() {
   /* Parsec 14.3: on the Technician page, Ask <the foreman> sits with the others — it opens Messages about this RO, to them */
   try { if (typeof tcxOn === 'function' && tcxOn(RO.id)) { var fm = ropPerson('Foreman'); if (fm && !ropIsMe(fm)) acts.appendChild(el('button', { class: 'px-btn px-btn--sm rop-askf', type: 'button', title: 'Ask ' + ropFirst(fm) + ' about this RO — a message on it', html: pxI('chat', 14) + 'Ask ' + esc(ropFirst(fm)), onClick: function (e) { e.stopPropagation(); ROPU.msgTo = fm; render(); requestAnimationFrame(function () { var i = R.querySelector('.rop-in__i'); if (i) { try { i.scrollIntoView({ block: 'center' }); } catch (er) {} i.focus(); } }); } })); } } catch (er) { console.error(er); }
   try { if (typeof v163DeptActs === 'function') acts = v163DeptActs(acts, RO) || acts; } catch (er) { console.error(er); }   /* Parsec 16.3: by department */
-  if (tb) tb.appendChild(acts);
-  try { var byl = ropBypassLine(RO); if (byl && tb) tb.appendChild(byl); } catch (er) { console.error(er); }   /* Parsec 14.7 */
+  /* 17.1 — the one RO panel: the buttons sit at the bottom of the right column, always in reach (ropRail) */
+  var foot = el('div', { class: 'rop-foot' }, [acts]); ROP_FOOT = foot;
+  try { var byl = ropBypassLine(RO); if (byl) foot.appendChild(byl); } catch (er) { console.error(er); }   /* Parsec 14.7 */
   /* Parsec 14: does this truck need a road test? Off — no Road test, no Truck checks, ready to release when the work is done */
-  try { var tgl = rtToggleHtml(RO); if (tgl && tb) { var tw = el('div', { class: 'rop-rtt', html: tgl }), sw = tw.querySelector('.rtt-sw');
+  try { var tgl = rtToggleHtml(RO); if (tgl) { var tw = el('div', { class: 'rop-rtt', html: tgl }), sw = tw.querySelector('.rtt-sw');
     if (sw) sw.addEventListener('click', function (e) { e.stopPropagation(); var on = !rtNeeded(RO); if (rtToggle(RO, on)) { render(); tecRender(); ropUndo(on ? 'Road test needed again — Road test and Truck checks are back.' : 'No road test for this RO — no truck checks either. When the work is done it’s ready to release.'); } });
-    tb.appendChild(tw); } } catch (er) { console.error(er); }
+    foot.appendChild(tw); } } catch (er) { console.error(er); }
   return el('div', { class: 'rop-band' }, [band]);
 }
 function ropWho() {
@@ -140,9 +141,15 @@ function ropProps() {
     RO.asistTotals && RO.asistTotals.total != null ? pxProp('ASIST total', pxMoney(RO.asistTotals.total) + (RO.asistTotals.tax ? ' · tax ' + pxMoney(RO.asistTotals.tax) : ''), { num: true }) : null].filter(Boolean)));   /* Parsec 14 (fork X): core, shop supplies, ASIST's own total */
   return props;
 }
+var ROP_FOOT = null;
 function ropRail() {
+  ROP_FOOT = null;
   var top = el('div', { class: 'rop-top' }, [ropBand()]);
   var stg = null; try { stg = pxStage(); } catch (e) {} if (stg) top.appendChild(el('section', { class: 'rop-rblk rop-stg' }, [stg]));
+  /* 17.1 — the one RO panel (ro/ro-panel.js): Time · Parts · Files on one line, then the operations with status and hours */
+  try { var rp = el('section', { class: 'rop-rblk rop-rp', html: rpFactsHtml(RO) + rpOpsHtml(RO, S.ui.card) });
+    rp.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('[data-rp-op]'); if (!b) return; e.stopPropagation(); S.ui.card = b.getAttribute('data-rp-op'); render(); });
+    top.appendChild(rp); } catch (e) { console.error(e); }
   var who = null; try { who = ropWho(); } catch (e) { console.error(e); } if (who) top.appendChild(who);
-  return el('aside', { class: 'px-ro__rail rop-rail' }, [top, ropProps()]);
+  return el('aside', { class: 'px-ro__rail rop-rail' }, [top, ropProps()].concat(ROP_FOOT ? [ROP_FOOT] : []));
 }

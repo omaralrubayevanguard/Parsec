@@ -115,21 +115,16 @@
         <h4>${esc(r.cust)}</h4><p>${esc(r.cmp || 'No operations yet')}${r.ops.length > 1 ? ` · +${r.ops.length - 1}` : ''}</p>
         <div class="rq-card__ft">${st(r.st, { of: r.ro, ofKind: 'ro',  cls: 'sm', size: 12, sub: subOf(r) })}${mini(r.b, r.q)}${av(r.tech)}</div></div>`).join('') || '<div class="rq-empty">Nothing here</div>'}</div></div>`; }).join('')}</div>`;
   }
+  /* 17.1 — the one RO side panel (ro/ro-panel.js): the same sections, in the same order, as the RO page's right column */
   function peek(r){
-    const ro = r.ro; let nx = null; try{ nx = raNext(ro); }catch(e){}
-    const parts = []; r.ops.forEach(o => { try{ opRealParts(o).forEach(p => parts.push(p)); }catch(e){} });
-    const pin = parts.filter(p => p.status === 'Received' || p.status === 'Installed' || p.sup === 'stock').length;
-    const files = (ro.attachments || []).length + (ro.bulletins || []).reduce((s, b) => s + ((b.files || []).length), 0);
-    const run = STATE.punches.filter(p => !p.stop && p.roId === ro.id);
-    return `<aside class="rq-peek"><div class="rq-peek__top"><span class="id">${esc(roLabelFull(ro))}</span><span>·</span><span>${r.done ? 'closed' : r.days == null ? '' : r.days === 0 ? 'opened today' : r.days + ' days open'}</span><button class="btn btn-sm ib tg-gh" data-a="peekx" title="Close (Esc)">${ic('x', 15)}</button></div>
-      <h2>${rifHtml(ro, 'customerName', ro.customerName || '', 'Customer')}</h2><div class="sub">${rifVeh(ro, r.veh)}${r.spot && r.spot !== '—' ? ' · ' + esc(r.spot) : ''}${v149KeySeg(ro)}</div>
+    const ro = r.ro;
+    const ops = rpOpsHtml(ro).replace(/data-rp-op="([^"]+)"/g, `data-a="open" data-id="${r.id}" data-op="$1"`);
+    return `<aside class="rq-peek rp"><div class="rq-peek__top"><span class="id">${esc(roLabelFull(ro))}</span><span>·</span><span>${r.done ? 'closed' : r.days == null ? '' : r.days === 0 ? 'opened today' : r.days + ' days open'}</span><button class="btn btn-sm ib tg-gh" data-a="peekx" title="Close (Esc)">${ic('x', 15)}</button></div>
+      <div class="rp-nm">${typeof trkThumb === 'function' ? trkThumb(ro) : ''}<h2>${rifHtml(ro, 'customerName', ro.customerName || '', 'Customer')}</h2></div><div class="sub">${rifVeh(ro, r.veh)}${r.spot && r.spot !== '—' ? ' · ' + esc(r.spot) : ''}${v149KeySeg(ro)}</div>
       <div class="rq-strow">${canSt() ? st(r.st, { of: r.ro, ofKind: 'ro',  menu: 1, sub: subOf(r), attrs: `data-a="status" data-id="${r.id}" title="Set status (S)"` }) : st(r.st, { of: r.ro, ofKind: 'ro',  sub: subOf(r) })}${r.tech ? `<span class="rq-with">with ${av(r.tech)} ${esc(r.tech)}</span>` : '<span class="rq-with">no tech yet</span>'}</div>
-      ${nx ? `<div class="rq-next ${nx.tone === 'bad' ? 'bad' : nx.tone === 'warn' ? 'warn' : nx.tone === 'good' ? 'good' : ''}"><div class="rq-next__head"><b>Next</b><span>${esc(r.stage)}${r.ready && r.ready !== '—' ? ' · ' + (r.done ? '' : 'ready ') + esc(r.ready) : ''}</span></div><p>${esc(nx.txt)}</p></div>` : ''}
-      <div class="rq-tots"><div><span>${ic('clock', 13)}Time</span><b>${r.b.toFixed(2)}<em> / ${qtRoHtml(ro, r.q)} h</em></b></div><div><span>${ic('parts', 13)}Parts</span><b>${pin}<em> / ${parts.length}</em></b></div><div><span>${ic('clip', 13)}Files</span><b>${files}</b></div></div>
-      <div class="rq-pk-h">Operations</div><div class="rq-pops">${r.ops.length ? r.ops.map((o, i) => { let bb = 0; try{ bb = opCalc(o).burntHrs || 0; }catch(e){} let os = 'Hold Tech'; try{ const s0 = opStatus(o); os = (typeof s0 === 'string' ? s0 : s0 && s0.status) || os; }catch(e){} if(run.some(p => p.opId === o.id)) os = 'Working'; else if(opDoneNow(o)) os = 'Complete';
-        return `<div class="rq-pop">${st(os, { iconOnly: 1 })}<span class="n">${i + 1}</span><span class="t">${esc(o.complaint || 'Operation')}</span><span class="h">${bb.toFixed(2)} / ${qtHtml(ro, o, +o.quoted || 0)} h</span></div>`; }).join('') : '<div class="rq-pop"><span class="t" style="color:var(--tg-ink3)">No operations yet</span></div>'}</div>
+      ${rpStageHtml(ro)}${rpFactsHtml(ro)}${ops}
       ${(() => { try{ return roDetailsHtml(ro); }catch(e){ return ""; } })()}
-      <div class="rq-open"><button class="btn btn-primary" data-a="open" data-id="${r.id}">Open RO${kbd('↵')}</button><button class="btn" data-a="pop" data-p="xfer" data-id="${r.id}">${ic('swap', 14)}Transfer…</button></div>${trxBtnsOk(ro) && rtOn(ro) ? `<div class="rq-open rq-open2">${trxBtns(ro, 'btn')}</div>` : ''}</aside>`;
+      <div class="rp-foot">${rpActsHtml(ro, { open: 1 })}</div></aside>`;
   }
   function pop(){
     const p = U.pop; if(!p) return '';

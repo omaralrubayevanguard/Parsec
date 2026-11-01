@@ -255,6 +255,7 @@ shell/render-root.js
 shell/ro-rail.js
 
 ro/stages.js
+ro/ro-panel.js
 ro/assist.js
 ro/route.js
 ro/transfers.js

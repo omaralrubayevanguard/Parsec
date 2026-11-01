@@ -74,8 +74,7 @@ function pxProp(label, value, opts) {
 function pxField2(k) { return roFldEdit(RO, k) || { get: function () { return RO[k] || ''; }, set: function (v) { RO[k] = v; } }; }   /* Parsec 14.1: one table (ROFLD) */
 function pxGroup(key, title, sum, rows, act) {
   UI.ivFold = UI.ivFold || {}; UI.ivOpenAt = UI.ivOpenAt || {};
-  var dflt = { schedule: true, people: true, vehicle: true, paperwork: false, money: false };
-  var open = UI.ivFold[key] == null ? dflt[key] : !UI.ivFold[key];
+  var open = !rpFold(key);   /* 17.1: what you fold stays folded — the same on the RO list's panel (ro/ro-panel.js) */
   var sec = el('section', { class: 'px-pg' + (open ? ' is-open' : ''), 'data-pg': key });
   var h = el('div', { class: 'px-pg__h', role: 'button', tabindex: '0', 'aria-expanded': open ? 'true' : 'false', html: pxI('chevD', 12).replace('class="px-ico"', 'class="px-ico px-pg__chev"') + '<span class="px-pg__t">' + esc(title) + '</span><span class="px-pg__sum">' + esc(sum || '') + '</span>' });
   if (act) h.appendChild(act);
@@ -83,7 +82,7 @@ function pxGroup(key, title, sum, rows, act) {
     if (e && e.target.closest && e.target.closest('.px-pg__act')) return;
     var o = !sec.classList.contains('is-open');
     sec.classList.toggle('is-open', o); h.setAttribute('aria-expanded', o ? 'true' : 'false');
-    UI.ivFold[key] = !o; if (o) UI.ivOpenAt[key] = Date.now();
+    UI.ivFold[key] = !o; rpFoldSet(key, !o); if (o) UI.ivOpenAt[key] = Date.now();
     persistUI();
     if (o) setTimeout(pxFitRail, 260);
   }

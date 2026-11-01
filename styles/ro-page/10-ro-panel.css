@@ -1,0 +1,35 @@
+/* ---- 17.1 · the one RO panel (ro/ro-panel.js): the RO page's right column, matched to the RO list's side panel ---- */
+/* a small truck picture beside the name */
+.rop-band .px-trk { grid-template-columns: 72px minmax(0, 1fr) !important; column-gap: 12px; align-items: start; }
+.rop-band .px-trk > .px-titleblock { grid-column: 2; grid-row: 1; min-width: 0; }
+.rop-band .px-ro__title { font-size: 21px !important; line-height: 26px !important; }
+.rop-band .px-trk__pic, .rop-band .px-trk__pic.is-model, .rop-band .px-trk__pic.is-photo, .rop-band .px-trk__pic.is-framed, .rop-band .px-trk__pic.is-none { order: 0; grid-column: 1; grid-row: 1; justify-self: start; align-self: start !important; width: 72px !important; max-width: 72px !important; height: 48px !important; margin: 18px 0 0 !important; padding: 0 !important; border-radius: 8px; overflow: hidden; }
+.rop-band .px-trk__pic img { width: 100% !important; height: 100% !important; object-fit: contain; }
+.rop-band .px-trk__pic.is-photo img { object-fit: cover; }
+.rop-band .px-trk__pic.is-none > svg { width: 64px !important; }
+.rop-band .px-trk__none, .rop-band .px-trk__cap { display: none !important; }
+.rop-band .px-trk__act, .rop-band .px-trk__cam { opacity: 0; transform: scale(.78); transition: opacity .15s; }
+.rop-band .px-trk__pic:hover .px-trk__act, .rop-band .px-trk__pic:hover .px-trk__cam, .rop-band .px-trk.has-menu .px-trk__act { opacity: 1; }
+/* Time · Parts · Files on one line, the operations with status and hours */
+.rop-rp { display: flex; flex-direction: column; gap: 10px; }
+.rp-facts { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 6px; font-size: 12.5px; color: var(--ink-2, #57534B); }
+.rp-facts b { color: var(--ink, #1D1C1A); font-weight: 600; font-variant-numeric: tabular-nums; } .rp-facts i { font-style: normal; color: var(--ink-4, #A39E94); }
+.rp-gh { all: unset; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--ink-3, #67625A); }
+.rp-gh i { width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid currentColor; transition: transform .15s; }
+.rp-ops.shut .rp-gh i { transform: rotate(-90deg); } .rp-gh small { font-weight: 500; color: var(--ink-4, #A39E94); }
+.rp-opl { display: flex; flex-direction: column; gap: 1px; margin-top: 4px; }
+.rp-op { all: unset; box-sizing: border-box; cursor: pointer; display: grid; grid-template-columns: 16px 16px minmax(0, 1fr) auto; align-items: center; gap: 6px; padding: 5px 6px; border-radius: 8px; font-size: 13px; color: var(--ink, #1D1C1A); }
+.rp-op:hover { background: var(--fill, rgba(0,0,0,.04)); } .rp-op.on { background: var(--sel, rgba(0,0,0,.06)); }
+.rp-op .n { color: var(--ink-3, #67625A); font-variant-numeric: tabular-nums; } .rp-op .t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rp-op .h { font: 500 11.5px/1 var(--mono, ui-monospace, monospace); color: var(--ink-3, #67625A); white-space: nowrap; }
+.rp-none { font-size: 12.5px; color: var(--ink-3, #67625A); }
+/* the buttons at the bottom of the column, always in reach */
+.rop-foot { position: sticky; bottom: -32px; z-index: 4; margin: auto -18px -32px; padding: 12px 18px 14px; display: flex; flex-direction: column; gap: 8px; background: var(--panel, #FBFAF7); box-shadow: 0 -1px 0 var(--hairline), 0 -10px 18px -14px rgba(0,0,0,.35); }
+.rop-foot .rop-acts { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; }
+:host([data-device=phone]) .rop-foot { position: static; margin: 0; box-shadow: none; padding: 0; }
+/* the drag edge (shell/widths.js) */
+.px-ro__rail { position: relative; }
+.pxw-rs { position: absolute; top: 0; bottom: 0; width: 6px; cursor: col-resize; z-index: 6; }
+.pxw-rs.l { left: 0; } .pxw-rs::after { content: ""; position: absolute; top: 0; bottom: 0; left: 2px; width: 2px; border-radius: 2px; background: transparent; transition: background-color .12s; }
+.pxw-rs:hover::after { background: var(--accent, #86643A); }
+:host([data-device=phone]) .pxw-rs { display: none; }

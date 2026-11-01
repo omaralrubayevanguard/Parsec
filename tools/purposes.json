@@ -70,6 +70,7 @@
   "ro/derived-calcs.js": "Numbers derived from an operation: opCalc (quoted, burnt, left, efficiency), part locks (a repair that waits on a part), what is missing to complete (opCompleteGaps), the operation's status from its fields (opStatus / opStatusRaw).",
   "ro/forecast.js": "When will this RO be ready: roForecast asks the RO engine (window.RoMath, src/engine/ro-engine.js) with the shop calendar, each tech's pace and parts' ETAs.",
   "ro/stages.js": "The six RO stages (Check-in → Close-out), each with one “done when” rule; roStages(ro) says where an RO stands, stageToggle checks one off by hand.",
+  "ro/ro-panel.js": "The one RO side panel's shared pieces: the stage line, Time · Parts · Files on one line, the operations, the buttons by role, and the folds each person keeps.",
   "ro/assist.js": "The RO assist strip: the next step, burnt vs quoted, the story so far (raNext / raStory) — shown on the Triage and Technician panes.",
   "ro/route.js": "The RO's route between departments: who holds it now (writer, tech, parts, foreman…), the next step for a role (rtNext / rtStepFor).",
   "ro/transfers.js": "Transfers: a hand-off the other side has to accept (rtSend / rtAccept / rtReturn), hold goals per holder (rtCfg), the log and how long each hold took.",
