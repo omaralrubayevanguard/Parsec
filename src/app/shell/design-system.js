@@ -28,6 +28,7 @@ var IV_NAV_IC = { tech:"tech", console:"console", ros:"ros", rolist:"ros", triag
 IV_NAV_IC.admin = "admin"; IVI.admin = '<path d="M12 3.5l7 2.75v5.25c0 4.5-3 7.75-7 9-4-1.25-7-4.5-7-9V6.25z"/><path d="M9 12l2.25 2.25L15.5 10"/>';   /* Parsec 13: the Admin page */
 IV_NAV_IC.assets = "assets"; IVI.assets = "<path d=\"M3.5 6.5h10v9h-10zM13.5 9.5h3.8l3.2 3.4v2.6h-7\"/><circle cx=\"7\" cy=\"17\" r=\"1.8\"/><circle cx=\"16.5\" cy=\"17\" r=\"1.8\"/>";   /* Parsec 14: the Assets page */
 IV_NAV_IC.library = "library"; IVI.library = '<path d="M4.5 5.5A1.5 1.5 0 0 1 6 4h4.5v15.5H6a1.5 1.5 0 0 0-1.5 1.5z"/><path d="M10.5 4H18a1.5 1.5 0 0 1 1.5 1.5V19.5H10.5"/><path d="M13 8h4M13 11h4M4.5 21h15"/>';   /* Parsec 17.1: the Library */
+IV_NAV_IC.fleets = "fleets"; IVI.fleets = '<path d="M2.5 8.5h8v6h-8zM10.5 10.5h2.6l2 2.2v1.8h-4.6"/><circle cx="5" cy="15.5" r="1.3"/><circle cx="12.5" cy="15.5" r="1.3"/><path d="M13 5.5h6v4.5h-6zM19 7h1.6l1.4 1.5v1.5H19"/>';   /* Parsec 17.1: Fleets */
 IV_NAV_IC.inventory = "inventory"; IVI.inventory = '<path d="M3.5 20.5h17M4.5 20.5V3.5M19.5 20.5V3.5M4.5 12h15"/><rect x="7" y="6.5" width="4.5" height="5.5" rx=".7"/><rect x="13" y="8.5" width="4" height="3.5" rx=".7"/><rect x="7.5" y="15" width="5.5" height="5.5" rx=".7"/><path d="M15 17.5h2.5v3H15z"/>';   /* Parsec 12.5: the Inventory page */
 /* "WAITING – PARTS" → "Waiting – Parts", "COMPLETE – ROAD TEST" → "Complete – Road test"; the op-type codes stay */
 var IV_CAPS_KEEP = /^(DIAG|OP|PM|WARR|COMEBACK|SUBLET|RECALL|REPAIR|VIN|RO|ETA|PO|AM|PM|OK|QR|ID|EOD|CSV|PDF)$/;

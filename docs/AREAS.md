@@ -219,11 +219,12 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `_close.js` | Closes the Manager closure. | 0 | 0 | 0 |
 | `_open.js` | Opens the Manager closure (MG): the shop's KPIs from the ROs, the Time Log and Parts. | 0 | 0 | 1 |
 | `actions.js` | Doing things on Manager: pop-overs, go to a KPI, clicks and keys. | 11 | 8 | 0 |
-| `draw.js` | Manager's drawing: overview, the KPI list and one KPI, flow (who holds what), team, activity. | 42 | 20 | 4 |
+| `draw.js` | Manager's drawing: overview, the KPI list and one KPI, flow (who holds what), team, activity. | 43 | 20 | 4 |
 | `engine.js` | Manager's engine: periods, windows, buckets, targets and deltas over pgShopData. | 22 | 10 | 75 |
+| `fleets-page.js` | The Fleets page (its own page since 17.1, on the Manager’s engine): every fleet in a list, a pane with Overview, Trucks and ROs, the period, printing for an account review. | 8 | 4 | 3 |
 | `ideas.js` | The ten ideas (Manager v3): pace to month end, drivers, streaks, alerts, the monthly report. | 32 | 31 | 22 |
 | `model.js` | What the Manager page holds besides the numbers: pinned tiles, Needs you, hold goals, targets (mgSet). | 8 | 11 | 25 |
-| `view.js` | viewManager(): the page module's entry. | 0 | 1 | 0 |
+| `view.js` | viewManager(): the page module's entry. | 0 | 2 | 0 |
 
 ## pages/parts/  — the Parts desk and the parts stages
 
@@ -405,7 +406,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | file | what it is | KB | functions | constants |
 |---|---|---:|---:|---:|
 | `day-ribbon.js` | The slim live strip across the top of every page: today's punches, air and the clock state. | 2 | 2 | 0 |
-| `design-system.js` | The Ivory / Graphite shell: the sidebar (ivSideHtml), its mini form, the case rules, the page header (pzHeaderHtml), the IVI stroke icon set. | 16 | 9 | 6 |
+| `design-system.js` | The Ivory / Graphite shell: the sidebar (ivSideHtml), its mini form, the case rules, the page header (pzHeaderHtml), the IVI stroke icon set. | 17 | 9 | 6 |
 | `device-mode.js` | Computer or phone view: Automatic picks from the device, or the person sets it (DEVICE_SETTING); applyDevice sets data-device on <html>. | 2 | 4 | 2 |
 | `event-wiring.js` | The app's main click / change / input / drop handlers on document: data-action buttons are dispatched here to the function that does the work (the big switch), plus drag-and-drop of files and the keyboard shortcuts that are the same everywhere. | 47 | 1 | 0 |
 | `header-shrink.js` | The top bar shrinks on scroll and grows back (syncHeaderShrink on window scroll). | 2 | 2 | 3 |

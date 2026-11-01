@@ -101,6 +101,7 @@ pages/manager/engine.js
 pages/manager/model.js
 pages/manager/draw.js
 pages/manager/actions.js
+pages/manager/fleets-page.js
 pages/manager/ideas.js
 pages/manager/_close.js
 pages/manager/view.js

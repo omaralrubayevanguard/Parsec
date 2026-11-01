@@ -241,3 +241,21 @@ button.lib-chip:focus-visible{outline:2px solid var(--tg-acc,#86643A);outline-of
 .lib-it{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--tg-border);font-size:11.5px;color:var(--tg-ink2);}
 :root[data-device="phone"] .lib-row.lib-prow{grid-template-columns:minmax(0,1fr) auto;}
 :root[data-device="phone"] .lib-row.lib-prow :is(.lib-c-fg,.lib-c-k,.lib-c-d,.lib-c-a){display:none;}
+
+/* ---------- the Fleets page (Parsec 17.1): the Manager's look, on its own page ---------- */
+.main.v-fleets{padding:0 !important;}
+:root:is([data-theme="ivl"],[data-theme="ivd"]):not([data-device="phone"]) .main.v-fleets{padding:0 !important;flex:0 0 auto !important;height:calc(100vh - 16px) !important;min-height:0 !important;overflow:hidden;}
+:root:is([data-theme="ivl"],[data-theme="ivd"]):not([data-device="phone"]) .main.v-fleets > [data-pg]{height:100%;min-height:0;box-shadow:none;}
+[data-pg="fleets"]{display:flex;flex-direction:column;}
+[data-pg="fleets"] .fl-per{display:inline-flex;gap:2px;padding:2px;border-radius:9px;background:var(--tg-fill);}
+[data-pg="fleets"] .fl-per button{all:unset;cursor:pointer;height:26px;padding:0 10px;border-radius:7px;font-size:12.5px;font-weight:500;color:var(--tg-ink2);}
+[data-pg="fleets"] .fl-per button.on{background:var(--tg-raised);color:var(--tg-ink);box-shadow:var(--tg-sh-panel);}
+[data-pg="fleets"] .fl-per button:focus-visible{outline:2px solid var(--tg-acc);}
+[data-pg="fleets"] .fl-q{padding:4px 10px 8px;}
+[data-pg="fleets"] .fl-q input{box-sizing:border-box;width:100%;height:32px;padding:0 10px;border:0;border-radius:8px;background:var(--tg-raised);box-shadow:inset 0 0 0 1px var(--tg-border);color:var(--tg-ink);font:400 13.5px var(--tg-sans);outline:none;}
+[data-pg="fleets"] .fl-q input:focus{box-shadow:inset 0 0 0 1.5px var(--tg-acc);}
+[data-pg="fleets"] .fl-s{font:500 12.5px var(--tg-mono);color:var(--tg-ink2);}
+[data-pg="fleets"] .fl-tabs{margin-top:8px;}
+[data-pg="fleets"] .fl-tabs small{margin-left:5px;font-size:11px;color:var(--tg-ink3);}
+[data-pg="fleets"] .fl-tile{cursor:default;}
+[data-pg="fleets"] .mq-tr[data-a="truck"]{cursor:pointer;}

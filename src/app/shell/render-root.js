@@ -72,6 +72,7 @@ function render(){
   else if(UI.view==="admin") viewHtml = viewAdmin();   /* Parsec 13 */
   else if(UI.view==="assets") viewHtml = viewAssets();   /* Parsec 14 */
   else if(UI.view==="library") viewHtml = viewLibrary();   /* Parsec 17.1 */
+  else if(UI.view==="fleets") viewHtml = viewFleets();   /* Parsec 17.1 */
   else if(UI.view==="report") viewHtml = viewDayReport();
   
   else if(UI.view==="profile") viewHtml = pxProfileView();

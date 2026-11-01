@@ -48,7 +48,7 @@ var STAFF_ROLES = {
                       sf.off / sf.offAt (sign-in turned off — history stays)
               admin:  STATE.shop.adminPinH / adminPinS
    On this computer: tec_recent (who signed in here, newest first) · tec_pinfail (wrong tries) · tec_locked (stepped away). */
-var PERM_PAGES = [["ros", "Repair Orders"], ["assets", "Assets"], ["library", "Library"], ["tech", "Technician"], ["triage", "Triage"], ["foreman", "Foreman"], ["parts", "Parts"], ["inventory", "Inventory"], ["warranty", "Warranty"], ["manager", "Manager"], ["fixes", "Fixes"], ["timelog", "Time Log"], ["career", "Career"]];
+var PERM_PAGES = [["ros", "Repair Orders"], ["assets", "Assets"], ["fleets", "Fleets"], ["library", "Library"], ["tech", "Technician"], ["triage", "Triage"], ["foreman", "Foreman"], ["parts", "Parts"], ["inventory", "Inventory"], ["warranty", "Warranty"], ["manager", "Manager"], ["fixes", "Fixes"], ["timelog", "Time Log"], ["career", "Career"]];
 var PERM_ACTS = [
   ["Repair orders", [["ro.new", "Open new ROs"], ["ro.status", "Change an RO’s status"], ["ro.release", "Release a truck"], ["ro.reopen", "Reopen a completed RO"], ["ro.del", "Delete ROs"]]],
   ["Time", [["t.own", "Start and stop their own clock"], ["t.editown", "Fix their own punches"], ["t.editall", "Fix anyone’s punches"], ["t.move", "Move time to someone else"], ["t.approve", "Approve timesheets"]]],
@@ -74,7 +74,7 @@ function permActLabel(k){ var r = k; PERM_ACTS.forEach(function(g){ g[1].forEach
 function permPageLabel(k){ var r = k; PERM_PAGES.forEach(function(p){ if(p[0] === k) r = p[1]; }); return r; }
 function permRoles(){ return Object.keys(STAFF_ROLES); }
 function permRoleDefault(role){
-  var pg = {}, ac = {}, L = (STAFF_ROLES[role] || []).concat(["assets", "library"]),   /* Parsec 14: every role opens the Assets page · 17.1: and the Library */ A = (PERM_ROLE_ACTS[role] || "").split(" ");
+  var pg = {}, ac = {}, L = (STAFF_ROLES[role] || []).concat(["assets", "library", "fleets"]),   /* Parsec 14: every role opens the Assets page · 17.1: and the Library and Fleets */ A = (PERM_ROLE_ACTS[role] || "").split(" ");
   PERM_PAGES.forEach(function(p){ pg[p[0]] = L.indexOf(p[0]) >= 0; });
   permActKeys().forEach(function(k){ ac[k] = A.indexOf(k) >= 0; });
   return { pages: pg, acts: ac };
@@ -103,7 +103,7 @@ function permMigrate(){
     if(!sf) return;
     if(!sf.ov || typeof sf.ov !== "object"){
       var t = permRole(sf.role), ov = { pages: {}, acts: {} };
-      if(sf.pages) PERM_PAGES.forEach(function(p){ var k = p[0], had = !!sf.pages[k]; if((k === "assets" || k === "library") && !(k in sf.pages)) return; if(k === "tech") had = sf.role === "Technician" ? (sf.pages.tech !== false) : !!sf.pages.tech; if(had !== !!t.pages[k]) ov.pages[k] = had; });
+      if(sf.pages) PERM_PAGES.forEach(function(p){ var k = p[0], had = !!sf.pages[k]; if((k === "assets" || k === "library" || k === "fleets") && !(k in sf.pages)) return; if(k === "tech") had = sf.role === "Technician" ? (sf.pages.tech !== false) : !!sf.pages.tech; if(had !== !!t.pages[k]) ov.pages[k] = had; });
       sf.ov = ov;
     }
     sf.ov.pages = sf.ov.pages || {}; sf.ov.acts = sf.ov.acts || {};

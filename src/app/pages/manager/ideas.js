@@ -170,4 +170,4 @@ function dl(name,rows){ const csv=rows.map(r=>r.map(v=>'"'+String(v==null?'':v).
     items:q=>q?mgQ(q,()=>kRows()).slice(0,8).map(k=>{ const o=kv(k); return { id:k.id, title:k.n, sub:[CAT[k.c][0], locked(k)?'needs data':fmt(k.u,o.v), o.t!=null?(o.ok?'on target':'target '+fmt(k.u,o.t)):''].filter(Boolean).join(' · ') }; }):[],
     pick:it=>{ goKpi(it.id); } }));
   PG.reg('manager', { H, U: () => U, input, change, fieldKey, keydown, after });
-  return { view, U: () => U, KM, kv: k => kv(k), ctx: (a, b, F) => ctx(a, b, F), goalsFor: k => { try{ sync(); }catch(e){} return (PGS() || {})[k] || null; } };
+  return { view, fleetsView, U: () => U, KM, kv: k => kv(k), ctx: (a, b, F) => ctx(a, b, F), goalsFor: k => { try{ sync(); }catch(e){} return (PGS() || {})[k] || null; } };

@@ -80,7 +80,7 @@ function keydown(e){ const k=e.key, inF=PG.typing(e); if(e.ctrlKey||e.metaKey||e
   if(k==='p'&&U.view==='kpi'){ $('[data-a="pin"]')?.click(); return stop(); }
   if(k==='t'&&U.view==='kpi'){ const b=$('[data-a="pop"][data-p="tgt"]'); if(b) openPop('tgt',{k:U.sel},b); return stop(); }
   const pi='dwmqy'.indexOf(k); if(pi>=0){ U.p=['day','wk','mo','qt','yr'][pi]; U.bk=null; rd(); return stop(); }
-  if(k>='1'&&k<='6'){ U.view=['ov','kpi','fleet','flow','team','act'][+k-1]; U.pop=null; rd(); return stop(); }
+  if(k>='1'&&k<='5'){ U.view=['ov','kpi','flow','team','act'][+k-1]; U.pop=null; rd(); return stop(); }
 }
 function after(){ PG.placePop(U);
   const sc=$('.tg-scroll'), on=sc&&sc.querySelector('.tg-it.on'); if(on&&U.kb){ if(on.offsetTop<sc.scrollTop+30) sc.scrollTop=on.offsetTop-40; else if(on.offsetTop+on.offsetHeight>sc.scrollTop+sc.clientHeight-20) sc.scrollTop=on.offsetTop+on.offsetHeight-sc.clientHeight+40; }

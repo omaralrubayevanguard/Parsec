@@ -8,7 +8,7 @@
 /* ---------- the nav rail: one column, every icon in the same 36 × 36 box on one line ----------
    Logo (opens and closes it), search, the clock, Inbox and the pages in three groups, and you at the
    bottom — your menu holds the theme, the size, settings and signing out. */
-var PX_GROUPS = [["", ["career", "timelog", "rolist", "ros", "tech", "triage", "foreman", "parts", "warranty", "manager", "fixes", "assets", "inventory", "library", "admin"]]];
+var PX_GROUPS = [["", ["career", "timelog", "rolist", "ros", "tech", "triage", "foreman", "parts", "warranty", "manager", "fixes", "assets", "inventory", "fleets", "library", "admin"]]];
 var PX_NARROW = 1100;
 function pxNarrow(){ var z = ({ large: 1.15, floor: 1.35 })[sizeMode()] || 1; return window.innerWidth / z < PX_NARROW; }
 function pxSyncNarrow(){ var de = document.documentElement, n = pxNarrow(); if(de.classList.contains("px-narrow") !== n) de.classList.toggle("px-narrow", n); de.classList.toggle("px-peek", n && !!UI.pxPeek); }

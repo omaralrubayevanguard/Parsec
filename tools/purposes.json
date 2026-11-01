@@ -273,5 +273,6 @@
   "pages/library/_close.js": "Closes the Library page closure.",
   "pages/library/view.js": "viewLibrary() and libOpenFor(): the page module’s entry and opening it narrowed to an RO and operation.",
   "ro-page/library-on-ro.js": "The Library on the RO page: each operation’s codes, function group and documents with + document, what each code means, the documents that cover its codes (Attach / Not now), the documents strip above the operations, and PDFs offered to the Library before they attach.",
-  "library/models.js": "The Library’s Models tab: the truck pictures moved out of Settings, one row per model (Make, Model, Years, Body, Open ROs) with the view from above, Replace and Remove; the catalog and Add a picture."
+  "library/models.js": "The Library’s Models tab: the truck pictures moved out of Settings, one row per model (Make, Model, Years, Body, Open ROs) with the view from above, Replace and Remove; the catalog and Add a picture.",
+  "pages/manager/fleets-page.js": "The Fleets page (its own page since 17.1, on the Manager’s engine): every fleet in a list, a pane with Overview, Trucks and ROs, the period, printing for an account review."
 }
