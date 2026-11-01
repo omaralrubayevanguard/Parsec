@@ -1,0 +1,391 @@
+
+<!doctype html>
+<html lang="en" data-th="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parsec codes and documents</title>
+<style>
+/* ---------- tokens: two themes (rename to the app's own, e.g. Ivory / Graphite) ---------- */
+:root,[data-th="light"]{--canvas:#F2F0EA;--panel:#FBFAF7;--raised:#fff;--fill:#F0EDE6;--hair:#E6E2D8;--border:#D6D0C3;--ink:#1D1C1A;--ink2:#57534B;--ink3:#67625A;--acc:#86643A;--acct:#F4EDE1;--accl:#D9C5A3;--primary:#1D1C1A;--onprimary:#FBFAF7;--good:#3A8C60;--warn:#AD7210;--bad:#C0503F;--shadow:0 0 0 1px rgba(29,28,26,.06),0 1px 3px rgba(29,28,26,.04);--raise:0 0 0 1px rgba(29,28,26,.08),0 18px 44px -14px rgba(29,28,26,.28);color-scheme:light}
+[data-th="dark"]{--canvas:#0E0E0D;--panel:#151514;--raised:#1D1D1B;--fill:#222220;--hair:#262624;--border:#363532;--ink:#EDEBE6;--ink2:#B0ACA3;--ink3:#9A968D;--acc:#D1B184;--acct:#2A241B;--accl:#6B5A40;--primary:#EDEBE6;--onprimary:#151514;--good:#5BBE8B;--warn:#E2A84C;--bad:#EC7F6C;--shadow:0 0 0 1px rgba(255,255,255,.06);--raise:0 0 0 1px rgba(255,255,255,.08),0 20px 50px -14px rgba(0,0,0,.7);color-scheme:dark}
+:root{--sans:"Inter","Segoe UI",system-ui,sans-serif;--serif:"Iowan Old Style",Georgia,serif;--mono:"Cascadia Mono",Consolas,monospace}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--canvas);color:var(--ink);font:400 14px/1.45 var(--sans);-webkit-font-smoothing:antialiased}
+button,input,textarea{font:inherit;color:inherit}
+/* ---------- the frame (prefix ip- so the drawn visuals' classes can't collide) ---------- */
+.ip-bar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 16px;background:var(--canvas);box-shadow:inset 0 -1px 0 var(--hair)}
+.ip-bar h1{margin:0 auto 0 0;display:flex;align-items:baseline;gap:10px;font:500 19px/24px var(--serif)}
+.ip-bar h1 small{font:500 11px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.ip-jump{display:flex;gap:2px;flex-wrap:wrap} .ip-jump a{padding:4px 9px;border-radius:7px;font-size:12.5px;color:var(--ink2);text-decoration:none} .ip-jump a:hover{background:var(--fill)}
+.ip-seg{display:inline-flex;gap:2px;padding:2px;border-radius:9px;background:var(--fill)}
+.ip-seg button{all:unset;cursor:pointer;height:26px;padding:0 10px;border-radius:7px;font-size:12.5px;font-weight:500;color:var(--ink2)} .ip-seg button[aria-pressed="true"]{background:var(--raised);color:var(--ink);box-shadow:var(--shadow)}
+.ip-btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 11px;border-radius:8px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--border);font:500 12.5px/1 var(--sans)}
+.ip-btn.pri{background:var(--primary);color:var(--onprimary);box-shadow:none} .ip-btn em{font-style:normal;opacity:.7;font-size:11px}
+.ip-btn:focus-visible,.ip-opt:focus-visible,.ip-seg button:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.ip-wrap{max-width:1500px;margin:0 auto;padding:18px 16px 120px}
+.ip-now{margin:0 0 20px;padding:14px 16px;border-radius:14px;background:var(--panel);box-shadow:var(--shadow)} .ip-now h2{margin:0 0 8px;font:500 15px/1 var(--serif)}
+.ip-lead{margin:0 2px 18px;color:var(--ink2)}
+.ip-sec{margin:0 0 26px;scroll-margin-top:64px} .ip-sec h2{display:flex;align-items:baseline;gap:10px;margin:0 2px 10px;font:500 22px/28px var(--serif)} .ip-sec h2 small{font:400 12.5px var(--sans);color:var(--ink3)}
+.ip-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(440px,1fr));gap:14px} @media (max-width:980px){.ip-grid{grid-template-columns:1fr}}
+.ip-idea{min-width:0;display:flex;flex-direction:column;gap:10px;padding:14px 14px 10px;border-radius:14px;background:var(--panel);box-shadow:var(--shadow)}
+.ip-idea.picked{box-shadow:0 0 0 1.5px var(--accl),var(--shadow)}
+.ip-idea h3{margin:0;font:600 15px/20px var(--sans)} .ip-idea header p{margin:3px 0 0;font-size:12.5px;line-height:17px;color:var(--ink3)}
+.ip-vis{position:relative;min-height:96px;padding:12px;border-radius:11px;background:var(--canvas);box-shadow:inset 0 0 0 1px var(--hair);font-size:12.5px;overflow:hidden}
+.ip-hint{position:absolute;left:8px;bottom:8px;z-index:5;padding:3px 8px;border-radius:7px;background:var(--raised);box-shadow:var(--shadow);font-size:11px;color:var(--ink3);pointer-events:none}
+.ip-vis.ip-has .ip-hint,.ip-vis.ip-skip .ip-hint,.ip-vis:not(.ip-has) .ip-replay{display:none}
+.ip-vis.ip-skip>*:not(.ip-replay){opacity:.45}
+.ip-replay{all:unset;cursor:pointer;position:absolute;right:8px;bottom:8px;z-index:5;width:24px;height:24px;border-radius:7px;display:grid;place-items:center;background:var(--raised);box-shadow:var(--shadow);color:var(--ink3);font-size:11px}
+.ip-ol{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:2px}
+.ip-opt{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:14px minmax(0,1fr);gap:8px;padding:6px 8px;border-radius:9px;font-size:12.5px;line-height:16px;color:var(--ink2)}
+.ip-opt:hover{background:var(--fill)} .ip-opt i{width:14px;height:14px;margin-top:1px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--border)}
+.ip-opt b{display:block;font-weight:500;color:var(--ink)} .ip-opt small{display:block;font-size:11.5px;color:var(--ink3)}
+.ip-opt[aria-pressed="true"]{background:var(--acct)} .ip-opt[aria-pressed="true"] i{box-shadow:inset 0 0 0 4.5px var(--acc)}
+#ip-picks{position:fixed;z-index:85;right:16px;top:62px;width:440px;max-width:calc(100vw - 32px);max-height:calc(100vh - 80px);overflow:auto;padding:12px 14px 14px;border-radius:16px;background:var(--raised);box-shadow:var(--raise);display:flex;flex-direction:column;gap:10px}
+#ip-picks[hidden]{display:none}
+#ip-picks pre{margin:0;padding:10px 12px;border-radius:10px;background:var(--fill);font:400 12px/1.55 var(--mono);white-space:pre-wrap}
+#ip-picks textarea{min-height:60px;padding:8px 10px;border:0;border-radius:9px;background:var(--fill);font-size:13px;resize:vertical;outline:none}
+.ip-ph{display:flex;align-items:center;font:500 18px/1 var(--serif)} .ip-ph b{flex:1;font-weight:500} .ip-ph button{all:unset;cursor:pointer;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;color:var(--ink3)}
+.ip-toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:99;padding:10px 14px;border-radius:10px;background:var(--primary);color:var(--onprimary);font-size:13px;box-shadow:var(--raise)}
+@media (max-width:640px){ .ip-grid{grid-template-columns:1fr} #ip-picks{left:16px;right:16px;width:auto} .ip-bar h1 small{display:none} }
+
+/* ---------- the drawn visuals: prefix v- · animate with [data-step] on .ip-vis ---------- */
+.ip-vis{min-height:150px}
+.v-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.v-col{display:flex;flex-direction:column;gap:6px}
+.v-mono{font:500 11.5px/1.5 var(--mono)}
+.v-mut{color:var(--ink3);font-size:11.5px}
+.v-cur{position:absolute;left:78%;top:78%;width:14px;height:14px;z-index:4;pointer-events:none;transition:left .6s cubic-bezier(.2,.75,.25,1),top .6s cubic-bezier(.2,.75,.25,1)}
+.v-cur::before{content:"";position:absolute;inset:0;clip-path:polygon(0 0,0 100%,30% 72%,52% 100%,64% 94%,44% 66%,80% 66%);background:var(--ink)}
+.v-cur::after{content:"";position:absolute;left:-8px;top:-8px;width:30px;height:30px;border-radius:50%;background:var(--acc);opacity:0;transform:scale(.3)}
+[data-step="click"] .v-cur::after{animation:v-ripple .45s ease-out}
+@keyframes v-ripple{0%{opacity:.35;transform:scale(.3)}100%{opacity:0;transform:scale(1.4)}}
+.v-pill{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 9px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--border);background:var(--raised);font:500 11.5px/1 var(--sans);white-space:nowrap;transition:opacity .3s,transform .3s,box-shadow .3s}
+.v-pill i{width:6px;height:6px;border-radius:50%;background:var(--acc)}
+.v-pill.v-cbr i{background:var(--bad)} .v-pill.v-fsb i{background:var(--warn)} .v-pill.v-tsb i{background:var(--acc)} .v-pill.v-ts i{background:#2F8F87}
+.v-hide{opacity:0;transform:translateY(4px)}
+.v-card{padding:8px 10px;border-radius:9px;background:var(--raised);box-shadow:var(--shadow)}
+/* side bar */
+.v-shell{display:grid;grid-template-columns:118px minmax(0,1fr);gap:10px;height:126px}
+.v-side{display:flex;flex-direction:column;gap:1px;padding:6px;border-radius:9px;background:var(--panel);box-shadow:var(--shadow);font-size:11.5px}
+.v-side span{padding:3px 7px;border-radius:6px;color:var(--ink2);position:relative}
+.v-side .v-new{color:var(--ink);font-weight:500}
+.v-side .v-new::after{content:"new";margin-left:5px;font-size:9.5px;color:var(--acc)}
+.ip-s-click .v-side .v-go{background:var(--acct);color:var(--ink)}
+.v-page{border-radius:9px;background:var(--panel);box-shadow:var(--shadow);padding:8px 10px;opacity:.35;transition:opacity .3s}
+.ip-s-done .v-page{opacity:1}
+.v-tabs{display:flex;gap:2px;flex-wrap:wrap;margin:0 0 6px}
+.v-tabs b{font-weight:500;font-size:11px;padding:3px 7px;border-radius:6px;color:var(--ink2)}
+.v-tabs b.on{background:var(--raised);color:var(--ink);box-shadow:var(--shadow)}
+.v-tabs b.soon{opacity:.5}
+[data-opt="hide"] .v-tabs b.soon{display:none}
+[data-opt="two"] .v-tab-fc{display:none}
+[data-opt="lib"] .v-side .v-two{display:none} [data-opt="two"] .v-side .v-one{display:none}
+.v-side .v-two,.v-side .v-one{transition:background .2s}
+.v-doc{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;padding:3px 0;font-size:11.5px;box-shadow:inset 0 -1px 0 var(--hair)}
+.v-doc span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* fault-code entry */
+.v-inp{display:flex;align-items:center;gap:6px;height:30px;padding:0 10px;border-radius:8px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--border);font:500 12.5px/1 var(--mono);min-width:190px}
+.v-inp .v-car{width:1px;height:14px;background:var(--acc);animation:v-blink 1s steps(1) infinite}
+@keyframes v-blink{50%{opacity:0}}
+.v-typ{display:none} .v-typ.v-t0{display:inline}
+.ip-s-t1 .v-typ.v-t0{display:none} .ip-s-t1 .v-typ.v-t1{display:inline}
+.ip-s-t2 .v-typ.v-t1{display:none} .ip-s-t2 .v-typ.v-t2{display:inline}
+.v-read{font-size:11.5px;color:var(--ink3);opacity:0;transition:opacity .3s}
+.ip-s-t2 .v-read{opacity:1}
+.v-chipbox{min-height:26px}
+.v-fc{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 9px;border-radius:999px;box-shadow:inset 0 0 0 1px #2F8F87;color:var(--ink);font:500 11.5px/1 var(--mono);opacity:0;transform:scale(.9);transition:opacity .3s,transform .3s}
+.v-fc i{width:6px;height:6px;border-radius:50%;background:#2F8F87}
+.ip-s-done .v-fc{opacity:1;transform:none}
+.v-fc .v-ftb{color:var(--ink3)}
+[data-opt="short"] .v-fc .v-ftb{display:none}
+.v-mean{font-size:11.5px;color:var(--ink2);opacity:0;transition:opacity .3s .15s}
+.ip-s-done .v-mean{opacity:1}
+[data-opt="short"] .v-mean{opacity:0!important}
+.v-fmts{display:flex;gap:4px;flex-wrap:wrap}
+.v-fmts span{font:500 10.5px/1 var(--mono);padding:4px 6px;border-radius:5px;background:var(--fill);color:var(--ink2)}
+/* code page */
+.v-mod{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);margin:4px 0 2px}
+.v-code{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:8px;align-items:center;padding:4px 6px;border-radius:6px;font-size:11.5px}
+.v-code b{font:600 11.5px/1 var(--mono)}
+.v-code span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink2)}
+.v-code em{font-style:normal;font-size:10.5px;color:var(--ink3)}
+.ip-s-click .v-code.v-hit{background:var(--acct)}
+.v-ftbs{overflow:hidden;max-height:0;transition:max-height .4s;margin-left:62px}
+.ip-s-done .v-ftbs{max-height:90px}
+.v-ftbs div{font-size:11px;color:var(--ink2);padding:1px 0}
+.v-ftbs div b{font:600 11px var(--mono);color:var(--ink);margin-right:6px}
+[data-opt="flat"] .v-mod{display:none}
+/* drop a file */
+.v-drop{position:relative;display:grid;place-items:center;height:56px;border-radius:9px;box-shadow:inset 0 0 0 1.5px var(--border);font-size:11.5px;color:var(--ink3);transition:box-shadow .2s,background .2s}
+.ip-s-over .v-drop{box-shadow:inset 0 0 0 1.5px var(--acc);background:var(--acct)}
+.v-file{position:absolute;left:68%;top:6px;z-index:3;display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:7px;background:var(--raised);box-shadow:var(--raise);font:500 11px/1 var(--mono);transition:left .7s cubic-bezier(.2,.75,.25,1),top .7s cubic-bezier(.2,.75,.25,1),opacity .3s}
+.v-file::before{content:"PDF";font:700 8.5px/1 var(--sans);padding:3px 3px;border-radius:3px;background:var(--bad);color:#fff}
+.ip-s-over .v-file{left:32%;top:24px}
+.ip-s-read .v-file{opacity:0}
+.v-res{margin-top:8px;opacity:0;transform:translateY(4px);transition:opacity .3s,transform .3s}
+.ip-s-read .v-res{opacity:1;transform:none}
+.v-res .v-ln{display:flex;gap:6px;align-items:center;font-size:11.5px;padding:2px 0}
+.v-res .v-ln b{font-weight:600}
+.v-scan{height:3px;border-radius:2px;background:linear-gradient(90deg,var(--acc),transparent);width:0;transition:width .9s}
+.ip-s-read .v-scan{width:100%}
+.v-ask{display:none;gap:6px;align-items:center;margin-top:4px}
+[data-opt="ask"].ip-s-done .v-ask{display:flex}
+.v-tick{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink2)}
+.v-tick i{width:14px;height:14px;border-radius:4px;box-shadow:inset 0 0 0 1.5px var(--border);display:grid;place-items:center;font-style:normal;font-size:10px;color:#fff;transition:background .25s,box-shadow .25s}
+.ip-s-done .v-tick.v-auto i{background:var(--good);box-shadow:none}
+.ip-s-done .v-tick.v-auto i::before{content:"✓"}
+[data-opt="ask"].ip-s-done .v-tick.v-auto i{background:none;box-shadow:inset 0 0 0 1.5px var(--border)}
+[data-opt="ask"].ip-s-done .v-tick.v-auto i::before{content:""}
+.v-btn{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:6px;background:var(--primary);color:var(--onprimary);font:500 11px/1 var(--sans)}
+.v-btn.v-ghost{background:var(--raised);color:var(--ink);box-shadow:inset 0 0 0 1px var(--border)}
+/* RO header chips */
+.v-head{padding:8px 10px;border-radius:9px;background:var(--panel);box-shadow:var(--shadow)}
+.v-head .v-ro{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}
+.v-head .v-ro b{font:500 15px/1 var(--serif)}
+.v-grp{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin:3px 0}
+.v-op{font:600 10.5px/1 var(--sans);color:var(--ink3);width:34px}
+[data-opt="flat"] .v-op{display:none}
+[data-opt="flat"] .v-grp{display:inline-flex;margin:0 3px 0 0}
+.v-opn{display:none;font-size:10px;color:var(--ink3)}
+[data-opt="flat"] .v-opn{display:inline}
+.v-head .v-pill{opacity:0;transform:translateY(4px)}
+.ip-s-in .v-head .v-pill{opacity:1;transform:none}
+.ip-s-in .v-head .v-grp:nth-child(3) .v-pill{transition-delay:.15s}
+.ip-s-click .v-pill.v-hit{box-shadow:inset 0 0 0 1.5px var(--acc)}
+.v-view{position:absolute;right:10px;top:10px;bottom:10px;width:46%;border-radius:9px;background:var(--raised);box-shadow:var(--raise);padding:8px 10px;transform:translateX(110%);transition:transform .45s cubic-bezier(.2,.75,.25,1);font-size:11px}
+.ip-s-done .v-view{transform:none}
+.v-view .v-vh{display:flex;justify-content:space-between;font-weight:600;margin-bottom:5px}
+.v-view .v-pg{height:6px;border-radius:3px;background:var(--fill);margin:5px 0}
+[data-opt="tab"] .v-view{left:10px;right:10px;width:auto}
+[data-opt="tab"] .v-view::before{content:"New browser tab · RVXX2601.pdf";display:block;font:500 10.5px var(--sans);color:var(--ink3);padding-bottom:5px;margin-bottom:5px;box-shadow:inset 0 -1px 0 var(--hair)}
+/* warranty */
+.v-war{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:8px;align-items:center;padding:4px 0;font-size:11.5px;box-shadow:inset 0 -1px 0 var(--hair)}
+.v-war .v-docs{display:flex;gap:4px;flex-wrap:wrap}
+.v-war .v-docs .v-pill{height:19px;font-size:10.5px;opacity:0}
+.ip-s-done .v-war .v-docs .v-pill{opacity:1}
+.v-war .v-st{font-size:10.5px;color:var(--ink3)}
+.ip-s-done .v-war .v-st.v-ok{color:var(--good)}
+[data-opt="pack"] .v-pack{display:inline-flex} .v-pack{display:none;margin-top:6px;opacity:0;transition:opacity .3s}
+[data-opt="pack"].ip-s-done .v-pack{opacity:1}
+/* folder tree */
+.v-tree{font:500 11px/1.65 var(--mono);color:var(--ink2);white-space:pre;overflow:hidden}
+.v-tree b{color:var(--ink);font-weight:600}
+.v-tree em{font-style:normal;color:var(--acc)}
+.v-tree .v-nw{opacity:.25;transition:opacity .4s}
+.ip-s-done .v-tree .v-nw{opacity:1;background:var(--acct);border-radius:3px}
+.v-tree .v-a,.v-tree .v-b{display:none}
+[data-opt="type"] .v-tree .v-a{display:inline} [data-opt="num"] .v-tree .v-b{display:inline}
+.v-tree .v-a.v-0,.v-tree .v-b.v-0{display:none}
+.ip-vis:not([data-opt]) .v-tree .v-a{display:inline}
+.v-rel .v-old{transition:opacity .4s,text-decoration-color .4s}
+[data-opt="newest"].ip-s-done .v-rel .v-old{opacity:.25;text-decoration:line-through}
+[data-opt="copy"] .v-cp{display:inline} .v-cp{display:none}
+.ip-s-done .v-cp{background:var(--acct);border-radius:3px}
+.ip-s-done .v-lk{background:var(--acct);border-radius:3px}
+[data-opt="copy"] .v-lk{background:none!important}
+/* procedures (later) */
+.v-proc{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:8px;align-items:center;padding:5px 0;font-size:11.5px;box-shadow:inset 0 -1px 0 var(--hair);opacity:.4;transition:opacity .3s}
+.v-proc .v-n{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--fill);font-weight:600;font-size:10.5px}
+.v-proc .v-tq{font:600 11px/1 var(--mono);padding:3px 6px;border-radius:5px;background:var(--acct);color:var(--ink)}
+.ip-s-s1 .v-proc.v-p1,.ip-s-s2 .v-proc.v-p2,.ip-s-s3 .v-proc.v-p3{opacity:1}
+.ip-s-s2 .v-proc.v-p1 .v-n,.ip-s-s3 .v-proc.v-p2 .v-n{background:var(--good);color:#fff}
+/* suggest */
+.v-sug{display:flex;align-items:center;gap:6px;margin-top:6px;padding:6px 8px;border-radius:8px;background:var(--acct);font-size:11.5px;opacity:0;transform:translateY(4px);transition:opacity .3s,transform .3s}
+.ip-s-show .v-sug{opacity:1;transform:none}
+[data-opt="auto"] .v-sug{display:none}
+.v-att{opacity:0;transition:opacity .3s}
+.ip-s-done .v-att{opacity:1}
+[data-opt="auto"].ip-s-show .v-att{opacity:1}
+@media (prefers-reduced-motion:reduce){.v-cur,.v-file,.v-view,.v-res,.v-fc,.v-pill{transition:none!important}.v-cur::after,.v-car{animation:none!important}}
+@media (max-width:640px){.v-shell{grid-template-columns:96px minmax(0,1fr)}.v-view{width:62%}.v-tree{font-size:10px}}
+/* a pointer inside its target: it rests below-right, then moves onto it */
+.v-tg{position:relative}
+.v-tg>.v-cur{left:calc(100% + 30px);top:calc(100% + 26px)}
+.ip-s-point .v-tg>.v-cur{left:45%;top:45%}
+</style>
+</head>
+<body>
+<div class="ip-bar"><h1>Parsec <small>Fault codes · documents · storage</small></h1><nav class="ip-jump" id="ip-jump"></nav>
+<div class="ip-seg" role="group" aria-label="Theme"><button data-th="light" aria-pressed="true">Ivory</button><button data-th="dark" aria-pressed="false">Graphite</button></div>
+<button class="ip-btn pri" id="ip-open">Your picks <em id="ip-n"></em></button></div>
+<main class="ip-wrap">
+<section class="ip-now"><h2>How it looks now</h2><p style="margin:0;color:var(--ink2)">Codes: typed by hand as <b>3226/2</b> or <b>P0401</b>, 21 SPNs with a meaning, no FTBs (P1050 FTB 17 isn’t accepted). Documents: stored as plain files under a log entry, nothing read from them, no chips. From your files: <b>RVXX2601</b> rel 02, <b>EC0033</b>, <b>SNM23-002</b>, <b>SBN25-119</b>, <b>SLV26-009</b>, Service Bulletin <b>430-13</b> rel 01 (62 TCM codes).</p></section>
+<p class="ip-lead" id="ip-lead"></p>
+<div id="ip-secs"></div>
+</main>
+<div id="ip-picks" hidden></div>
+<script>
+/* ---------- the content: groups → ideas → options (Skip is added to each) ---------- */
+var APP = 'Parsec', TOPIC = 'Fault codes and documents', KEY = 'ip-parsec-codes-docs';   /* KEY: unique per mock-up */
+var CUR = '<span class="v-cur"></span>';
+var IDEAS = [
+  { group: 'The new page', items: [
+    { k: 'page', t: 'Where it sits on the side bar', why: 'Fault codes and the four document kinds, and room for procedures later.',
+      vis: '<div class="v-shell"><div class="v-side"><span>ROs</span><span>Technician</span><span>Triage</span><span>Warranty</span>' +
+        '<span class="v-new v-go v-one v-tg">Library' + CUR + '</span><span class="v-new v-go v-two v-tg">Documents' + CUR + '</span><span class="v-new v-two">Fault codes</span></div>' +
+        '<div class="v-page"><div class="v-tabs"><b class="v-tab-fc">Fault codes</b><b class="on">CBRs</b><b>FSBs</b><b>TSBs</b><b>TS</b><b class="soon">Procedures · soon</b></div>' +
+        '<div class="v-doc"><span class="v-pill v-cbr"><i></i>RVXX2601</span><span>Potential Vehicle Roll with Parking Brake Engaged</span><span class="v-mut">rel 02</span></div>' +
+        '<div class="v-doc"><span class="v-pill v-cbr"><i></i>EC0033</span><span>MY2017/18 13L TC</span><span class="v-mut">6.15.26</span></div></div></div>',
+      steps: [['idle', 700], ['point', 700], ['click', 500], ['done', 1400]],
+      opts: [['lib', 'A · One “Library” page', 'tabs: Fault codes · CBRs · FSBs · TSBs · TS'], ['two', 'B · Two pages', 'Documents (4 tabs) and Fault codes']] },
+    { k: 'proc', t: 'Procedures, before they’re ready', why: 'Step-by-step repairs with torque specs come later.',
+      vis: '<div class="v-tabs" style="margin-bottom:8px"><b>Fault codes</b><b>CBRs</b><b>FSBs</b><b>TSBs</b><b>TS</b><b class="soon on">Procedures · soon</b></div>' +
+        '<div class="v-proc v-p1"><span class="v-n">1</span><span>Remove the caliper mounting bolts</span><span class="v-tq">—</span></div>' +
+        '<div class="v-proc v-p2"><span class="v-n">2</span><span>Fit the new brake chamber</span><span class="v-tq">180 N·m</span></div>' +
+        '<div class="v-proc v-p3"><span class="v-n">3</span><span>Torque the air line fittings</span><span class="v-tq">25 N·m</span></div>',
+      steps: [['idle', 600], ['s1', 900], ['s2', 900], ['s3', 1200]],
+      opts: [['soon', 'A · Show the tab as “soon”', 'faded, not clickable'], ['hide', 'B · Hide it until it’s built']] },
+    { k: 'kinds', t: 'Which tab each document goes to', why: 'From your screenshots. Correct me where the shop calls them something else.',
+      vis: '<div class="v-col v-mono" style="gap:3px">' +
+        '<div>RVXX2601 · EC0033 <span class="v-mut">recalls, campaigns</span> → <span class="v-pill v-cbr"><i></i>CBR</span></div>' +
+        '<div>SNV23-002 · SNM23-002 · SBN25-119 · SLV26-009 → <span class="v-pill v-fsb"><i></i>FSB</span></div>' +
+        '<div>Service Bulletin · Group 430-13 rel 01 → <span class="v-pill v-tsb"><i></i>TSB</span></div>' +
+        '<div>Troubleshooting / fault tracing → <span class="v-pill v-ts"><i></i>TS</span></div></div>',
+      opts: [['prefix', 'A · By the number’s prefix', 'editable on Settings'], ['ask', 'B · Ask once for each new prefix', 'then remember it']] }
+  ]},
+  { group: 'Fault codes', items: [
+    { k: 'type', t: 'Type a code any way', why: 'One box. It reads every format below and shows what it means.',
+      vis: '<div class="v-fmts" style="margin-bottom:8px"><span>P1050-17</span><span>P1050 FTB 17</span><span>p1050 ftb17</span><span>SPN 3226 FMI 2</span><span>3226/2</span><span>MID 128 PID 110 FMI 0</span></div>' +
+        '<div class="v-row"><span class="v-inp"><span class="v-typ v-t0" style="color:var(--ink3)">+ code</span><span class="v-typ v-t1">p1050</span><span class="v-typ v-t2">p1050 ftb17</span><span class="v-car"></span></span><span class="v-read">reads as P1050 · FTB 17</span></div>' +
+        '<div class="v-chipbox" style="margin-top:8px"><span class="v-fc"><i></i>P1050<span class="v-ftb">· 17</span></span></div>' +
+        '<div class="v-mean">TCM · Transmission range, position — voltage above normal, or shorted high · slow gear changes</div>',
+      steps: [['idle', 700], ['t1', 700], ['t2', 900], ['done', 1500]],
+      opts: [['full', 'A · Chip shows the code and FTB', 'P1050 · 17, meaning underneath'], ['short', 'B · Chip shows the code only', 'the FTB and meaning in its tooltip']] },
+    { k: 'codes', t: 'The fault code page', why: 'Every code, its FTBs and the documents that cover it.',
+      vis: '<div class="v-mod">TCM · transmission</div>' +
+        '<div class="v-code v-hit v-tg"><b>P1050</b><span>Transmission range, position</span><em>4 FTBs · TSB 430-13</em>' + CUR + '</div>' +
+        '<div class="v-ftbs"><div><b>17</b>Voltage above normal, or shorted high</div><div><b>18</b>Current below normal or open circuit</div><div><b>54</b>Calibration out of range — cranking inhibited</div></div>' +
+        '<div class="v-code"><b>P1051</b><span>Transmission splitter, position</span><em>4 FTBs</em></div>' +
+        '<div class="v-mod">ECM · engine</div><div class="v-code"><b>3226/2</b><span>Aftertreatment NOx, outlet — erratic</span><em>SPN/FMI</em></div>',
+      steps: [['idle', 700], ['point', 700], ['click', 500], ['done', 1400]],
+      opts: [['mod', 'A · Grouped by module', 'TCM, ECM, ACM, EBS…'], ['flat', 'B · One list with a search box']] },
+    { k: 'source', t: 'Where the code list comes from', why: 'Your 430-13 file lists 62 TCM codes with their FTBs.',
+      vis: '<div class="v-drop">Drop a DTC bulletin on the Fault codes page<span class="v-file">volvo-truck-dtc-tcm.pdf</span></div><div class="v-scan"></div>' +
+        '<div class="v-res"><div class="v-ln"><b>62 codes</b> read from Service Bulletin 430-13 rel 01 · TCM</div><div class="v-ln v-mut">P1050 … P107B · U0001 … U3003 · each with its FTBs and symptoms</div></div>',
+      steps: [['idle', 700], ['over', 900], ['read', 1000], ['done', 1200]],
+      opts: [['read', 'A · Read from the bulletins you drop in', 'plus the standard SPN/FMI list built in'], ['built', 'B · Built-in list only'], ['hand', 'C · Typed in by hand']] },
+    { k: 'sug', t: 'A code brings its documents', why: 'Add a code to an operation — Parsec offers what covers it.',
+      vis: '<div class="v-row"><span class="v-op" style="width:auto">OP 2</span><span class="v-fc" style="opacity:1;transform:none"><i></i>P1050<span class="v-ftb">· 17</span></span><span class="v-pill v-tsb v-att"><i></i>TSB 430-13</span></div>' +
+        '<div class="v-sug"><span>TSB 430-13 covers P1050 (page 5)</span><span class="v-btn v-tg">Attach' + CUR + '</span><span class="v-btn v-ghost">Not now</span></div>',
+      steps: [['idle', 600], ['show', 900], ['point', 700], ['click', 500], ['done', 1200]],
+      opts: [['offer', 'A · Offer it, one tap to attach'], ['auto', 'B · Attach it by itself']] }
+  ]},
+  { group: 'Documents on the RO', items: [
+    { k: 'drop', t: 'Drop a document on the RO', why: 'Read, filed under the right log entry, and the checklist ticked.',
+      vis: '<div class="v-drop">Drop on RO 412870 · OP 1<span class="v-file">RVXX2601.pdf</span></div><div class="v-scan"></div>' +
+        '<div class="v-res"><div class="v-ln"><span class="v-pill v-cbr"><i></i>CBR</span><b>RVXX2601 · release 02</b> Potential Vehicle Roll…</div>' +
+        '<div class="v-ln">Filed under <b>Upload pictures &amp; documents</b> · OP 1</div>' +
+        '<div class="v-ln"><span class="v-tick v-auto"><i></i>Recall checked</span><span class="v-tick v-auto"><i></i>DTC uploaded</span></div>' +
+        '<div class="v-ask"><span class="v-mut">Is this right?</span><span class="v-btn">File it</span><span class="v-btn v-ghost">Change</span></div></div>',
+      steps: [['idle', 700], ['over', 900], ['read', 1100], ['done', 1400]],
+      opts: [['auto', 'A · File and tick by itself', 'asks only when it isn’t sure'], ['ask', 'B · Always ask first']] },
+    { k: 'chips', t: 'Documents on the RO header', why: 'Every document used, by operation. Click one to open it.',
+      vis: '<div class="v-head"><div class="v-ro"><b>RO 412870</b><span class="v-mut">VNL 860 · 4V4NC9EH7RN…</span></div>' +
+        '<div class="v-grp"><span class="v-op">OP 1</span><span class="v-pill v-cbr v-hit v-tg" style=""><i></i><span class="v-opn">1 ·</span>CBR RVXX2601' + CUR + '</span></div>' +
+        '<div class="v-grp"><span class="v-op">OP 2</span><span class="v-pill v-tsb"><i></i><span class="v-opn">2 ·</span>TSB 430-13</span><span class="v-pill v-fsb"><i></i><span class="v-opn">2 ·</span>FSB SNM23-002</span></div></div>' +
+        '<div class="v-view"><div class="v-vh"><span>RVXX2601 · rel 02</span><span>✕</span></div><div>Potential Vehicle Roll with Parking Brake Engaged</div><div class="v-pg"></div><div class="v-pg" style="width:80%"></div><div class="v-pg" style="width:60%"></div><div class="v-mut">page 1 of 31</div></div>',
+      steps: [['idle', 600], ['in', 800], ['point', 700], ['click', 500], ['done', 1400]],
+      opts: [['grp', 'A · Grouped by operation'], ['flat', 'B · One row, the OP number on each chip']] },
+    { k: 'open', t: 'Opening a document', why: 'What a click on a chip does.',
+      vis: '<div class="v-head"><div class="v-ro"><b>RO 412870</b></div><div class="v-grp"><span class="v-op">OP 1</span><span class="v-pill v-cbr v-hit v-tg" style=";opacity:1;transform:none"><i></i>CBR RVXX2601' + CUR + '</span></div></div>' +
+        '<div class="v-view"><div class="v-vh"><span>RVXX2601 · rel 02</span><span>✕</span></div><div>Potential Vehicle Roll with Parking Brake Engaged</div><div class="v-pg"></div><div class="v-pg" style="width:80%"></div><div class="v-mut">page 1 of 31</div></div>',
+      steps: [['idle', 600], ['point', 700], ['click', 500], ['done', 1400]],
+      opts: [['panel', 'A · A panel beside the RO', 'the RO stays open'], ['tab', 'B · A new browser tab']] },
+    { k: 'war', t: 'Warranty sees the documents', why: 'Per operation, ready for the claim.',
+      vis: '<div class="v-war"><b>OP 1</b><span class="v-docs"><span class="v-pill v-cbr"><i></i>RVXX2601</span></span><span class="v-st v-ok">✓ documents</span></div>' +
+        '<div class="v-war"><b>OP 2</b><span class="v-docs"><span class="v-pill v-tsb"><i></i>430-13</span><span class="v-pill v-fsb"><i></i>SNM23-002</span></span><span class="v-st v-ok">✓ documents</span></div>' +
+        '<div class="v-war"><b>OP 3</b><span class="v-docs"></span><span class="v-st">none yet</span></div>' +
+        '<span class="v-btn v-pack">Save the claim folder · 3 PDFs</span>',
+      steps: [['idle', 700], ['done', 1400]],
+      opts: [['col', 'A · A documents column on Warranty'], ['pack', 'B · Column, plus a claim folder to save'], ['ro', 'C · Only on the RO header']] }
+  ]},
+  { group: 'How it’s stored', items: [
+    { k: 'tree', t: 'The folder layout', why: 'Each document is saved once, in the shop folder — never in Parsec.html or GitHub.',
+      vis: '<div class="v-tree">Parsec Data/\n' +
+        '  ROs/Open/412870 - Acme Freight/ro.json  <em>← links to the documents</em>\n' +
+        '  <b class="v-nw">Library/</b>\n' +
+        '<span class="v-a">    <span class="v-nw">CBR/RVXX2601 - Potential Vehicle Roll (rel 02).pdf</span>\n    <span class="v-nw">FSB/SNM23-002 - EGR Cooler.pdf</span>\n    <span class="v-nw">TSB/430-13 rel 01 - TCM DTCs.pdf</span>\n    <span class="v-nw">TS/</span>   <span class="v-nw">Procedures/</span>  <em>(later)</em>\n</span>' +
+        '<span class="v-b">    <span class="v-nw">2026/RVXX2601.pdf · 2023/SNM23-002.pdf …</span>\n</span>' +
+        '    <span class="v-nw">codes/tcm.json · ecm.json</span>   <em>the code list</em>\n' +
+        '  Shop/<span class="v-nw">library.json</span>          <em>every document’s number, kind, title, codes</em></div>',
+      steps: [['idle', 600], ['done', 1400]],
+      opts: [['type', 'A · A folder per kind', 'Library/CBR, FSB, TSB, TS'], ['num', 'B · A folder per year']] },
+    { k: 'rel', t: 'When a new release comes out', why: 'RVXX2601 went from release 01 to 02.',
+      vis: '<div class="v-tree v-rel">Library/CBR/\n  <span class="v-old">RVXX2601 - Potential Vehicle Roll (rel 01).pdf</span>  <em>RO 409112 used it</em>\n  <span class="v-nw">RVXX2601 - Potential Vehicle Roll (rel 02).pdf</span>  <em>newest</em></div>',
+      steps: [['idle', 600], ['done', 1400]],
+      opts: [['keep', 'A · Keep every release', 'old ROs still open the one they used'], ['newest', 'B · Keep only the newest']] },
+    { k: 'link', t: 'An RO links to its documents', why: 'What goes in the RO’s own folder.',
+      vis: '<div class="v-tree">ROs/Open/412870 - Acme Freight/\n  ro.json   <em>OP 1 →</em> <span class="v-lk">doc RVXX2601 rel 02</span>\n  Attachments/\n    photos, the DTC readout\n    <span class="v-cp">RVXX2601 (rel 02).pdf  <em>← a copy</em></span></div>',
+      steps: [['idle', 600], ['done', 1400]],
+      opts: [['link', 'A · A link, the file stays in Library', 'saved once'], ['copy', 'B · A link and a copy in Attachments', 'the RO folder has everything for warranty']] }
+  ]}
+];
+/* ---------- the page ---------- */
+var D = document, $ = function (s, r) { return (r || D).querySelector(s); }, $$ = function (s, r) { return [].slice.call((r || D).querySelectorAll(s)); };
+function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+var V = { th: 'light', open: false, v: {}, note: '' };
+try { var sv = JSON.parse(localStorage.getItem(KEY) || '{}'); if (sv.v) V.v = sv.v; if (sv.note) V.note = sv.note; if (sv.th) V.th = sv.th; } catch (e) {}
+function save() { try { localStorage.setItem(KEY, JSON.stringify({ v: V.v, note: V.note, th: V.th })); } catch (e) {} }
+var total = IDEAS.reduce(function (a, g) { return a + g.items.length; }, 0);
+$('#ip-lead').textContent = total + ' idea' + (total === 1 ? '' : 's') + ' for the ' + TOPIC.toLowerCase() + ' — pick an option on each, or Skip, then copy Your picks into the chat.';
+$('#ip-jump').innerHTML = IDEAS.map(function (g, i) { return '<a href="#ip-s' + i + '">' + esc(g.group) + '</a>'; }).join('');
+$('#ip-secs').innerHTML = IDEAS.map(function (g, i) {
+  return '<section class="ip-sec" id="ip-s' + i + '"><h2>' + esc(g.group) + ' <small>' + g.items.length + ' idea' + (g.items.length > 1 ? 's' : '') + '</small></h2><div class="ip-grid">' + g.items.map(function (it) {
+    var o = it.opts.concat([['skip', 'Skip', '']]);
+    return '<article class="ip-idea" data-k="' + it.k + '"><header><h3>' + esc(it.t) + '</h3><p>' + esc(it.why) + '</p></header><div class="ip-vis" data-step="' + (it.steps ? it.steps[0][0] : '') + '">' + it.vis + (it.steps ? '<span class="ip-hint">Pick an option to see it play</span><button class="ip-replay" aria-label="Play it again" title="Play it again">↻</button>' : '') + '</div><div class="ip-ol">' +
+      o.map(function (x) { return '<button class="ip-opt" data-k="' + it.k + '" data-v="' + x[0] + '" aria-pressed="false"><i></i><span><b>' + esc(x[1]) + '</b>' + (x[2] ? '<small>' + esc(x[2]) + '</small>' : '') + '</span></button>'; }).join('') + '</div></article>';
+  }).join('') + '</div></section>';
+}).join('');
+/* ---------- the animations: still until you pick an option — then that option plays once and holds its result (↻ plays it again) ---------- */
+var RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+function find(k) { var r = null; IDEAS.forEach(function (g) { g.items.forEach(function (it) { if (it.k === k) r = it; }); }); return r; }
+function mark(vis, it, n) { it.steps.forEach(function (s, j) { vis.classList.toggle('ip-s-' + s[0], j <= n); }); vis.dataset.step = it.steps[n][0]; }   /* data-step = this step · .ip-s-<name> = every step reached */
+function rest(vis, it, end) { clearTimeout(vis._t); if (it.steps) mark(vis, it, end ? it.steps.length - 1 : 0); }
+function play(vis, it) {
+  clearTimeout(vis._t); if (!it.steps) return;
+  if (RM) { rest(vis, it, 1); return; }   /* reduced motion: the end state, still */
+  var i = 0; (function next() { var s = it.steps[i]; mark(vis, it, i); i++; if (i < it.steps.length) vis._t = setTimeout(next, s[1]); })();
+}
+function setOpt(vis, v) { if (v && v !== 'skip') vis.dataset.opt = v; else delete vis.dataset.opt; vis.classList.toggle('ip-has', !!v && v !== 'skip'); vis.classList.toggle('ip-skip', v === 'skip'); }
+$$('.ip-vis').forEach(function (vis) { var k = vis.closest('.ip-idea').dataset.k, it = find(k), v = V.v[k]; setOpt(vis, v); rest(vis, it, v && v !== 'skip'); });   /* saved picks show their result, still */
+/* ---------- Your picks ---------- */
+function pkText() {
+  var L = [APP + ' · ' + TOPIC + ' — my picks'];
+  IDEAS.forEach(function (g) { var rows = []; g.items.forEach(function (it) { var v = V.v[it.k]; if (!v) return; var o = it.opts.filter(function (x) { return x[0] === v; })[0]; rows.push('· ' + it.t + ': ' + (v === 'skip' ? 'skip' : o ? o[1] : v)); }); if (rows.length) { L.push(g.group + ':'); L = L.concat(rows); } });
+  var left = total - Object.keys(V.v).length; if (left) L.push('(not picked yet: ' + left + ')');
+  if (V.note.trim()) L.push('Notes: ' + V.note.trim());
+  return L.join('\n');
+}
+function sync() {
+  D.documentElement.setAttribute('data-th', V.th);
+  $$('.ip-seg button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.th === V.th)); });
+  $$('.ip-opt').forEach(function (b) { b.setAttribute('aria-pressed', String(V.v[b.dataset.k] === b.dataset.v)); });
+  $$('.ip-idea').forEach(function (a) { a.classList.toggle('picked', !!V.v[a.dataset.k]); });
+  var n = Object.keys(V.v).length; $('#ip-n').textContent = n ? n + '/' + total : '';
+}
+function draw() {
+  var w = $('#ip-picks'); w.hidden = !V.open; if (!V.open) return;
+  var ta = $('#ip-note'); if (ta && D.activeElement === ta) { $('#ip-picks pre').textContent = pkText(); return; }
+  w.innerHTML = '<div class="ip-ph"><b>Your picks</b><button data-pk="x" aria-label="Close">✕</button></div><pre>' + esc(pkText()) + '</pre><label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:var(--ink2)">Anything else<textarea id="ip-note" placeholder="Anything to add or change">' + esc(V.note) + '</textarea></label><button class="ip-btn pri" data-pk="copy" style="justify-content:center;height:34px">Copy for the chat</button>';
+}
+function toast(m) { var t = $('.ip-toast'); if (t) t.remove(); t = D.createElement('div'); t.className = 'ip-toast'; t.textContent = m; D.body.appendChild(t); clearTimeout(toast.h); toast.h = setTimeout(function () { t.remove(); }, 2600); }
+function copy(tx) {
+  var fb = function () { var ta = D.createElement('textarea'); ta.value = tx; D.body.appendChild(ta); ta.select(); try { D.execCommand('copy'); toast('Copied — paste it in the chat.'); } catch (e) { toast('Select the text and copy it.'); } ta.remove(); };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(tx).then(function () { toast('Copied — paste it in the chat.'); }, fb); else fb();
+}
+D.addEventListener('click', function (ev) {
+  var t = ev.target, b;
+  if ((b = t.closest('.ip-seg button'))) { V.th = b.dataset.th; save(); sync(); return; }
+  if (t.closest('#ip-open')) { V.open = !V.open; draw(); return; }
+  if ((b = t.closest('[data-pk]'))) { if (b.dataset.pk === 'x') { V.open = false; draw(); } else copy(pkText()); return; }
+  if ((b = t.closest('.ip-replay'))) { var vis = b.closest('.ip-vis'); play(vis, find(vis.closest('.ip-idea').dataset.k)); return; }
+  if ((b = t.closest('.ip-opt'))) { var k = b.dataset.k, v = b.dataset.v; if (V.v[k] === v) delete V.v[k]; else V.v[k] = v; save(); sync(); draw();
+    var vs = $('.ip-idea[data-k="' + k + '"] .ip-vis'), it = find(k), nv = V.v[k]; setOpt(vs, nv); if (nv && nv !== 'skip') play(vs, it); else rest(vs, it, 0); }
+});
+D.addEventListener('input', function (ev) { if (ev.target.id === 'ip-note') { V.note = ev.target.value; save(); var p = $('#ip-picks pre'); if (p) p.textContent = pkText(); } });
+D.addEventListener('keydown', function (ev) { if (ev.key === 'Escape' && V.open) { V.open = false; draw(); } });
+sync();
+</script>
+</body>
+</html>
