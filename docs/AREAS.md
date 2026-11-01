@@ -253,8 +253,8 @@ Load order is `build/manifest.txt`; this page is for finding things.
 |---|---|---:|---:|---:|
 | `_close.js` | Closes the RO list closure. | 0 | 0 | 0 |
 | `_open.js` | Opens the RO list closure (RL): one flat list of ROs and a peek pane. | 0 | 0 | 1 |
-| `columns.js` | The RO list's columns (13.1): drag into any order, add fields or your own, saved views, the Display pop-over. | 43 | 32 | 18 |
-| `embed.js` | The ROs tab on Triage, Foreman, Parts, Manager and Technician (14.3): rlEmbed puts the RO list inside another page, with Back. | 2 | 9 | 1 |
+| `columns.js` | The RO list's columns (13.1): drag into any order, add fields or your own, saved views, the Display pop-over. | 43 | 32 | 19 |
+| `embed.js` | The ROs tab on Triage, Foreman, Parts, Manager and Technician (14.3): rlEmbed puts the RO list inside another page, with Back. | 2 | 9 | 2 |
 | `model.js` | The RO list's model: one RO as the list draws it (info, spot, next step), rows and counts. | 10 | 6 | 24 |
 | `page-base.js` | The RO list page's older base (RL_GROUPS, rlList) and the permission labels and role tables it shares with Admin (permRoles, permState…). | 8 | 11 | 7 |
 | `view.js` | viewRoList(): the page module's entry. | 0 | 1 | 0 |
@@ -422,6 +422,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `rail-popovers.js` | The two pop-overs off the rail (the clock, the person) and the tooltip mode row (PTIP_MODES / ptipSetMode). | 4 | 6 | 1 |
 | `render-root.js` | render(): the one place the page is drawn. It picks the view, builds its HTML, morphs it into #app, then runs each area's after-render hooks. histSync keeps the browser history in step. | 8 | 2 | 2 |
 | `ro-rail.js` | The RO list rail beside the RO page (shown / hidden, widths) and, since 16.3, roLnk(): every RO number anywhere becomes a link that opens its RO, with the picture and the ⋯ shop menu on RO rows (rl163Deco runs on every render). | 22 | 29 | 10 |
+| `widths.js` | Widths you set by dragging: the side bar's edge, the panes (lists, the RO list's side panel, the Library's document panel); the folded side bar opens on hover over its expand button. | 6 | 11 | 3 |
 
 ## state/  — STATE and UI, the folder handle, drafts, undo, data safety
 

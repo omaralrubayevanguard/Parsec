@@ -104,6 +104,7 @@ function render(){
   try{ if(UI.view !== "ros") UI.roFrom = null; if(typeof rlEmbAfter === "function") rlEmbAfter(); }catch(e){}   /* Parsec 14.3 */
   try{ trkHydrate(); }catch(e){ console.error(e); }
   try{ pmAfter(); }catch(e){ console.error(e); }
+  try{ pxwAfter(); }catch(e){ console.error(e); }   /* 17.1: the widths you set, and the drag edges (shell/widths.js) */
   document.documentElement.classList.toggle('yd-roam', false);   /* the Foreman yard is the Triage yard now */
   document.querySelectorAll('#app button[title]:not([aria-label])').forEach(function(b){ if(!/[A-Za-z0-9]/.test(b.textContent||'')) b.setAttribute('aria-label', b.getAttribute('title')); });
 

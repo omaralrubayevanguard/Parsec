@@ -1,7 +1,7 @@
 /* Parsec · pages/rolist · embed.js
    The ROs tab on Triage, Foreman, Parts, Manager and Technician (14.3): rlEmbed puts the RO list inside another page, with Back.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   rlEmbed rlEmbedCount rlEmbOk rlEmbOn rlEmbAfter rlBackName rlBack rlCrumbFix rlEmbTab RL_HOSTN (9 functions, 1 constant)
+   declares   rlEmbed rlEmbedCount rlEmbOk rlEmbOn rlEmbAfter rlBackName rlBack rlCrumbFix rlEmbTab RL_PEEK_HOSTS RL_HOSTN (9 functions, 2 constants)
    state      rlLayout
    uses       access/ data/ shell/ state/
 */
@@ -15,6 +15,7 @@ function rlEmbedCount(){ try{ return RL.n(); }catch(e){ return 0; } }
 function rlEmbOk(){ try{ return typeof navAllowed !== 'function' || navAllowed('rolist'); }catch(e){ return true; } }
 function rlEmbOn(){ return UI.view !== 'rolist' && UI.view !== 'ros' && !UI.modal && !!document.querySelector('.rq-emb'); }
 function rlEmbAfter(){ try{ if(rlEmbOn()) RL.embAfter(); }catch(e){} }
+var RL_PEEK_HOSTS = { tech: 1 };   /* 17.1: on these pages' ROs tab a click opens the side panel (Open RO, or a second click, opens the RO page) */
 var RL_HOSTN = { triage: 'Triage', foreman: 'Foreman', parts: 'Parts', manager: 'Manager', tech: 'Technician' };
 function rlBackName(){ return UI.roFrom && RL_HOSTN[UI.roFrom] ? RL_HOSTN[UI.roFrom] : 'RO list'; }
 function rlBack(){ var h = UI.roFrom && RL_HOSTN[UI.roFrom] ? UI.roFrom : 'rolist'; UI.view = h; UI.modal = null; try{ persistUI(); }catch(e){} render(); window.scrollTo(0, 0); }

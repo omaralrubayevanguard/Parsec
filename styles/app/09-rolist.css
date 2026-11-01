@@ -260,3 +260,7 @@
 @media (max-width:1180px){
 .rq-emb:where([data-pg="rolist"],[data-pg="rolist"] *) .rq-efacts{display:none;}
 }
+/* 17.1: the Technician's ROs tab with the side panel open — the facts give way so the tools fit */
+.rq-emb.is-peek:where([data-pg="rolist"],[data-pg="rolist"] *) .rq-efacts{display:none;}
+.rq-emb.is-peek:where([data-pg="rolist"],[data-pg="rolist"] *) .rq-tools{min-width:0;flex-wrap:wrap;row-gap:8px;}
+.rq-emb.is-peek:where([data-pg="rolist"],[data-pg="rolist"] *) .rq-main{min-width:0;}

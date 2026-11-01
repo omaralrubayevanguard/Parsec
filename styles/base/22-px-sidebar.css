@@ -178,13 +178,13 @@ button.px-hf{cursor:pointer;} button.px-hf:hover{background:var(--px-fill);}
 .pxr-warn.in{position:static;display:inline-block;box-shadow:none;}
 .pxr-me{margin-top:6px;}
 /* icons only: everything but the boxes folds away, nothing moves */
-:root.iv-mini .px-rail .pxr-tl,:root.iv-mini .px-rail .pxr-n,:root.iv-mini .px-rail .pxr-kbd,:root.iv-mini .px-rail .pxr-end,:root.iv-mini .px-rail .pxr-col,
-:root.px-narrow:not(.px-peek) .px-rail .pxr-tl,:root.px-narrow:not(.px-peek) .px-rail .pxr-n,:root.px-narrow:not(.px-peek) .px-rail .pxr-kbd,:root.px-narrow:not(.px-peek) .px-rail .pxr-end,:root.px-narrow:not(.px-peek) .px-rail .pxr-col{display:none !important;}
-:root.iv-mini .px-rail .pxr-b,:root.px-narrow:not(.px-peek) .px-rail .pxr-b{display:block;}
+:root.iv-mini:not(.px-hover) .px-rail .pxr-tl,:root.iv-mini:not(.px-hover) .px-rail .pxr-n,:root.iv-mini:not(.px-hover) .px-rail .pxr-kbd,:root.iv-mini:not(.px-hover) .px-rail .pxr-end,:root.iv-mini .px-rail .pxr-col,
+:root.px-narrow:not(.px-peek):not(.px-hover) .px-rail .pxr-tl,:root.px-narrow:not(.px-peek):not(.px-hover) .px-rail .pxr-n,:root.px-narrow:not(.px-peek):not(.px-hover) .px-rail .pxr-kbd,:root.px-narrow:not(.px-peek):not(.px-hover) .px-rail .pxr-end,:root.px-narrow:not(.px-peek) .px-rail .pxr-col{display:none !important;}
+:root.iv-mini:not(.px-hover) .px-rail .pxr-b,:root.px-narrow:not(.px-peek):not(.px-hover) .px-rail .pxr-b{display:block;}
 
-:root.iv-mini .px-rail .pxr-brand:hover .lg,:root.px-narrow:not(.px-peek) .px-rail .pxr-brand:hover .lg{display:none;}
-:root.iv-mini .px-rail .pxr-brand:hover .ex,:root.px-narrow:not(.px-peek) .px-rail .pxr-brand:hover .ex{display:grid;}
-:root.iv-mini .px-rail .pxr-row,:root.px-narrow:not(.px-peek) .px-rail .pxr-row{width:36px;}
+:root.iv-mini:not(.px-hover) .px-rail .pxr-brand:hover .lg,:root.px-narrow:not(.px-peek):not(.px-hover) .px-rail .pxr-brand:hover .lg{display:none;}
+:root.iv-mini:not(.px-hover) .px-rail .pxr-brand:hover .ex,:root.px-narrow:not(.px-peek):not(.px-hover) .px-rail .pxr-brand:hover .ex{display:grid;}
+:root.iv-mini:not(.px-hover) .px-rail .pxr-row,:root.px-narrow:not(.px-peek):not(.px-hover) .px-rail .pxr-row{width:36px;}
 /* the big sizes: group names become lines so every page still fits */
 
 
@@ -193,7 +193,7 @@ html[data-size=floor] .px-rail .pxr-nav{gap:0;}
 :root:is([data-theme="ivl"],[data-theme="ivd"]):not([data-device="phone"]).px-narrow{--iv-sw:56px;}
 :root:is([data-theme="ivl"],[data-theme="ivd"]):not([data-device="phone"]).px-narrow body{padding-left:56px !important;}
 :root:is([data-theme="ivl"],[data-theme="ivd"]):not([data-device="phone"]).px-narrow .iv-side.px-rail{width:56px !important;}
-:root:is([data-theme="ivl"],[data-theme="ivd"]):not([data-device="phone"]).px-narrow.px-peek .iv-side.px-rail{width:236px !important;z-index:96;box-shadow:var(--px-sh-raised);}
+:root:is([data-theme="ivl"],[data-theme="ivd"]):not([data-device="phone"]).px-narrow.px-peek .iv-side.px-rail{width:var(--px-rail-w,236px) !important;z-index:96;box-shadow:var(--px-sh-raised);}
 /* popovers off the rail */
 .pxr-pop.me{width:330px;} .pxr-pop.clk{width:360px;}
 .pxp-h{display:flex;align-items:center;gap:8px;padding:8px 8px 10px;font-size:13px;} .pxp-h .sp{flex:1;} .pxp-h b.mono{font-weight:600;}
@@ -264,3 +264,18 @@ html[data-size=floor] .px-rail .pxr-nav{gap:0;}
 .pxa-bar .px-btn{flex:1 1 auto;justify-content:center;}
 .pxa-mh{padding:6px 10px 2px;font-size:11px;font-weight:600;color:var(--px-ink4);text-transform:uppercase;letter-spacing:.04em;}
 @media (prefers-reduced-motion:reduce){ .pxa-row.drag{transform:none;} }
+
+/* ---- widths you set (Parsec 17.1 · shell/widths.js): the side bar opens on hover while folded; drag edges ---- */
+:root:is([data-theme="ivl"],[data-theme="ivd"]):not([data-device="phone"]).px-hover .iv-side.px-rail{width:var(--px-rail-w,236px) !important;z-index:96;box-shadow:var(--px-sh-raised);animation:pxwOpen .16s cubic-bezier(.2,.8,.2,1);}
+@keyframes pxwOpen{from{width:56px;}}
+.pxr-rs{position:absolute;top:0;right:-3px;bottom:0;width:6px;cursor:col-resize;z-index:3;}
+.pxr-rs::after,.pxw-rs::after{content:"";position:absolute;top:0;bottom:0;left:2px;width:2px;border-radius:2px;background:transparent;transition:background-color .12s;}
+.pxr-rs:hover::after,.pxw-rs:hover::after,:root.pxw-dragging .pxr-rs::after{background:var(--px-acc,#86643A);}
+:root.iv-mini:not(.px-hover) .pxr-rs,:root.px-narrow .pxr-rs,:root.px-hover .pxr-rs{display:none;}
+.pxw-rs{position:absolute;top:0;bottom:0;width:6px;cursor:col-resize;z-index:6;}
+.pxw-rs.r{right:-3px;} .pxw-rs.l{left:-3px;}
+.rq-peek{position:relative;}
+:root.pxw-dragging,:root.pxw-dragging *{cursor:col-resize !important;user-select:none !important;}
+:root.pxw-dragging body{transition:none !important;}
+:root[data-device="phone"] .pxr-rs,:root[data-device="phone"] .pxw-rs{display:none;}
+@media (prefers-reduced-motion:reduce){ :root.px-hover .iv-side.px-rail{animation:none;} }

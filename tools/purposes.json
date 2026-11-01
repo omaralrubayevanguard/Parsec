@@ -38,6 +38,7 @@
   "shell/nav-rail.js": "The nav rail: one column, every icon in the same box; PX_GROUPS orders the pages; the narrow (folded) state, the clock row, and who is signed in.",
   "shell/nav-arrange.js": "Arranging the side bar: press and hold a page, then drag; a switch hides a page (the name menu keeps it); the shop’s order (the manager) and each person’s own.",
   "shell/dept-tabs.js": "Time Log and Career as tabs on each department page: the title becomes the tabs; the department they sit on (UI.dHome); who gets Career.",
+  "shell/widths.js": "Widths you set by dragging: the side bar's edge, the panes (lists, the RO list's side panel, the Library's document panel); the folded side bar opens on hover over its expand button.",
   "shell/rail-popovers.js": "The two pop-overs off the rail (the clock, the person) and the tooltip mode row (PTIP_MODES / ptipSetMode).",
   "shell/event-wiring.js": "The app's main click / change / input / drop handlers on document: data-action buttons are dispatched here to the function that does the work (the big switch), plus drag-and-drop of files and the keyboard shortcuts that are the same everywhere.\nFlow: a button carries data-action=\"…\"; the handler reads it, calls the action, and the action calls render().",
   "shell/live-time.js": "The second-by-second tick: tickLive patches only the figures that move (clocks, elapsed), never a full render while you are typing (safeToRedraw).",

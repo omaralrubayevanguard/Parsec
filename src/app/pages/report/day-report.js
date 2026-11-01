@@ -3,7 +3,7 @@
    ── facts (generated; run tools/headers.py to refresh) ──
    declares   me techs look data track axis sheet sigs view go print change … (13 functions, 22 constants)
    state      settings shopName tlSign
-   uses       data/ kit/ pages/ pages/timelog/ pages/warranty/ ro/ shell/ state/
+   uses       access/ data/ kit/ pages/ pages/timelog/ pages/warranty/ ro/ shell/ state/
 */
   const ic = PG.ic, esc = PG.e;
   const p2 = n => String(n).padStart(2, '0');

@@ -2,7 +2,7 @@
    A document open in a panel beside the page (libOpen): its facts, the PDF, Open in a tab; a procedure’s steps ticked from its operation; on Warranty, the documents per operation and the claim folder.
    ── facts (generated; run tools/headers.py to refresh) ──
    declares   libClose libOpen libWaDocs libSaveClaim libProcDone libProcView LIB_VIEW (6 functions, 1 constant)
-   uses       data/ kit/ pages/warranty/ ro/ ro-page/ state/
+   uses       data/ kit/ pages/warranty/ ro/ ro-page/ shell/ state/
    at load    on document click
 */
 /* ============================== a document, open beside the page (Parsec 17.1) ==============================
@@ -31,6 +31,7 @@ function libOpen(d, page, ctx){
     + (facts.length ? '<div class="lib-view-f">' + facts.map(libE).join('<i>·</i>') + '</div>' : '')
     + '<div class="lib-view-b2"><div class="lib-view-none">Opening…</div></div>';
   document.body.appendChild(w); LIB_VIEW.el = w; LIB_VIEW.id = d.id;
+  try{ pxwAfter(); }catch(e){}   /* 17.1: its width, and the edge to drag */
   w.addEventListener("click", function(e){
     var b = e.target.closest && e.target.closest("[data-lv]"); if(!b) return;
     if(b.getAttribute("data-lv") === "x") libClose();

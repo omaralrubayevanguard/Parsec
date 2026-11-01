@@ -1,7 +1,7 @@
 /* Parsec · pages/rolist · columns.js
    The RO list's columns (13.1): drag into any order, add fields or your own, saved views, the Display pop-over.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   customs colDef cols colsSet shown gridVars cfCell cfSave cmpBy ordered headHtml row … (32 functions, 18 constants)
+   declares   customs colDef cols colsSet shown gridVars cfCell cfSave cmpBy ordered headHtml row … (32 functions, 19 constants)
    state      punches rlCustom rlLayout rlViews ros
    uses       access/ clock/ data/ kit/ pages/ pages/triage/ pages/warranty/ phone/ ro/ shell/ state/ trucks/
    at load    on document dragstart · on document dragover · on document drop · on document dragend
@@ -50,7 +50,7 @@
   const layKey = () => (PG.me() || {}).name || 'Admin';
   function cols(){ const M = STATE.rlLayout && STATE.rlLayout[layKey()]; const L = (M && Array.isArray(M.cols) ? M.cols : DEF_COLS).filter(k => colDef(k)); if(L.indexOf('ro') < 0) L.unshift('ro'); return L; }
   function colsSet(L){ if(!STATE.rlLayout || typeof STATE.rlLayout !== 'object') STATE.rlLayout = {}; STATE.rlLayout[layKey()] = { cols: L.slice(), at: nowIso() }; CACHE = null; scheduleSave(true); }
-  function shown(){ const peekOn = !EMB && U.peek && U.view === 'list' && U.cur; return cols().filter(k => !(peekOn && (colDef(k) || {}).peek)); }
+  function shown(){ const peekOn = (!EMB || RL_PEEK_HOSTS[EMB]) && U.peek && U.view === 'list' && U.cur; return cols().filter(k => !(peekOn && (colDef(k) || {}).peek)); }
   function gridVars(){ const L = shown(); const tr = ['18px'].concat(L.map(k => colDef(k).w), ['24px']); const min = 18 + 24 + L.reduce((a, k) => a + (colDef(k).min || 80), 0) + 12 * (L.length + 1) + 12;
     return `--cols:${tr.join(' ')};--rl-minw:${min}px`; }
   /* your own columns: type straight into the cell */
@@ -175,14 +175,15 @@
       Object.keys(U.sel).forEach(id => { if(!L.some(r => r.id === id)) delete U.sel[id]; });
       if(U.cur && !L.some(r => r.id === U.cur)) U.cur = null;
       const nSel = Object.keys(U.sel).length, none = !STATE.ros.filter(ro => ro.id !== SHOP_RO_ID && !ro.shop).length;
-      return `<div class="rq rq-emb${nSel ? ' has-sel' : ''}" data-pg="rolist" data-host="${esc(EMB)}"><div class="tg-body"><div class="rq-main">
+      const cur = RL_PEEK_HOSTS[EMB] && U.peek && U.view === 'list' && U.cur && !(typeof pmOn === 'function' && pmOn()) ? L.find(r => r.id === U.cur) : null;   /* 17.1: the Technician's ROs tab opens the side panel */
+      return `<div class="rq rq-emb${cur ? ' is-peek' : ''}${nSel ? ' has-sel' : ''}" data-pg="rolist" data-host="${esc(EMB)}"><div class="tg-body"><div class="rq-main">
         <div class="rq-top rq-etop"><div class="rq-tools"><div class="rq-seg" role="group" aria-label="Show">${RL_GROUPS.filter(x => x[0] !== 'mine' || me).map(x => `<button class="${g === x[0] ? 'on' : ''}" data-a="tab" data-g="${x[0]}" aria-pressed="${g === x[0]}">${x[1]}<span>${c[x[0]]}</span></button>`).join('')}</div>
           <span class="rq-efacts"><b>${c.all}</b> open · <b>${c.waiting}</b> waiting · <b>${c.live}</b> on the clock</span>
           <span class="rq-findw">${typeof psmBtn === 'function' ? psmBtn('rolist', 'Search repair orders') : ''}</span>
           <button class="btn" data-a="pop" data-p="disp">${ic('sliders', 15)}Display</button></div>${savedViews()}</div>
         ${none ? '<div class="rq-none">No repair orders yet — New RO adds the first one.</div>' : U.view === 'board' ? board() : list()}
         <div class="rq-ekeys">${kbd('J')}${kbd('K')}<span>move</span>${kbd('↵')}<span>open the RO</span>${kbd('/')}<span>search</span><span>· click a header to sort · drag one to move it</span></div></div>
-        ${pop()}
+        ${cur ? peek(cur) : ''}${pop()}
         ${nSel ? `<div class="rq-bulkwrap"><div class="rq-bulk"><b>${nSel} selected</b><button class="btn btn-sm tg-gh" data-a="pop" data-p="xfer">${ic('swap', 14)}Transfer…</button><button class="btn btn-sm tg-gh" data-a="pop" data-p="bst">${typeof pgStIc === 'function' ? pgStIc('ring', 14) : ''}Set status…</button><button class="btn btn-sm tg-gh" data-a="bprint">${ic('print', 14)}Print</button><button class="btn btn-sm tg-gh" data-a="bclr">${ic('x', 14)}Clear</button></div></div>` : ''}
         ${U.print ? printSheet() : ''}</div></div>`;
     } finally { EMB = null; }
@@ -195,6 +196,8 @@
     if(U.pop.ax != null){ x = U.pop.ax + (U.pop.aw || 0) - pw; y = U.pop.ay + 6; if(y + ph > Hh - 12) y = Math.max(12, (U.pop.at || y) - ph - 6); } else { x = W - pw - 16; y = 12; }
     p.style.left = Math.round(Math.max(12, Math.min(x, W - pw - 12))) + 'px'; p.style.top = Math.round(Math.max(12, Math.min(y, Hh - ph - 12))) + 'px'; }
   const inEmb = t => !!(t && t.closest && t.closest('.rq-emb'));
+  /* 17.1: a host whose ROs tab opens the side panel, like the RO list page (the others open the RO page) */
+  const embPeek = t => { const e = t && t.closest && t.closest('.rq-emb'); return !!(e && RL_PEEK_HOSTS[e.getAttribute('data-host')]); };
   function view(){
     if(U._me !== PG.me().name){ reset(); U._me = PG.me().name; }
     try{ if(typeof yardAutoPlace === 'function') yardAutoPlace(); }catch(e){}   /* Parsec 14: a new truck gets its spot here too, as Triage and Foreman place it */
@@ -219,7 +222,7 @@
   function open(id, emb){ U.pop = null; if(emb){ UI._roFromNext = UI.view; UI.rlOrder = ordered(rows()).map(r => r.id); } PG.openRo(id); }   /* Parsec 14.3: from a page's ROs tab, the RO page goes back there */
   const H = {
     sel: (t, ev) => { const id = t.dataset.id; if(ev && (ev.shiftKey || ev.metaKey || ev.ctrlKey)){ if(U.sel[id]) delete U.sel[id]; else U.sel[id] = 1; rd(); return; }
-      if(inEmb(t) || !U.peek || U.view !== 'list' || U.cur === id || (typeof pmOn === 'function' && pmOn())){ open(id, inEmb(t)); return; } U.cur = id; rd(); },
+      if((inEmb(t) && !embPeek(t)) || !U.peek || U.view !== 'list' || U.cur === id || (typeof pmOn === 'function' && pmOn())){ open(id, inEmb(t)); return; } U.cur = id; rd(); },
     cb: (t, ev) => { if(ev) ev.stopPropagation(); const id = t.dataset.id; if(U.sel[id]) delete U.sel[id]; else U.sel[id] = 1; rd(); },
     shop: () => { UI.view = 'ros'; UI.selectedRo = SHOP_RO_ID; UI.modal = null; render(); },
     grp: t => { const k = t.dataset.g; U.closed[k] = !U.closed[k]; rd(); },
