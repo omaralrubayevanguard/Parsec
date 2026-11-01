@@ -107,6 +107,15 @@ Typical sequences:
 
 Keep each sequence between 3 and 6 seconds.
 
+## Keeping it current
+
+This file and `template.html` are the reference. Update both in the same change, and say so in one line, when:
+
+- the person gives new feedback on mock-ups, or
+- a mock-up finds a better way: a new animation pattern, a layout, a check that caught a problem.
+
+Put each rule where it belongs above (When to use it, How to run it, Look and behaviour, Animation steps), not in a list at the end. Keep the template here and `template.html` the same.
+
 ## Template
 
 Copy it whole, then fill in the content block and the `v-` visual CSS.

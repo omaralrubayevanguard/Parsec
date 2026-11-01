@@ -1,6 +1,6 @@
 # Parsec · how to change it
 
-Read `ARCHITECTURE.md` once; keep this one open while you work.
+Read `ARCHITECTURE.md` once; keep this one open while you work. The working rules (mock-ups first, releasing, git, company data) are in `CLAUDE.md` at the top of the repository.
 
 ## Where code goes
 
@@ -60,10 +60,7 @@ Prefixes are how this codebase finds its way; keep them:
 
 ## Releasing
 
-1. `src/app/kit/version.js`: the `BUILD` line is the version and its one-line summary; move the old line to `BUILD_WAS`.
-2. `python3 build.py` → `python3 tests/run.py` (all green, or know why not).
-3. Add the entry at the top of `Parsec changelog.txt` (newest first; the second line says which is newest).
-4. Ship `dist/Parsec.html` as `Parsec_<version>.html`. The test build never ships.
+The steps are in `CLAUDE.md` → Releasing: version line, build and the whole suite, the `CHANGELOG.txt` entry, the tag, then `dist/Parsec.html` shipped as `Parsec_<version>.html`. The test build never ships.
 
 ## What not to do
 

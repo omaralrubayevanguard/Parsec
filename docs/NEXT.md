@@ -2,7 +2,7 @@
 
 Parsec 17 changed how the code is kept, not what it does. These are the next steps worth taking, in the order I'd take them. None is urgent; each is a small release on its own, and the guards make all of them safe to do a file at a time.
 
-1. **Keep it in git.** A private repository (GitHub, or whatever IT allows) is the missing piece: every change compared, every version recoverable, and a new chat or a new developer starts from the files it needs rather than the whole app. The code holds no customer data (the sample data is invented), but ask IT before putting it anywhere off-site.
+1. **Keep it in git.** *Done (November 2026):* a private GitHub repository holds the whole history, Parsec 4 → 17, and `CLAUDE.md` gives every session the working rules. The code holds no customer data (the sample data is invented); real shop data still needs IT's OK before it goes anywhere off-site.
 
 2. **Untangle the manifest, one area at a time.** Today the load order still follows Parsec 8–16's history (an area's files are spread through the manifest). For each area: move its function-only files together (free), then move its load-time files and read the guard's diff; where two capture-phase handlers for the same key or click swap order, check the two and keep the later one guarded. Run that area's tests. Done area by area, the manifest ends up grouped like the folders.
 
@@ -12,7 +12,7 @@ Parsec 17 changed how the code is kept, not what it does. These are the next ste
 
 5. **One page shape.** Foreman, Triage and Warranty predate the page frame (`PG`) and are plain functions; wrapping each in its own closure with `view()/after()` like the others makes every page look the same and lets tests reach them the same way.
 
-6. **A size guard.** Add a warning in `build.py` for any `src/app` file over ~60 KB (today: `ro-page/fault-codes.js` 76 KB, `pages/warranty/actions.js` 56 KB), so files split before they turn into the old problem.
+6. **A size guard.** *Done in 17:* `build.py` prints "worth splitting (over 60 KB)" for any `src/app` file past that size (`ro-page/fault-codes.js` is 76 KB), so files get split before they turn into the old problem. What's left is splitting them.
 
 7. **Server, when IT decides.** `docs/SERVER.md` has the staged path; Stage 0 (exports on a shared drive, verified) needs no code and starts the conversation with IT about where the data may live.
 

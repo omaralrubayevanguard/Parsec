@@ -10,7 +10,7 @@ python3 tests/run.py      # every test against the test build (3 browsers at a t
 python3 tools/headers.py  # refresh the generated facts in every file header and docs/AREAS.md
 ```
 
-Needs Python 3 and Node (the guards parse the app with a vendored copy of acorn, `vendor/acorn/`). Nothing is installed by the build. The tests need Playwright for Python and its Chromium — run them where that exists (the chat's sandbox does); the build and the guards run anywhere.
+Needs Python 3 and Node (the guards parse the app with a vendored copy of acorn, `vendor/acorn/`). On Windows the command is `python` (or `py`) instead of `python3`. Nothing is installed by the build. The tests need Playwright for Python and its Chromium (`pip install playwright`, then `python -m playwright install chromium`, once per computer); the build and the guards run anywhere.
 
 ## The tree
 
@@ -30,6 +30,10 @@ Needs Python 3 and Node (the guards parse the app with a vendored copy of acorn,
 | `tests/` | the Playwright tests (`t<version><letter>.py`), the runner, a Parsec 15 build the data-store test compares against |
 | `docs/` | `ARCHITECTURE.md` (how it works), `CONVENTIONS.md` (how to change it), `SERVER.md` (the seams for a server and admin controls), `AREAS.md` (generated index), `MIGRATION-16-to-17.md` (how this tree was made and proven), `NEXT.md` (recommendations) |
 | `tools/` | `headers.py`, `purposes.json` (the hand-written purpose line per file), `areas.json`, and `migration/` — the one-time tools that produced this tree from Parsec 16.3 |
+| `CLAUDE.md` | the working rules every Claude session reads first: how the user wants to work, releasing, git, company data, mock-ups, and keeping the rules current |
+| `.claude/skills/idea-picker/` | the Idea picker skill (mock-ups before UI changes); Claude Code loads it from here |
+| `mockups/` | every mock-up and Idea picker so far; new ones are added here |
+| `extras/` | other deliveries: Parsec Mobile, the code review, the phone sync patch |
 
 ## The rules in one breath
 
@@ -37,9 +41,9 @@ Needs Python 3 and Node (the guards parse the app with a vendored copy of acorn,
 - **Nothing is patched.** Change the source, not the output. There are no find-and-replace layers any more (Parsec 8–16 had 723 of them).
 - **The guards run on every build**: it parses; every file is in the manifest once; no name is declared twice; nothing reads a constant before it exists; the load order matches the baseline; every `STATE` key has a home in the data store; the tooltips keep their writing rules; every file has its header.
 - **Headers are part of the code.** The first lines of a file (purpose, flow) are written by hand; the facts under the rule are generated — refresh them with `tools/headers.py` after moving code.
-- **Release**: bump `src/app/kit/version.js`, build, run the tests, add the changelog entry, ship `dist/Parsec.html` renamed `Parsec_<version>.html`.
+- **Release**: bump `src/app/kit/version.js`, build, run the tests, add the changelog entry, tag, ship `dist/Parsec.html` renamed `Parsec_<version>.html` (the steps: `CLAUDE.md` → Releasing).
 
-Everything else is in `docs/`.
+How to work on it with Claude is in `CLAUDE.md`. Everything else is in `docs/`.
 
 ## The history
 
