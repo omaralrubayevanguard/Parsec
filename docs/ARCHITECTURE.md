@@ -52,7 +52,7 @@ function viewTimeLog(){ return TL.view(); }
 
 `render()` finds the module for `UI.view` (`PG.mods`) and calls `view()` for the HTML, then `after()` to place pop-overs. Each page folder has the same shape: `model.js` (what the page knows, from STATE), `draw.js` (HTML), `popovers.js`, `actions.js` (clicks, typing, keys), `view.js` (the entry). The first and last file of a closure are `_open.js` / `_close.js`.
 
-**The side bar** (`shell/nav-rail.js`) draws the pages in `pxaOrder()` (`shell/nav-arrange.js`): the person's own order (`sf.nav.order`; the Admin's in `STATE.mgSet.navMe`), else the shop's (`STATE.mgSet.nav.order`, set by anyone who can change settings), else `PX_GROUPS`. Press and hold a page to drag it; a switch per page hides it (`sf.nav.hide`), and the name menu lists the hidden ones.
+**The side bar** (`shell/nav-rail.js`) draws the pages in `pxaOrder()` (`shell/nav-arrange.js`): the person's own order (`sf.nav.order`; the Admin's in `STATE.mgSet.navMe`), else the shop's (`STATE.mgSet.nav.order`, set by anyone who can change settings), else `PX_GROUPS`. Press and hold a page to drag it; a switch per page hides it (`sf.nav.hide`), and the name menu lists the hidden ones. Folded to icons, it opens over the page while the pointer rests on its expand button (`px-hover`). Its width and the panes' widths (a page's `.tg-list`, the Settings list, the RO list's side panel, the Library's document panel) are dragged at their edges and kept per person in this browser (`shell/widths.js`, `--px-rail-w`); a new list pane under `.tg-body` gets its edge for free.
 
 **Department pages** (Technician, Triage, Foreman, Parts, Warranty, Manager) carry **Time Log** and **Career** as tabs: `dpTitle()` (`shell/dept-tabs.js`) turns the page's `<h1 class="tg-h1">` into “Technician · Time Log · Career”. The two keep their own modules (`UI.view` `timelog` / `career`); `UI.dHome` is the department they sit on, so the side bar keeps it lit. Everyone has their own Time Log; Career is for technicians and foremen; seeing anyone else's needs `t.others` (“See other people’s time” — the foreman and the manager), and Manager › Team opens a person's Time Log, timesheet or Career.
 
@@ -103,6 +103,7 @@ Library/<kind>/<number> - <title> (rel NN).pdf   the Library's documents (Fault 
 | Questions | `ro/flow-gates.js` `pgAsk()` | the shared "are you sure / which one" dialog |
 | Trucks | `trucks/` | `trkPick(ro)`: the RO's own picture, else the catalog body for its model/year, else the check-in photo |
 | Clock | `clock/` | day clocks (shifts) and punches per person; the clock only reminds, never stops anything |
+| Widths | `shell/widths.js` `pxwAfter()` | drag edges on the side bar and the panes, the hover-open side bar; localStorage per person, never shop data |
 | Phone | `phone/` | the phone layout, and sync by QR codes (no network) |
 | Sample data | `sample/` | 25 ROs with six weeks of history; `loadSample25()` |
 
