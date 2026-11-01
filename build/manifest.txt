@@ -346,4 +346,5 @@ library/read-files.js
 library/store.js
 library/intake.js
 library/viewer.js
+library/models.js
 boot/init.js

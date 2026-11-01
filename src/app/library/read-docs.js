@@ -1,7 +1,7 @@
 /* Parsec · library · read-docs.js
-   Reading a document: its kind from its number (CBR, TSB, FSB, Recall, Procedure), number, release, date, title, function group, model, the codes it mentions, and a DTC bulletin’s code table with FTBs; Volvo’s function groups.
+   Reading a document: its kind from its number (CBR, TSB, FSB, Recall, Procedure), number, release, date, title, function group, model, model years, the codes it mentions, a DTC bulletin’s code table with FTBs, and an Impact procedure’s steps, warnings, tools and torques; Volvo’s function groups.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   libFgName libKind libKindOf libPrefixOf libFlat libDespace libOverlap libDespaceText libUnhyph libDate libSpaced libDocRead … (15 functions, 6 constants)
+   declares   libFgName libKind libKindOf libPrefixOf libFlat libDespace libOverlap libDespaceText libUnhyph libDate libSpaced libDocRead … (18 functions, 7 constants)
    state      libRules
    uses       state/
 */
@@ -13,12 +13,13 @@
 
 /* the kinds, and the numbers that say which kind a document is (the shop's own rules; more are learned in STATE.libRules) */
 var LIB_KINDS = [
-  { k: "codes",  tab: "Fault codes", one: "Fault code", dir: "" },
+  { k: "codes",  tab: "Fault codes", one: "Fault code", dir: "", page: true },
   { k: "cbr",    tab: "CBRs",        one: "CBR",        dir: "CBR" },
   { k: "tsb",    tab: "TSBs",        one: "TSB",        dir: "TSB" },
   { k: "fsb",    tab: "FSBs",        one: "FSB",        dir: "FSB" },
   { k: "recall", tab: "Recalls",     one: "Recall",     dir: "Recalls" },
-  { k: "proc",   tab: "Procedures",  one: "Procedure",  dir: "Procedures", soon: true }
+  { k: "models", tab: "Models",      one: "Model",      dir: "", page: true },   /* the truck pictures (trucks/), not documents */
+  { k: "proc",   tab: "Procedures",  one: "Procedure",  dir: "Procedures" }
 ];
 var LIB_NUM_RULES = [
   [/^(RVXX\d{4}|S\d{4}|C\d{4})$/, "recall"],               /* recalls: RVXX2601, S1234, C1234 */
@@ -107,11 +108,12 @@ function libDocRead(text, fileName, pages){
   var r = { kind: "", num: "", rel: "", date: "", title: "", fgrp: "", model: "", opNo: "", codes: [], table: [], how: "" }, m;
 
   /* Impact printouts: Path 413/…, ID/Operation 4134-03-02-05, Publish date 5/14/2025, Model VN */
-  if((m = /ID\/Operation\s+(\d{4}-\d{2}-\d{2}-\d{2}|V-\d{3}-\d{3}[A-Z]?)/i.exec(one))){
+  if((m = /ID\/Operation[\s\S]{0,40}?\b(\d{4}-\d{2}-\d{2}-\d{2}|V-\d{3}-\d{3}[A-Z]?)/i.exec(one))){   /* the label and its value can sit on different lines */
     r.num = m[1]; r.how = "Impact";
     if(/^\d{4}-/.test(m[1])) r.opNo = m[1];
     var pth = /Path\s+(\d{2,4})\//i.exec(one); if(pth) r.fgrp = pth[1];
-    var pd = /Publish date\s+(\d{1,2}\/\d{1,2}\/\d{4})/i.exec(one); if(pd) r.date = libDate(pd[1]);
+    var pd = /Publish date[\s\S]{0,40}?(\d{1,2}\/\d{1,2}\/\d{4})/i.exec(one); if(pd) r.date = libDate(pd[1]);
+    var pt = /Path\s+\d{2,4}\/[^\/\s]+\/([^\/\s]+)\//i.exec(one); if(pt) r.info = pt[1];   /* 413/Parts/Repair/Service → Repair */
     var tre = new RegExp(m[1].replace(/[-]/g, "\\-") + "[ \\t]*([A-Z][^\\n]{3,90})", "g"), tl;
     while((tl = tre.exec(T))) if(!/^(Copyright|Path|Identity|Publish)/.test(tl[1])){ r.title = tl[1].trim(); break; }
   }
@@ -158,6 +160,8 @@ function libDocRead(text, fileName, pages){
   var md = one.match(/\b(VNL|VNR|VNX|VHD|VAH|VN)\b(?:\s?\(\d\))?/g);
   if(md){ var seen = {}; r.model = md.map(function(x){ return x.replace(/\s/g, ""); }).filter(function(x){ if(seen[x]) return false; seen[x] = 1; return true; }).slice(0, 4).join(", "); }
 
+  r.years = libYears(one);
+  if(r.kind === "proc") r.proc = libProcRead(raw);   /* an Impact procedure: steps, warnings, tools, torques */
   r.table = libDocCodeTable(T);
   /* with the page positions, the FTB wording comes straight from its column */
   if(pages && r.table.length){ var byPos = libFtbFromPages(pages);
@@ -258,4 +262,52 @@ function libFtbFromPages(pages){
   Object.keys(res).forEach(function(k){ out[k] = {}; Object.keys(res[k]).forEach(function(n){ var r = res[k][n];
     out[k][n] = { d: r.c[1].trim(), s: r.sym.map(function(x){ return x.trim(); }).filter(function(x){ return x && x !== "N/A"; }).join("; ") }; }); });
   return out;
+}
+
+/* ---------- an Impact procedure: its steps, warnings, tools and torques (Parsec 17.1) ---------- */
+/* raw = the PDF's text with its tabs (library/read-files.js). Steps are "39<tab>Tighten the screws to torque."; a Note, a
+   WARNING / CAUTION / DANGER block or a "Tightening torque" block after a step belongs to that step; the ones before step 1
+   are the procedure's own. Torques keep both units, lbf·ft shown first. */
+var LIB_PROC_FURN = /^(Impact \d|Printed by:|Copyright to this documentation|written consent by the Volvo|The information contained herein|uncontrolled\.|\d+ \/ \d+$|f$)/;
+function libProcRead(raw){
+  var L = String(raw || "").replace(/\r/g, "").split("\n").map(function(l){ return l.replace(/ /g, " ").trim(); }).filter(function(l){ return l && !LIB_PROC_FURN.test(l); });
+  var p = { warn: [], tools: [], material: [], steps: [], notes: [] }, cur = null, mode = "", blk = null, tq = null;
+  var start = 0; for(var i = 0; i < L.length; i++) if(/^(WARNING|CAUTION|DANGER|Special tools|1\t)/.test(L[i])){ start = i; break; }
+  var flushTq = function(){ if(!tq) return; var s = tq.join(" ").replace(/\t/g, " ").replace(/\s+/g, " "), t = libTorque(s); if(t) (cur ? (cur.tq = cur.tq || []) : (p.tq = p.tq || [])).push(t); tq = null; };
+  var flushBlk = function(){ if(blk){ (cur ? (cur.warn = cur.warn || []) : p.warn).push(blk); blk = null; } };
+  for(var j = start; j < L.length; j++){
+    var l = L[j], m;
+    if((m = /^(\d{1,3})\t(.+)$/.exec(l)) && (!cur || +m[1] === cur.n + 1)){ flushTq(); flushBlk(); mode = ""; cur = { n: +m[1], t: m[2].replace(/\t/g, " ").replace(/\s+\./, ".").replace(/\s{2,}/g, " ").trim() }; p.steps.push(cur); continue; }
+    if(/^(WARNING|CAUTION|DANGER)$/.test(l)){ flushTq(); flushBlk(); blk = { lv: l, t: [] }; mode = "blk"; continue; }
+    if(l === "Note"){ flushTq(); flushBlk(); mode = "note"; continue; }
+    if(l === "Tightening torque"){ flushTq(); flushBlk(); tq = []; mode = "tq"; continue; }
+    if(l === "Special tools"){ flushTq(); flushBlk(); mode = "tools"; continue; }
+    if(l === "Required material"){ flushTq(); flushBlk(); mode = "mat"; continue; }
+    if(l === "Conditions"){ flushTq(); flushBlk(); mode = "note"; continue; }
+    if(mode === "tq"){ tq.push(l); if(/lb\s*⋅?\s*ft\)?/i.test(l)){ flushTq(); mode = ""; } continue; }
+    if(mode === "tools"){ l.split("\t").forEach(function(x){ x = x.trim(); if(/^\d{6,9}$/.test(x) && p.tools.indexOf(x) < 0) p.tools.push(x); }); continue; }
+    if(mode === "mat"){ var c = l.split("\t").map(function(x){ return x.trim(); }).filter(Boolean); if(c.length >= 2 && /^\d{6,9}$/.test(c[c.length - 1])) p.material.push([c.slice(0, -1).join(" "), c[c.length - 1]]); else mode = ""; continue; }
+    if(mode === "blk" && blk){ blk.t.push(l.replace(/^▶\s*/, "").replace(/\t/g, " ")); continue; }
+    if(mode === "note"){ var tx = l.replace(/^[●▶]\s*/, "").replace(/\t/g, " "); if(cur) (cur.notes = cur.notes || []).push(tx); else p.notes.push(tx); continue; }
+    /* a line that runs on from the step before */
+    if(cur && !mode && cur.t.length < 200 && /^[a-z(]/.test(l)) cur.t += " " + l.replace(/\t/g, " ");
+  }
+  flushTq(); flushBlk();
+  /* lines that wrapped inside a warning: join them back into sentences */
+  var join = function(b){ var out = []; b.t.forEach(function(x){ if(out.length && /^[a-z"(]/.test(x)) out[out.length - 1] += " " + x; else out.push(x); }); b.t = out; return b; };
+  p.warn.forEach(join); p.steps.forEach(function(s){ (s.warn || []).forEach(join); });
+  return p;
+}
+/* "Clutch cylinder, screw 45 ±5 Nm (33 ±4 lb ⋅ ft)" → { what, nm: "45 ±5", lbf: "33 ±4" } */
+function libTorque(s){
+  var m = /^(.*?)\s*(?:Screws\s+)?(\d+(?:[.,]\d+)?(?:\s*[–-]\s*\d+(?:[.,]\d+)?)?)\s*(±\s*\d+(?:[.,]\d+)?)?\s*Nm\s*\(\s*(\d+(?:[.,]\d+)?(?:\s*[–-]\s*\d+(?:[.,]\d+)?)?)\s*(±\s*\d+(?:[.,]\d+)?)?\s*lb\s*⋅?\s*ft\s*\)/i.exec(s);
+  if(!m) return null;
+  var sp = function(a, b){ return (a + (b ? " " + b.replace(/\s+/g, "") : "")).replace(/\s*[–-]\s*/, "–"); };
+  return { what: m[1].replace(/\s+Screws$/i, "").trim(), nm: sp(m[2], m[3]), lbf: sp(m[4], m[5]) };
+}
+/* the model years a document says it fits: "2017+", "MY2017-2024", "2017–2024 model years" */
+function libYears(t){
+  var m = /\b(?:MY\s?)?((?:19|20)\d\d)\s*(?:[-–]\s*((?:19|20)?\d\d)|(\+|\s+and (?:newer|later)))(?=\s|$|[.,)])/i.exec(String(t || ""));
+  if(!m) return "";
+  return m[2] ? m[1] + "–" + (m[2].length === 2 ? m[1].slice(0, 2) + m[2] : m[2]) : m[1] + "+";
 }

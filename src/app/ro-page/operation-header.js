@@ -98,6 +98,8 @@ function ropOpRow(j, i, on, stash) {
     html: pxSi(nm, live ? 'px-breathe' : '') + '<span class="px-row__n">' + (i + 1) + '</span><span class="px-row__t" title="' + esc(j.complaint || 'New operation') + (on ? ' — click to change it' : ' — double-click to change it') + '">' + esc(j.complaint || 'New operation') + '</span>' + (meta ? '<span class="px-row__m">' + esc(meta) + '</span>' : '') + ropChips(j) });
   row.appendChild(ropJt(j));
   var fgr = libOpFgrp(j); if (fgr) row.appendChild(el('span', { class: 'libFg mono', text: fgr, title: 'Function group ' + (libFgName(fgr) || fgr) }));   /* Parsec 17.1 */
+  libOpDocs(j).filter(function (d) { return d.kind === 'proc' && d.proc; }).slice(0, 1).forEach(function (d) { var n = libProcDone(j, d).length, N = d.proc.steps.length;   /* steps done, for the foreman */
+    row.appendChild(el('span', { class: 'libSteps mono' + (n >= N ? ' done' : ''), text: n + '/' + N, title: n + ' of ' + N + ' steps done · ' + (d.title || d.num) })); });
   row.insertAdjacentHTML('beforeend', '<span class="px-row__time">' + pxNum(c.b) + ' <em>/ ' + qtHtml(RO, j, c.q) + ' h</em></span>' + pxMini(c.b, c.q) + '<span class="px-av" title="' + esc(who) + '"' + v149eAvAttr(who) + '>' + esc(ivInit(who)) + '</span>');
   var ctl = el('span', { class: 'rop-octl' });
   if (!RO.shop) ctl.appendChild(ropStatus(j));

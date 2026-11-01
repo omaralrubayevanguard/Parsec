@@ -4,7 +4,7 @@
    ── facts (generated; run tools/headers.py to refresh) ──
    declares   sgReg SG_REG SG_BY (1 function, 2 constants)
    state      laborRate shop staff techName tgTemplates
-   uses       access/ automations/ boot/ clock/ data/ kit/ pages/ pages/foreman/ pages/rolist/ pages/triage/ pages/warranty/ ro/ ro-page/ shell/ state/ trucks/
+   uses       access/ automations/ boot/ clock/ data/ kit/ pages/ pages/foreman/ pages/rolist/ pages/triage/ pages/warranty/ ro/ ro-page/ shell/ state/
 */
 /* ---------- the registry ---------- */
 var SG_REG = [
@@ -205,8 +205,7 @@ var SG_REG = [
     words: "export save restore file json", render: function(ro){ return ro ? '' : '<span class="sg-ctl"><button class="px-btn sm" data-action="export-json">' + pxI("save", 13) + 'Save a backup file</button><button class="px-btn sm" data-action="px-restore-file">Restore from a file…</button></span>'; } },
   { id: "data.server", g: "data", sub: "For the server", label: "Export for the server", help: "tables, attachments, schema and a manifest — with a round-trip check", who: "a.data", where: "Parsec Data/Exports", kind: "mount",
     words: "export server round-trip tables schema manifest", render: function(){ return pdxCard(); } },
-  { id: "data.trucks", g: "data", sub: "Truck pictures", label: "Truck pictures", help: "the pictures the RO page and the yard draw", who: "me", where: "The RO page truck card · the yard", kind: "mount",
-    words: "truck pictures photos", render: function(){ try{ return trkSettingsHtml(); }catch(e){ return ''; } } },
+  /* Parsec 17.1: Truck pictures moved to Library › Models */
   { id: "data.phone", g: "data", sub: "Parsec Mobile", label: "The phone", help: "QR codes between this computer and the phone — no network", who: "a.data", where: "Parsec Mobile", kind: "action",
     words: "phone mobile qr send get", render: function(ro){ return ro ? '' : '<span class="sg-ctl"><button class="px-btn sm pri" data-action="phone-sync" data-mode="send">Send to phone</button><button class="px-btn sm" data-action="phone-sync" data-mode="get">Get from phone</button></span>'; } },
   { id: "data.sample", g: "data", sub: "Test data", label: "Sample data", help: "25 made-up ROs to try things on — or clear everything", who: "a.data", where: "Every page", kind: "action", show: function(){ return pxIsAdmin(); },

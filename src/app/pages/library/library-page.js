@@ -1,7 +1,7 @@
 /* Parsec · pages/library · library-page.js
-   The Library page: tabs (Fault codes, CBRs, TSBs, FSBs, Recalls, Procedures soon), the search, the function-group filter, documents in Impact’s columns by function group, codes by module with their FTBs, adding by button or drop.
+   The Library page: tabs (Fault codes, CBRs, TSBs, FSBs, Recalls, Models, Procedures), the search, the function-group filter, documents in Impact’s columns by function group, procedures with sortable columns, codes by module with their FTBs, adding by button or drop.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   usedOn roCtx docsOf codeRows view head tabs tools list docsList empty codesList … (19 functions, 10 constants)
+   declares   usedOn roCtx docsOf codeRows view head tabs tools list procList docsList empty … (20 functions, 11 constants)
    state      ros
    uses       data/ kit/ library/ pages/ ro/ shell/ state/
    at load    on document keydown · on document dragleave · on document drop
@@ -12,7 +12,7 @@
    Add documents (or drop them on the page) → library/intake.js asks before anything is filed.
    Opened from an RO (libOpenFor), the list starts narrowed to that truck and operation. */
   const esc = PG.e;
-  const U = { tab: 'codes', q: '', fg: '', ro: null, op: null, open: null };
+  const U = { tab: 'codes', q: '', fg: '', ro: null, op: null, open: null, sk: 'fgrp', sd: 1 };   /* sk / sd: the Procedures column sorted, and which way */
   const rd = () => { try{ PG.keepScroll(render); }catch(e){ render(); } };
   const ICP = { add: '<path d="M12 5v14M5 12h14"/>', search: '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>', x: '<path d="M6 6l12 12M18 6L6 18"/>',
     edit: '<path d="M4.5 19.5l1-4L15 6l3 3-9.5 9.5z"/>', del: '<path d="M5 7h14M10 7V5h4v2M7 7l1 13h8l1-13"/>', chev: '<path d="M9 6l6 6-6 6"/>' };
@@ -73,10 +73,9 @@
   }
   function tabs(){
     const n = { codes: codeRows().length };
-    kinds().forEach(k => { if(k.k !== 'codes') n[k.k] = libDocs().filter(d => d && d.kind === k.k).length; });
-    return `<nav class="lib-tabs" role="tablist" aria-label="Library">${kinds().map(k => k.soon
-      ? `<span class="lib-tab soon" title="Step-by-step procedures from Impact come in the next update">${esc(k.tab)}<small>soon</small></span>`
-      : `<button class="lib-tab k-${k.k}${U.tab === k.k ? ' on' : ''}" role="tab" aria-selected="${U.tab === k.k}" data-a="tab" data-k="${k.k}"><i></i>${esc(k.tab)}<small>${n[k.k] || 0}</small></button>`).join('')}</nav>`;
+    kinds().forEach(k => { if(!k.page) n[k.k] = libDocs().filter(d => d && d.kind === k.k).length; });
+    n.models = libModelsN();
+    return `<nav class="lib-tabs" role="tablist" aria-label="Library">${kinds().map(k => `<button class="lib-tab k-${k.k}${U.tab === k.k ? ' on' : ''}" role="tab" aria-selected="${U.tab === k.k}" data-a="tab" data-k="${k.k}"><i></i>${esc(k.tab)}<small>${n[k.k] || 0}</small></button>`).join('')}</nav>`;
   }
   function tools(){
     const C = roCtx();
@@ -84,11 +83,32 @@
     const G = {}; src.forEach(x => { const g = String(x.fgrp || '').charAt(0) || '-'; G[g] = (G[g] || 0) + 1; });
     const fgs = Object.keys(G).sort((a, b) => (a === '-') - (b === '-') || a.localeCompare(b));
     const chip = (v, t, n) => `<button class="tg-chip${U.fg === v ? ' on' : ''}" data-a="fg" data-v="${v}">${esc(t)}${n != null ? `<small>${n}</small>` : ''}</button>`;
-    return `<div class="lib-tools"><label class="lib-q">${ic('search', 15)}<input id="lib-q" data-in="q" value="${esc(U.q)}" placeholder="${U.tab === 'codes' ? 'Search codes — P1050, 3226, clutch, slow gear changes' : 'Search number, title, code, truck'}" autocomplete="off" spellcheck="false" aria-label="Search the Library"></label>
+    return `<div class="lib-tools"><label class="lib-q">${ic('search', 15)}<input id="lib-q" data-in="q" value="${esc(U.q)}" placeholder="${U.tab === 'codes' ? 'Search codes — P1050, 3226, clutch, slow gear changes' : U.tab === 'models' ? 'Find a model — VNL 760, VHD, 2019' : U.tab === 'proc' ? 'Search procedures — clutch, 4134, VN' : 'Search number, title, code, truck'}" autocomplete="off" spellcheck="false" aria-label="Search the Library"></label>
       ${fgs.length > 1 || U.fg ? `<div class="lib-fgs" role="group" aria-label="Function group">${chip('', 'All')}${fgs.map(g => chip(g, g === '-' ? 'No group' : g + ' ' + LIB_FG[g], G[g])).join('')}</div>` : ''}
       ${C ? `<div class="lib-ctx">For <b>RO ${esc(C.ro.roNumber || '')}</b>${C.op ? ` · OP ${(C.ro.operations || []).indexOf(C.op) + 1} ${esc(String(C.op.complaint || '').slice(0, 40))}` : ''}${C.model ? ' · ' + esc(C.model) : ''} — its codes, function groups${U.tab === 'recall' ? ' and recalls' : ''}<button class="lib-ctx-x" data-a="all" title="Show the whole Library">Show all ${ic('x', 12)}</button></div>` : ''}</div>`;
   }
-  function list(){ return U.tab === 'codes' ? codesList() : docsList(); }
+  function list(){ return U.tab === 'codes' ? codesList() : U.tab === 'models' ? libModelsHtml(U.q) : U.tab === 'proc' ? procList() : docsList(); }
+
+  /* procedures: Impact's table with Model and Year, under function group headings; a column header sorts, again reverses */
+  const PCOLS = [['fgrp', 'Fgrp'], ['title', 'Title'], ['info', 'Info type'], ['num', 'ID / Operation'], ['model', 'Model'], ['years', 'Year']];
+  function procList(){
+    const L = docsOf('proc'), sk = U.sk, sd = U.sd;
+    if(!L.length) return empty(libKind('proc'));
+    const val = d => sk === 'num' ? (d.opNo || d.num || '') : sk === 'years' ? String(d.years || '').replace(/\D.*$/, '') : String(d[sk] || '').toLowerCase();
+    L.sort((a, b) => String(a.fgrp || '~').slice(0, 2).localeCompare(String(b.fgrp || '~').slice(0, 2)) || (val(a) < val(b) ? -sd : val(a) > val(b) ? sd : 0));
+    let last = null, h = '';
+    L.forEach(d => {
+      const g = String(d.fgrp || ''), key = g ? g.slice(0, 2) : '-';
+      if(key !== last){ last = key; h += `<div class="lib-gh">${g ? `<b class="mono">${esc(g.charAt(0))}</b>${esc(LIB_FG[g.charAt(0)] || '')}${LIB_FG[g.slice(0, 2)] ? `<i>›</i><b class="mono">${esc(g.slice(0, 2))}</b>${esc(LIB_FG[g.slice(0, 2)])}` : ''}` : 'No function group'}</div>`; }
+      const P = d.proc, n = P ? P.steps.length : 0;
+      h += `<div class="lib-row lib-prow" data-a="open" data-id="${esc(d.id)}" role="button" tabindex="0" title="Open the steps">
+        <span class="lib-c-fg mono">${esc(g || '—')}</span><span class="lib-c-t"><b>${esc(d.title || '(no title)')}</b>${n ? `<small>${n} steps${P.tools.length ? ' · ' + P.tools.length + ' special tool' + (P.tools.length === 1 ? '' : 's') : ''}</small>` : ''}</span>
+        <span class="lib-c-k">${d.info ? `<span class="lib-it">${esc(d.info)}</span>` : ''}</span><span class="lib-c-n mono">${esc(d.opNo || d.num)}</span>
+        <span class="lib-c-d">${esc(d.model || '')}</span><span class="lib-c-d mono">${esc(d.years || '')}</span>
+        <span class="lib-c-a"><button class="lib-ib" data-a="edit" data-id="${esc(d.id)}" title="Change its details">${ic('edit', 13)}</button><button class="lib-ib" data-a="del" data-id="${esc(d.id)}" title="Take it out of the Library">${ic('del', 13)}</button></span></div>`;
+    });
+    return `<div class="lib-cols lib-pcols">${PCOLS.map(c => `<button class="lib-sort${sk === c[0] ? ' on' : ''}" data-a="sort" data-k="${c[0]}" aria-sort="${sk === c[0] ? (sd > 0 ? 'ascending' : 'descending') : 'none'}" title="Sort by ${esc(c[1].toLowerCase())}">${esc(c[1])}<i>${sk === c[0] ? (sd > 0 ? '↑' : '↓') : '↕'}</i></button>`).join('')}<span></span></div>${h}`;
+  }
 
   /* documents: Impact's columns, under function group headings */
   function docsList(){
@@ -153,6 +173,7 @@
     all: () => { U.ro = null; U.op = null; U.q = ''; U.fg = ''; rd(); },
     add: () => pick(),
     open: tt => libOpen(tt.dataset.id, tt.dataset.page),
+    sort: tt => { const k = tt.dataset.k; if(U.sk === k) U.sd = -U.sd; else { U.sk = k; U.sd = k === 'years' ? -1 : 1; } relist(); },
     code: tt => { U.open = U.open === tt.dataset.k ? null : tt.dataset.k; relist(); },
     edit: tt => { const d = libDocById(tt.dataset.id); if(d) libEdit(d, () => rd()); },
     del: tt => { const d = libDocById(tt.dataset.id); if(!d) return;

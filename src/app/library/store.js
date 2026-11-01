@@ -98,7 +98,8 @@ function libAdd(f, blob, origName){
   var have = libFind(f.kind, f.num, f.rel);
   if(have) return Promise.resolve(have);
   var d = { id: uid("ld"), kind: f.kind, num: String(f.num || "").trim(), rel: String(f.rel || "").trim(), date: f.date || "", title: String(f.title || "").trim(),
-    fgrp: String(f.fgrp || "").trim(), model: f.model || "", mod: f.mod || "", opNo: f.opNo || "", codes: (f.codes || []).slice(0, 400), dtc: !!(f.table && f.table.length),   /* dtc: it brought a code table */
+    fgrp: String(f.fgrp || "").trim(), model: f.model || "", mod: f.mod || "", opNo: f.opNo || "", codes: (f.codes || []).slice(0, 400), dtc: !!(f.table && f.table.length),
+    years: String(f.years || "").trim(), info: f.info || "", proc: f.proc || undefined,   /* dtc: it brought a code table · proc: an Impact procedure's steps, warnings, tools, torques */
     addedAt: nowIso(), addedBy: libWho() };
   if(f.learn && f.num && f.kind){ var pre = libPrefixOf(f.num); if(pre && !(STATE.libRules || []).some(function(x){ return x.pre === pre; })) (STATE.libRules = STATE.libRules || []).push({ id: uid("lr"), pre: pre, kind: f.kind }); }
   return (blob ? libWriteFile(d, blob, origName) : Promise.resolve(d)).then(function(){

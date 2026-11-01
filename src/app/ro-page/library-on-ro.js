@@ -1,7 +1,7 @@
 /* Parsec · ro-page · library-on-ro.js
    The Library on the RO page: each operation’s codes, function group and documents with + document, what each code means, the documents that cover its codes (Attach / Not now), the documents strip above the operations, and PDFs offered to the Library before they attach.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   libOpChips libOpBelow libPickFor libRouteDocs libDocStrip (5 functions)
+   declares   libOpChips libOpBelow libPickFor libRouteDocs libDocStrip libProcsFor libStepsTxt (7 functions)
    uses       access/ library/ pages/library/ ro/ shell/ state/
 */
 /* ============================== the Library on the RO page (Parsec 17.1) ==============================
@@ -16,8 +16,8 @@ function libOpChips(job, row) {
   if (fg) row.insertBefore(el('span', { class: 'libFg mono', text: fg, title: 'Function group ' + (libFgName(fg) || fg) }), row.firstChild);
   libOpDocs(job).forEach(function (d) {
     row.appendChild(el('span', { class: 'libChip k-' + d.kind }, [
-      el('button', { class: 'libGo', type: 'button', title: 'Open ' + libDocChipText(d) + (d.title ? ' — ' + d.title : ''), onClick: function (e) { e.stopPropagation(); libOpen(d); } },
-        [el('i'), document.createTextNode(libDocChipText(d))]),
+      el('button', { class: 'libGo', type: 'button', title: 'Open ' + libDocChipText(d) + (d.title ? ' — ' + d.title : ''), onClick: function (e) { e.stopPropagation(); libOpen(d, null, { ro: RO, op: job }); } },
+        [el('i'), document.createTextNode(libDocChipText(d) + libStepsTxt(job, d))]),
       el('button', { class: 'libX', type: 'button', 'aria-label': 'Take ' + libDocChipText(d) + ' off this operation', title: 'Take it off this operation (its copy stays in Files)', html: svgI('<path d="M6 6l12 12M18 6L6 18"/>', 10),
         onClick: function (e) { e.stopPropagation(); pushUndo('document'); libDetach(job, d.id); render(); toast(libDocChipText(d) + ' is off OP ' + ropN(job), { label: 'UNDO', run: function () { restoreSnapshot(); } }); } })
     ]));
@@ -48,11 +48,12 @@ function libOpBelow(job, bar) {
       offers.push({ d: d, f: f, pg: pg });
     });
   });
+  libProcsFor(job).forEach(function (o) { if (!have[o.d.id] && !skip[o.d.id] && !seen[o.d.id]) { seen[o.d.id] = 1; offers.push(o); } });
   offers.slice(0, 3).forEach(function (o) {
     bar.appendChild(el('div', { class: 'libOffer' }, [
       el('span', { class: 'libChip k-' + o.d.kind + ' ro' }, [el('i'), document.createTextNode(libDocChipText(o.d))]),
-      el('span', { class: 'libOfferT', text: 'covers ' + libCodeKey(o.f) + (o.pg ? ' (page ' + o.pg + ')' : '') }),
-      el('button', { class: 'libOfferB', type: 'button', text: 'Open', onClick: function (e) { e.stopPropagation(); libOpen(o.d, o.pg); } }),
+      el('span', { class: 'libOfferT', text: o.why || ('covers ' + libCodeKey(o.f) + (o.pg ? ' (page ' + o.pg + ')' : '')) }),
+      el('button', { class: 'libOfferB', type: 'button', text: 'Open', onClick: function (e) { e.stopPropagation(); libOpen(o.d, o.pg, { ro: RO, op: job }); } }),
       el('button', { class: 'libOfferB pri', type: 'button', text: 'Attach', title: 'Put it on OP ' + ropN(job) + ' — a copy goes into Files',
         onClick: function (e) { e.stopPropagation(); pushUndo('document'); libAttach(RO, job, o.d, o.d.dtc ? 'dtc' : 'report', function () { render(); }); render(); toast(libDocChipText(o.d) + ' is on OP ' + ropN(job) + '.'); } }),
       el('button', { class: 'libOfferB', type: 'button', text: 'Not now', title: 'Don’t offer it on this operation again',
@@ -81,10 +82,22 @@ function libDocStrip() {
   G.forEach(function (g) {
     var grp = el('span', { class: 'libGrp' }, [el('span', { class: 'libOp', text: 'OP ' + g.n, title: g.op.complaint || '' })]);
     g.docs.forEach(function (d) {
-      grp.appendChild(el('button', { class: 'libChip libGo k-' + d.kind, type: 'button', title: 'Open ' + libDocChipText(d) + (d.title ? ' — ' + d.title : ''), onClick: function (e) { e.stopPropagation(); libOpen(d); } },
-        [el('i'), document.createTextNode(libDocChipText(d))]));
+      grp.appendChild(el('button', { class: 'libChip libGo k-' + d.kind, type: 'button', title: 'Open ' + libDocChipText(d) + (d.title ? ' — ' + d.title : ''), onClick: function (e) { e.stopPropagation(); libOpen(d, null, { ro: RO, op: g.op }); } },
+        [el('i'), document.createTextNode(libDocChipText(d) + libStepsTxt(g.op, d))]));
     });
     strip.appendChild(grp);
   });
   return strip;
 }
+
+/* ---------- Impact procedures for an operation: its operation number first, then its function group ---------- */
+function libProcsFor(job) {
+  var txt = [job.complaint, job.work, job.cause, job.correction].concat((job.offNotes || []).map(function (n) { return n.text; })).join(' ');
+  var nums = {}; String(txt || '').replace(/\b(\d{4}-\d{2}-\d{2}-\d{2})\b/g, function (m, n) { nums[n] = 1; return m; });
+  var fg = libOpFgrp(job).slice(0, 2), P = libDocs().filter(function (d) { return d && d.kind === 'proc'; }), out = [];
+  P.forEach(function (d) { if (nums[d.opNo || d.num]) out.push({ d: d, why: 'its operation number ' + (d.opNo || d.num) + ' · ' + (d.title || '') }); });
+  if (fg) P.forEach(function (d) { if (!nums[d.opNo || d.num] && String(d.fgrp || '').slice(0, 2) === fg) out.push({ d: d, why: (d.title || '') + ' · function group ' + fg }); });
+  return out;
+}
+/* " · 23/80" on a procedure's chip: the steps ticked on this operation */
+function libStepsTxt(op, d) { if (!d || d.kind !== 'proc' || !d.proc) return ''; var n = libProcDone(op, d).length; return ' \u00b7 ' + n + '/' + d.proc.steps.length; }

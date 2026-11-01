@@ -54,10 +54,12 @@ function libAskShow(o){
 }
 function libAskForm(file, g, ctx, cb){
   var w = LIB_ASK.el || libAskShow({ reading: file.name }), kindWas = g.kind, have = null;
-  var kinds = LIB_KINDS.filter(function(k){ return k.k !== "codes"; });
+  var kinds = LIB_KINDS.filter(function(k){ return !k.page; });
   var ops = (ctx.ro && ctx.ro.operations) || [], op0 = ctx.op || ops.filter(function(o){ return !o.declined; })[0] || ops[0] || null;
   var fgName = function(v){ return libFgName(v) || "—"; };
-  var codesLine = g.table.length ? "<b>" + g.table.length + " codes</b> with their FTBs — they go into Fault codes"
+  var P = g.proc, nTq = P ? P.steps.reduce(function(a, s){ return a + (s.tq || []).length; }, 0) : 0;
+  var codesLine = P ? "<b>" + P.steps.length + " steps</b>" + (P.tools.length ? " · " + P.tools.length + " special tool" + (P.tools.length === 1 ? "" : "s") : "") + (nTq ? " · " + nTq + " torque" + (nTq === 1 ? "" : "s") : "") + (g.info ? " · " + libE(g.info) : "") + " — they show in Parsec, the PDF one tap away"
+    : g.table.length ? "<b>" + g.table.length + " codes</b> with their FTBs — they go into Fault codes"
     : g.codes.length ? "Mentions " + g.codes.slice(0, 6).map(libE).join(" · ") + (g.codes.length > 6 ? " · +" + (g.codes.length - 6) : "") : "No fault codes in it";
   var task = g.table.length ? "dtc" : "report";
   w.innerHTML = '<div class="roreo-c lib-ask-c"><div class="roreo-h"><span class="roreo-i" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V20a.5.5 0 0 1-.5.5h-10A.5.5 0 0 1 7 20z"/><path d="M14 3.5V8h4M9.5 12.5h5M9.5 16h5"/></svg></span>'
@@ -71,6 +73,7 @@ function libAskForm(file, g, ctx, cb){
     + '<label class="lib-f-c w">Title<input id="lib-f-title" value="' + libE(g.title) + '" autocomplete="off"></label>'
     + '<label class="lib-f-c">Function group<input id="lib-f-fg" class="mono" value="' + libE(g.fgrp) + '" placeholder="430" autocomplete="off"><small id="lib-f-fgn">' + libE(fgName(g.fgrp)) + '</small></label>'
     + '<label class="lib-f-c">Trucks<input id="lib-f-model" value="' + libE(g.model) + '" placeholder="VN, VHD" autocomplete="off"></label>'
+    + '<label class="lib-f-c">Model years<input id="lib-f-years" class="mono" value="' + libE(g.years || "") + '" placeholder="2017–2024 or 2017+" autocomplete="off"></label>'
     + '</div>'
     + '<div class="lib-f-found">' + codesLine + '</div>'
     + '<label class="lib-f-learn" id="lib-f-learnw" hidden><input type="checkbox" id="lib-f-learn" checked> <span id="lib-f-learnt"></span></label>'
@@ -97,7 +100,7 @@ function libAskForm(file, g, ctx, cb){
   var answer = function(){
     var num = $("lib-f-num").value.trim().toUpperCase(), k = kindNow(); if(!num || !k) return null;
     var a = { kind: k, num: num, rel: $("lib-f-rel").value.trim(), date: $("lib-f-date").value.trim(), title: $("lib-f-title").value.trim(), fgrp: $("lib-f-fg").value.trim(),
-      model: $("lib-f-model").value.trim(), mod: g.mod, opNo: g.opNo, codes: g.codes, table: g.table, learn: !$("lib-f-learnw").hidden && $("lib-f-learn").checked };
+      model: $("lib-f-model").value.trim(), years: libYears($("lib-f-years").value) || $("lib-f-years").value.trim(), info: g.info || "", proc: g.proc || null, mod: g.mod, opNo: g.opNo, codes: g.codes, table: g.table, learn: !$("lib-f-learnw").hidden && $("lib-f-learn").checked };
     if(ctx.ro){ var oid = $("lib-f-op").value; a.op = ops.filter(function(o){ return o.id === oid; })[0] || op0; a.task = $("lib-f-task").value; a.tick = $("lib-f-tick").checked; }
     return a;
   };
@@ -127,12 +130,12 @@ function libAskForm(file, g, ctx, cb){
 /* change a filed document's details (the same card, with Save) */
 function libEdit(d, done){
   libAskShow({ reading: "" });
-  var g = { kind: d.kind, num: d.num, rel: d.rel, date: d.date, title: d.title, fgrp: d.fgrp, model: d.model, mod: d.mod, opNo: d.opNo, codes: d.codes || [], table: [], how: "" };
+  var g = { kind: d.kind, num: d.num, rel: d.rel, date: d.date, title: d.title, fgrp: d.fgrp, model: d.model, years: d.years, info: d.info, mod: d.mod, opNo: d.opNo, codes: d.codes || [], table: [], how: "" };
   libAskForm({ name: (d.file && d.file.name) || libDocLabel(d) }, g, { edit: d }, function(a){
     libAskClose();
     if(!a || a === "plain"){ if(done) done(false); return; }
     pushUndo("library");
-    ["kind", "num", "rel", "date", "title", "fgrp", "model"].forEach(function(k){ d[k] = a[k]; });
+    ["kind", "num", "rel", "date", "title", "fgrp", "model", "years"].forEach(function(k){ d[k] = a[k]; });
     if(a.learn && a.num && a.kind){ var pre = libPrefixOf(a.num); if(pre && !(STATE.libRules || []).some(function(x){ return x.pre === pre; })) (STATE.libRules = STATE.libRules || []).push({ id: uid("lr"), pre: pre, kind: a.kind }); }
     scheduleSave(true);
     if(done) done(true);

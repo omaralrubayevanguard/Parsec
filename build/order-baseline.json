@@ -694,6 +694,7 @@
 "library/read-docs.js \u00b7 var LIB_MON",
 "library/read-docs.js \u00b7 var LIB_BOILER",
 "library/read-docs.js \u00b7 var LIB_FURN",
+"library/read-docs.js \u00b7 var LIB_PROC_FURN",
 "library/store.js \u00b7 var LIB_DIR",
 "library/store.js \u00b7 var LIB_IDB,LIB_IDB_STORE",
 "library/intake.js \u00b7 var LIB_ASK",
