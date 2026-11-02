@@ -26,7 +26,7 @@ async def main():
         # ---------- the sidebar ----------
         rows = await pg.evaluate("[...document.querySelectorAll('.pxr-nav .pxr-row .pxr-tl')].map(x=>x.textContent)")
         print("sidebar:", rows)
-        ok(rows == ["Career", "Time Log", "RO List", "Technician", "Triage", "Foreman", "Parts", "Warranty", "Manager", "Fixes", "Assets", "Inventory", "Admin"], "sidebar order")   # Parsec 13: the Admin page · Parsec 14: Assets
+        ok(rows[:10] == ["RO List", "Technician", "Triage", "Foreman", "Parts", "Warranty", "Manager", "Fixes", "Assets", "Inventory"] and rows[-1] == "Admin", f"sidebar order ({rows})")   # 17.1: Time Log and Career are tabs on the department pages; Fleets and Library before Admin   # Parsec 13: the Admin page · Parsec 14: Assets
         ok(await pg.evaluate("document.querySelectorAll('.pxr-nav .pxr-gh').length") == 0, "no lines or headings in the sidebar")
         await pg.screenshot(path=os.path.join(OUT, "a1_sidebar.png"), clip={"x": 0, "y": 0, "width": 260, "height": 900})
         for v in ["inbox", "console"]:
@@ -91,7 +91,7 @@ async def main():
         await pg.click('[data-pg=rolist] [data-a="pop"][data-p="disp"]'); await pg.wait_for_timeout(300)
         await pg.click('[data-a="dpk"][data-v="1"]'); await pg.wait_for_timeout(300); await pg.keyboard.press("Escape"); await pg.wait_for_timeout(200)
         await pg.evaluate("(()=>{ const r=document.querySelector('[data-pg=rolist] .rq-row[data-a=sel]'); if(r) r.click(); })()"); await pg.wait_for_timeout(500)
-        ok(await pg.evaluate("!!document.querySelector('.rq-open .trx-rtb')"), "RO list pane has Road test")
+        ok(await pg.evaluate("!!document.querySelector('.rq-open .trx-rtb, .rq-peek .rp-acts .trx-rtb')"), "RO list pane has Road test")
         await pg.screenshot(path=os.path.join(OUT, "c5_rolist.png"))
         # leaving the page closes the layer
         await go(pg, "foreman"); await pg.evaluate("(()=>{ const L=[...document.querySelectorAll('.main .tg-it')]; const n=L.find(x=>x.querySelector('.tg-no'))||L[0]; if(n) n.click(); })()"); await pg.wait_for_timeout(400)
@@ -138,7 +138,7 @@ async def main():
         ok("Inbox" not in tabs and "Console" not in tabs, "phone tabs have no Inbox or Console")
         await pg.click('.pm-tab[data-pm="more"]'); await pg.wait_for_timeout(400)
         more = await pg.evaluate("[...document.querySelectorAll('.pm-pg span')].map(x=>x.textContent)"); print("phone more:", more)
-        ok("Inbox" not in more and "Console" not in more and more[:3] == ["Career", "Time Log", "RO list"], "phone More in the sidebar's order")
+        ok("Inbox" not in more and "Console" not in more and more[:2] == ["RO list", "Technician"], "phone More in the sidebar's order")
         await pg.screenshot(path=os.path.join(OUT, "p1_more.png"))
         await pg.evaluate("(()=>{ const s=document.querySelector('[data-pm=close]'); if(s) s.click(); })()"); await pg.wait_for_timeout(300)
         rid3 = await pg.evaluate("__tg.STATE().ros.find(r=>!r.shop && r.id!=='ro_shop' && !r.dateClosed && r.operations.length).id")

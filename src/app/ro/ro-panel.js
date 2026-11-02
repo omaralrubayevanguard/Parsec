@@ -66,7 +66,7 @@ function rpActsHtml(ro, o){
     else if(next) h += '<button class="btn btn-sm" data-action="open-start-punch" data-ro="' + rpE(ro.id) + '" data-op="' + rpE(next.id) + '">▶ Start Op ' + ((ro.operations || []).indexOf(next) + 1) + "</button>";
   }
   if(!tech || o.xfer) h += '<button class="btn btn-sm" data-a="pop" data-p="xfer" data-id="' + rpE(ro.id) + '">Transfer…</button>';
-  try{ if(trxBtnsOk(ro) && rtOn(ro)) h += trxBtns(ro, "btn btn-sm"); }catch(e){}
+  try{ if(trxBtnsOk(ro) && (typeof rtNeeded !== "function" || rtNeeded(ro))) h += trxBtns(ro, "btn btn-sm"); }catch(e){}   /* the road test, unless this truck needs none */
   return '<div class="rp-acts">' + h + "</div>";
 }
 /* one click handler for the panel's own controls, in the page and inside the RO page's shadow root (composedPath) */

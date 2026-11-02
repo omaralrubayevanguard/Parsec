@@ -87,6 +87,7 @@ async def main():
         # ---------- 8 · RO details editable on the RO list pane ----------
         await view(pg, "rolist", f"__tg.RL && 0;")
         await pg.evaluate(f"(()=>{{ const U=__tg.UI(); U.view='rolist'; __tg.render(); }})()"); await pg.wait_for_timeout(500)
+        await pg.evaluate("(()=>{ Object.keys(localStorage).filter(k=>/^rpfold:/.test(k)).forEach(k=>localStorage.setItem(k, JSON.stringify({ vehicle: false, customer: false, people: false, schedule: false, paperwork: false }))); localStorage.setItem('rpfold:admin', JSON.stringify({ vehicle: false, customer: false, people: false, schedule: false, paperwork: false })); })()")   # 17.1: Vehicle starts folded — open them all to count
         await pg.click("[data-pg=rolist] .rq-rows .rq-row .rq-k-cust"); await pg.wait_for_timeout(700)
         det = await pg.evaluate("(()=>{ const s=document.querySelector('.rq-peek .rod'); return s ? { groups: [...s.querySelectorAll('.rod-gh b')].map(x=>x.textContent), ed: s.classList.contains('ed'), rows: s.querySelectorAll('.rod-r').length, id: s.getAttribute('data-rod-ro') } : null; })()")
         B0 = B; B = det["id"] if det else B

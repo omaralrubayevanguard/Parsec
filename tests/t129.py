@@ -128,7 +128,7 @@ async def main():
         r = await pg.evaluate(RS(a6))
         ok(r[0] == "Hold Tech" and not any(r[2]), f"…its operations reopen ({r})")
         await pg.evaluate(f"(()=>{{ const TU=__tg.CX.TU(); TU.ro='{a6}'; __tg.PG.go('tech'); }})()"); await pg.wait_for_timeout(900)
-        st = await pg.evaluate(JTX % "const b=[...R.querySelectorAll('.rop-band button')].find(x=>/^Start/.test(x.textContent.trim())); return [!!b, (R.querySelector('.px-status--button')||{}).textContent||''];")
+        st = await pg.evaluate(JTX % "const b=[...R.querySelectorAll('.rop-foot button, .rop-band button')].find(x=>/^Start/.test(x.textContent.trim())); return [!!b, (R.querySelector('.px-status--button')||{}).textContent||''];")
         ok(st and st[0] and "Hold" in st[1], f"…and Start is there ({st})")
         await pg.screenshot(path=os.path.join(OUT, "u4_tech_after.png"))
         # 8. the operation's own status picked on the RO page holds through what happens next

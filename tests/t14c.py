@@ -24,7 +24,7 @@ async def main():
         await pg.click(f"{Q} .rq-seg button[data-g='all']"); await pg.wait_for_timeout(300)
         # the pane: the one you can change is the pill, and it opens the status window
         await pg.click(f"{Q} .rq-rows .rq-row .rq-k-cust"); await pg.wait_for_timeout(500)
-        r = await pg.evaluate(f"(()=>{{ const b=document.querySelector('{Q} .rq-peek .rq-strow .pgst.m'); return b ? [b.tagName, b.dataset.a, !!b.querySelector('.pgst-cv'), document.querySelectorAll('{Q} .rq-peek .rq-pop .pgst').length > 0] : null; }})()")
+        r = await pg.evaluate(f"(()=>{{ const b=document.querySelector('{Q} .rq-peek .rq-strow .pgst.m'); return b ? [b.tagName, b.dataset.a, !!b.querySelector('.pgst-cv'), document.querySelectorAll('{Q} .rq-peek .rq-pop .pgst, {Q} .rq-peek .rp-op .pgst').length > 0] : null; }})()")
         ok(r and r[0] == 'BUTTON' and r[1] == 'status' and r[2] and r[3], f"pane: the status is an outlined pill with ▾; the operations show theirs ({r})")
         await pg.screenshot(path=os.path.join(OUT, "c1_pane.png"))
         await pg.click(f"{Q} .rq-peek .rq-strow .pgst.m"); await pg.wait_for_timeout(400)
@@ -58,7 +58,7 @@ async def main():
         # pane Next card (base raNext) agrees
         await pg.click(f"{Q} .rq-row[data-id='{rid}'] .rq-k-cust"); await pg.wait_for_timeout(400)
         pn = await pg.evaluate(f"(document.querySelector('{Q} .rq-peek .rq-next p')||{{}}).textContent||''")
-        ok('assign a tech' in pn.lower(), f"the pane's Next card says the same ({pn[:80]})")
+        ok(not await pg.evaluate(f"!!document.querySelector('{Q} .rq-peek .rq-next')"), "the pane has no Next card (17.1: the one RO panel leaves it out)")
         await pg.keyboard.press("Escape"); await pg.wait_for_timeout(300)
         await pg.evaluate("(()=>{ const x=document.querySelector('[data-pg=rolist] [data-a=peekx]'); x && x.click(); })()"); await pg.wait_for_timeout(300)
         # all done, no road test → Release

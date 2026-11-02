@@ -99,7 +99,7 @@ async def main():
         await pg.evaluate("(()=>{ localStorage.removeItem('tec_viewas'); __tg.pxSignedIn(); __tg.UI().view='tech'; __tg.render(); })()"); await pg.wait_for_timeout(900)
         bar3 = await pg.evaluate(BAR)
         ok("’s ROs" in bar3[0], f"the admin's view reads <Tech>'s ROs ({bar3})")
-        await pg.evaluate(JT("const g=R.querySelector('.rop-band .px-btn--primary'); if(g && /Start/.test(g.textContent)) g.click(); return 1")); await pg.wait_for_timeout(500)
+        await pg.evaluate(JT("const g=R.querySelector('.rop-foot .px-btn--primary, .rop-band .px-btn--primary'); if(g && /Start/.test(g.textContent)) g.click(); return 1")); await pg.wait_for_timeout(500)
         t2 = await pg.evaluate(JT("return (R.getElementById('toast')||{}).textContent||''")) + (await pg.evaluate("(document.querySelector('.toast-wrap')||{}).textContent||''"))
         runs4 = await pg.evaluate("(()=>__tg.STATE().punches.filter(p=>!p.stop && /admin/i.test(p.by||'')).length)()")
         ok("starts and stops on their sign-in" in t2 and runs4 == 0, f"…and doesn't start their clock ({t2[:70]}, admin punches {runs4})")

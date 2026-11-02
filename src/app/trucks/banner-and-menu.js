@@ -77,7 +77,7 @@ function v147Fit(pop, anchor, o){
     var m = band.querySelector(".px-trk__menu"); if(!m) return;
     m.classList.add("is-lifted"); m.__anchor = anchor; top.appendChild(m);
     if(root && root.host && root.host.getAttribute && root.host.getAttribute("data-device") === "phone") m.style.width = Math.max(220, window.innerWidth - 24) + "px";
-    v147Fit(m, anchor, { alignRight: true });
+    var ar = anchor.getBoundingClientRect(); v147Fit(m, anchor, { alignRight: ar.left > window.innerWidth / 2 });   /* 17.1: the picture can sit on the left now (one RO panel) — open toward the room */
     var first = m.querySelector("button"); if(first) try{ first.focus({ preventScroll: true }); }catch(e){}
     var off = function(e){ if(e && e.target && m.contains && m.contains(e.target)) return; if(m.isConnected){ m.remove(); band.classList.remove("has-menu"); } window.removeEventListener("scroll", off, true); window.removeEventListener("resize", off); if(root && root.removeEventListener) root.removeEventListener("scroll", off, true); };
     setTimeout(function(){ window.addEventListener("scroll", off, true); window.addEventListener("resize", off); if(root && root.host) root.addEventListener("scroll", off, true); }, 0);

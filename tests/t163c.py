@@ -107,7 +107,7 @@ async def main():
         ok(u5[0] == "(336) 555-0142", "Undo puts the phone back: %r" % u5)
         if u5[1] != "(919) 555-0142":   # the undo stack may fold quick edits together — put the two back for the checks below
             await pg.evaluate("""(id)=>{ const ro=__tg.STATE().ros.filter(r=>r.id===id)[0]; ro.driverPhone='(919) 555-0142'; ro.contactEmail='ops@rick.com'; }""", NEWRO)
-        dh = await pg.evaluate("(id)=>{ __tg.UI().rodFold = { customer: false }; return __tg.roDetailsHtml(__tg.STATE().ros.filter(r=>r.id===id)[0]); }", NEWRO)
+        dh = await pg.evaluate("(id)=>{ __tg.UI().rodFold = { customer: false }; try{ localStorage.setItem('rpfold:' + (localStorage.getItem('tec_viewas') || 'admin'), JSON.stringify({ customer: false })); }catch(e){}   /* 17.1: folds are kept per person */ return __tg.roDetailsHtml(__tg.STATE().ros.filter(r=>r.id===id)[0]); }", NEWRO)
         ok("Driver’s phone" in dh and "Email" in dh and "Tony Ruiz" in dh, "the RO list / Technician details pane shows the new rows")
         await pg.evaluate(f"(()=>{{ const U=__tg.UI(); U.view='ros'; U.selectedRo='{NEWRO}'; __tg.render(); }})()"); await pg.wait_for_timeout(1000)
         cs = await pg.evaluate(J("const s=R.querySelector('.rop-k-customer'); return s ? s.textContent : ''"))
