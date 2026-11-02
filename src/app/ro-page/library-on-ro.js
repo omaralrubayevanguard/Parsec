@@ -1,8 +1,8 @@
 /* Parsec · ro-page · library-on-ro.js
-   The Library on the RO page: each operation’s codes, function group and documents with + document, what each code means, the documents that cover its codes (Attach / Not now), the documents strip above the operations, and PDFs offered to the Library before they attach.
+   The Library on the RO page: each operation’s codes, function group and documents, what each code means, the documents that cover its codes (Attach / Not now), the documents strip above the operations, and PDFs offered to the Library before they attach.
    ── facts (generated; run tools/headers.py to refresh) ──
    declares   libOpChips libOpBelow libPickFor libRouteDocs libDocStrip libProcsFor libStepsTxt (7 functions)
-   uses       access/ library/ pages/library/ ro/ shell/ state/
+   uses       library/ ro/ shell/ state/
 */
 /* ============================== the Library on the RO page (Parsec 17.1) ==============================
    Each operation's line under its row: its fault codes (code · FTB), its function group, its documents, + document,
@@ -11,8 +11,8 @@
    A PDF dropped on an operation, or added from the Files tab, is offered to the Library first (library/intake.js). */
 
 /* the chips that follow "+ code" on the operation's line */
-function libOpChips(job, row) {
-  var fg = libOpFgrp(job);
+function libOpChips(job, row, o) {
+  var fg = o && o.noFg ? '' : libOpFgrp(job);   /* on the RO page the group is one of the card's facts (Parsec 17.1) */
   if (fg) row.insertBefore(el('span', { class: 'libFg mono', text: fg, title: 'Function group ' + (libFgName(fg) || fg) }), row.firstChild);
   libOpDocs(job).forEach(function (d) {
     row.appendChild(el('span', { class: 'libChip k-' + d.kind }, [
@@ -22,10 +22,6 @@ function libOpChips(job, row) {
         onClick: function (e) { e.stopPropagation(); pushUndo('document'); libDetach(job, d.id); render(); toast(libDocChipText(d) + ' is off OP ' + ropN(job), { label: 'UNDO', run: function () { restoreSnapshot(); } }); } })
     ]));
   });
-  row.appendChild(el('button', { class: 'fltAdd libAdd', type: 'button', text: '+ document', title: 'Add a CBR, TSB, FSB or recall — Parsec reads it and asks before filing',
-    onClick: function (e) { e.stopPropagation(); libPickFor(job); } }));
-  if (navAllowed('library')) row.appendChild(el('button', { class: 'fltLink libFind', type: 'button', text: 'Library', title: 'The Library, narrowed to this truck and operation',
-    onClick: function (e) { e.stopPropagation(); libOpenFor(RO, job); } }));
 }
 /* under the line: what each code means, then what the Library has for them */
 function libOpBelow(job, bar) {

@@ -1,7 +1,7 @@
 /* Parsec · ro-page · clock-card-draw.js
-   The clock card's pieces, markup and ticker: the big time, the ring, segments and facts; focus mode (the big shop-floor view); ockTick updates every card in place each second.
+   The clock card's pieces, markup and ticker: the big time, the ring, segments and facts; focus mode (the big shop-floor view); ockTick updates every card in place each second; the time bar's initials and note pins, and the note added where you click (17.1).
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   ockCls ockBigTxt ockShape ockDigits ockLbl ockFxLbl ockRing ockScale ockPct ockSegs ockSegHtml ockBar … (63 functions)
+   declares   ockCls ockBigTxt ockShape ockDigits ockLbl ockFxLbl ockRing ockScale ockPct ockSegs ockSegHtml ockHasWho … (71 functions)
    state      punches
    uses       access/ clock/ data/ kit/ pages/ pages/warranty/ ro/ state/
    at load    a delayed start
@@ -38,12 +38,53 @@ function ockSegs(m, sc){ /* Parsec 12.7: only your own running punch moves when 
   var hrs = m.ms / 3600000, L = [], k = hrs > 0 && m.h < hrs ? m.h / hrs : 1, extra = m.h - hrs;
   if(extra > 0.004) L.push({ h: extra, c: "var(--o-ink4)", t: "Typed in by hand · " + ockHm(extra * 3600), live: 0 });
   m.ps.forEach(function(p){ var a = +new Date(p.start) - (p === m.mine ? m.fx : 0), b = p.stop ? +new Date(p.stop) : m.now, d = Math.max(0, b - a) / 3600000 * k;
-    L.push({ h: d, c: ockRv(p.startReason), t: (p.startReason || "Working") + (p.stop ? " → " + (p.stopReason || "stopped") : " · on the clock") + " · " + ockHm(d * 3600), live: !p.stop }); });
+    L.push({ h: d, c: ockRv(p.startReason), t: (p.by ? ockFirst(p.by) + " · " : "") + (p.startReason || "Working") + (p.stop ? " → " + (p.stopReason || "stopped") : " · on the clock") + " · " + ockHm(d * 3600), live: !p.stop, by: p.by || "" }); });
   var cap = m.q > 0 ? m.q : Infinity, acc = 0;
-  L.forEach(function(x, i){ var w = Math.max(0, Math.min(x.h, cap - acc)); acc += x.h; x.w = w; x.z = w / sc * 100 < 0.15; x.css = "--c:" + x.c + ";width:max(0px, calc(" + ockPct(w, sc) + " - " + (i < L.length - 1 ? 2 : 0) + "px))"; });
+  L.forEach(function(x, i){ var w = Math.max(0, Math.min(x.h, cap - acc)); acc += x.h; x.w = w; x.z = w / sc * 100 < 0.15; x.css = "--c:" + x.c + ";width:max(0px, calc(" + ockPct(w, sc) + " - " + (i < L.length - 1 ? 2 : 0) + "px))";
+    x.ini = x.by && w / sc * 100 >= 3.5 ? ockIni(x.by) : ""; });   /* Parsec 17.1: who worked each piece, in initials over it */
   return L;
 }
-function ockSegHtml(L){ return L.map(function(x){ return '<i class="' + (x.live ? "live" : "") + (x.z ? " z" : "") + '" style="' + x.css + '" title="' + ockE(x.t) + '"></i>'; }).join(""); }
+function ockSegHtml(L){ return L.map(function(x){ return '<i class="' + (x.live ? "live" : "") + (x.z ? " z" : "") + '" style="' + x.css + '" title="' + ockE(x.t) + '"' + (x.ini ? ' data-w="' + ockE(x.ini) + '"' : "") + "></i>"; }).join(""); }
+function ockHasWho(m){ return m.ps.some(function(p){ return !!p.by; }); }
+/* ---------- notes on the time bar (Parsec 17.1) ----------
+   Each note is a pin where it was written along the time worked; pointing at it shows the note, who wrote it and when.
+   Clicking the bar where something happened adds a note at that moment, to the punch under the pointer. */
+function ockBarMap(m){   /* where each punch sits along the bar, in hours (the same walk ockSegs makes) */
+  var hrs = m.ms / 3600000, k = hrs > 0 && m.h < hrs ? m.h / hrs : 1, ex = m.h - hrs, acc = ex > 0.004 ? ex : 0;
+  return m.ps.map(function(p){ var a = +new Date(p.start) - (p === m.mine ? m.fx : 0), b = p.stop ? +new Date(p.stop) : m.now, d = Math.max(0, b - a) / 3600000 * k, r = { p: p, a: a, b: b, k: k, h0: acc, d: d }; acc += d; return r; });
+}
+function ockPins(m, sc){
+  var L = [];
+  ockBarMap(m).forEach(function(x){
+    ockNotes(x.p).forEach(function(n){ if(OCK_SYS_NOTE.test(n.text)) return;
+      var t = n.known ? n.at : x.b, off = Math.max(0, Math.min(x.d, (t - x.a) / 3600000 * x.k));
+      var pc = Math.min(100, (x.h0 + off) / sc * 100);
+      L.push({ left: "left:" + pc.toFixed(3) + "%", side: pc < 14 ? " l" : pc > 86 ? " r" : "", t: t, known: n.known, text: n.text, by: x.p.by || "", a: x.a, b: x.b, pid: x.p.id }); });
+  });
+  return L;
+}
+function ockPinWhen(x){
+  var d = new Date(x.t), day = d.toDateString() === new Date().toDateString() ? "" : d.toLocaleDateString(undefined, { weekday: "short" }) + " ";
+  return x.known ? day + ockClk(x.t) : "during " + day + ockClk(x.a) + "–" + ockClk(x.b);
+}
+function ockPinsKey(L){ return L.map(function(x){ return x.pid + ":" + x.text.length + ":" + (x.known ? 1 : 0); }).join("|"); }
+function ockPinsHtml(L){
+  return L.map(function(x){ var who = x.by ? ockFirst(x.by) : "", when = ockPinWhen(x);
+    return '<button type="button" class="ock-pin' + x.side + '" data-ock="pin" style="' + x.left + '" aria-label="' + ockE("Note" + (who ? " by " + who : "") + ", " + when + ": " + x.text) + '"><span class="ock-pn" aria-hidden="true"><b>' + ockE((who ? who + " · " : "") + when) + "</b>" + ockE(x.text) + "</span></button>"; }).join("");
+}
+/* the moment under the pointer: the punch it falls in and the time it was */
+function ockBarAt(m, sc, frac){
+  var h = Math.max(0, frac) * sc, M = ockBarMap(m), hit = null, slack = sc * 0.012;
+  M.forEach(function(x){ if(!hit && x.d > 0 && h >= x.h0 - slack && h <= x.h0 + x.d + slack) hit = x; });
+  if(!hit) return null;
+  var off = Math.max(0, Math.min(hit.d, h - hit.h0));
+  return { p: hit.p, at: Math.round(hit.a + off / hit.k * 3600000), pct: Math.min(100, (hit.h0 + off) / sc * 100) };
+}
+function ockNaddHtml(st){
+  var x = st.nadd; if(!x) return "";
+  var p = (STATE.punches || []).filter(function(q){ return q.id === x.pid; })[0]; if(!p){ st.nadd = null; return ""; }
+  return '<span class="ock-npt" style="left:' + x.pct.toFixed(2) + '%"></span><div class="ock-nadd" style="--x:' + x.pct.toFixed(2) + '%"><b>Note at ' + ockE(ockClk(x.at)) + (p.by ? " · " + ockE(ockFirst(p.by)) + "’s punch" : "") + '</b><div class="ock-nf"><input type="text" data-ock-na value="' + ockE(x.v || "") + '" placeholder="What happened here?" aria-label="A note at ' + ockE(ockClk(x.at)) + '" enterkeyhint="done"><button type="button" class="ock-btn pri" data-ock="nas">Save</button><button type="button" class="ock-btn" data-ock="nax">Cancel</button></div></div>';
+}
 function ockBar(m, sc, sim, up){
   var q = m.q;
   return { ov: "left:" + ockPct(q, sc) + ";width:" + (m.over ? ockPct(m.h - q, sc) : "0%"), gh: "left:" + ockPct(Math.min(m.h, q), sc) + ";width:" + (q > 0 && m.h < q ? ockPct(q - m.h, sc) : "0%"),
@@ -228,10 +269,12 @@ function ockHtml(roId, opId, o){
   h += '<div class="ock-lbl">' + ockLbl(m, mode, n, can, st) + "</div>";
   h += ockSide(m, st, mode, o, x.nm, false);
   h += '<div class="ock-fix">' + ockFixHtml(m, st) + "</div>";
-  h += '<div class="ock-bar" role="img" aria-label="' + (m.q > 0 ? Math.round(m.h / m.q * 100) + "% of quoted" : m.h.toFixed(2) + " h, no quote") + '"><span class="ock-band" style="' + bar.band + '" title="' + (sim ? "Similar jobs " + sim.lo.toFixed(1) + "–" + sim.hi.toFixed(1) + " h (" + sim.n + ")" : "") + '"></span><span class="ock-bu" style="' + bar.bu + '" title="' + (sim ? "Similar jobs usually " + sim.md.toFixed(1) + " h" : "") + '"></span>'
+  var pins = ockPins(m, sc);
+  h += '<div class="ock-bar' + (ockHasWho(m) ? " has-w" : "") + (can ? " can" : "") + '" role="group"' + (can ? ' data-ock="bar"' : "") + ' aria-label="' + (m.q > 0 ? Math.round(m.h / m.q * 100) + "% of quoted" : m.h.toFixed(2) + " h, no quote") + '"><span class="ock-band" style="' + bar.band + '" title="' + (sim ? "Similar jobs " + sim.lo.toFixed(1) + "–" + sim.hi.toFixed(1) + " h (" + sim.n + ")" : "") + '"></span><span class="ock-bu" style="' + bar.bu + '" title="' + (sim ? "Similar jobs usually " + sim.md.toFixed(1) + " h" : "") + '"></span>'
     + '<span class="ock-segs">' + ockSegHtml(L) + '</span><span class="ock-ov" style="' + bar.ov + '"></span><span class="ock-gh" style="' + bar.gh + '"></span>'
     + [0.5, 0.75].map(function(p, i){ return '<span class="ock-ms' + (st.hit[p] ? " hit" : "") + (lab === p ? " pop" : "") + '" data-p="' + p + '" style="' + bar.ms[i] + '"></span>'; }).join("")
-    + '<span class="ock-up' + (up && m.h >= up.fu ? " hit" : "") + '" style="' + bar.up + '" title="' + (up ? "Where " + ockE(up.who) + " usual pace would finish" : "") + '"></span><span class="ock-qt' + (lab === 1 ? " pop" : "") + '" style="' + bar.qt + '" title="Quoted"></span><span class="ock-here' + (sim && bt.z !== "in" ? " out" : "") + '" style="' + bar.here + '"></span></div>';
+    + '<span class="ock-up' + (up && m.h >= up.fu ? " hit" : "") + '" style="' + bar.up + '" title="' + (up ? "Where " + ockE(up.who) + " usual pace would finish" : "") + '"></span><span class="ock-qt' + (lab === 1 ? " pop" : "") + '" style="' + bar.qt + '" title="Quoted"></span><span class="ock-here' + (sim && bt.z !== "in" ? " out" : "") + '" style="' + bar.here + '"></span>'
+    + '<span class="ock-pins" data-k="' + ockE(ockPinsKey(pins)) + '">' + ockPinsHtml(pins) + '</span>' + (can ? '<span class="ock-gst" aria-hidden="true"></span>' : "") + ockNaddHtml(st) + "</div>";
   h += '<div class="ock-fa"><span class="ock-f" data-f="pace">' + ockFact("pace", "clock", ockPace(m)) + '</span><span class="ock-f" data-f="up">' + ockFact("up", "gauge", ut.t) + '</span><span class="ock-f" data-f="band">' + ockFact("band", "similar", bt.t) + '</span><span class="ock-f" data-f="lunch">' + ockFact("lunch", "moon", ockLunchTxt(m, mineRun)) + "</span></div>";
   h += '<div class="ock-x"><span class="ock-dn">' + ockDoneHtml(m, mode, st) + '</span><span class="ock-reo">' + ockReoHtml(x.op, mode, can, m.now) + '</span><span class="ock-whos" data-k="' + ockE(ockWhoKey(m)) + '">' + ockWhoHtml(m, st) + '</span><span class="ock-pts">' + ockPartsHtml(x.op, st, m.now) + '</span><span class="ock-ovs">' + ockOvHtml(m, st) + '</span><span class="ock-mls">' + ockMlHtml(m, st) + '</span><span class="ock-bk">' + ockBackHtml(m) + '</span><span class="ock-ng">' + ockNudgeHtml(ockNudgeInfo(m, can, st), st, m.now) + "</span></div>";
   h += '<div class="ock-laps">' + ockLapsHtml(m) + "</div>";
@@ -331,7 +374,11 @@ function ockTick(card){
   var sg = card.querySelector(".ock-segs");
   if(sg){ var L = ockSegs(m, sc);
     if(sg.children.length !== L.length) sg.innerHTML = ockSegHtml(L);
-    else L.forEach(function(x, i){ var e = sg.children[i]; e.style.cssText = x.css; e.classList.toggle("live", !!x.live); e.classList.toggle("z", !!x.z); if(e.getAttribute("title") !== x.t) e.setAttribute("title", x.t); }); }
+    else L.forEach(function(x, i){ var e = sg.children[i]; e.style.cssText = x.css; e.classList.toggle("live", !!x.live); e.classList.toggle("z", !!x.z); if(e.getAttribute("title") !== x.t) e.setAttribute("title", x.t); if((e.getAttribute("data-w") || "") !== x.ini){ if(x.ini) e.setAttribute("data-w", x.ini); else e.removeAttribute("data-w"); } }); }
+  var pw = card.querySelector(".ock-pins");
+  if(pw){ var PN = ockPins(m, sc), pk = ockPinsKey(PN);
+    if(pw.getAttribute("data-k") !== pk){ pw.setAttribute("data-k", pk); pw.innerHTML = ockPinsHtml(PN); }
+    else PN.forEach(function(x, i){ var e = pw.children[i], v = x.left.slice(5); if(e && e.style.left !== v) e.style.left = v; }); }
   var bar = ockBar(m, sc, sim, up);
   ["ov", "gh", "qt", "band", "bu", "here", "up"].forEach(function(k){ var e = card.querySelector(".ock-" + k); if(e) e.style.cssText = bar[k]; });
   var bt = ockBandTxt(m, sim), ut = ockUpTxt(m, up);

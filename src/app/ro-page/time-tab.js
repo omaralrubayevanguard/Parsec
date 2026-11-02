@@ -165,7 +165,7 @@ function ropPunch(job, p, box) {
       if (e.key === 'Escape') { ROPT.note = null; render(); return; }
       if (e.key !== 'Enter') return; e.preventDefault();
       var txt = autoPunct(String(ni.value || '').trim()); if (!txt) { ROPT.note = null; render(); return; }
-      pushUndo('punch note'); var line = txt; p.notes = String(p.notes || '').trim() ? String(p.notes).replace(/\s+$/, '') + '\n' + line : line;
+      pushUndo('punch note'); var line = txt; p.notes = String(p.notes || '').trim() ? String(p.notes).replace(/\s+$/, '') + '\n' + line : line; ockNoteTime(p, line);
       ROPT.note = null; save(true); render(); ropUndo('Note added to the punch.'); });
     ni.addEventListener('blur', function () { setTimeout(function () { if (ROPT.note === p.id && !String(ni.value || '').trim()) { ROPT.note = null; render(); } }, 150); });
     blk.appendChild(el('div', { class: 'rop-tn is-add' }, [el('small', { text: live ? 'now' : ropClk(en) }), ni]));
@@ -289,7 +289,7 @@ function ropTimeline(job, pane) {
     var txt = autoPunct(String(ta.value || '').replace(/\s*\n\s*/g, ' ').trim()); if (!txt) return;
     pushUndo('note'); delete OFF_DRAFTS[job.id];
     var p2 = ropRun(job);
-    if (p2) { var line = txt; p2.notes = String(p2.notes || '').trim() ? String(p2.notes).replace(/\s+$/, '') + '\n' + line : line; }
+    if (p2) { var line = txt; p2.notes = String(p2.notes || '').trim() ? String(p2.notes).replace(/\s+$/, '') + '\n' + line : line; ockNoteTime(p2, line); }
     else job.offNotes = (Array.isArray(job.offNotes) ? job.offNotes : []).concat([{ id: 'on' + Date.now().toString(36), at: new Date().toISOString(), text: txt, by: punchByName() || ropMe() }]);
     save(true); render(); ropUndo(p2 ? 'Note saved in the running punch' : 'Note saved on Op ' + ropN(job));
     requestAnimationFrame(function () { var t2 = R.querySelector('.rop-ta'); if (t2) t2.focus(); });

@@ -1,10 +1,10 @@
 /* Parsec · ro-page · clock-card-actions.js
    What you do on the clock card: hold to stop with a reason, lap / split, fix the start, notes, reopen; ockAuto for lunch and the end of the day (reminders only since Parsec 15).
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   ockTgt ockOf ockHint ockHoldEnd ockRunP ockStopNow ockLap ockFixSave ockNoteSave ockRedraw ockReopen ockSetReason … (12 functions, 2 constants)
+   declares   ockTgt ockOf ockHint ockHoldEnd ockRunP ockStopNow ockLap ockFixSave ockNoteSave ockBarModel ockBarHit ockNaddOpen … (16 functions, 3 constants)
    state      punches
    uses       clock/ data/ pages/ pages/warranty/ ro/ shell/ state/
-   at load    on document pointerdown · on document pointerup · on document pointercancel · on document pointermove · on document contextmenu · on document input · on document click · on document keydown
+   at load    on document pointerdown · on document pointerup · on document pointercancel · 2× on document pointermove · on document contextmenu · on document input · on document click · on document keydown
 */
 /* ---------- what you do on the card ---------- */
 var OCK_H = null, OCK_SKIP = false;   /* OCK_SKIP: the click that ends a press on Stop does nothing (the hold did it) */
@@ -51,6 +51,34 @@ function ockNoteSave(c){
   ockCommit("note", function(){ ockAddNote(p, v); });
   ockToast("Note saved to this punch · " + ockClk(Date.now()) + ".");
 }
+/* Parsec 17.1: a note added on the time bar, at the moment picked there */
+function ockBarModel(card){
+  var op = null; try{ op = getOp(card.getAttribute("data-ro"), card.getAttribute("data-op")); }catch(e){} if(!op) return null;
+  var key = card.getAttribute("data-ro") + "|" + card.getAttribute("data-op"), st = ockState(key), now = Date.now(), C = card.__ockBm;
+  if(C && now - C.t < 1000) return C;
+  var m = ockModel(op, card.getAttribute("data-hr"), st.fix ? st.fix.d : 0);
+  return (card.__ockBm = { t: now, m: m, sc: ockScale(m, ockSim(op)) });
+}
+function ockBarHit(card, cx){
+  var bar = card.querySelector(".ock-bar"), B = ockBarModel(card); if(!bar || !B) return null;
+  var r = bar.getBoundingClientRect(); if(!r.width) return null;
+  return ockBarAt(B.m, B.sc, (cx - r.left) / r.width);
+}
+function ockNaddOpen(c, cx){
+  var x = ockBarHit(c.el, cx), st = ockState(c.key);
+  if(!x){ ockToast("Notes go on the time worked — click a coloured piece of the bar."); return; }
+  st.nadd = { pid: x.p.id, at: x.at, pct: x.pct, v: st.nadd && st.nadd.pid === x.p.id ? st.nadd.v || "" : "" };
+  ockRedraw();
+  var f = ockFindCard(c.key), i = f && f.querySelector("[data-ock-na]"); if(i) try{ i.focus({ preventScroll: true }); }catch(er){}
+}
+function ockNaddSave(c){
+  var st = ockState(c.key), x = st.nadd; if(!x) return;
+  var i = c.el.querySelector("[data-ock-na]"), v = i ? String(i.value || "").trim() : ""; if(!v){ ockToast("Type a few words first."); return; }
+  var p = (STATE.punches || []).filter(function(q){ return q.id === x.pid; })[0]; st.nadd = null;
+  if(!p){ ockRedraw(); return; }
+  ockCommit("note", function(){ ockAddNote(p, v, x.at); });
+  ockToast("Note saved at " + ockClk(x.at) + ".");
+}
 function ockRedraw(){ try{ if(typeof PG !== "undefined" && PG.keepScroll) PG.keepScroll(render); else render(); }catch(e){} try{ if(typeof JC !== "undefined" && JC && JC.rerender) JC.rerender(); }catch(e){} }
 document.addEventListener("pointerdown", function(e){
   if(e.button) return;
@@ -72,9 +100,21 @@ document.addEventListener("pointermove", function(e){
   var r = OCK_H.go.getBoundingClientRect(); if(!r.width) return;
   if(e.clientX < r.left - 14 || e.clientX > r.right + 14 || e.clientY < r.top - 14 || e.clientY > r.bottom + 14) ockHoldEnd(true);
 }, true);
+var OCK_GST = null;
+document.addEventListener("pointermove", function(e){
+  if(e.pointerType === "touch") return;
+  var t = ockTgt(e), bar = t && t.closest && t.closest('.ock-bar[data-ock="bar"]'), g = null;
+  if(bar && !t.closest(".ock-pin, .ock-nadd")){
+    var card = bar.closest(".ock[data-op]"), x = card && ockBarHit(card, e.clientX); g = bar.querySelector(".ock-gst");
+    if(g && x){ g.style.left = x.pct.toFixed(2) + "%"; var lb = "+ Note at " + ockClk(x.at); if(g.getAttribute("data-t") !== lb) g.setAttribute("data-t", lb); g.classList.add("on"); } else if(g){ g.classList.remove("on"); g = null; }
+  }
+  if(OCK_GST && OCK_GST !== g) OCK_GST.classList.remove("on");
+  OCK_GST = g;
+}, true);
 document.addEventListener("contextmenu", function(e){ var t = ockTgt(e); if(t && t.closest && t.closest('.ock [data-ock="go"]')) e.preventDefault(); }, true);
 document.addEventListener("input", function(e){
-  var t = ockTgt(e); if(!t || !t.matches || !t.matches("[data-ock-fr]")) return;
+  var t = ockTgt(e); if(t && t.matches && t.matches("[data-ock-na]")){ var c9 = ockOf(t), s9 = c9 && ockState(c9.key); if(s9 && s9.nadd) s9.nadd.v = t.value; return; }   /* the bar's note keeps its words through a redraw */
+  if(!t || !t.matches || !t.matches("[data-ock-fr]")) return;
   var c = ockOf(t); if(!c) return; e.stopPropagation();
   var st = ockState(c.key); if(!st.fix) st.fix = { d: 0 }; st.fix.d = +t.value || 0;
   ockTick(c.el);
@@ -87,6 +127,7 @@ document.addEventListener("click", function(e){
   if(fxw && !t.closest("button,input")){ e.preventDefault(); e.stopPropagation(); ockFocusClose(); return; }
   var c = ockOf(t); if(!c) return;
   var a = t.closest("[data-ock],[data-ock-r]"); if(!a || !c.el.contains(a)) return;
+  if(a.getAttribute("data-ock") === "bar" && t.closest(".ock-nadd")){ e.stopPropagation(); return; }   /* inside the note pop-over */
   if(t.closest("input")) { e.stopPropagation(); return; }
   e.preventDefault(); e.stopPropagation();
   if(c.cb.pre) try{ c.cb.pre(); }catch(er){}                                   /* the page's own pop-ups close, as a click elsewhere would */
@@ -117,6 +158,10 @@ document.addEventListener("click", function(e){
   if(k === "nopen"){ st.noteOpen = true; ockRedraw(); var f1 = ockFindCard(c.key), ii = f1 && f1.querySelector("[data-ock-in]"); if(ii) try{ ii.focus({ preventScroll: true }); }catch(er){} return; }
   if(k === "ns"){ ockNoteSave(c); return; }
   if(k === "nx"){ st.noteOpen = false; ockRedraw(); return; }
+  if(k === "bar"){ ockNaddOpen(c, e.clientX); return; }
+  if(k === "pin"){ return; }                                                     /* pointing reads it; a click keeps it open (focus) */
+  if(k === "nas"){ ockNaddSave(c); return; }
+  if(k === "nax"){ st.nadd = null; ockRedraw(); return; }
   if(k === "nxx"){ st.nextGone = true; ockRedraw(); return; }
   if(k === "nxs"){ st.nextGone = true; var nr = a.getAttribute("data-nro"), no = a.getAttribute("data-nop"); if(c.cb.start) c.cb.start(nr, no); return; }
 }, true);
@@ -126,6 +171,11 @@ document.addEventListener("keydown", function(e){
   if(t.matches && t.matches("[data-ock-in]")){
     var c0 = ockOf(t); if(!c0) return; e.stopPropagation();
     if(e.key === "Enter"){ e.preventDefault(); ockNoteSave(c0); } else if(e.key === "Escape"){ e.preventDefault(); ockState(c0.key).noteOpen = false; ockRedraw(); }
+    return;
+  }
+  if(t.matches && t.matches("[data-ock-na]")){
+    var c2 = ockOf(t); if(!c2) return; e.stopPropagation();
+    if(e.key === "Enter"){ e.preventDefault(); ockNaddSave(c2); } else if(e.key === "Escape"){ e.preventDefault(); ockState(c2.key).nadd = null; ockRedraw(); }
     return;
   }
   if(t.matches && t.matches("[data-ock-fr]")){ var c1 = ockOf(t); if(!c1) return; e.stopPropagation(); if(e.key === "Enter"){ e.preventDefault(); ockFixSave(c1); } else if(e.key === "Escape"){ e.preventDefault(); ockState(c1.key).fix = null; ockRedraw(); } return; }

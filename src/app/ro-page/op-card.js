@@ -461,7 +461,7 @@ function jobCard(job, idx) {
       pushUndo('punch note');
       noteDraftSet(p.id, '');
       var line = txt;
-      p.notes = String(p.notes || '').trim() ? String(p.notes).replace(/\s+$/, '') + '\n' + line : line;
+      p.notes = String(p.notes || '').trim() ? String(p.notes).replace(/\s+$/, '') + '\n' + line : line; ockNoteTime(p, line);
       noteF.value = '';
       save(true); render();
     }

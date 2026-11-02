@@ -1,0 +1,56 @@
+/* Parsec · styles/ro-page · 11-op-row.css
+   The operation row and its card's facts (17.1), and the clock card's time bar notes — the same rules as styles/app/58-time-bar-notes.css, for the RO page's shadow root. */
+/* ---- 17.1 · the operation row: the number, the complaint and the status (ro-page/operation-header.js) ---- */
+/* the job type is the row's coloured edge; a click on it changes it */
+.rop-jte { all: unset; box-sizing: border-box; position: absolute; z-index: 1; left: 0; top: 7px; bottom: 7px; width: 9px; cursor: pointer; }
+.rop-jte::before { content: ""; position: absolute; left: 2px; top: 0; bottom: 0; width: 3px; border-radius: 2px; background: var(--jc); transition: width .15s ease, left .15s ease; }
+.rop-jte:hover::before, .rop-jte[aria-expanded="true"]::before { left: 1px; width: 5px; }
+.rop-jte:focus-visible { outline: none; }
+.rop-jte:focus-visible::before { box-shadow: 0 0 0 2px var(--panel), 0 0 0 4px var(--accent); }
+/* a blocker beside the status it explains */
+.rop-octl > .rop-stm { flex: 0 1 auto; min-width: 0; max-width: 220px; margin-right: 8px; overflow: hidden; text-overflow: ellipsis; font-size: 12.5px; color: var(--ink-3); }
+@container (max-width: 620px) { .rop-orow > .rop-octl > .rop-stm { order: 3; margin-left: 22px; max-width: none; } }
+:host([data-device=phone]) .rop-orow > .rop-octl > .rop-stm { order: 3; margin-left: 0; max-width: none; }
+/* the facts at the top of the open card */
+.rop-facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, max-content)); gap: 6px 26px; margin-bottom: calc(var(--space-2) - var(--space-5)); }
+.rop-fact { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.rop-fact > small { font: 500 11px/14px var(--font-sans); letter-spacing: .02em; color: var(--ink-3); }
+.rop-fact > .rop-fv { justify-self: start; align-self: flex-start; font: 500 13px/20px var(--font-sans); color: var(--ink); white-space: nowrap; }
+.rop-fact > .rop-fv.mono { font-family: var(--font-mono); font-size: 12.5px; }
+.rop-fact > .rop-chip, .rop-fact > .libFg, .rop-fact > .libSteps { height: 22px; line-height: 22px; }
+.rop-jtv { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 6px; margin: -2px -6px; border-radius: 6px; cursor: pointer; transition: background-color .12s ease-out; }
+.rop-jtv:hover, .rop-jtv[aria-expanded="true"] { background: var(--fill); }
+.rop-jtv:focus-visible { box-shadow: var(--shadow-focus); }
+.rop-jtv .rop-dot { margin: 0; background: var(--jc); }
+.rop-jtv .px-ico { width: 10px; height: 10px; color: var(--ink-3); }
+/* Add ▾ on the codes line */
+.fltAdd.fcAdd { display: inline-flex; align-items: center; gap: 5px; }
+.fltAdd.fcAdd .px-ico { width: 10px; height: 10px; }
+.px-pop.fcAddPop { width: 220px; }
+/* ---- the time bar: who worked each piece, and the notes pinned where they happened (17.1, ro-page/clock-card-draw.js) ---- */
+.ock-bar.has-w{margin-top:24px;}
+.ock-segs i[data-w]::before{content:attr(data-w);position:absolute;left:1px;bottom:calc(100% + 5px);font:600 9.5px/1 var(--o-sans);letter-spacing:.04em;color:var(--o-ink3);white-space:nowrap;pointer-events:none;}
+.ock-bar.can{cursor:copy;}
+.ock-bar.can::before{content:"";position:absolute;left:0;right:0;top:-9px;bottom:-9px;}
+.ock-pins{position:absolute;inset:0;pointer-events:none;}
+.ock-pin{all:unset;box-sizing:border-box;position:absolute;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--o-raised);box-shadow:0 0 0 1.5px var(--o-acc),0 1px 3px rgba(0,0,0,.18);cursor:default;pointer-events:auto;z-index:3;animation:ock-pin-in .3s cubic-bezier(.2,.8,.2,1) backwards;}
+.ock-pin::after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--o-acc);transition:inset .15s ease;}
+.ock-pin:hover,.ock-pin:focus{z-index:5;}
+.ock-pin:hover::after,.ock-pin:focus::after{inset:2px;}
+.ock-pin:focus-visible{box-shadow:0 0 0 1.5px var(--o-acc),0 0 0 4px color-mix(in srgb,var(--o-acc) 30%,transparent);}
+@keyframes ock-pin-in{from{transform:scale(0);}}
+.ock-pn{position:absolute;left:50%;bottom:calc(100% + 10px);width:max-content;max-width:min(280px,70vw);padding:7px 10px 8px;border-radius:10px;background:var(--o-raised);box-shadow:0 0 0 1px var(--o-hair),0 12px 30px -8px rgba(0,0,0,.3);font:400 12.5px/17px var(--o-sans);color:var(--o-ink);white-space:normal;text-align:left;opacity:0;visibility:hidden;transform:translate(-50%,4px);transition:opacity .14s ease,transform .14s ease,visibility 0s linear .14s;pointer-events:none;}
+.ock-pin.l .ock-pn{left:-6px;transform:translate(0,4px);}
+.ock-pin.r .ock-pn{left:auto;right:-6px;transform:translate(0,4px);}
+.ock-pn b{display:block;margin-bottom:2px;font-size:11.5px;font-weight:600;color:var(--o-ink3);}
+.ock-pin:hover .ock-pn,.ock-pin:focus .ock-pn{opacity:1;visibility:visible;transform:translate(-50%,0);transition:opacity .14s ease,transform .14s ease;}
+.ock-pin.l:hover .ock-pn,.ock-pin.l:focus .ock-pn,.ock-pin.r:hover .ock-pn,.ock-pin.r:focus .ock-pn{transform:none;}
+.ock-gst{position:absolute;top:-6px;bottom:-6px;width:2px;margin-left:-1px;border-radius:1px;background:var(--o-ink);opacity:0;pointer-events:none;transition:opacity .12s ease;z-index:4;}
+.ock-gst::after{content:attr(data-t);position:absolute;left:50%;bottom:calc(100% + 4px);transform:translateX(-50%);padding:3px 8px;border-radius:6px;background:var(--o-ink);color:var(--o-raised);font:500 11px/15px var(--o-sans);white-space:nowrap;}
+.ock-gst.on{opacity:1;}
+.ock-npt{position:absolute;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--o-raised);box-shadow:0 0 0 1.5px var(--o-acc);z-index:4;pointer-events:none;animation:ock-pin-in .25s cubic-bezier(.2,.8,.2,1);}
+.ock-nadd{position:absolute;z-index:6;top:calc(100% + 12px);left:clamp(0px,calc(var(--x) - 170px),calc(100% - min(340px,100%)));width:min(340px,100%);padding:10px 12px;border-radius:12px;background:var(--o-raised);box-shadow:0 0 0 1px var(--o-hair),0 14px 36px -10px rgba(0,0,0,.32);font:400 12.5px/1.3 var(--o-sans);color:var(--o-ink);cursor:default;animation:ock-drop .2s ease;}
+.ock-nadd > b{display:block;margin-bottom:7px;font-weight:600;color:var(--o-ink2);}
+@media (prefers-reduced-motion:reduce){.ock-pin,.ock-npt,.ock-nadd{animation:none;}.ock-pn,.ock-gst{transition:none;}}
+/* the codes line lines up with the facts above it */
+.px-op > .fltBar { padding: 0; }

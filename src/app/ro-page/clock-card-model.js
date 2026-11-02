@@ -1,7 +1,7 @@
 /* Parsec · ro-page · clock-card-model.js
-   The operation clock card (Parsec 12.4 / 12.5), the model: the numbers each page counts (ockModel), the shop day, similar jobs and the tech's usual pace, parts on the job, the running punch's notes and splits.
+   The operation clock card (Parsec 12.4 / 12.5), the model: the numbers each page counts (ockModel), the shop day, similar jobs and the tech's usual pace, parts on the job, the punches' notes (and each note's time, p.noteAt) and splits.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   ockCalm ockE ockHms ockMs ockHm ockCd ockClk ockIni ockFirst ockIso ockMe ockSame … (36 functions, 21 constants)
+   declares   ockCalm ockE ockHms ockMs ockHm ockCd ockClk ockIni ockFirst ockIso ockMe ockSame … (38 functions, 21 constants)
    state      punches ros
    uses       access/ automations/ clock/ data/ kit/ pages/ pages/fixes/ pages/foreman/ pages/warranty/ ro/ shell/ state/
    at load    builds OCK_VIEW (a closure)
@@ -138,14 +138,27 @@ var OCK_SYS_NOTE = /^(Split \d+ · |Start moved back )/;
 function ockNotes(p){
   var E = []; try{ E = noteEntries(p.notes); }catch(e){}
   var st = +new Date(p.start);
-  return E.map(function(e){ var mm = /^(\d+):(\d{2})$/.exec(e.ran || ""); return { at: mm ? st + (+mm[1] * 60 + +mm[2]) * 60000 : st, text: String(e.text || "").trim() }; }).filter(function(x){ return x.text; });
+  return E.map(function(e){ var mm = /^(\d+):(\d{2})$/.exec(e.ran || ""), tx = String(e.text || "").trim(), sv = mm ? null : ockNoteAt(p, tx);
+    return { at: mm ? st + (+mm[1] * 60 + +mm[2]) * 60000 : sv != null ? sv : st, text: tx, known: !!mm || sv != null }; }).filter(function(x){ return x.text; });
 }
 function ockLastNote(p){ var L = ockNotes(p).filter(function(x){ return !OCK_SYS_NOTE.test(x.text); }); return L[L.length - 1] || null; }
+/* ---------- a note's time (Parsec 17.1): kept beside the note, so its pin sits where it happened on the time bar ----------
+   p.noteAt = { "<the note, as saved>": ISO time }. The note's words stay exactly as typed (16.1); the time only places the pin.
+   Older notes have none: a stamped one ([10:05 · 0:26]) goes by its stamp, the rest sit at the end of their punch. */
+function ockNoteAt(p, text){ var m = p && p.noteAt, v = m && typeof m === "object" ? m[String(text || "").trim()] : null, t = v ? +new Date(v) : NaN; return isNaN(t) ? null : t; }
+function ockNoteTime(p, text, at){
+  var k = String(text || "").trim(); if(!p || !k) return;
+  var a = +new Date(p.start), b = p.stop ? +new Date(p.stop) : Date.now(), t = at == null ? Date.now() : +at;
+  if(isNaN(t)) return; if(!isNaN(a)) t = Math.max(a, t); if(!isNaN(b)) t = Math.min(b, t);
+  if(!p.noteAt || typeof p.noteAt !== "object") p.noteAt = {};
+  p.noteAt[k] = new Date(t).toISOString();
+}
 function ockSplits(p){ return Array.isArray(p.splits) ? p.splits.map(function(x){ return +new Date(x); }).filter(function(x){ return !isNaN(x); }) : []; }
-function ockAddNote(p, text){
+function ockAddNote(p, text, at){
   var t = String(text || "").trim(); if(!t) return;
   try{ t = autoPunct(t); }catch(e){}
   p.notes = (String(p.notes || "").trim() ? String(p.notes).replace(/\s+$/, "") + "\n" : "") + t;
+  ockNoteTime(p, t, at);   /* now, or the moment picked on the time bar */
 }
 /* small edits the card makes itself: one undo step, saved, both pages redrawn */
 function ockCommit(label, fn){

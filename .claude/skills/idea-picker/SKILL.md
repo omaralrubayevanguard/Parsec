@@ -142,6 +142,7 @@ These are what make the animations read as the real thing rather than a sketch.
 - **Nothing moves before a pick**, and a replay starts from the first frame. Don't use CSS animations that loop on their own.
 - **Left-align the drawn content** so pixel positions hold at any card width, and keep each visual under ~400 px wide so it fits one column on a phone without scaling.
 - **Labels don't overlap.** Watch pointer vs hint, tip vs button, badge vs title. Check both the first frame and the last.
+- **The result stays readable.** The pointer fades once the result shows (the template does it). A caption under a tall visual sits in the flow (`display:block`, room for the dots below), not absolutely at the bottom, so it never lands on the drawing. When a change happens inside something that opens (a card, a menu), draw it shut and let the click open it.
 - **Use the tokens** (`var(--ink)`, `var(--acc)`, …), never hard-coded colours, so all four themes look right.
 - **Reduced motion** shows the end state, still; the template already turns the `v-` transitions off under `prefers-reduced-motion`.
 
@@ -286,7 +287,8 @@ button,input,textarea,select{font:inherit;color:inherit}
 /* ---------- the drawn visuals: prefix v- · animate with [data-step], .ip-s-<step> and [data-opt] on .ip-vis ---------- */
 .v-btn{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:7px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--border);font:500 12px/1 var(--sans);white-space:nowrap;transition:background .2s,color .2s}
 .v-tip{position:absolute;left:12px;top:48px;padding:6px 9px;border-radius:7px;background:var(--primary);color:var(--onprimary);font-size:12px;font-weight:500;white-space:nowrap;opacity:0;transform:translateY(-4px);transition:opacity .18s,transform .18s}
-.v-cur{position:absolute;left:250px;top:40px;width:14px;height:14px;z-index:6;pointer-events:none;transition:left .6s cubic-bezier(.2,.75,.25,1),top .6s cubic-bezier(.2,.75,.25,1)}
+.v-cur{position:absolute;left:250px;top:40px;width:14px;height:14px;z-index:6;pointer-events:none;transition:left .6s cubic-bezier(.2,.75,.25,1),top .6s cubic-bezier(.2,.75,.25,1),opacity .25s .35s}
+.ip-s-done .v-cur{opacity:0}                                                            /* the pointer steps aside once the result shows, so it never covers it */
 .v-cur::before{content:"";position:absolute;inset:0;clip-path:polygon(0 0,0 100%,30% 72%,52% 100%,64% 94%,44% 66%,80% 66%);background:var(--ink)}
 .v-cur::after{content:"";position:absolute;left:-8px;top:-8px;width:30px;height:30px;border-radius:50%;background:var(--acc);opacity:0;transform:scale(.3)}
 @keyframes v-ripple{0%{opacity:.35;transform:scale(.3)}100%{opacity:0;transform:scale(1.4)}}

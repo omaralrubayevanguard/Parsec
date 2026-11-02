@@ -4,7 +4,7 @@
    ── facts (generated; run tools/headers.py to refresh) ──
    declares   pushToast creditBurnt stampFromIso migrateRO v148DecStart doStartPunch doStartPunch0 doStopPunch markStatusFlip addRO addOperation addPart … (24 functions, 1 constant)
    state      lastBackupAt punches ros
-   uses       access/ automations/ clock/ data/ import/ kit/ pages/inventory/ pages/warranty/ shell/ state/
+   uses       access/ automations/ clock/ data/ import/ kit/ pages/inventory/ pages/warranty/ ro-page/ shell/ state/
 */
 /* ============================== ACTIONS ============================== */
 function pushToast(msg, undoable){
@@ -93,7 +93,7 @@ function doStopPunch(reason, notes){
   pushUndo("stop punch");
   commitNoteDrafts();
   rp.stop = nowIso(); rp.stopReason = reason;
-  if(notes && String(notes).trim()) rp.notes = (String(rp.notes || "").trim() ? String(rp.notes).replace(/\s+$/, "") + "\n" : "") + autoPunct(String(notes).trim());
+  if(notes && String(notes).trim()){ var nl = autoPunct(String(notes).trim()); rp.notes = (String(rp.notes || "").trim() ? String(rp.notes).replace(/\s+$/, "") + "\n" : "") + nl; ockNoteTime(rp, nl); }
   creditBurnt(rp);
   UI.modal = null;
   scheduleSave(true);

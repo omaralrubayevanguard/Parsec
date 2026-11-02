@@ -131,7 +131,7 @@
     if(t.dataset.in === 'ttime'){ if(ev.key === 'Enter'){ ev.preventDefault(); tcSaveTime(t.dataset.p, t.dataset.f, t.value); return true; } if(ev.key === 'Escape'){ ev.preventDefault(); TU.edT = null; PG.keepScroll(render); return true; } return false; }
     if(t.dataset.in === 'tpnote'){ if(ev.key === 'Escape'){ ev.preventDefault(); TU.pnote = null; PG.keepScroll(render); return true; }
       if(ev.key === 'Enter' && t.value.trim()){ ev.preventDefault(); const p = tcP(t.dataset.p); TU.pnote = null; if(!p){ PG.keepScroll(render); return true; } const txt = autoPunct(t.value.trim());
-        PG.act('punch note', 'Note added to the punch.', () => { p.notes = (String(p.notes || '').replace(/\s+$/, '') ? String(p.notes).replace(/\s+$/, '') + '\n' : '') + txt; }); return true; } return false; }
+        PG.act('punch note', 'Note added to the punch.', () => { p.notes = (String(p.notes || '').replace(/\s+$/, '') ? String(p.notes).replace(/\s+$/, '') + '\n' : '') + txt; ockNoteTime(p, txt); }); return true; } return false; }
     if(t.dataset.in === 'tnp'){ if(ev.key === 'Enter'){ ev.preventDefault(); if(TU.newP) TU.newP[t.dataset.k] = t.value; HT.tnpok(); return true; } if(ev.key === 'Escape'){ ev.preventDefault(); TU.newP = null; PG.keepScroll(render); return true; } return false; }
     if(t.dataset.in === 'tnote' && ev.key === 'Enter' && t.value.trim()){ ev.preventDefault(); const id = t.dataset.id, o = opBy(id); if(!o) return true; pushUndo('note'); addNote(o, t.value); TU.dr[id] = ''; scheduleSave(true); PG.keepScroll(render); const i = document.querySelector('[data-pg="tech"] [data-in="tnote"][data-id="' + id + '"]'); if(i){ i.value = ''; i.focus(); } return true; }
     if(t.dataset.in === 'tact' && ev.key === 'Enter' && t.value.trim()){ ev.preventDefault(); const o = opBy(U.sel); if(!o) return true; const txt = autoPunct(t.value.trim());
@@ -178,7 +178,7 @@
   function addNote(o, text){
     text = autoPunct(String(text || '').trim()); if(!text || !o) return false;
     const ps = opPunches(o.id), p = ps.filter(x => !x.stop)[0] || ps[ps.length - 1];
-    if(p){ const line = text; p.notes = String(p.notes || '').trim() ? String(p.notes).replace(/\s+$/, '') + '\n' + line : line; }
+    if(p){ const line = text; p.notes = String(p.notes || '').trim() ? String(p.notes).replace(/\s+$/, '') + '\n' + line : line; ockNoteTime(p, line); }
     else { o.op.log = o.op.log || []; o.op.log.push({ id: uid('lg'), at: nowIso(), kind: 'cause', text: text }); }
     return true;
   }

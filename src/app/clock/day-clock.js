@@ -3,7 +3,7 @@
    ── facts (generated; run tools/headers.py to refresh) ──
    declares   shiftList lunchOffClock shiftsForDate openShift shiftMs lastShiftOut shiftClockIn ensureOnClock shiftClockOut0 dayTimeIso shiftSetTime shiftSuggest … (14 functions)
    state      punches shifts
-   uses       automations/ data/ kit/ ro/ shell/ state/
+   uses       automations/ data/ kit/ ro/ ro-page/ shell/ state/
 */
 /* ============================== DAY CLOCK (shifts) ==============================
    Clock in when the day starts, out when it ends. A day may hold more than one shift
@@ -61,7 +61,7 @@ function shiftClockOut0(reason, mins, notes, stand){
   var rp = runningPunch(), stopped = null;
   if(rp){
     rp.stop = nowIso(); rp.stopReason = (stand && STOP_REASONS_EXPLICIT.indexOf(stand) > -1) ? stand : reason;
-    if(notes && String(notes).trim()) rp.notes = (String(rp.notes || "").trim() ? String(rp.notes).replace(/\s+$/, "") + "\n" : "") + String(notes).trim();
+    if(notes && String(notes).trim()){ rp.notes = (String(rp.notes || "").trim() ? String(rp.notes).replace(/\s+$/, "") + "\n" : "") + String(notes).trim(); ockNoteTime(rp, notes); }
     creditBurnt(rp); stopped = rp;
   }
   s.out = nowIso(); s.outReason = reason;

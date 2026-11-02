@@ -1,8 +1,8 @@
 /* Parsec · ro-page · fault-codes.js
-   Fault codes on each operation (SPN / FMI, P-codes): reading what was typed, what a code means, the chips on the tile and the card, and the note a chip starts.
+   Fault codes on each operation (SPN / FMI, P-codes): reading what was typed, what a code means, the chips on the tile and the card, and the note a chip starts; Add ▾ for a code, a document or the Library (17.1).
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   parseFault fcSame fcLabel fcShort faultMeaning addFault openFaultNotes faultMini faultBar FC_ADD (9 functions, 1 constant)
-   uses       access/ data/ library/ pages/fixes/ pages/warranty/ shell/ state/
+   declares   parseFault fcSame fcLabel fcShort faultMeaning addFault openFaultNotes faultMini fcAddBtn faultBar FC_ADD (10 functions, 1 constant)
+   uses       access/ data/ kit/ library/ pages/fixes/ pages/library/ pages/warranty/ shell/ state/
 */
 /* ============ fault-code chips (SPN / FMI) on each operation — N3 + N6 ============ */
 var FC_ADD = null;      /* id of the operation whose "add a code" panel is open */
@@ -50,7 +50,20 @@ function faultMini(job) {
   return box;
 }
 /* N6: chips on the open card, and a "+ code" that takes 111/1 and shows what it means */
-function faultBar(job) {
+/* Add ▾ on the codes line (Parsec 17.1): a fault code, a document, or the Library narrowed to this operation */
+function fcAddBtn(job) {
+  var b = el('button', { class: 'fltAdd fcAdd' + (FC_ADD === job.id ? ' on' : ''), type: 'button', title: 'Add a fault code or a document', 'aria-haspopup': 'menu', html: '<span>Add</span>' + pxI('chevD', 10) });
+  b.addEventListener('click', function (e) {
+    e.stopPropagation();
+    var items = [pxMenuItem('plus', 'Fault code', { run: function () { FC_ADD = job.id; render(); requestAnimationFrame(function () { var i = R.querySelector('.fltIn'); if (i) i.focus(); }); } }),
+      pxMenuItem('clip', 'Document…', { run: function () { libPickFor(job); } })];
+    if (navAllowed('library')) items.push(pxMenuItem('search', 'Find in the Library', { run: function () { libOpenFor(RO, job); } }));
+    pxPop(b, el('div', { class: 'px-pop rop-pop fcAddPop', role: 'menu' }, items));
+  });
+  return b;
+}
+function faultBar(job, o) {
+  o = o || {};
   var fl = job.faults || [];
   var bar = el('div', { class: 'fltBar' });
   bar.addEventListener('click', function (e) { e.stopPropagation(); });
@@ -64,10 +77,8 @@ function faultBar(job) {
           toast('Code removed', { label: 'UNDO', run: function () { restoreSnapshot(); } }); } })
     ]));
   });
-  row.appendChild(el('button', { class: 'fltAdd' + (FC_ADD === job.id ? ' on' : ''), type: 'button', text: '+ code', title: 'Add a fault code',
-    onClick: function (e) { e.stopPropagation(); FC_ADD = FC_ADD === job.id ? null : job.id; render();
-      if (FC_ADD) requestAnimationFrame(function () { var i = R.querySelector('.fltIn'); if (i) i.focus(); }); } }));
-  libOpChips(job, row);   /* Parsec 17.1: its function group, its documents, + document, the Library */
+  libOpChips(job, row, o);   /* Parsec 17.1: its function group, its documents */
+  row.appendChild(fcAddBtn(job));   /* Parsec 17.1: + code, + document and the Library, behind one Add */
   /* this job's warranty claim, and how often the shop has fixed it before */
   try {
     if (navAllowed('warranty') && wcIsOp(RO, job)) {
