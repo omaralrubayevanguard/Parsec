@@ -60,14 +60,15 @@ async def main():
         await jundo(pg)
         ok(await st(pg, "pb1") == ["Backordered"], "one Undo puts it back")
         # ---- the Vehicle group: Build date, Warranty start, Opened, Closed
-        await pg.evaluate("(()=>{ const U=__tg.UI(); U.ivFold=U.ivFold||{}; U.ivFold.vehicle=false; __tg.render(); })()"); await pg.wait_for_timeout(500)
-        V = await pg.evaluate(J("const g=R.querySelector('.px-pg[data-pg=vehicle]'); return g ? [...g.querySelectorAll('.px-prop')].map(r=>[r.children[0].textContent, r.children[1].textContent, r.classList.contains('is-edit')]) : null"))
+        # 17.1: the RO page's right column is the RO's panel (light DOM beside the RO page); Vehicle starts folded there
+        await pg.evaluate("(()=>{ const h=document.querySelector('.jc-host .rp-host [data-rod-g=vehicle]'); if(h && h.getAttribute('aria-expanded')!=='true') h.click(); })()"); await pg.wait_for_timeout(500)
+        V = await pg.evaluate("(()=>{ const h=document.querySelector('.jc-host .rp-host [data-rod-g=vehicle]'); const L=h ? [...h.parentNode.querySelectorAll('.rod-r')] : null; return L ? L.map(r=>[r.children[0].textContent, r.children[1].textContent, r.classList.contains('ed')]) : null; })()")
         lab = {x[0]: x for x in (V or [])}
         ok(all(k in lab for k in ["Build date", "Warranty start", "Opened", "Closed"]), f"Vehicle shows the four dates ({[x[0] for x in V or []]})")
         ok(lab.get("Build date", [0, ""])[1] == "Mar 14, 2020" and lab.get("Warranty start", [0, ""])[1] == "Add date" and lab.get("Closed", [0, ""])[1] == "Open" and not lab["Closed"][2] and lab["Opened"][2], f"build Mar 14, 2020 · warranty Add date · Closed Open (not editable) · Opened editable ({lab.get('Build date')}, {lab.get('Closed')})")
         # edit Warranty start in place
-        await pg.evaluate(J("const r=[...R.querySelectorAll('.px-pg[data-pg=vehicle] .px-prop')].find(r=>r.children[0].textContent==='Warranty start'); r.click();")); await pg.wait_for_timeout(200)
-        await pg.evaluate(J("const i=R.querySelector('.px-pg[data-pg=vehicle] .px-prop input'); i.value='2020-05-01'; i.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true}));")); await pg.wait_for_timeout(400)
+        await pg.evaluate("document.querySelector('.jc-host .rp-host .rod-r[data-rod-k=warrantyStart]').click()"); await pg.wait_for_timeout(200)
+        await pg.evaluate("(()=>{ const i=document.querySelector('.jc-host .rp-host .rod-r[data-rod-k=warrantyStart] input'); i.value='2020-05-01'; i.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true})); })()"); await pg.wait_for_timeout(400)
         ws = await pg.evaluate(f"__tg.getRO('{rid}').warrantyStart")
         ok(ws in ("05-01-2020", "2020-05-01"), f"Warranty start saved the way the RO keeps it ({ws})")   # Parsec 16: YYYY-MM-DD
         au = await pg.evaluate("(__tg.auditLog()||[]).slice(-3).map(a=>a.text).join(' | ')")
@@ -75,7 +76,8 @@ async def main():
         await pg.screenshot(path=os.path.join(OUT, "a3_vehicle.png"))
         # a closed RO: Closed shows its date and can be changed
         await pg.evaluate(f"(()=>{{ const r=__tg.getRO('{rid}'); r.dateClosed=new Date(2026,9,20,15,0).toISOString(); __tg.render(); try{{ __tg.JC.rerender(); }}catch(e){{}} }})()"); await pg.wait_for_timeout(500)
-        V = await pg.evaluate(J("const g=R.querySelector('.px-pg[data-pg=vehicle]'); return g ? [...g.querySelectorAll('.px-prop')].map(r=>[r.children[0].textContent, r.children[1].textContent, r.classList.contains('is-edit')]) : null"))
+        await pg.evaluate("(()=>{ const h=document.querySelector('.jc-host .rp-host [data-rod-g=vehicle]'); if(h && h.getAttribute('aria-expanded')!=='true') h.click(); })()"); await pg.wait_for_timeout(300)
+        V = await pg.evaluate("(()=>{ const h=document.querySelector('.jc-host .rp-host [data-rod-g=vehicle]'); const L=h ? [...h.parentNode.querySelectorAll('.rod-r')] : null; return L ? L.map(r=>[r.children[0].textContent, r.children[1].textContent, r.classList.contains('ed')]) : null; })()")
         print("   ", await pg.evaluate(f"[__tg.UI().view, __tg.UI().selectedRo, __tg.getRO('{rid}').dateClosed, (typeof __tg.JC)]"), await pg.evaluate(J("return (R.querySelector('.px-ro__rail')||{}).innerText ? 'rail' : 'no rail'")))
         lab = {x[0]: x for x in (V or [])}
         ok(lab.get("Closed", [0, "", False])[1] == "Oct 20, 2026" and lab["Closed"][2], f"a closed RO: Closed Oct 20, 2026, editable ({lab.get('Closed')})")

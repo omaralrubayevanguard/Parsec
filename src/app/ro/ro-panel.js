@@ -4,7 +4,7 @@
    declares   rpWho rpFolds rpFold rpFoldSet rpE rpStageHtml rpFactsHtml rpOpsHtml rpActsHtml rpPanelHtml rpAnyOpen rpMountRo … (12 functions, 5 constants)
    state      punches
    uses       access/ clock/ kit/ pages/ pages/triage/ pages/warranty/ ro-page/ shell/ state/ trucks/
-   at load    2× on document click
+   at load    2× on document click · on document keydown
 */
 /* ============================== one RO side panel (Parsec 17.1) ==============================
    The RO list's side panel (and the Technician's ROs tab) and the RO page's right column (and Technician › My ROs) are
@@ -49,7 +49,8 @@ function rpOpsHtml(ro, cur){
     var bb = 0; try{ bb = opCalc(o).burntHrs || 0; }catch(e){}
     var os = "Hold Tech"; try{ var s0 = opStatus(o); os = (typeof s0 === "string" ? s0 : s0 && s0.status) || os; }catch(e){}
     if(run.some(function(p){ return p.opId === o.id; })) os = "Working"; else if(o.declined) os = "Declined"; else { try{ if(opDoneNow(o)) os = "Complete"; }catch(e){} }
-    return '<button type="button" class="rp-op' + (cur === o.id ? " on" : "") + '" data-rp-op="' + rpE(o.id) + '">' + pgSt("ro", os, { iconOnly: 1, noTip: 1 }) + '<span class="n">' + (i + 1) + '</span><span class="t">' + rpE(o.complaint || "Operation") + '</span><span class="h">' + bb.toFixed(2) + " / " + (+o.quoted || 0).toFixed(2) + " h</span></button>";
+    var qh = (+o.quoted || 0).toFixed(2); try{ qh = qtHtml(ro, o, o.quoted); }catch(e){}   /* the quote changes in place, as it did on the RO list's pane (14.2) */
+    return '<div role="button" tabindex="0" class="rp-op' + (cur === o.id ? " on" : "") + '" data-rp-op="' + rpE(o.id) + '">' + pgSt("ro", os, { iconOnly: 1, noTip: 1 }) + '<span class="n">' + (i + 1) + '</span><span class="t">' + rpE(o.complaint || "Operation") + '</span><span class="h">' + bb.toFixed(2) + " / " + qh + " h</span></div>";
   }).join("");
   var shut = rpFold("ops");
   return '<div class="rp-ops' + (shut ? " shut" : "") + (!shut && RP_ANIM.k === "ops" && Date.now() - RP_ANIM.at < 700 ? " rp-anim" : "") + '"><button type="button" class="rp-gh" data-rp-fold="ops" aria-expanded="' + !shut + '"><i></i><b>Operations</b><small>' + L.length + "</small></button>" + (shut ? "" : '<div class="rp-opl">' + (rows || '<span class="rp-none">No operations yet</span>') + "</div>") + "</div>";
@@ -115,7 +116,8 @@ function rpMountRo(){
   if(!typing && box.__h !== h){ box.innerHTML = h; box.__h = h; }
 }
 document.addEventListener("click", function(e){
-  var t = e.composedPath ? e.composedPath()[0] : e.target; if(!t || !t.closest) return;
+  var t = e.composedPath ? e.composedPath()[0] : e.target; if(t && t.nodeType !== 1) t = t.parentElement; if(!t || !t.closest) return;
+  if(t.closest(".qte, .rif")) return;   /* a quote or a field changes in place (ro/truck-card-words.js) */
   var b = t.closest("[data-rp-all]");
   if(b){ e.preventDefault(); e.stopPropagation(); var open = !rpAnyOpen(); RP_KEYS.forEach(function(k){ rpFoldSet(k, !open); }); try{ render(); }catch(x){} try{ rpMountRo(); }catch(x){} return; }
   var ps = t.closest("[data-rp-st]");
@@ -125,4 +127,10 @@ document.addEventListener("click", function(e){
   var op = t.closest("[data-rp-op]");
   if(op){ var p = op.closest("[data-rp-ro]"); if(!p) return; e.preventDefault(); e.stopPropagation(); var rid = p.getAttribute("data-rp-ro");
     if(typeof openRoAt === "function") openRoAt(rid, op.getAttribute("data-rp-op")); else if(typeof PG !== "undefined") PG.openRo(rid); }
+}, true);
+/* an operation in the panel opens with Enter or Space too */
+document.addEventListener("keydown", function(e){
+  if(e.key !== "Enter" && e.key !== " ") return;
+  var t = e.composedPath ? e.composedPath()[0] : e.target; if(!t || !t.matches || !t.matches("[data-rp-op]")) return;
+  e.preventDefault(); e.stopPropagation(); t.click();
 }, true);

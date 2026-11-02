@@ -98,10 +98,12 @@ function roDetailsEdit(row){
   inp.className = "rod-in"; inp.type = f.o.dt ? "datetime-local" : f.o.type || "text"; inp.value = cur || ""; inp.setAttribute("data-no-draft", ""); inp.autocomplete = "off";
   if(f.o.list){ var dl = document.createElement("datalist"), id = "rod-dl-" + f.k; dl.id = id; var names = []; try{ names = staffList().filter(function(s){ return f.o.list !== "tech" || s.role === "Technician"; }).map(function(s){ return s.name; }); }catch(e){}
     dl.innerHTML = names.map(function(n){ return '<option value="' + v141E(n) + '">'; }).join(""); inp.setAttribute("list", id); row.appendChild(dl); }
+  var was = b.innerHTML;
   b.innerHTML = ""; b.appendChild(inp); row.classList.add("editing"); inp.focus(); if(inp.select) try{ inp.select(); }catch(e){}
   var done = false;
   function commit(keep){ if(done) return; done = true; var v = inp.value.trim();
     if(keep && v !== String(cur || "")){ var w = f.o.warn ? f.o.warn(v) : ""; roFldSet(ro, f.k, v); if(w) pushToast(w + " — saved anyway.", false); }
+    row.classList.remove("editing"); b.innerHTML = was;   /* the box closes first, so a panel kept between redraws (beside the RO page) draws the change */
     v141Render(); }
   inp.addEventListener("keydown", function(ev){ ev.stopPropagation(); if(ev.key === "Enter"){ ev.preventDefault(); commit(true); } else if(ev.key === "Escape"){ ev.preventDefault(); commit(false); } else if(ev.key === "Tab"){ ev.preventDefault(); var rows = Array.prototype.slice.call(sec.querySelectorAll(".rod-r.ed")), i = rows.indexOf(row), nx = rows[i + (ev.shiftKey ? -1 : 1)]; commit(true); if(nx) setTimeout(function(){ var s2 = document.querySelector('.rod[data-rod-ro="' + ro.id + '"] .rod-r[data-rod-k="' + nx.getAttribute("data-rod-k") + '"]'); if(s2) roDetailsEdit(s2); }, 60); } });
   inp.addEventListener("blur", function(){ setTimeout(function(){ commit(true); }, 0); });

@@ -60,6 +60,7 @@ function rifEdit(sp){
   function commit(keep, next){
     if(done) return; done = true; var v = inp.value.trim();
     if(keep && v !== String(cur || "").trim()){ var w = f.o.warn ? f.o.warn(v) : ""; roFldSet(ro, k, v); if(w) pushToast(w + " — saved anyway.", false); else pushToast(f.l + (v ? " · " + v : " cleared"), true); }
+    sp.classList.remove("on"); sp.textContent = keep ? v : String(cur || "");   /* the box closes first, so a panel kept between redraws (the RO's panel beside the RO page) draws the new words */
     v141Render();
     if(next) setTimeout(function(){ var root = sp.getRootNode ? sp.getRootNode() : document, L = Array.prototype.slice.call(root.querySelectorAll('.rif[data-rif-ro="' + ro.id + '"]')), i = L.map(function(x){ return x.getAttribute("data-rif-k"); }).indexOf(k), nx = L[i + next]; if(nx) rifEdit(nx); }, 30);
   }
