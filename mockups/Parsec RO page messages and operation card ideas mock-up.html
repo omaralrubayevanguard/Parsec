@@ -1,0 +1,982 @@
+<!doctype html>
+<html lang="en" data-th="ivory">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parsec RO page ideas</title>
+<style>
+/* ---------- tokens: four themes · Ivory / Graphite (warm) · Mist / Obsidian (cool). Keep the names. ---------- */
+:root,[data-th="ivory"]{--canvas:#F2F0EA;--panel:#FBFAF7;--raised:#fff;--fill:#F0EDE6;--hair:#E6E2D8;--border:#D6D0C3;--ink:#1D1C1A;--ink2:#57534B;--ink3:#67625A;--acc:#86643A;--acct:#F4EDE1;--accl:#D9C5A3;--primary:#1D1C1A;--onprimary:#FBFAF7;--good:#3A8C60;--goodt:#E8F5EE;--warn:#AD7210;--bad:#C0503F;--shadow:0 0 0 1px rgba(29,28,26,.06),0 1px 3px rgba(29,28,26,.04);--raise:0 0 0 1px rgba(29,28,26,.08),0 18px 44px -14px rgba(29,28,26,.28);color-scheme:light}
+[data-th="graphite"]{--canvas:#0E0E0D;--panel:#151514;--raised:#1D1D1B;--fill:#222220;--hair:#262624;--border:#363532;--ink:#EDEBE6;--ink2:#B0ACA3;--ink3:#9A968D;--acc:#D1B184;--acct:#2A241B;--accl:#6B5A40;--primary:#EDEBE6;--onprimary:#151514;--good:#5BBE8B;--goodt:#1A2E24;--warn:#E2A84C;--bad:#EC7F6C;--shadow:0 0 0 1px rgba(255,255,255,.06);--raise:0 0 0 1px rgba(255,255,255,.08),0 20px 50px -14px rgba(0,0,0,.7);color-scheme:dark}
+[data-th="mist"]{--canvas:#EEF1F4;--panel:#F7F9FB;--raised:#fff;--fill:#E8EDF2;--hair:#DEE3E9;--border:#C9D1DA;--ink:#171A1F;--ink2:#4E5661;--ink3:#626B77;--acc:#3F6A8A;--acct:#E4EDF4;--accl:#A9C4D8;--primary:#1F2A36;--onprimary:#F7F9FB;--good:#2F8A5E;--goodt:#E2F1E9;--warn:#A86F0E;--bad:#BF4F3F;--shadow:0 0 0 1px rgba(23,26,31,.06),0 1px 3px rgba(23,26,31,.05);--raise:0 0 0 1px rgba(23,26,31,.08),0 18px 44px -14px rgba(23,26,31,.3);color-scheme:light}
+[data-th="obsidian"]{--canvas:#0C0E11;--panel:#13161A;--raised:#1A1E24;--fill:#1F242B;--hair:#242930;--border:#343B45;--ink:#E8ECF1;--ink2:#A9B2BD;--ink3:#8E98A4;--acc:#8FB6D4;--acct:#1B2733;--accl:#3E5B73;--primary:#E8ECF1;--onprimary:#13161A;--good:#5BBE8B;--goodt:#182B22;--warn:#E2A84C;--bad:#EC7F6C;--shadow:0 0 0 1px rgba(255,255,255,.06);--raise:0 0 0 1px rgba(255,255,255,.08),0 20px 50px -14px rgba(0,0,0,.75);color-scheme:dark}
+:root{--sans:"Inter","Segoe UI",system-ui,sans-serif;--serif:"Iowan Old Style",Georgia,serif;--mono:"Cascadia Mono",Consolas,monospace}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{margin:0;background:var(--canvas);color:var(--ink);font:400 14px/1.45 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button,input,textarea,select{font:inherit;color:inherit}
+/* ---------- the frame (prefix ip- so the drawn visuals' classes can't collide) ---------- */
+.ip-bar{position:sticky;top:0;z-index:60;background:var(--canvas);box-shadow:inset 0 -1px 0 var(--hair)}
+.ip-r1,.ip-r2{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 16px}
+.ip-r2{padding-top:0;padding-bottom:8px}
+.ip-bar h1{margin:0 auto 0 0;display:flex;align-items:baseline;gap:10px;font:500 19px/24px var(--serif)}
+.ip-bar h1 small{font:500 11px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.ip-jump{display:flex;gap:2px;flex-wrap:wrap}.ip-jump a{padding:4px 9px;border-radius:7px;font-size:12.5px;color:var(--ink2);text-decoration:none}.ip-jump a:hover{background:var(--fill)}
+.ip-seg{display:inline-flex;gap:2px;padding:2px;border-radius:9px;background:var(--fill)}
+.ip-seg button{all:unset;cursor:pointer;height:26px;padding:0 10px;border-radius:7px;font-size:12.5px;font-weight:500;color:var(--ink2);white-space:nowrap}.ip-seg button[aria-pressed="true"]{background:var(--raised);color:var(--ink);box-shadow:var(--shadow)}
+.ip-btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 11px;border-radius:8px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--border);font:500 12.5px/1 var(--sans);white-space:nowrap}
+.ip-btn.pri{background:var(--primary);color:var(--onprimary);box-shadow:none}.ip-btn em{font-style:normal;opacity:.7;font-size:11px}
+.ip-btn:focus-visible,.ip-opt:focus-visible,.ip-seg button:focus-visible,.ip-chip:focus-visible,.ip-dots i:focus-visible,.ip-sel:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.ip-prog{display:flex;align-items:center;gap:10px;flex:1 1 220px;min-width:160px}
+.ip-prog-bar{flex:1;height:6px;border-radius:999px;background:var(--fill);overflow:hidden}
+.ip-prog-bar i{display:block;height:100%;width:0;background:var(--acc);border-radius:999px;transition:width .35s}
+.ip-prog span{font-size:12px;color:var(--ink3);white-space:nowrap}
+.ip-tabs{display:inline-flex;gap:2px;padding:2px;border-radius:9px;background:var(--fill);flex-wrap:wrap}
+.ip-chip{all:unset;cursor:pointer;height:26px;padding:0 10px;border-radius:7px;font-size:12px;font-weight:500;color:var(--ink2);white-space:nowrap}
+.ip-chip[aria-pressed="true"]{background:var(--raised);color:var(--ink);box-shadow:var(--shadow)}
+.ip-warn{display:none;align-items:center;height:26px;padding:0 10px;border-radius:7px;background:var(--warn);color:#fff;font-size:12px;font-weight:600;cursor:pointer}
+.ip-wrap{max-width:1500px;margin:0 auto;padding:18px 16px 120px}
+.ip-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.ip-layout.has-prev{grid-template-columns:minmax(0,1fr) min(360px,34vw)}
+@media (max-width:1100px){.ip-layout.has-prev{grid-template-columns:1fr}}
+#ip-preview{position:sticky;top:96px;align-self:start;max-height:calc(100vh - 110px);overflow:auto;padding:12px;border-radius:14px;background:var(--panel);box-shadow:var(--shadow)}
+#ip-preview[hidden]{display:none}
+#ip-preview h2{margin:0 0 8px;font:500 14px/1 var(--serif)}
+#ip-preview h2 small{font:400 11px var(--sans);color:var(--ink3);margin-left:6px}
+.ip-prev-root{position:relative;min-height:80px;padding:12px;border-radius:10px;background:var(--canvas);box-shadow:inset 0 0 0 1px var(--hair);font-size:12.5px;overflow:hidden}
+.ip-now{margin:0 0 16px;padding:14px 16px;border-radius:14px;background:var(--panel);box-shadow:var(--shadow)}.ip-now h2{margin:0 0 8px;font:500 15px/1 var(--serif)}
+.ip-now-row{display:flex;gap:10px;flex-wrap:wrap}.ip-now-row>div{flex:1 1 220px;padding:8px 10px;border-radius:9px;background:var(--canvas);box-shadow:inset 0 0 0 1px var(--hair);font-size:12.5px;color:var(--ink2)}.ip-now-row b{color:var(--ink)}
+.ip-lead{margin:0 2px 14px;color:var(--ink2)}
+.ip-keys{margin:0 2px 14px;font-size:11.5px;color:var(--ink3)} .ip-keys kbd{display:inline-block;min-width:18px;padding:0 5px;border-radius:4px;background:var(--raised);box-shadow:inset 0 -1.5px 0 var(--border),inset 0 0 0 1px var(--border);font:600 10.5px/17px var(--mono);text-align:center;color:var(--ink2)}
+.ip-sec{margin:0 0 26px;scroll-margin-top:100px}.ip-sec h2{display:flex;align-items:baseline;gap:10px;margin:0 2px 10px;font:500 22px/28px var(--serif)}.ip-sec h2 small{font:400 12.5px var(--sans);color:var(--ink3)}
+.ip-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(440px,1fr));gap:14px}@media (max-width:980px){.ip-grid{grid-template-columns:1fr}}
+.ip-idea{min-width:0;display:flex;flex-direction:column;gap:10px;padding:14px 14px 10px;border-radius:14px;background:var(--panel);box-shadow:var(--shadow);scroll-margin-top:104px;transition:box-shadow .2s}
+.ip-idea.picked{box-shadow:0 0 0 1.5px var(--accl),var(--shadow)}
+.ip-idea.ip-cur{box-shadow:0 0 0 2px var(--acc),var(--shadow)}
+.ip-idea[hidden]{display:none}
+.ip-idea.ip-locked .ip-vis,.ip-idea.ip-locked .ip-ol,.ip-idea.ip-locked .ip-card-tools{opacity:.5}
+.ip-idea h3{margin:0;font:600 15px/20px var(--sans);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ip-idea header p{margin:3px 0 0;font-size:12.5px;line-height:17px;color:var(--ink3)}
+.ip-tags{display:inline-flex;gap:4px}
+.ip-tag{display:inline-flex;align-items:center;height:18px;padding:0 6px;border-radius:5px;font:600 10px/1 var(--sans);background:var(--fill);color:var(--ink2)}
+.ip-tag.hi{background:var(--goodt);color:var(--good)}
+.ip-tag.lo{background:var(--acct);color:var(--acc)}
+.ip-need{display:inline-flex;align-items:center;gap:4px;height:18px;padding:0 7px;border-radius:5px;font:600 10px/1 var(--sans);background:var(--acct);color:var(--acc);letter-spacing:.02em}
+.ip-idea:not(.ip-locked) .ip-need{background:var(--goodt);color:var(--good)}
+.ip-rec{position:relative;display:inline-flex;align-items:center;height:16px;padding:0 6px;border-radius:4px;font:600 9px/1 var(--sans);letter-spacing:.04em;text-transform:uppercase;background:var(--acct);color:var(--acc);cursor:help}
+.ip-rec[data-tip]::after{content:attr(data-tip);position:absolute;left:0;top:calc(100% + 6px);z-index:7;min-width:180px;max-width:260px;padding:6px 9px;border-radius:7px;background:var(--primary);color:var(--onprimary);font:400 11.5px/1.4 var(--sans);text-transform:none;letter-spacing:0;white-space:normal;opacity:0;transform:translateY(-3px);pointer-events:none;transition:opacity .15s,transform .15s}
+.ip-rec[data-tip]:hover::after,.ip-rec[data-tip]:focus::after,.ip-opt:focus-visible .ip-rec[data-tip]::after{opacity:1;transform:none}
+.ip-vis{position:relative;min-height:96px;padding:12px;border-radius:11px;background:var(--canvas);box-shadow:inset 0 0 0 1px var(--hair);font-size:12.5px;overflow:hidden}
+.ip-hint{position:absolute;left:8px;bottom:8px;z-index:5;padding:3px 8px;border-radius:7px;background:var(--raised);box-shadow:var(--shadow);font-size:11px;color:var(--ink3);pointer-events:none}
+.ip-vis.ip-has .ip-hint,.ip-vis.ip-skip .ip-hint,.ip-vis.ip-peeking .ip-hint,.ip-vis:not(.ip-has) .ip-replay,.ip-vis:not(.ip-has) .ip-dots{display:none}
+.ip-vis.ip-skip>*:not(.ip-replay):not(.ip-cmp){opacity:.45}
+.ip-replay{all:unset;cursor:pointer;position:absolute;right:8px;bottom:8px;z-index:5;width:24px;height:24px;border-radius:7px;display:grid;place-items:center;background:var(--raised);box-shadow:var(--shadow);color:var(--ink3);font-size:11px}
+.ip-dots{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:5;display:flex;gap:6px;padding:4px 7px;border-radius:999px;background:var(--raised);box-shadow:var(--shadow)}
+.ip-dots i{all:unset;cursor:pointer;width:9px;height:9px;border-radius:50%;background:var(--fill);box-shadow:inset 0 0 0 1.5px var(--border);transition:background .2s,box-shadow .2s}
+.ip-dots i.f{background:var(--acc);box-shadow:none}
+.ip-vis.ip-peeking{box-shadow:inset 0 0 0 1.5px var(--acc)}
+.ip-peek-lbl{display:none;position:absolute;left:8px;bottom:8px;z-index:5;padding:3px 8px;border-radius:7px;background:var(--acc);color:var(--onprimary);font-size:11px;font-weight:600;pointer-events:none}
+.ip-vis.ip-peeking .ip-peek-lbl{display:block}
+.ip-vis.ip-peeking .ip-dots,.ip-vis.ip-peeking .ip-replay{display:none}
+.ip-cmp{display:none;position:absolute;inset:0;z-index:3;background:var(--canvas)}
+.ip-vis.ip-comparing .ip-cmp{display:block}
+.ip-vis.ip-comparing{min-height:150px}
+.ip-cmp-a .v-cur,.ip-cmp-b .v-cur{display:none}
+.ip-vis.ip-comparing>.ip-body,.ip-vis.ip-comparing>.ip-hint,.ip-vis.ip-comparing>.ip-dots,.ip-vis.ip-comparing>.ip-replay{visibility:hidden}
+.ip-cmp-a,.ip-cmp-b{position:absolute;top:34px;bottom:0;width:50%;padding:12px;overflow:hidden}
+.ip-cmp-a{left:0;box-shadow:inset -1px 0 0 var(--hair)}.ip-cmp-b{left:50%}
+.ip-cmp-top{position:absolute;left:0;right:0;top:0;height:34px;display:flex;align-items:center;gap:6px;padding:0 8px;font-size:11px;color:var(--ink3);background:var(--panel);box-shadow:inset 0 -1px 0 var(--hair);z-index:5}
+.ip-cmp-top b{flex:1;text-align:center;font-weight:500;color:var(--ink2)}
+.ip-sel{all:unset;box-sizing:border-box;cursor:pointer;height:22px;padding:0 20px 0 7px;border-radius:6px;background:var(--raised) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23888'/%3E%3C/svg%3E") no-repeat right 7px center;box-shadow:inset 0 0 0 1px var(--border);font:500 11px/22px var(--sans);color:var(--ink);max-width:150px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;-webkit-appearance:none;appearance:none}
+.ip-ol{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:2px}
+.ip-opt{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:14px minmax(0,1fr);gap:8px;padding:6px 8px;border-radius:9px;font-size:12.5px;line-height:16px;color:var(--ink2)}
+.ip-opt:hover{background:var(--fill)}.ip-opt i{width:14px;height:14px;margin-top:1px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--border)}
+.ip-opt b{display:block;font-weight:500;color:var(--ink)}.ip-opt small{display:block;font-size:11.5px;color:var(--ink3)}
+.ip-opt[aria-pressed="true"]{background:var(--acct)}.ip-opt[aria-pressed="true"] i{box-shadow:inset 0 0 0 4.5px var(--acc)}
+.ip-opt .ip-rec{margin-left:4px;vertical-align:middle}
+.ip-opt kbd{float:right;margin-left:6px;min-width:16px;padding:0 4px;border-radius:4px;background:var(--raised);box-shadow:inset 0 -1.5px 0 var(--border),inset 0 0 0 1px var(--border);font:600 9.5px/15px var(--mono);text-align:center;color:var(--ink3)}
+.ip-idea-note{width:100%;min-height:34px;padding:7px 10px;border:0;border-radius:9px;background:var(--fill);font-size:12.5px;resize:vertical;outline:none}
+.ip-idea-note:focus{box-shadow:inset 0 0 0 1.5px var(--accl)}
+.ip-card-tools{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.ip-card-tools .ip-seg{display:none}.ip-idea.picked .ip-card-tools .ip-seg{display:inline-flex}
+.ip-card-tools .ip-seg button{height:22px;font-size:11.5px}
+#ip-picks{position:fixed;z-index:85;right:16px;top:96px;width:470px;max-width:calc(100vw - 32px);max-height:calc(100vh - 112px);overflow:auto;padding:12px 14px 14px;border-radius:16px;background:var(--raised);box-shadow:var(--raise);display:flex;flex-direction:column;gap:10px}
+#ip-picks[hidden]{display:none}
+#ip-picks pre{margin:0;padding:10px 12px;border-radius:10px;background:var(--fill);font:400 12px/1.55 var(--mono);white-space:pre-wrap}
+#ip-picks textarea{min-height:60px;padding:8px 10px;border:0;border-radius:9px;background:var(--fill);font-size:13px;resize:vertical;outline:none}
+#ip-picks label.ip-ck{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink2)}
+.ip-ph{display:flex;align-items:center;font:500 18px/1 var(--serif)}.ip-ph b{flex:1;font-weight:500}.ip-ph button{all:unset;cursor:pointer;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;color:var(--ink3)}
+.ip-actions{display:flex;flex-wrap:wrap;gap:6px}
+.ip-toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:99;display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;background:var(--primary);color:var(--onprimary);font-size:13px;box-shadow:var(--raise);max-width:calc(100vw - 32px)}
+.ip-toast button{all:unset;cursor:pointer;font-weight:600;color:var(--accl);padding:2px 4px;border-radius:4px}
+.ip-file{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+@media (max-width:640px){ .ip-grid{grid-template-columns:1fr} #ip-picks{left:16px;right:16px;width:auto} .ip-bar h1 small{display:none} .ip-layout.has-prev{grid-template-columns:1fr} .ip-r2 [data-sort]{display:none} .ip-keys{display:none} #ip-preview{position:static;max-height:none} }
+@media print{
+  body{background:#fff;color:#000}
+  .ip-bar .ip-seg,.ip-bar #ip-open,.ip-bar #ip-accept,.ip-r2,.ip-ol,.ip-replay,.ip-hint,.ip-dots,.ip-card-tools,.ip-idea-note,#ip-preview,.ip-cmp,.ip-keys,.ip-actions,.ip-ck{display:none!important}
+  #ip-picks{position:static!important;display:flex!important;width:100%!important;max-width:none;max-height:none;box-shadow:none;border:1px solid #ccc;page-break-before:avoid}
+  .ip-vis{break-inside:avoid}
+  .ip-idea[hidden]{display:flex!important}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.ip-prog-bar i{transition:none}}
+
+/* ---------- the drawn visuals: prefix v- · animate with [data-step], .ip-s-<step> and [data-opt] on .ip-vis ---------- */
+.v-cur{position:absolute;left:250px;top:40px;width:14px;height:14px;z-index:6;pointer-events:none;transition:left .6s cubic-bezier(.2,.75,.25,1),top .6s cubic-bezier(.2,.75,.25,1),opacity .25s .35s}
+.ip-s-done .v-cur{opacity:0}
+.v-cur::before{content:"";position:absolute;inset:0;clip-path:polygon(0 0,0 100%,30% 72%,52% 100%,64% 94%,44% 66%,80% 66%);background:var(--ink)}
+.v-cur::after{content:"";position:absolute;left:-8px;top:-8px;width:30px;height:30px;border-radius:50%;background:var(--acc);opacity:0;transform:scale(.3)}
+@keyframes v-ripple{0%{opacity:.35;transform:scale(.3)}100%{opacity:0;transform:scale(1.4)}}
+[data-step="click"] .v-cur::after,[data-step="pick"] .v-cur::after,[data-step="send"] .v-cur::after{animation:v-ripple .45s ease-out}
+@keyframes v-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes v-pop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.08);opacity:1}100%{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.v-cur,.v-tab,.v-inkbar,.v-badge,.v-send,.v-seen,.v-dot,.v-tipone{transition:none!important}.v-cur::after,.v-new,.v-badge,.v-row.v-add{animation:none!important}}
+
+/* ---- shared pieces: the column, tabs, panes, operation rows ---- */
+.v-col{position:relative;width:376px;max-width:100%;display:flex;flex-direction:column;gap:8px;font-size:12px;color:var(--ink);text-align:left}
+.v-col .v-cur{left:340px;top:-6px}
+.v-tabs{position:relative;display:flex;gap:2px;height:28px;align-items:flex-end;box-shadow:inset 0 -1px 0 var(--hair);flex:none}
+.v-tab{display:inline-flex;align-items:center;justify-content:center;gap:5px;height:26px;padding:0 10px;font:500 12.5px/1 var(--sans);color:var(--ink2);white-space:nowrap;border-radius:7px 7px 0 0;transition:color .2s,box-shadow .2s,background .2s}
+.v-tab.v-on{color:var(--ink);box-shadow:inset 0 -2px 0 var(--acc)}
+.v-t-ops{width:104px;padding:0}.v-t-msg{width:92px;padding:0}.v-t-cus{width:84px;padding:0}
+.v-n{font:600 10px/16px var(--mono);padding:0 5px;border-radius:5px;background:var(--fill);color:var(--ink2)}
+.v-tab.v-on .v-n{background:var(--acct);color:var(--acc)}
+.v-ti{display:none;width:13px;height:13px;flex:none}
+.v-pane{padding:8px 10px;border-radius:10px;background:var(--panel);box-shadow:inset 0 0 0 1px var(--hair)}
+.v-sec{display:flex;align-items:center;gap:8px;font:600 13px/1 var(--sans);color:var(--ink);padding:3px 0}
+.v-op{display:flex;align-items:center;gap:8px;height:30px;padding:0 10px;border-radius:9px;background:var(--panel);box-shadow:inset 0 0 0 1px var(--hair);flex:none}
+.v-op b{font:600 11px/18px var(--mono);width:18px;text-align:center;border-radius:5px;background:var(--fill);color:var(--ink2)}
+.v-op span{flex:1;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.v-pill{display:inline-flex;align-items:center;gap:4px;height:18px;padding:0 7px;border-radius:999px;font:500 10.5px/1 var(--sans);box-shadow:inset 0 0 0 1px var(--border);color:var(--ink2);font-style:normal;white-space:nowrap}
+.v-pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.v-pill.v-go{color:var(--good);box-shadow:inset 0 0 0 1px var(--good)}.v-pill.v-hold{color:var(--warn);box-shadow:inset 0 0 0 1px var(--warn)}
+.v-props{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px}
+.v-props>div{min-width:0}.v-props small{display:block;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)}.v-props b{display:block;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v-more{display:none}
+.v-showall{display:none;align-items:center;height:22px;padding:0 8px;border-radius:6px;background:var(--fill);font:500 11px/1 var(--sans);color:var(--ink2);margin-top:6px;width:max-content}
+.v-strip{display:none;align-items:center;gap:8px;height:28px;padding:0 10px;border-radius:9px;background:var(--panel);box-shadow:inset 0 0 0 1px var(--hair);font-size:11.5px;color:var(--ink2);white-space:nowrap;overflow:hidden}
+.v-strip b{margin-left:auto;color:var(--ink);font-weight:500}
+.v-two{display:flex;flex-direction:column;gap:8px}
+.v-t-ops,.v-p-ops,.v-p-cus,.v-two .v-p-cus{display:none}
+.v-inkbar{display:none;position:absolute;left:0;bottom:0;width:92px;height:2px;background:var(--acc);border-radius:1px;transition:left .3s cubic-bezier(.2,.75,.25,1),width .3s}
+.v-copied{position:absolute;left:0;top:-26px;padding:3px 7px;border-radius:6px;background:var(--primary);color:var(--onprimary);font-size:10.5px;white-space:nowrap;opacity:0;transition:opacity .2s}
+
+/* ---- the chat ---- */
+.v-chat{display:flex;flex-direction:column;gap:6px}
+.v-day{align-self:center;font:500 9.5px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);padding:2px 0}
+.v-msg{display:flex;gap:7px;align-items:flex-end;max-width:88%;position:relative}
+.v-msg.v-me{align-self:flex-end;flex-direction:row-reverse}
+.v-av{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font:600 9px/1 var(--sans);background:var(--fill);color:var(--ink2);box-shadow:inset 0 0 0 1px var(--border)}
+.v-msg.v-me .v-av{display:none}
+.v-bub{padding:6px 9px;border-radius:11px 11px 11px 3px;background:var(--raised);box-shadow:var(--shadow);line-height:1.35;min-width:0}
+.v-msg.v-me .v-bub{border-radius:11px 11px 3px 11px;background:var(--acct);box-shadow:inset 0 0 0 1px var(--accl)}
+.v-bub small{display:block;font-size:10px;color:var(--ink3);margin-top:2px}
+.v-who{display:block;font-size:10.5px;font-weight:600;color:var(--ink2);margin-bottom:1px}
+.v-who em{font-style:normal;font-weight:400;color:var(--ink3);display:none}
+.v-msg.v-me .v-who{display:none}
+.v-comp{position:relative;display:flex;align-items:center;gap:6px;height:32px;padding:0 5px 0 8px;border-radius:9px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--border);margin-top:8px;flex:none}
+.v-comp .v-ph{flex:1;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11.5px}
+.v-comp .v-typed{display:none;flex:1;color:var(--ink);white-space:nowrap;overflow:hidden;font-size:11.5px}
+.v-typed::after{content:"";display:inline-block;width:1px;height:13px;background:var(--ink);vertical-align:-2px;margin-left:1px}
+.v-send{flex:none;width:24px;height:24px;border-radius:6px;display:grid;place-items:center;background:var(--primary);color:var(--onprimary);transition:background .2s,transform .2s}
+.v-send svg,.v-clip svg,.v-ic svg{width:12px;height:12px;display:block}
+.v-to{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 7px;border-radius:6px;background:var(--fill);font:500 11px/1 var(--sans);color:var(--ink2);white-space:nowrap;flex:none}
+.v-to::before{content:"To · Frank"}
+.v-to.v-to-ben::before{content:"To · Ben"}
+.v-to i{width:0;height:0;border-left:3.5px solid transparent;border-right:3.5px solid transparent;border-top:4px solid var(--ink3)}
+.v-clip{flex:none;width:22px;height:22px;border-radius:6px;display:grid;place-items:center;color:var(--ink3)}
+.v-opchip{display:inline-flex;align-items:center;height:18px;padding:0 6px;border-radius:5px;font:600 10px/1 var(--mono);background:var(--acct);color:var(--acc);white-space:nowrap;flex:none}
+.v-thumb{display:none;width:30px;height:22px;border-radius:4px;background:var(--fill);box-shadow:inset 0 0 0 1px var(--border);place-items:center;color:var(--ink3);flex:none}
+.v-thumb svg{width:12px;height:12px}
+.v-new{display:none}
+.v-seen{font-size:10px;color:var(--ink3);text-align:right;opacity:0;transition:opacity .3s;margin-top:-2px}
+.v-dot{display:none;width:7px;height:7px;border-radius:50%;background:var(--border);margin-left:5px;vertical-align:middle;transition:background .3s}
+.v-menu{display:none;position:absolute;left:10px;top:106px;z-index:4;width:228px;padding:4px;border-radius:10px;background:var(--raised);box-shadow:var(--raise)}
+.v-mg{font:600 9.5px/18px var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);padding:0 8px}
+.v-mi{display:flex;align-items:center;gap:7px;height:20px;padding:0 8px;border-radius:6px;font-size:11.5px;color:var(--ink)}
+.v-mi .v-av{width:16px;height:16px;font-size:7.5px}
+.v-mi small{margin-left:auto;font-size:10px;color:var(--ink3)}
+.v-sugg{display:none;position:absolute;left:10px;top:106px;z-index:4;width:200px;padding:4px;border-radius:10px;background:var(--raised);box-shadow:var(--raise)}
+.v-at{display:inline-flex;align-items:center;height:16px;padding:0 5px;border-radius:4px;background:var(--acct);color:var(--acc);font-weight:600;font-size:11px}
+.v-ppl,.v-flt{display:none;gap:4px;flex:none}
+.v-pb,.v-chip{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 9px;border-radius:7px;font:500 11.5px/1 var(--sans);color:var(--ink2);background:var(--fill);white-space:nowrap}
+.v-pb.v-on,.v-chip.v-on{background:var(--primary);color:var(--onprimary)}.v-pb.v-on .v-n,.v-chip.v-on .v-n{background:rgba(255,255,255,.18);color:inherit}
+.v-tipone{position:absolute;left:30px;bottom:calc(100% + 4px);padding:4px 8px;border-radius:6px;background:var(--primary);color:var(--onprimary);font-size:10.5px;white-space:nowrap;opacity:0;transition:opacity .2s;z-index:3}
+.v-quick{display:flex;gap:4px;flex-wrap:wrap;flex:none}
+.v-quick span{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:999px;font:500 11px/1 var(--sans);color:var(--ink2);box-shadow:inset 0 0 0 1px var(--border);white-space:nowrap;transition:background .2s,color .2s}
+.v-badge{display:inline-flex;align-items:center;gap:5px;opacity:0;max-width:0;overflow:hidden;transform:scale(.6);transform-origin:left center;transition:opacity .25s,max-width .35s,transform .35s cubic-bezier(.2,1.4,.4,1)}
+.v-bd{font:600 10px/16px var(--sans);padding:0 6px;border-radius:999px;background:var(--acc);color:var(--onprimary);font-style:normal}
+.v-peek{font-style:normal;font-size:11px;color:var(--ink2);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ---- the operation clock card ---- */
+.v-ock{position:relative;padding:10px 12px;border-radius:12px;background:var(--panel);box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px;flex:none}
+.v-ock-top{display:flex;align-items:center;gap:10px;order:1}
+.v-big{font:600 26px/1 var(--mono);letter-spacing:-.02em;color:var(--ink)}
+.v-lbl{font-size:11px;color:var(--ink3);margin-top:4px}
+.v-ring{margin-left:auto;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;position:relative;flex:none}
+.v-ring::before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(var(--good) 0 68%,var(--hair) 68% 100%);-webkit-mask:radial-gradient(circle,transparent 13.5px,#000 14.5px);mask:radial-gradient(circle,transparent 13.5px,#000 14.5px)}
+.v-ring i{width:10px;height:10px;border-radius:2px;background:var(--ink)}
+.v-bar{position:relative;height:8px;border-radius:4px;background:var(--fill);order:2;margin:2px 0}
+.v-bar i{position:absolute;top:0;height:100%;border-radius:3px;background:var(--good)}
+.v-bar .v-q{position:absolute;top:-3px;width:2px;height:14px;background:var(--ink);border-radius:1px}
+.v-kv{display:flex;gap:14px;font-size:10.5px;color:var(--ink3);order:3}
+.v-kv b{display:block;font:600 12.5px/1.2 var(--mono);color:var(--ink)}
+.v-ctabs{order:5;margin-top:2px}
+.v-ctabs .v-tab{padding:0 9px}
+.v-tacts{margin-left:auto;display:flex;gap:4px;align-items:center;align-self:center}
+.v-tb{display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 7px;border-radius:6px;font:500 11px/1 var(--sans);color:var(--ink2);background:var(--fill);white-space:nowrap}
+.v-tb svg{width:11px;height:11px}
+.v-tpane{order:6;display:flex;flex-direction:column}
+.v-tpane.v-p-parts,.v-tpane.v-p-files{display:none}
+.v-row{display:flex;align-items:center;gap:8px;height:26px;font-size:11.5px;box-shadow:inset 0 -1px 0 var(--hair)}
+.v-row:last-child{box-shadow:none}
+.v-row .v-tm{font:500 11px/1 var(--mono);color:var(--ink2);flex:none}
+.v-row span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.v-row .v-pn{font:500 10.5px/1 var(--mono);color:var(--ink3);flex:none}
+.v-row.v-add{display:none;color:var(--ink3)}
+.v-cfacts{display:none;gap:6px;flex-wrap:wrap;order:0}
+.v-fc{display:inline-flex;align-items:center;gap:4px;height:18px;padding:0 6px;border-radius:5px;background:var(--fill);font:500 10.5px/1 var(--sans);color:var(--ink2);white-space:nowrap}
+.v-fc b{font-weight:600;color:var(--ink)}
+.v-facts{display:flex;gap:6px;flex-wrap:wrap;flex:none;transition:opacity .3s}
+.v-codes{display:flex;gap:6px;flex:none}
+.v-code{font:500 10.5px/18px var(--mono);padding:0 6px;border-radius:5px;background:var(--acct);color:var(--acc)}
+.v-ct-det{display:none}
+.v-dots{position:absolute;right:10px;top:8px;width:24px;height:22px;border-radius:6px;display:grid;place-items:center;color:var(--ink3)}
+.v-dots svg{width:14px;height:14px}
+.v-cmenu{display:none;position:absolute;right:10px;top:34px;z-index:4;width:160px;padding:4px;border-radius:10px;background:var(--raised);box-shadow:var(--raise)}
+.v-stoast{position:absolute;right:12px;top:10px;padding:4px 8px;border-radius:6px;background:var(--primary);color:var(--onprimary);font-size:10.5px;opacity:0;transition:opacity .2s;white-space:nowrap}
+
+/* =============== G1 · above the operations =============== */
+/* where: click Customer */
+[data-k="where"] .ip-s-point .v-cur{left:122px;top:14px}
+[data-k="where"] [data-opt="inrow"].ip-s-point .v-cur{left:226px}
+[data-k="where"] [data-opt="strip"].ip-s-point .v-cur{left:60px}
+[data-k="where"] .ip-s-done .v-t-msg{color:var(--ink2);box-shadow:none}
+[data-k="where"] .ip-s-done .v-t-msg .v-n{background:var(--fill);color:var(--ink2)}
+[data-k="where"] .ip-s-done .v-t-cus{color:var(--ink);box-shadow:inset 0 -2px 0 var(--acc)}
+[data-k="where"] .ip-s-done .v-p-msg{display:none}
+[data-k="where"] .ip-s-done .v-p-cus{display:block}
+[data-k="where"] [data-opt="inrow"] .v-t-ops{display:inline-flex;color:var(--ink);box-shadow:inset 0 -2px 0 var(--acc)}
+[data-k="where"] [data-opt="inrow"] .v-t-ops .v-n{background:var(--acct);color:var(--acc)}
+[data-k="where"] [data-opt="inrow"] .v-t-msg{color:var(--ink2);box-shadow:none}
+[data-k="where"] [data-opt="inrow"] .v-t-msg .v-n{background:var(--fill);color:var(--ink2)}
+[data-k="where"] [data-opt="inrow"] .v-p-msg,[data-k="where"] [data-opt="inrow"] .v-opsh,[data-k="where"] [data-opt="inrow"] .v-op{display:none}
+[data-k="where"] [data-opt="inrow"] .v-p-ops{display:flex;flex-direction:column;gap:6px}
+[data-k="where"] [data-opt="inrow"] .v-p-ops .v-op{display:flex}
+[data-k="where"] [data-opt="inrow"].ip-s-done .v-t-ops{color:var(--ink2);box-shadow:none}
+[data-k="where"] [data-opt="inrow"].ip-s-done .v-t-ops .v-n{background:var(--fill);color:var(--ink2)}
+[data-k="where"] [data-opt="inrow"].ip-s-done .v-p-ops{display:none}
+[data-k="where"] [data-opt="strip"] .v-tabs,[data-k="where"] [data-opt="strip"] .v-p-msg{display:none}
+[data-k="where"] [data-opt="strip"] .v-strip{display:flex}
+[data-k="where"] [data-opt="strip"].ip-s-done .v-strip{display:none}
+[data-k="where"] [data-opt="strip"].ip-s-done .v-tabs{display:flex}
+[data-k="where"] [data-opt="strip"].ip-s-done .v-p-msg{display:block}
+[data-k="where"] [data-opt="strip"].ip-s-done .v-p-cus{display:none}
+[data-k="where"] [data-opt="strip"].ip-s-done .v-t-msg{color:var(--ink);box-shadow:inset 0 -2px 0 var(--acc)}
+[data-k="where"] [data-opt="strip"].ip-s-done .v-t-msg .v-n{background:var(--acct);color:var(--acc)}
+[data-k="where"] [data-opt="strip"].ip-s-done .v-t-cus{color:var(--ink2);box-shadow:none}
+
+/* tabstyle: ink slides, pill raises, split shows both */
+[data-k="tabstyle"] .ip-s-point .v-cur{left:122px;top:14px}
+[data-k="tabstyle"] .ip-s-done .v-t-msg{color:var(--ink2);box-shadow:none}
+[data-k="tabstyle"] .ip-s-done .v-t-msg .v-n{background:var(--fill);color:var(--ink2)}
+[data-k="tabstyle"] .ip-s-done .v-t-cus{color:var(--ink);box-shadow:inset 0 -2px 0 var(--acc)}
+[data-k="tabstyle"] .ip-s-done .v-p-msg{display:none}
+[data-k="tabstyle"] .ip-s-done .v-two .v-p-cus{display:block}
+[data-k="tabstyle"] [data-opt="ink"] .v-tab.v-on,[data-k="tabstyle"] [data-opt="ink"].ip-s-done .v-t-cus{box-shadow:none}
+[data-k="tabstyle"] [data-opt="ink"] .v-inkbar{display:block}
+[data-k="tabstyle"] [data-opt="ink"].ip-s-done .v-inkbar{left:94px;width:84px}
+[data-k="tabstyle"] [data-opt="seg"] .v-tabs{height:30px;padding:2px;border-radius:9px;background:var(--fill);box-shadow:none;align-items:center;width:max-content}
+[data-k="tabstyle"] [data-opt="seg"] .v-tab{height:26px;border-radius:7px;box-shadow:none}
+[data-k="tabstyle"] [data-opt="seg"] .v-tab.v-on{background:var(--raised);box-shadow:var(--shadow)}
+[data-k="tabstyle"] [data-opt="seg"].ip-s-done .v-t-msg{background:transparent;box-shadow:none}
+[data-k="tabstyle"] [data-opt="seg"].ip-s-done .v-t-cus{background:var(--raised);box-shadow:var(--shadow)}
+[data-k="tabstyle"] [data-opt="seg"].ip-s-point .v-cur{left:124px;top:16px}
+[data-k="tabstyle"] [data-opt="split"] .v-tabs{display:none}
+[data-k="tabstyle"] [data-opt="split"] .v-two{flex-direction:row}
+[data-k="tabstyle"] [data-opt="split"] .v-two .v-pane{flex:1;min-width:0;position:relative}
+[data-k="tabstyle"] [data-opt="split"] .v-two .v-p-cus{display:block}
+[data-k="tabstyle"] [data-opt="split"].ip-s-done .v-p-msg{display:block}
+[data-k="tabstyle"] [data-opt="split"] .v-props{grid-template-columns:1fr}
+[data-k="tabstyle"] [data-opt="split"] .v-msg{max-width:100%}
+[data-k="tabstyle"] [data-opt="split"].ip-s-point .v-cur{left:224px;top:92px}
+[data-k="tabstyle"] [data-opt="split"].ip-s-done .v-copied{opacity:1}
+
+/* badge: a message arrives while Customer is open */
+[data-k="badge"] .v-t-msg{width:auto;padding:0 10px}
+[data-k="badge"] .v-t-msg .v-n{font-size:0}
+[data-k="badge"] .v-t-msg .v-n::after{content:"4";font-size:10px}
+[data-k="badge"] .ip-s-new .v-badge{opacity:1;max-width:240px;transform:none}
+[data-k="badge"] .ip-s-new .v-t-msg .v-n{display:none}
+[data-k="badge"] [data-opt="count"] .v-peek{display:none}
+[data-k="badge"] [data-opt="none"] .v-badge{display:none}
+[data-k="badge"] [data-opt="none"].ip-s-new .v-t-msg .v-n{display:inline}
+[data-k="badge"] [data-opt="none"].ip-s-new .v-t-msg .v-n::after{content:"6"}
+
+/* height: the Customer pane fills up — does it push Operations down? */
+[data-k="height"] .ip-s-fill .v-more{display:contents}
+[data-k="height"] [data-opt="fixed"] .v-p-cus{max-height:112px;overflow:hidden;position:relative}
+[data-k="height"] [data-opt="fixed"].ip-s-fill .v-p-cus::after{content:"";position:absolute;right:4px;top:10px;width:4px;height:44px;border-radius:2px;background:var(--border)}
+[data-k="height"] [data-opt="keyfour"] .v-more{display:none!important}
+[data-k="height"] [data-opt="keyfour"].ip-s-fill .v-showall{display:inline-flex}
+[data-k="height"] [data-opt="grow"].ip-s-fill .v-opsh{color:var(--warn)}
+
+/* =============== G2 · the chat =============== */
+/* chatlook: type → send → the new bubble */
+[data-k="chatlook"] .ip-s-type .v-ph{display:none}
+[data-k="chatlook"] .ip-s-type .v-typed{display:block}
+[data-k="chatlook"] [data-step="send"] .v-send{transform:scale(.88);background:var(--acc)}
+[data-k="chatlook"] .ip-s-done .v-new{display:flex;animation:v-in .35s ease-out}
+[data-k="chatlook"] .ip-s-done .v-typed{display:none}
+[data-k="chatlook"] .ip-s-done .v-ph{display:block}
+[data-k="chatlook"] [data-opt="thread"] .v-msg,[data-k="chatlook"] [data-opt="log"] .v-msg,.ip-prev-root[data-p-chatlook="thread"] .v-msg,.ip-prev-root[data-p-chatlook="log"] .v-msg{max-width:100%;align-self:stretch;flex-direction:row;align-items:flex-start}
+[data-k="chatlook"] [data-opt="thread"] .v-bub,[data-k="chatlook"] [data-opt="log"] .v-bub,.ip-prev-root[data-p-chatlook="thread"] .v-bub,.ip-prev-root[data-p-chatlook="log"] .v-bub{background:transparent;box-shadow:none;padding:0;border-radius:0;flex:1}
+[data-k="chatlook"] [data-opt="thread"] .v-msg.v-me .v-av,[data-k="chatlook"] [data-opt="log"] .v-msg.v-me .v-av,.ip-prev-root[data-p-chatlook="thread"] .v-msg.v-me .v-av{display:grid}
+[data-k="chatlook"] [data-opt="thread"] .v-who,[data-k="chatlook"] [data-opt="log"] .v-who,.ip-prev-root[data-p-chatlook="thread"] .v-who,.ip-prev-root[data-p-chatlook="log"] .v-who{display:block}
+[data-k="chatlook"] [data-opt="thread"] .v-who em,[data-k="chatlook"] [data-opt="log"] .v-who em,.ip-prev-root[data-p-chatlook="thread"] .v-who em,.ip-prev-root[data-p-chatlook="log"] .v-who em{display:inline}
+[data-k="chatlook"] [data-opt="thread"] .v-day,[data-k="chatlook"] [data-opt="log"] .v-day,.ip-prev-root[data-p-chatlook="thread"] .v-day,.ip-prev-root[data-p-chatlook="log"] .v-day{display:none}
+[data-k="chatlook"] [data-opt="thread"] .v-msg,.ip-prev-root[data-p-chatlook="thread"] .v-msg{padding:5px 0;box-shadow:inset 0 1px 0 var(--hair)}
+[data-k="chatlook"] [data-opt="thread"] .v-msg:first-of-type,.ip-prev-root[data-p-chatlook="thread"] .v-msg:first-of-type{box-shadow:none}
+[data-k="chatlook"] [data-opt="log"] .v-chat,.ip-prev-root[data-p-chatlook="log"] .v-chat{gap:2px}
+[data-k="chatlook"] [data-opt="log"] .v-msg,.ip-prev-root[data-p-chatlook="log"] .v-msg{gap:6px;align-items:center}
+[data-k="chatlook"] [data-opt="log"] .v-av,.ip-prev-root[data-p-chatlook="log"] .v-av{display:none!important}
+[data-k="chatlook"] [data-opt="log"] .v-bub,.ip-prev-root[data-p-chatlook="log"] .v-bub{display:flex;gap:6px;align-items:baseline;font-size:11.5px;white-space:nowrap;overflow:hidden}
+[data-k="chatlook"] [data-opt="log"] .v-bub small,.ip-prev-root[data-p-chatlook="log"] .v-bub small{order:-1;font:500 10.5px/1 var(--mono);margin:0;width:50px;flex:none}
+[data-k="chatlook"] [data-opt="log"] .v-who,.ip-prev-root[data-p-chatlook="log"] .v-who{margin:0;flex:none}
+
+/* people: the To picker opens, Ben is picked · @ in the text */
+[data-k="people"] .v-to{position:relative}
+[data-k="people"] .ip-s-point .v-cur{left:32px;top:80px}
+[data-k="people"] .ip-s-click .v-menu{display:block}
+[data-k="people"] .ip-s-pick .v-cur{left:62px;top:150px}
+[data-k="people"] .ip-s-pick .v-mi.v-pick{background:var(--acct)}
+[data-k="people"] .ip-s-done .v-menu{display:none}
+[data-k="people"] .ip-s-done .v-to::before{content:"To · Ben"}
+[data-k="people"] [data-opt="mention"] .v-to,.ip-prev-root[data-p-people="mention"] .v-to{display:none}
+[data-k="people"] [data-opt="mention"] .v-ph::after,.ip-prev-root[data-p-people="mention"] .v-ph::after,.ip-prev-root[data-p-people="both"] .v-ph::after{content:" · @ pings someone"}
+[data-k="people"] [data-opt="mention"].ip-s-point .v-cur{left:60px;top:80px}
+[data-k="people"] [data-opt="mention"].ip-s-click .v-menu{display:none}
+[data-k="people"] [data-opt="mention"].ip-s-click .v-ph{display:none}
+[data-k="people"] [data-opt="mention"].ip-s-click .v-typed{display:block}
+[data-k="people"] [data-opt="mention"].ip-s-click .v-sugg{display:block}
+[data-k="people"] [data-opt="mention"].ip-s-pick .v-cur{left:62px;top:116px}
+[data-k="people"] [data-opt="mention"].ip-s-done .v-sugg{display:none}
+[data-k="people"] [data-opt="mention"] .v-typed .v-at{display:none}
+[data-k="people"] [data-opt="mention"].ip-s-done .v-typed .v-at{display:inline-flex}
+[data-k="people"] [data-opt="mention"].ip-s-done .v-typed .v-half{display:none}
+[data-k="people"] [data-opt="both"].ip-s-done .v-ph{display:none}
+[data-k="people"] [data-opt="both"].ip-s-done .v-typed{display:block}
+[data-k="people"] [data-opt="both"] .v-typed .v-half{display:none}
+
+/* thread: a message from Ben to Frank arrives */
+[data-k="thread"] .ip-s-new .v-new{display:flex;animation:v-in .35s ease-out}
+[data-k="thread"] .ip-s-point .v-cur{left:90px;top:128px}
+[data-k="thread"] .ip-s-done .v-tipone{opacity:1}
+[data-k="thread"] [data-opt="per"] .v-ppl,.ip-prev-root[data-p-thread="per"] .v-ppl{display:flex}
+[data-k="thread"] [data-opt="per"] .v-pb-ben .v-n{display:none}
+[data-k="thread"] [data-opt="per"].ip-s-new .v-new{display:none}
+[data-k="thread"] [data-opt="per"].ip-s-new .v-pb-ben .v-n{display:inline;animation:v-pop .4s ease-out}
+[data-k="thread"] [data-opt="per"].ip-s-point .v-cur{left:96px;top:13px}
+[data-k="thread"] [data-opt="per"].ip-s-done .v-pb.v-on{background:var(--fill);color:var(--ink2)}
+[data-k="thread"] [data-opt="per"].ip-s-done .v-pb-ben{background:var(--primary);color:var(--onprimary)}
+[data-k="thread"] [data-opt="per"].ip-s-done .v-pb-ben .v-n{background:rgba(255,255,255,.18);color:inherit}
+[data-k="thread"] [data-opt="per"].ip-s-done .v-m1,[data-k="thread"] [data-opt="per"].ip-s-done .v-m2{display:none}
+[data-k="thread"] [data-opt="per"].ip-s-done .v-new{display:flex}
+[data-k="thread"] [data-opt="per"].ip-s-done .v-tipone{opacity:0}
+[data-k="thread"] [data-opt="onefilter"] .v-flt,.ip-prev-root[data-p-thread="onefilter"] .v-flt{display:flex}
+[data-k="thread"] [data-opt="onefilter"].ip-s-point .v-cur{left:62px;top:13px}
+[data-k="thread"] [data-opt="onefilter"].ip-s-done .v-chip.v-on{background:var(--fill);color:var(--ink2)}
+[data-k="thread"] [data-opt="onefilter"].ip-s-done .v-mine{background:var(--primary);color:var(--onprimary)}
+[data-k="thread"] [data-opt="onefilter"].ip-s-done .v-new{display:none}
+[data-k="thread"] [data-opt="onefilter"].ip-s-done .v-tipone{opacity:0}
+
+/* attach: paste a screenshot, send it with the Op chip */
+[data-k="attach"] .ip-s-paste .v-comp .v-thumb{display:grid;animation:v-pop .35s ease-out}
+[data-k="attach"] .ip-s-paste .v-ph{display:none}
+[data-k="attach"] .ip-s-paste .v-typed{display:block}
+[data-k="attach"] [data-step="send"] .v-send{transform:scale(.88);background:var(--acc)}
+[data-k="attach"] .ip-s-done .v-new{display:flex;animation:v-in .35s ease-out}
+[data-k="attach"] .ip-s-done .v-new .v-thumb{display:grid;width:64px;height:44px}
+[data-k="attach"] .ip-s-done .v-comp .v-thumb{display:none}
+[data-k="attach"] .ip-s-done .v-typed{display:none}
+[data-k="attach"] .ip-s-done .v-ph{display:block}
+[data-k="attach"] [data-opt="oplink"] .v-thumb,[data-k="attach"] [data-opt="oplink"] .v-clip,.ip-prev-root[data-p-attach="oplink"] .v-clip{display:none!important}
+[data-k="attach"] [data-opt="text"] .v-thumb,[data-k="attach"] [data-opt="text"] .v-clip,[data-k="attach"] [data-opt="text"] .v-opchip,.ip-prev-root[data-p-attach="text"] .v-clip,.ip-prev-root[data-p-attach="text"] .v-opchip{display:none!important}
+
+/* read: seen */
+[data-k="read"] .ip-s-seen .v-seen{opacity:1}
+[data-k="read"] [data-opt="dot"] .v-seen,.ip-prev-root[data-p-read="dot"] .v-seen{display:none}
+[data-k="read"] [data-opt="dot"] .v-dot,.ip-prev-root[data-p-read="dot"] .v-dot{display:inline-block}
+[data-k="read"] [data-opt="dot"].ip-s-seen .v-dot,.ip-prev-root[data-p-read="dot"] .v-dot{background:var(--acc)}
+[data-k="read"] [data-opt="none"] .v-seen,.ip-prev-root[data-p-read="none"] .v-seen{display:none}
+[data-k="read"] [data-opt="none"].ip-s-seen .v-new{display:flex;animation:v-in .35s ease-out}
+
+/* quick: a chip fills the box */
+[data-k="quick"] .ip-s-point .v-cur{left:22px;top:12px}
+[data-k="quick"] [data-step="click"] .v-quick .v-q1{background:var(--primary);color:var(--onprimary)}
+[data-k="quick"] .ip-s-done .v-ph{display:none}
+[data-k="quick"] .ip-s-done .v-typed{display:block}
+.v-quick .v-qr{display:none}
+[data-k="quick"] [data-opt="recent"] .v-quick .v-qr,.ip-prev-root[data-p-quick="recent"] .v-quick .v-qr{display:inline-flex}
+[data-k="quick"] [data-opt="recent"] .v-quick .v-qa,.ip-prev-root[data-p-quick="recent"] .v-quick .v-qa{display:none}
+[data-k="quick"] [data-opt="recent"] .v-typed .v-ta,.ip-prev-root[data-p-quick="recent"] .v-typed .v-ta{display:none}
+.v-typed .v-tr{display:none}
+[data-k="quick"] [data-opt="recent"] .v-typed .v-tr{display:inline}
+[data-k="quick"] [data-opt="none"] .v-quick,.ip-prev-root[data-p-quick="none"] .v-quick{display:none}
+[data-k="quick"] [data-opt="none"].ip-s-point .v-cur{left:70px;top:16px}
+[data-k="quick"] [data-opt="none"].ip-s-done .v-typed .v-ta{display:none}
+[data-k="quick"] [data-opt="none"].ip-s-done .v-typed .v-tn{display:inline}
+.v-typed .v-tn{display:none}
+
+/* =============== G3 · inside the clock card =============== */
+/* tabsin: click Parts, its pane opens inside the card */
+[data-k="tabsin"] .ip-s-point .v-cur{left:105px;top:124px}
+[data-k="tabsin"] .ip-s-done .v-ct-time{color:var(--ink2);box-shadow:none}
+[data-k="tabsin"] .ip-s-done .v-ct-time .v-n{background:var(--fill);color:var(--ink2)}
+[data-k="tabsin"] .ip-s-done .v-ct-parts{color:var(--ink);box-shadow:inset 0 -2px 0 var(--acc)}
+[data-k="tabsin"] .ip-s-done .v-ct-parts .v-n{background:var(--acct);color:var(--acc)}
+[data-k="tabsin"] .ip-s-done .v-p-time{display:none}
+[data-k="tabsin"] .ip-s-done .v-p-parts{display:flex;animation:v-in .3s ease-out}
+[data-k="tabsin"] [data-opt="corner"] .v-ctabs,.ip-prev-root[data-p-tabsin="corner"] .v-ctabs{position:absolute;right:10px;top:8px;height:24px;box-shadow:none;margin:0}
+[data-k="tabsin"] [data-opt="corner"] .v-ctabs .v-tab,.ip-prev-root[data-p-tabsin="corner"] .v-ctabs .v-tab{height:22px;padding:0 7px;font-size:11.5px;border-radius:6px}
+[data-k="tabsin"] [data-opt="corner"] .v-ctabs .v-tab.v-on,.ip-prev-root[data-p-tabsin="corner"] .v-ctabs .v-tab.v-on{box-shadow:none;background:var(--acct)}
+[data-k="tabsin"] [data-opt="corner"] .v-ring,.ip-prev-root[data-p-tabsin="corner"] .v-ring{margin-top:22px}
+[data-k="tabsin"] [data-opt="corner"] .v-tpane,.ip-prev-root[data-p-tabsin="corner"] .v-tpane{padding-top:6px;box-shadow:inset 0 1px 0 var(--hair)}
+[data-k="tabsin"] [data-opt="corner"].ip-s-point .v-cur{left:260px;top:20px}
+[data-k="tabsin"] [data-opt="corner"].ip-s-done .v-ct-parts{box-shadow:none;background:var(--acct)}
+[data-k="tabsin"] [data-opt="corner"].ip-s-done .v-ct-time{background:transparent}
+[data-k="tabsin"] [data-opt="rail"] .v-ock,.ip-prev-root[data-p-tabsin="rail"] .v-ock{display:grid;grid-template-columns:30px minmax(0,1fr);column-gap:10px;row-gap:8px}
+[data-k="tabsin"] [data-opt="rail"] .v-ctabs,.ip-prev-root[data-p-tabsin="rail"] .v-ctabs{grid-column:1;grid-row:1/6;flex-direction:column;height:auto;align-items:stretch;box-shadow:none;margin:0;gap:4px;justify-content:flex-start}
+[data-k="tabsin"] [data-opt="rail"] .v-ctabs .v-tab,.ip-prev-root[data-p-tabsin="rail"] .v-ctabs .v-tab{width:30px;height:30px;padding:0;border-radius:8px;box-shadow:none;flex-direction:column;gap:0}
+[data-k="tabsin"] [data-opt="rail"] .v-ctabs .v-tab.v-on,.ip-prev-root[data-p-tabsin="rail"] .v-ctabs .v-tab.v-on{background:var(--acct);color:var(--acc)}
+[data-k="tabsin"] [data-opt="rail"] .v-ctabs .v-tl,[data-k="tabsin"] [data-opt="rail"] .v-ctabs .v-n,.ip-prev-root[data-p-tabsin="rail"] .v-ctabs .v-tl,.ip-prev-root[data-p-tabsin="rail"] .v-ctabs .v-n{display:none}
+[data-k="tabsin"] [data-opt="rail"] .v-ctabs .v-ti,.ip-prev-root[data-p-tabsin="rail"] .v-ctabs .v-ti{display:block}
+[data-k="tabsin"] [data-opt="rail"] .v-ock-top,[data-k="tabsin"] [data-opt="rail"] .v-bar,[data-k="tabsin"] [data-opt="rail"] .v-kv,[data-k="tabsin"] [data-opt="rail"] .v-tpane,[data-k="tabsin"] [data-opt="rail"] .v-tacts,.ip-prev-root[data-p-tabsin="rail"] .v-ock-top,.ip-prev-root[data-p-tabsin="rail"] .v-bar,.ip-prev-root[data-p-tabsin="rail"] .v-kv,.ip-prev-root[data-p-tabsin="rail"] .v-tpane,.ip-prev-root[data-p-tabsin="rail"] .v-cfacts{grid-column:2}
+[data-k="tabsin"] [data-opt="rail"] .v-tacts,.ip-prev-root[data-p-tabsin="rail"] .v-tacts{display:none}
+[data-k="tabsin"] [data-opt="rail"].ip-s-point .v-cur{left:22px;top:56px}
+[data-k="tabsin"] [data-opt="rail"].ip-s-done .v-ct-parts{box-shadow:none;background:var(--acct);color:var(--acc)}
+[data-k="tabsin"] [data-opt="rail"].ip-s-done .v-ct-time{background:transparent}
+
+/* panes: swap, stack, side by side */
+[data-k="panes"] .ip-s-point .v-cur{left:105px;top:124px}
+[data-k="panes"] .ip-s-done .v-ct-time{color:var(--ink2);box-shadow:none}
+[data-k="panes"] .ip-s-done .v-ct-parts{color:var(--ink);box-shadow:inset 0 -2px 0 var(--acc)}
+[data-k="panes"] .ip-s-done .v-p-time{display:none}
+[data-k="panes"] .ip-s-done .v-p-parts{display:flex;animation:v-in .3s ease-out}
+[data-k="panes"] [data-opt="stack"] .v-ctabs,.ip-prev-root[data-p-panes="stack"] .v-ctabs{display:none}
+[data-k="panes"] [data-opt="stack"] .v-stk,.ip-prev-root[data-p-panes="stack"] .v-stk{display:flex}
+[data-k="panes"] [data-opt="stack"] .v-tpane,.ip-prev-root[data-p-panes="stack"] .v-tpane{display:none!important}
+[data-k="panes"] [data-opt="stack"] .v-stk .v-p-time,.ip-prev-root[data-p-panes="stack"] .v-stk .v-p-time{display:flex!important;padding-left:14px}
+[data-k="panes"] [data-opt="stack"].ip-s-point .v-cur{left:60px;top:200px}
+[data-k="panes"] [data-opt="stack"].ip-s-done .v-stk .v-p-parts{display:flex!important;padding-left:14px;animation:v-in .3s ease-out}
+[data-k="panes"] [data-opt="stack"].ip-s-done .v-sh-parts .v-chev{transform:rotate(90deg)}
+[data-k="panes"] [data-opt="side"] .v-ctabs,.ip-prev-root[data-p-panes="side"] .v-ctabs{display:none}
+[data-k="panes"] [data-opt="side"] .v-side,.ip-prev-root[data-p-panes="side"] .v-side{display:grid}
+[data-k="panes"] [data-opt="side"] .v-tpane,.ip-prev-root[data-p-panes="side"] .v-tpane{display:none!important}
+[data-k="panes"] [data-opt="side"] .v-side .v-tpane,.ip-prev-root[data-p-panes="side"] .v-side .v-tpane{display:flex!important}
+[data-k="panes"] [data-opt="side"] .v-side .v-p-files,.ip-prev-root[data-p-panes="side"] .v-side .v-p-files{grid-column:1/3;box-shadow:inset 0 1px 0 var(--hair);padding-top:4px}
+[data-k="panes"] [data-opt="side"].ip-s-point .v-cur{left:40px;top:220px}
+[data-k="panes"] [data-opt="side"].ip-s-done .v-side .v-p-files .v-row.v-add{display:flex}
+[data-k="panes"] [data-opt="side"].ip-s-done .v-side .v-row.v-fh{color:var(--acc)}
+.v-stk{display:none;flex-direction:column;order:5}
+.v-sh{display:flex;align-items:center;gap:6px;height:26px;font:500 12px/1 var(--sans);color:var(--ink);box-shadow:inset 0 1px 0 var(--hair)}
+.v-sh .v-chev{width:12px;height:12px;transition:transform .25s}
+.v-sh-time .v-chev{transform:rotate(90deg)}
+.v-side{display:none;grid-template-columns:1fr 1fr;gap:4px 12px;order:5}
+.v-side .v-row.v-fh{font-weight:600;box-shadow:none;height:22px}
+
+/* counts: a part is received — 2/3 becomes 3/3, the dot turns green */
+[data-k="counts"] .v-ct-parts .v-n{font-size:0}
+[data-k="counts"] .v-ct-parts .v-n::after{content:"2/3";font-size:10px}
+[data-k="counts"] .ip-s-recv .v-ct-parts .v-n::after{content:"3/3"}
+[data-k="counts"] .ip-s-recv .v-ct-parts .v-n{animation:v-pop .4s ease-out}
+.v-sdot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--warn);transition:background .3s}
+[data-k="counts"] .ip-s-recv .v-sdot{background:var(--good)}
+[data-k="counts"] [data-opt="icons"] .v-ti,[data-k="counts"] [data-opt="names"] .v-ti,.ip-prev-root[data-p-counts="icons"] .v-ti{display:block}
+[data-k="counts"] [data-opt="names"] .v-ti{display:none}
+[data-k="counts"] [data-opt="icons"] .v-tl,.ip-prev-root[data-p-counts="icons"] .v-tl{display:none}
+[data-k="counts"] [data-opt="icons"] .v-sdot,[data-k="counts"] [data-opt="names"] .v-sdot,.ip-prev-root[data-p-counts="icons"] .v-sdot,.ip-prev-root[data-p-counts="names"] .v-sdot{display:none}
+[data-k="counts"] [data-opt="names"] .v-ctabs .v-n,.ip-prev-root[data-p-counts="names"] .v-ctabs .v-n{display:none}
+[data-k="counts"] [data-opt="names"].ip-s-recv .v-stoast{opacity:1}
+[data-k="counts"] .ip-s-recv .v-row.v-pr2 .v-pill{color:var(--good);box-shadow:inset 0 0 0 1px var(--good)}
+[data-k="counts"] .ip-s-recv .v-row.v-pr2 .v-pill::after{content:"Received"}
+.v-row.v-pr2 .v-pill::after{content:"Ordered · Thu"}
+
+/* actions: Add part at the right of the tab row, under the pane, or in ⋯ */
+[data-k="actions"] .ip-s-point .v-cur{left:250px;top:124px}
+[data-k="actions"] .ip-s-done .v-tpane .v-row.v-add{display:flex;animation:v-in .3s ease-out}
+[data-k="actions"] .v-bact{display:none}
+[data-k="actions"] [data-opt="pane"] .v-tacts,.ip-prev-root[data-p-actions="pane"] .v-tacts{display:none}
+[data-k="actions"] [data-opt="pane"] .v-bact,.ip-prev-root[data-p-actions="pane"] .v-bact{display:flex;order:7;gap:4px;padding-top:6px}
+[data-k="actions"] [data-opt="pane"].ip-s-point .v-cur{left:40px;top:220px}
+[data-k="actions"] [data-opt="menu"] .v-tacts,.ip-prev-root[data-p-actions="menu"] .v-tacts{display:none}
+[data-k="actions"] [data-opt="menu"] .v-dots,.ip-prev-root[data-p-actions="menu"] .v-dots{display:grid}
+[data-k="actions"] [data-opt="menu"].ip-s-point .v-cur{left:350px;top:16px}
+[data-k="actions"] [data-opt="menu"].ip-s-click .v-cmenu{display:block}
+[data-k="actions"] [data-opt="menu"].ip-s-done .v-cmenu .v-mi:first-child{background:var(--acct)}
+[data-k="actions"] [data-opt="menu"].ip-s-done .v-tpane .v-row.v-add{display:none}
+.v-dots{display:none}
+.v-bact{display:none}
+
+/* facts: the facts row moves into the card */
+[data-k="facts"] .ip-s-move .v-facts,[data-k="facts"] .ip-s-move .v-codes{opacity:0;height:0;margin:-8px 0 0;overflow:hidden}
+[data-k="facts"] .ip-s-move .v-cfacts{display:flex;animation:v-in .35s ease-out}
+[data-k="facts"] [data-opt="above"].ip-s-move .v-facts,[data-k="facts"] [data-opt="above"].ip-s-move .v-codes{opacity:1;height:auto;margin:0;overflow:visible}
+[data-k="facts"] [data-opt="above"].ip-s-move .v-cfacts{display:none}
+[data-k="facts"] [data-opt="above"].ip-s-move .v-facts .v-fc{box-shadow:inset 0 0 0 1.5px var(--accl)}
+[data-k="facts"] [data-opt="tab"].ip-s-move .v-cfacts{display:none}
+[data-k="facts"] [data-opt="tab"].ip-s-move .v-ct-det{display:inline-flex;animation:v-pop .4s ease-out}
+[data-k="facts"] [data-opt="tab"].ip-s-done .v-ct-det{color:var(--ink);box-shadow:inset 0 -2px 0 var(--acc)}
+[data-k="facts"] [data-opt="tab"].ip-s-done .v-ct-time{color:var(--ink2);box-shadow:none}
+[data-k="facts"] [data-opt="tab"].ip-s-done .v-p-time{display:none}
+[data-k="facts"] [data-opt="tab"].ip-s-done .v-p-det{display:flex}
+.v-p-det{display:none;flex-wrap:wrap;gap:6px;padding-top:8px;flex-direction:row!important}
+
+/* =============== the live preview: the middle column with every pick on it =============== */
+.ip-prev-root .v-col{width:100%}
+.ip-prev-root .v-facts,.ip-prev-root .v-codes{display:none}
+.ip-prev-root .v-cfacts{display:flex}
+.ip-prev-root .v-seen{opacity:1}
+.ip-prev-root .v-inkbar{display:block}
+.ip-prev-root .v-pv-tabs .v-tab.v-on{box-shadow:none}
+.ip-prev-root[data-p-facts="above"] .v-facts,.ip-prev-root[data-p-facts="above"] .v-codes{display:flex}
+.ip-prev-root[data-p-facts="above"] .v-cfacts,.ip-prev-root[data-p-facts="tab"] .v-cfacts{display:none}
+.ip-prev-root[data-p-facts="tab"] .v-ct-det{display:inline-flex}
+.ip-prev-root[data-p-where="inrow"] .v-t-ops{display:inline-flex}
+.ip-prev-root[data-p-where="inrow"] .v-pv-tabs .v-inkbar{left:106px}
+.ip-prev-root[data-p-where="strip"] .v-pv-tabs,.ip-prev-root[data-p-where="strip"] .v-two{display:none}
+.ip-prev-root[data-p-where="strip"] .v-strip{display:flex}
+.ip-prev-root[data-p-tabstyle="seg"] .v-pv-tabs{height:30px;padding:2px;border-radius:9px;background:var(--fill);box-shadow:none;align-items:center;width:max-content}
+.ip-prev-root[data-p-tabstyle="seg"] .v-pv-tabs .v-tab{height:26px;border-radius:7px}
+.ip-prev-root[data-p-tabstyle="seg"] .v-pv-tabs .v-tab.v-on{background:var(--raised);box-shadow:var(--shadow)}
+.ip-prev-root[data-p-tabstyle="seg"] .v-inkbar,.ip-prev-root[data-p-tabstyle="split"] .v-pv-tabs{display:none}
+.ip-prev-root[data-p-tabstyle="split"] .v-two{flex-direction:row}
+.ip-prev-root[data-p-tabstyle="split"] .v-two .v-pane{flex:1;min-width:0}
+.ip-prev-root[data-p-tabstyle="split"] .v-two .v-p-cus{display:block}
+.ip-prev-root[data-p-tabstyle="split"] .v-props{grid-template-columns:1fr}
+.ip-prev-root[data-p-tabstyle="split"] .v-msg{max-width:100%}
+.ip-prev-root[data-p-tabstyle="split"] .v-quick,.ip-prev-root[data-p-tabstyle="split"] .v-to{display:none}
+.ip-prev-root[data-p-height="fixed"] .v-two .v-pane{max-height:170px;overflow:hidden}
+.ip-prev-root[data-p-people="both"] .v-to{display:inline-flex}
+.ip-prev-root[data-p-tabsin="corner"] .v-pv-ock .v-cfacts{margin-right:200px}
+.ip-prev-root[data-p-actions="pane"] .v-bact{display:flex;order:7;gap:4px;padding-top:6px}
+.ip-prev-root[data-p-actions="menu"] .v-dots{display:grid}
+.ip-prev-root[data-p-counts="icons"] .v-ctabs .v-tab{padding:0 7px}
+.ip-prev-root[data-p-panes="stack"] .v-stk .v-p-time{display:flex!important}
+
+/* the recommended options, written down so each option has its own rule */
+[data-k="badge"] [data-opt="dotpeek"] .v-peek{display:inline}
+[data-k="chatlook"] [data-opt="bubbles"] .v-bub{border-radius:11px 11px 11px 3px}
+[data-k="people"] [data-opt="picker"] .v-to{display:inline-flex}
+[data-k="thread"] [data-opt="one"] .v-ppl,[data-k="thread"] [data-opt="one"] .v-flt{display:none}
+[data-k="attach"] [data-opt="full"] .v-clip{display:grid}
+[data-k="quick"] [data-opt="role"] .v-quick .v-qa{display:inline-flex}
+[data-k="tabsin"] [data-opt="bottom"] .v-ctabs{order:5}
+[data-k="panes"] [data-opt="swap"] .v-tpane{order:6}
+[data-k="counts"] [data-opt="countdot"] .v-sdot{display:inline-block}
+[data-k="actions"] [data-opt="right"] .v-tacts{display:flex}
+[data-k="facts"] [data-opt="header"].ip-s-move .v-cfacts{display:flex}
+</style>
+</head>
+<body>
+<header class="ip-bar">
+<div class="ip-r1"><h1>Parsec <small>RO page · Messages, Customer and the operation card</small></h1><nav class="ip-jump" id="ip-jump"></nav>
+<div class="ip-seg" role="group" aria-label="Theme"><button type="button" data-th="ivory" aria-pressed="true">Ivory</button><button type="button" data-th="graphite" aria-pressed="false">Graphite</button><button type="button" data-th="mist" aria-pressed="false">Mist</button><button type="button" data-th="obsidian" aria-pressed="false">Obsidian</button></div>
+<span class="ip-warn" id="ip-warn" title="Open the console for the list"></span>
+<button type="button" class="ip-btn" id="ip-accept">Accept all recommended</button>
+<button type="button" class="ip-btn pri" id="ip-open">Your picks <em id="ip-n"></em></button></div>
+<div class="ip-r2">
+<div class="ip-prog" id="ip-prog"><div class="ip-prog-bar"><i></i></div><span id="ip-prog-lab">0 of 0 decided</span></div>
+<div class="ip-tabs" role="group" aria-label="Filter"><button type="button" class="ip-chip" data-f="all" data-label="All" aria-pressed="true">All</button><button type="button" class="ip-chip" data-f="unpicked" data-label="Unpicked" aria-pressed="false">Unpicked</button><button type="button" class="ip-chip" data-f="picked" data-label="Picked" aria-pressed="false">Picked</button><button type="button" class="ip-chip" data-f="skipped" data-label="Skipped" aria-pressed="false">Skipped</button></div>
+<div class="ip-tabs" role="group" aria-label="Sort"><button type="button" class="ip-chip" data-sort="author" aria-pressed="true">Author order</button><button type="button" class="ip-chip" data-sort="impact" aria-pressed="false">By impact</button><button type="button" class="ip-chip" data-sort="effort" aria-pressed="false">By effort</button></div>
+</div>
+</header>
+<main class="ip-wrap">
+<section class="ip-now"><h2>How it looks now</h2><div class="ip-now-row"><div><b>Messages about this RO</b> sits under the operations: the last 4 (Show all), a To row with up to 4 of the RO’s people, one line — Enter sends</div><div><b>Customer</b> sits under that: 12 fields in a grid, the Warranty toggle, the customer’s other ROs</div><div><b>An open operation</b>: the facts row · the codes line · the clock card · then Time / Parts / Files as a separate strip under it, each tab’s actions at the right</div></div></section>
+<p class="ip-lead" id="ip-lead"></p>
+<p class="ip-keys"><kbd>J</kbd> <kbd>K</kbd> next / previous card · <kbd>1</kbd>–<kbd>4</kbd> pick an option · <kbd>S</kbd> skip · <kbd>Z</kbd> undo · hover an option to peek at its result</p>
+<div class="ip-layout" id="ip-layout">
+  <div id="ip-secs"></div>
+  <aside id="ip-preview" hidden></aside>
+</div>
+</main>
+<div id="ip-picks" hidden></div>
+<script>
+/* ---------- the content: groups → ideas → options (Skip is added to each) ---------- */
+var APP = 'Parsec', TOPIC = 'RO page · Messages, Customer and the operation card', KEY = 'ip-parsec-ro-msgs-opcard';   /* KEY: unique per mock-up */
+var AUTOSCROLL = true;                                                 /* after a pick, bring the next unpicked card into view */
+/* the drawn pieces (real names and numbers from the sample RO 48213 · Carolina Freight) */
+function sv(p, cls) { return '<svg class="' + (cls || 'v-ti') + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>'; }
+var I = {
+  send: sv('<path d="M4 12l16-8-6 16-2.5-6.5z"/><path d="M11.5 13.5L20 4"/>', 'v-i'),
+  clip: '<path d="M8.5 12.5l6-6a3 3 0 1 1 4.2 4.2l-8 8a5 5 0 0 1-7-7l8-8"/>',
+  clock: '<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>',
+  box: '<path d="M4 8l8-4 8 4v8l-8 4-8-4z"/><path d="M4 8l8 4 8-4M12 12v8"/>',
+  image: '<rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.7"/><path d="M4 17l4.5-4 3.5 3 3-2.5 5 4"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  chev: '<path d="M9 6l6 6-6 6"/>',
+  dots: '<circle cx="6" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="18" cy="12" r="1.6" fill="currentColor" stroke="none"/>',
+  info: '<circle cx="12" cy="12" r="8"/><path d="M12 11v5M12 8h.01"/>'
+};
+var TABS3 = '<div class="v-tabs v-pv-tabs v-target"><span class="v-tab v-t-ops">Operations <i class="v-n">3</i></span><span class="v-tab v-on v-t-msg">Messages <i class="v-n">4</i></span><span class="v-tab v-t-cus">Customer</span><i class="v-inkbar"></i></div>';
+var STRIP = '<div class="v-strip v-target"><span class="v-av">FD</span><span>Frank · Parts are in, bay 4 · 12m</span><b>Carolina Freight</b></div>';
+var M_FRANK = '<div class="v-msg v-m1"><span class="v-av">FD</span><div class="v-bub"><span class="v-who">Frank · Foreman <em>→ Mike</em></span>Parts are in, bay 4.<small>8:12 am</small></div></div>';
+var M_ME = '<div class="v-msg v-me v-m2"><span class="v-av">MR</span><div class="v-bub"><span class="v-who">Mike <em>→ Frank</em></span>On it after the PM.<small>8:15 am</small></div></div>';
+var M_BEN = '<div class="v-msg v-m3"><span class="v-av">BO</span><div class="v-bub"><span class="v-who">Ben · Parts <em>→ Mike</em></span>Core charge on the turbo — bring the old one.<small>8:40 am</small></div></div>';
+function comp(inner, ph) { return '<div class="v-comp">' + (inner || '') + '<span class="v-ph">' + (ph || 'Message about RO 48213… Enter sends it') + '</span><span class="v-send">' + I.send + '</span></div>'; }
+var CUS4 = '<div><small>Customer</small><b>Carolina Freight</b></div><div><small>Contact</small><b>Denise Hall</b></div><div><small>Phone</small><b>(336) 555-0142<span class="v-copied">Copied</span></b></div><div><small>Case #</small><b>CS-88121</b></div>';
+var CUS_MORE = '<div class="v-more"><div><small>Cust #</small><b>10448</b></div><div><small>Email</small><b>d.hall@carolinafreight.com</b></div><div><small>Driver</small><b>Ray Pittman</b></div><div><small>Driver’s phone</small><b>(336) 555-0190</b></div><div><small>PO #</small><b>PO-7731</b></div><div><small>Auth #</small><b>—</b></div><div><small>Tech support</small><b>—</b></div><div><small>Warranty RO</small><b>Off</b></div></div>';
+var CUS_PANE = '<div class="v-pane v-p-cus"><div class="v-props">' + CUS4 + CUS_MORE + '</div><span class="v-showall">Show all ▾</span></div>';
+var OP1 = '<div class="v-op v-op1"><b>1</b><span>Check engine light — SPN 3226</span><i class="v-pill v-go">Working</i></div>', OP2 = '<div class="v-op v-op2"><b>2</b><span>PM service</span><i class="v-pill v-hold">Hold Tech</i></div>';
+var OPS = '<div class="v-sec v-opsh">Operations <i class="v-n">3</i></div>' + OP1 + OP2;
+var FACTS = '<div class="v-facts"><span class="v-fc">Job type <b>Warranty</b></span><span class="v-fc">Group <b>25</b></span><span class="v-fc">Skill <b>Electrical</b></span><span class="v-fc">ASIST <b>Approved</b></span><span class="v-fc">Steps <b>3 of 7</b></span></div><div class="v-codes"><span class="v-code">SPN 3226 FMI 4</span><span class="v-code">P0420</span></div>';
+var CFACTS = '<div class="v-cfacts"><span class="v-fc"><b>Warranty</b></span><span class="v-fc">Group <b>25</b></span><span class="v-fc"><b>Electrical</b></span><span class="v-fc">ASIST <b>Approved</b></span><span class="v-fc">Steps <b>3 of 7</b></span><span class="v-code">SPN 3226 FMI 4</span><span class="v-code">P0420</span></div>';
+var P_TIME = '<div class="v-tpane v-p-time"><div class="v-row"><span class="v-tm">8:02 – 9:14 am</span><span>Diag · scan, SPN 3226 active</span><span class="v-tm">1.20 h</span></div><div class="v-row"><span class="v-tm">9:40 – now</span><span>Repair · turbo actuator</span><span class="v-tm">0.50 h</span></div></div>';
+var P_PARTS = '<div class="v-tpane v-p-parts"><div class="v-row v-pr1"><span>Turbo actuator</span><span class="v-pn">22349881</span><i class="v-pill v-go">Received</i></div><div class="v-row v-pr2"><span>Gasket kit</span><span class="v-pn">20573583</span><i class="v-pill v-hold"></i></div><div class="v-row v-pr3"><span>Clamp</span><span class="v-pn">996712</span><i class="v-pill v-go">Installed</i></div><div class="v-row v-add"><span>Description · PN · Qty</span></div></div>';
+var P_FILES = '<div class="v-tpane v-p-files"><div class="v-row"><span>dash-codes.png</span><span class="v-tm">Mike · 8:40 am</span></div><div class="v-row v-add"><span>Drop a file or paste a screenshot</span></div></div>';
+var P_DET = '<div class="v-tpane v-p-det"><span class="v-fc">Job type <b>Warranty</b></span><span class="v-fc">Group <b>25</b></span><span class="v-fc">Skill <b>Electrical</b></span><span class="v-fc">ASIST <b>Approved</b></span><span class="v-fc">Steps <b>3 of 7</b></span><span class="v-code">SPN 3226 FMI 4</span><span class="v-code">P0420</span></div>';
+function inner(s) { return s.replace(/^<div class="v-tpane[^"]*">/, '').replace(/<\/div>$/, ''); }
+function ctabs(o) {
+  o = o || {};
+  return '<div class="v-tabs v-ctabs v-target"><span class="v-tab v-on v-ct-time">' + sv(I.clock) + '<span class="v-tl">Time</span><i class="v-n">4</i></span><span class="v-tab v-ct-parts">' + sv(I.box) + '<span class="v-tl">Parts</span><i class="v-n">2/3</i>' + (o.dot ? '<i class="v-sdot"></i>' : '') + '</span><span class="v-tab v-ct-files">' + sv(I.clip) + '<span class="v-tl">Files</span><i class="v-n">1</i></span><span class="v-tab v-ct-det"><span class="v-tl">Details</span></span>'
+    + (o.acts ? '<span class="v-tacts"><span class="v-tb">' + sv(I.plus, 'v-i') + 'Add part</span><span class="v-tb">' + sv(I.clip, 'v-i') + '</span><span class="v-tb">' + sv(I.image, 'v-i') + '</span></span>' : '') + '</div>';
+}
+function ock(o) {
+  o = o || {};
+  return '<div class="v-ock v-pv-ock">' + CFACTS + '<span class="v-dots">' + sv(I.dots, 'v-i') + '</span><div class="v-cmenu"><div class="v-mi">Add part</div><div class="v-mi">Attach a file</div><div class="v-mi">Paste a screenshot</div><div class="v-mi">Copy the notes</div></div>'
+    + '<div class="v-ock-top"><div><div class="v-big">1:42:08</div><div class="v-lbl">On it · 2 punches · Mike</div></div><div class="v-ring"><i></i></div></div>'
+    + '<div class="v-bar"><i style="left:0;width:40%"></i><i style="left:42%;width:26%"></i><span class="v-q" style="left:72%"></span></div>'
+    + '<div class="v-kv"><span>Quoted<b>2.50</b></span><span>On it<b>1.70</b></span><span>Left<b>0.80</b></span><span>Eff.<b>147%</b></span></div>'
+    + ctabs(o) + (o.stack ? '<div class="v-stk"><div class="v-sh v-sh-time">' + sv(I.chev, 'v-chev') + 'Time <i class="v-n">4</i></div>' + P_TIME + '<div class="v-sh v-sh-parts">' + sv(I.chev, 'v-chev') + 'Parts <i class="v-n">2/3</i></div>' + P_PARTS + '<div class="v-sh v-sh-files">' + sv(I.chev, 'v-chev') + 'Files <i class="v-n">1</i></div></div>' : '')
+    + (o.side ? '<div class="v-side"><div class="v-tpane v-p-time"><div class="v-row v-fh">Time · 4</div>' + inner(P_TIME) + '</div><div class="v-tpane v-p-parts"><div class="v-row v-fh">Parts · 2/3</div>' + inner(P_PARTS) + '</div><div class="v-tpane v-p-files"><div class="v-row v-fh v-target">Files · 1</div>' + inner(P_FILES) + '</div></div>' : '')
+    + P_TIME + P_PARTS + P_FILES + P_DET + '<div class="v-bact"><span class="v-tb">' + sv(I.plus, 'v-i') + 'Add part</span><span class="v-tb">' + sv(I.clip, 'v-i') + 'Attach</span></div>'
+    + '<span class="v-stoast">Part received · Gasket kit</span></div>';
+}
+var IDEAS = [
+  { group: 'Above the operations: Messages and Customer', items: [
+    { k: 'where', t: 'Messages and Customer move above Operations, as one tabbed box', why: 'Today both sit under the operations, at the bottom of the column, each its own section.',
+      pri: 'H', effort: 'M', rec: 'What you asked for: one box, one click to switch, and the operations keep the place the eye expects.',
+      vis: '<div class="v-col">' + TABS3 + STRIP + '<div class="v-pane v-p-msg"><div class="v-chat">' + M_FRANK + M_ME + '</div></div>' + CUS_PANE + '<div class="v-pane v-p-ops">' + OP1 + OP2 + '</div>' + OPS + '<span class="v-cur"></span></div>',
+      steps: [['idle', 900], ['point', 700], ['click', 500], ['done', 1500]],
+      opts: [['above', 'A · Above Operations, one box', 'Messages | Customer tabs; Operations stay under it'], ['inrow', 'B · All three as tabs', 'Operations | Messages | Customer in one strip — the column shows one at a time'], ['strip', 'C · A slim strip that opens', 'one line (last message · customer) until you click it']] },
+    { k: 'tabstyle', t: 'How the toggle looks', why: 'The operation card already has underline tabs with a sliding ink line (Time / Parts / Files).',
+      pri: 'M', effort: 'S', rec: 'The same tabs the operation card uses, so the page has one kind of tab.',
+      vis: '<div class="v-col"><div class="v-tabs v-target"><span class="v-tab v-on v-t-msg">Messages <i class="v-n">4</i></span><span class="v-tab v-t-cus">Customer</span><i class="v-inkbar"></i></div><div class="v-two"><div class="v-pane v-p-msg"><div class="v-chat">' + M_FRANK + M_ME + '</div></div><div class="v-pane v-p-cus"><div class="v-props">' + CUS4 + '</div></div></div><span class="v-cur"></span></div>',
+      steps: [['idle', 900], ['point', 700], ['click', 500], ['done', 1500]],
+      opts: [['ink', 'A · Underline with the sliding ink', 'like the operation’s tabs'], ['seg', 'B · Segmented pill', 'two buttons in one pill, the picked one raised'], ['split', 'C · No toggle — side by side', 'Messages left, Customer right, both always open (the click copies the phone)']] },
+    { k: 'badge', t: 'What the Messages tab shows while you are on Customer', why: 'A message can land while you are filling in the customer.',
+      pri: 'M', effort: 'S', needs: 'where', rec: 'You see who wrote and what without leaving Customer.',
+      vis: '<div class="v-col"><div class="v-tabs"><span class="v-tab v-t-msg">Messages <i class="v-n">4</i><span class="v-badge"><i class="v-bd">2 new</i><em class="v-peek">Frank: Parts are in, bay 4</em></span></span><span class="v-tab v-on v-t-cus">Customer</span></div><div class="v-pane v-p-cus" style="display:block"><div class="v-props">' + CUS4 + '</div></div></div>',
+      steps: [['idle', 900], ['new', 1800]],
+      opts: [['dotpeek', 'A · Count and a peek of the last message', '“2 new — Frank: Parts are in…”'], ['count', 'B · Count only', '“2 new”'], ['none', 'C · Nothing', 'the number just goes up; look when you open it']] },
+    { k: 'height', t: 'Keep Operations in view — the box above them can’t grow tall', why: 'Customer has 12 fields; a chat gets long. Whatever sits above Operations pushes them down.',
+      pri: 'H', effort: 'S', needs: 'where', rec: 'Operations stay at the same spot no matter how long the chat or the customer gets.',
+      vis: '<div class="v-col"><div class="v-tabs"><span class="v-tab v-t-msg">Messages <i class="v-n">4</i></span><span class="v-tab v-on v-t-cus">Customer</span></div>' + CUS_PANE.replace('v-p-cus"', 'v-p-cus" style="display:block"') + OPS + '</div>',
+      steps: [['idle', 900], ['fill', 1900]],
+      opts: [['fixed', 'A · A fixed height with its own scroll', 'about four rows; the pane scrolls inside'], ['keyfour', 'B · Four key fields, Show all for the rest', 'Customer, Contact, Phone, Case # up front'], ['grow', 'C · Grows with its content', 'Operations move down as it fills']] }
+  ]},
+  { group: 'Messages as a chat', items: [
+    { k: 'chatlook', t: 'Messages read as a chat', why: 'Today: a list of “Frank → Mike” lines, newest first, four shown, one input under them.',
+      pri: 'H', effort: 'M', rec: 'Reads at a glance who said what; what people expect of a chat.',
+      vis: '<div class="v-col"><div class="v-pane"><div class="v-chat"><div class="v-day">Today</div>' + M_FRANK + M_ME + M_BEN + '<div class="v-msg v-me v-new"><span class="v-av">MR</span><div class="v-bub"><span class="v-who">Mike <em>→ Ben</em></span>Will do.<small>now</small></div></div></div>' + comp('<span class="v-to v-to-ben"><i></i></span>').replace('<span class="v-ph">', '<span class="v-typed">Will do.</span><span class="v-ph">') + '</div><span class="v-cur"></span></div>',
+      steps: [['idle', 900], ['type', 1000], ['send', 500], ['done', 1500]],
+      opts: [['bubbles', 'A · Bubbles', 'yours on the right in the accent tint, theirs on the left with the avatar; day dividers'], ['thread', 'B · Lines, newest at the bottom', 'avatar · name → to · text · time, as today but in order'], ['log', 'C · Compact log', 'one line each, the time in mono — the most on screen']] },
+    { k: 'people', t: 'Anyone in the shop can be messaged', why: 'Today the To row offers at most four: the RO’s Foreman, Parts, Advisor and Technician.',
+      pri: 'H', effort: 'M', rec: 'One list with everyone on it, the RO’s own people on top.',
+      vis: '<div class="v-col"><div class="v-pane"><div class="v-chat">' + M_FRANK + '</div>' + comp('<span class="v-to v-target"><i></i></span>').replace('<span class="v-ph">', '<span class="v-typed">Core charge <span class="v-half">@Be</span><span class="v-at">@Ben</span></span><span class="v-ph">')
+        + '<div class="v-menu"><div class="v-mg">On this RO</div><div class="v-mi"><span class="v-av">FD</span>Frank Delaney<small>Foreman</small></div><div class="v-mi v-pick"><span class="v-av">BO</span>Ben Okafor<small>Parts</small></div><div class="v-mi"><span class="v-av">JC</span>Jenna Cho<small>Service writer</small></div><div class="v-mg">Technicians</div><div class="v-mi"><span class="v-av">DK</span>Dana Kowalski</div><div class="v-mi"><span class="v-av">LM</span>Luis Martinez</div><div class="v-mi"><span class="v-av">PS</span>Priya Shah</div><div class="v-mg">Shop</div><div class="v-mi"><span class="v-av">SA</span>Sofia Alvarez<small>Triage</small></div><div class="v-mi"><span class="v-av">CR</span>Carla Reyes<small>Warranty</small></div><div class="v-mi"><span class="v-av">TB</span>Tom Brandt<small>Manager</small></div></div>'
+        + '<div class="v-sugg"><div class="v-mi v-pick"><span class="v-av">BO</span>Ben Okafor<small>Parts</small></div><div class="v-mi"><span class="v-av">BT</span>Beth Tran<small>Technician</small></div></div></div><span class="v-cur"></span></div>',
+      steps: [['idle', 900], ['point', 700], ['click', 700], ['pick', 900], ['done', 1400]],
+      opts: [['picker', 'A · A To picker with everyone, by role', 'the RO’s people first, then every role in the shop'], ['mention', 'B · @ in the message', 'type @ and pick a name; the thread stays one'], ['both', 'C · The To picker and @', 'To picks who it goes to; @ pings someone else in the same line']] },
+    { k: 'thread', t: 'One thread for the RO, or one per person', why: 'Today each message is one Inbox note from one person to one person.',
+      pri: 'H', effort: 'M', rec: 'The RO is the subject — one place to read everything said about it; To only says who gets pinged.',
+      vis: '<div class="v-col"><div class="v-ppl"><span class="v-pb v-on">Frank <i class="v-n">2</i></span><span class="v-pb v-pb-ben v-target">Ben <i class="v-n">1</i></span></div><div class="v-flt"><span class="v-chip v-on">All</span><span class="v-chip v-mine v-target">Only mine</span></div><div class="v-pane"><div class="v-chat">' + M_FRANK + M_ME + '<div class="v-msg v-new"><span class="v-av">BO</span><div class="v-bub v-target"><span class="v-who">Ben · Parts <em>→ Frank</em></span>Turbo’s in, core goes back Friday.<small>now · to Frank</small></div><span class="v-tipone">Ben wrote to Frank — you see it because it’s about this RO</span></div></div></div><span class="v-cur"></span></div>',
+      steps: [['idle', 900], ['new', 900], ['point', 700], ['click', 500], ['done', 1400]],
+      opts: [['one', 'A · One thread for the RO', 'everyone on it sees the whole conversation'], ['per', 'B · One thread per person', 'like the Inbox today: you and Frank, you and Ben'], ['onefilter', 'C · One thread, plus Only mine', 'a chip hides what wasn’t to or from you']] },
+    { k: 'attach', t: 'Attach to a message', why: 'A photo of the part or the dash says more than a line of text; today a message is text only.',
+      pri: 'M', effort: 'M', rec: 'Files, a pasted screenshot, and an Op chip that ties the message to the operation you have open.',
+      vis: '<div class="v-col"><div class="v-pane"><div class="v-chat">' + M_FRANK + '<div class="v-msg v-me v-new"><span class="v-av">MR</span><div class="v-bub"><span class="v-thumb">' + sv(I.image, 'v-i') + '</span>Code on the dash after the clear.<small>now · <span class="v-opchip">Op 1</span></small></div></div></div>' + comp('<span class="v-clip">' + sv(I.clip, 'v-i') + '</span><span class="v-opchip">Op 1</span><span class="v-thumb">' + sv(I.image, 'v-i') + '</span>').replace('<span class="v-ph">', '<span class="v-typed">Code on the dash after the clear.</span><span class="v-ph">') + '</div><span class="v-cur"></span></div>',
+      steps: [['idle', 900], ['paste', 1000], ['send', 500], ['done', 1500]],
+      opts: [['full', 'A · Files, screenshots and the operation', 'paperclip, paste a screenshot, Op chip'], ['oplink', 'B · The operation link only', 'an Op chip, no files'], ['text', 'C · Text only', 'as today']] },
+    { k: 'read', t: 'Seen', why: 'You don’t know whether the foreman read it until he answers.',
+      pri: 'L', effort: 'S', rec: 'A quiet line under your last message says who has read it.',
+      vis: '<div class="v-col"><div class="v-pane"><div class="v-chat">' + M_FRANK + M_ME.replace('<small>8:15 am</small>', '<small>8:15 am<i class="v-dot"></i></small>') + '<div class="v-seen">Seen by Frank · 2m</div><div class="v-msg v-new"><span class="v-av">FD</span><div class="v-bub"><span class="v-who">Frank · Foreman</span>Good.<small>now</small></div></div></div></div></div>',
+      steps: [['idle', 900], ['seen', 1800]],
+      opts: [['names', 'A · Seen by names', '“Seen by Frank · 2m”'], ['dot', 'B · A dot', 'grey until read, then the accent'], ['none', 'C · None', 'you know when they answer']] },
+    { k: 'quick', t: 'Quick lines', why: 'Most messages on an RO are the same few questions.',
+      pri: 'L', effort: 'S', rec: 'A tech sees the lines a tech sends; Parts sees Parts’ lines. One tap, then Enter.',
+      vis: '<div class="v-col"><div class="v-quick"><span class="v-q1 v-qa v-target">Parts in?</span><span class="v-qa">Approved?</span><span class="v-qa">Need the foreman</span><span class="v-qa">Road test next</span><span class="v-q1 v-qr v-target">On it after the PM</span><span class="v-qr">Will do</span><span class="v-qr">Bay 4?</span></div>' + comp('<span class="v-to v-to-ben"><i></i></span>').replace('<span class="v-ph">', '<span class="v-typed"><span class="v-ta">Parts in?</span><span class="v-tr">On it after the PM</span><span class="v-tn">Any word on the parts?</span></span><span class="v-ph">') + '<span class="v-cur"></span></div>',
+      steps: [['idle', 900], ['point', 700], ['click', 500], ['done', 1500]],
+      opts: [['role', 'A · Quick chips by role', 'Parts in? · Approved? · Need the foreman · Road test next'], ['recent', 'B · Your recent lines', 'the last few things you typed'], ['none', 'C · None', 'type it']] }
+  ]},
+  { group: 'Time, Parts and Files inside the clock card', items: [
+    { k: 'tabsin', t: 'The tabs live inside the clock card', why: 'Today the clock card ends at its numbers; Time / Parts / Files is a second strip under it.',
+      pri: 'H', effort: 'M', rec: 'One card for the operation — the clock you watch on top, the lists you work from under it, no second strip.',
+      vis: '<div class="v-col">' + ock({ dot: 0 }) + '<span class="v-cur"></span></div>',
+      steps: [['idle', 900], ['point', 700], ['click', 500], ['done', 1500]],
+      opts: [['bottom', 'A · A tab row under the bar, the pane inside', 'clock on top, Time / Parts / Files under it'], ['corner', 'B · Small tabs in the card’s top-right', 'beside the big time; the pane opens under the numbers'], ['rail', 'C · An icon rail down the left', 'clock · parts · files; the pane on the right']] },
+    { k: 'panes', t: 'How a pane opens', why: 'Three lists in one card: one at a time, stacked, or side by side.',
+      pri: 'M', effort: 'M', rec: 'Keeps the card short; the tab row says where you are.',
+      vis: '<div class="v-col">' + ock({ stack: 1, side: 1 }) + '<span class="v-cur"></span></div>',
+      steps: [['idle', 900], ['point', 700], ['click', 500], ['done', 1500]],
+      opts: [['swap', 'A · One at a time', 'the pane swaps; its height eases'], ['stack', 'B · Stacked sections', 'Time, Parts and Files each a header you open; several at once'], ['side', 'C · Time and Parts side by side', 'Files under them; nothing to switch when the card is wide']] },
+    { k: 'counts', t: 'What the tab labels say', why: 'Time 4 · Parts 2/3 · Files 1 today. A part gets received while you are on Time.',
+      pri: 'M', effort: 'S', rec: 'The count says how many; the dot says whether every part is in hand, without opening the tab.',
+      vis: '<div class="v-col">' + ock({ dot: 1 }) + '</div>',
+      steps: [['idle', 900], ['recv', 1900]],
+      opts: [['countdot', 'A · Name, count and a state dot', 'Parts 2/3 with an amber dot until every part is in hand'], ['icons', 'B · Icons and counts', 'clock · box · clip, with the numbers'], ['names', 'C · Names only', 'a toast says when something changes']] },
+    { k: 'actions', t: 'Where each tab’s actions sit', why: 'Attach, paste a screenshot, copy the notes, add a part — today at the right of the tab row, only the open tab’s.',
+      pri: 'M', effort: 'S', needs: 'tabsin', rec: 'The hand is already on the tab row.',
+      vis: '<div class="v-col">' + ock({ acts: 1 }).replace('v-tab v-on v-ct-time', 'v-tab v-ct-time').replace('v-tab v-ct-parts', 'v-tab v-on v-ct-parts').replace('<div class="v-tpane v-p-time">', '<div class="v-tpane v-p-time" style="display:none">').replace('<div class="v-tpane v-p-parts">', '<div class="v-tpane v-p-parts" style="display:flex">') + '<span class="v-cur"></span></div>',
+      steps: [['idle', 900], ['point', 700], ['click', 500], ['done', 1500]],
+      opts: [['right', 'A · At the right of the tab row', 'as today: only the open tab’s'], ['pane', 'B · At the bottom of the pane', 'an Add part row under the parts, Attach under the files'], ['menu', 'C · In the card’s ⋯ menu', 'one menu, every action']] },
+    { k: 'facts', t: 'The facts row and the codes line', why: 'Job type · Group · Skill · ASIST · Steps, and the codes, sit above the card today.',
+      pri: 'M', effort: 'M', rec: 'Everything about the operation in the one card, and still read before the clock.',
+      vis: '<div class="v-col">' + FACTS + ock({ dot: 0 }) + '</div>',
+      steps: [['idle', 900], ['move', 1000], ['done', 1300]],
+      opts: [['header', 'A · Into the card, as a line above the clock', 'small chips; the codes with them'], ['above', 'B · Stay above the card, as today'], ['tab', 'C · A Details tab', 'a fourth tab holds the facts and the codes']] }
+  ]}
+];
+/* The live preview: the RO page’s middle column with every pick on it. The picks arrive as data-p-<idea>="<option>" on .ip-prev-root. */
+var COMPONENT = '<div class="v-col">' + TABS3.replace(' v-target', '') + STRIP.replace(' v-target', '') + '<div class="v-two"><div class="v-pane v-p-msg"><div class="v-ppl"><span class="v-pb v-on">Frank <i class="v-n">2</i></span><span class="v-pb">Ben <i class="v-n">1</i></span></div><div class="v-flt"><span class="v-chip v-on">All</span><span class="v-chip">Only mine</span></div><div class="v-chat"><div class="v-day">Today</div>' + M_FRANK + M_ME + '<div class="v-seen">Seen by Frank · 2m</div></div><div class="v-quick"><span class="v-qa">Parts in?</span><span class="v-qa">Approved?</span><span class="v-qa">Need the foreman</span><span class="v-qr">On it after the PM</span><span class="v-qr">Will do</span></div>' + comp('<span class="v-to"><i></i></span><span class="v-clip">' + sv(I.clip, 'v-i') + '</span><span class="v-opchip">Op 1</span>') + '</div><div class="v-pane v-p-cus"><div class="v-props">' + CUS4 + '</div></div></div>'
+  + '<div class="v-sec v-opsh">Operations <i class="v-n">3</i></div>' + FACTS + ock({ dot: 1, acts: 1, stack: 1, side: 1 }) + OP2 + '</div>';
+var PREVIEW = null;                                                    /* optional: function (ctx) { ... } runs after every change; ctx = { v, conf, notes, note, th, root, mount, ideas, app, topic } */
+/* ---------- the page (v3 shell) ---------- */
+var D = document, $ = function (s, r) { return (r || D).querySelector(s); }, $$ = function (s, r) { return [].slice.call((r || D).querySelectorAll(s)); };
+function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]; }); }
+function flat() { var a = []; IDEAS.forEach(function (g) { g.items.forEach(function (it) { a.push(it); }); }); return a; }
+function find(k) { var r = null; flat().forEach(function (it) { if (it.k === k) r = it; }); return r; }
+var THEMES = ['ivory', 'graphite', 'mist', 'obsidian'], THMAP = { light: 'ivory', dark: 'graphite' };
+var V = { th: 'ivory', open: false, v: {}, conf: {}, notes: {}, note: '', filter: 'all', sort: 'author', cmp: null, auto: AUTOSCROLL };
+function load(d) { if (!d || typeof d !== 'object') return; if (d.v) V.v = d.v; if (d.conf) V.conf = d.conf; if (d.notes) V.notes = d.notes; if (typeof d.note === 'string') V.note = d.note; if (d.th) V.th = THMAP[d.th] || d.th; if (d.filter) V.filter = d.filter; if (d.sort) V.sort = d.sort; if (typeof d.auto === 'boolean') V.auto = d.auto; }
+try { load(JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
+try { var hm = (location.hash || '').match(/[#&]p=([^&]+)/); if (hm) load(JSON.parse(decodeURIComponent(hm[1]))); } catch (e) {}
+if (THEMES.indexOf(V.th) < 0) V.th = 'ivory';
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify({ v: V.v, conf: V.conf, notes: V.notes, note: V.note, th: V.th, filter: V.filter, sort: V.sort, auto: V.auto })); } catch (e) {}
+  try { var next = '#p=' + encodeURIComponent(JSON.stringify({ v: V.v, conf: V.conf, notes: V.notes, note: V.note, th: V.th })); if (location.hash !== next) history.replaceState(null, '', location.pathname + location.search + next); } catch (e) {}
+}
+var total = flat().length;
+$('#ip-lead').textContent = total + ' idea' + (total === 1 ? '' : 's') + ' for the ' + TOPIC.replace(/^The\s+/i, '').toLowerCase() + ' — pick an option to see it play, or Skip, then copy Your picks into the chat.';
+$('#ip-jump').innerHTML = IDEAS.map(function (g, i) { return '<a href="#ip-s' + i + '">' + esc(g.group) + '</a>'; }).join('');
+/* ---------- cards ---------- */
+function priRank(p) { return { H: 0, M: 1, L: 2 }[p] != null ? { H: 0, M: 1, L: 2 }[p] : 9; }
+function effRank(e) { return { S: 0, M: 1, L: 2 }[e] != null ? { S: 0, M: 1, L: 2 }[e] : 9; }
+function isPicked(k) { var v = V.v[k]; return !!v && v !== 'skip'; }
+function locked(it) { return !!it.needs && !isPicked(it.needs); }
+function tagHtml(it) {
+  var b = [];
+  if (it.pri) b.push('<span class="ip-tag' + (it.pri === 'H' ? ' hi' : it.pri === 'L' ? ' lo' : '') + '" title="Impact: ' + ({ H: 'high', M: 'medium', L: 'low' })[it.pri] + '">' + esc(it.pri) + '</span>');
+  if (it.effort) b.push('<span class="ip-tag" title="Effort: ' + ({ S: 'small', M: 'medium', L: 'large' })[it.effort] + '">' + esc(it.effort) + '</span>');
+  if (it.needs) { var p = find(it.needs); b.push('<span class="ip-need" data-need="' + esc(it.needs) + '">needs: ' + esc(p ? p.t : it.needs) + '</span>'); }
+  return b.length ? '<span class="ip-tags">' + b.join('') + '</span>' : '';
+}
+function buildSecs() {
+  var order = flat().slice();
+  if (V.sort === 'impact') order.sort(function (a, b) { return priRank(a.pri) - priRank(b.pri) || effRank(a.effort) - effRank(b.effort); });
+  else if (V.sort === 'effort') order.sort(function (a, b) { return effRank(a.effort) - effRank(b.effort) || priRank(a.pri) - priRank(b.pri); });
+  $('#ip-secs').innerHTML = IDEAS.map(function (g, i) {
+    var list = order.filter(function (it) { return g.items.indexOf(it) >= 0; });
+    return '<section class="ip-sec" id="ip-s' + i + '"><h2>' + esc(g.group) + ' <small>' + list.length + ' idea' + (list.length !== 1 ? 's' : '') + '</small></h2><div class="ip-grid">' + list.map(function (it) {
+      var o = it.opts.concat([['skip', 'Skip', '']]);
+      return '<article class="ip-idea" data-k="' + it.k + '" tabindex="-1"><header><h3>' + esc(it.t) + ' ' + tagHtml(it) + '</h3><p>' + esc(it.why) + '</p></header>' +
+        '<div class="ip-vis" data-step="' + (it.steps ? it.steps[0][0] : '') + '"><div class="ip-body">' + it.vis + '</div>' +
+        (it.steps ? '<span class="ip-hint">Pick an option to see it play</span><span class="ip-peek-lbl"></span><span class="ip-dots" role="group" aria-label="Steps">' + it.steps.map(function (s, j) { return '<i tabindex="0" role="button" data-n="' + j + '" title="' + esc(s[0]) + '" aria-label="Jump to step ' + esc(s[0]) + '"></i>'; }).join('') + '</span><button type="button" class="ip-replay" aria-label="Play it again" title="Play it again">↻</button>' : '') +
+        '<div class="ip-cmp" aria-hidden="true"><div class="ip-cmp-top"><select class="ip-sel" data-side="a" aria-label="Left side"></select><b>vs</b><select class="ip-sel" data-side="b" aria-label="Right side"></select></div><div class="ip-cmp-a"></div><div class="ip-cmp-b"></div></div></div>' +
+        '<div class="ip-ol">' + o.map(function (x, xi) {
+          var rec = (xi === 0 && x[0] !== 'skip') ? ' <span class="ip-rec" tabindex="0"' + (it.rec ? ' data-tip="' + esc(it.rec) + '" title="' + esc(it.rec) + '"' : '') + '>Recommended</span>' : '';
+          var key = x[0] === 'skip' ? 'S' : (xi < 4 ? String(xi + 1) : '');
+          return '<button type="button" class="ip-opt" data-k="' + it.k + '" data-v="' + x[0] + '" aria-pressed="false"><i></i><span><b>' + (key ? '<kbd>' + key + '</kbd>' : '') + esc(x[1]) + rec + '</b>' + (x[2] ? '<small>' + esc(x[2]) + '</small>' : '') + '</span></button>';
+        }).join('') + '</div>' +
+        '<div class="ip-card-tools"><button type="button" class="ip-btn" data-cmp="' + it.k + '">Compare</button><div class="ip-seg" role="group" aria-label="How sure"><button type="button" data-conf="sure" data-k="' + it.k + '" aria-pressed="true">Sure</button><button type="button" data-conf="leaning" data-k="' + it.k + '" aria-pressed="false">Leaning</button></div></div>' +
+        '<textarea class="ip-idea-note" data-nk="' + it.k + '" placeholder="Note for this idea (optional)">' + esc(V.notes[it.k] || '') + '</textarea></article>';
+    }).join('') + '</div></section>';
+  }).join('');
+}
+/* ---------- the animations: still until you pick — then that option plays once and holds (↻ replays, dots jump to a step) ---------- */
+var RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+function mark(vis, it, n) { if (!it.steps) return; vis._n = n; it.steps.forEach(function (s, j) { vis.classList.toggle('ip-s-' + s[0], j <= n); }); vis.dataset.step = it.steps[n][0]; $$('.ip-dots i', vis).forEach(function (d, j) { d.classList.toggle('f', j <= n); }); }
+function rest(vis, it, end) { clearTimeout(vis._t); vis._playing = false; if (it.steps) mark(vis, it, end ? it.steps.length - 1 : 0); }
+function play(vis, it) {
+  clearTimeout(vis._t); if (!it.steps) return;
+  if (RM) { rest(vis, it, 1); return; }
+  vis._playing = true; var i = 0;
+  (function next() { var s = it.steps[i]; mark(vis, it, i); i++; if (i < it.steps.length) vis._t = setTimeout(next, s[1]); else vis._playing = false; })();
+}
+function setOpt(vis, v) { if (v && v !== 'skip') vis.dataset.opt = v; else delete vis.dataset.opt; vis.classList.toggle('ip-has', !!v && v !== 'skip'); vis.classList.toggle('ip-skip', v === 'skip'); }
+function visOf(k) { return $('.ip-idea[data-k="' + k + '"] .ip-vis'); }
+function restoreVis(k) { var vis = visOf(k), it = find(k), v = V.v[k]; if (!vis) return; vis.classList.remove('ip-peeking'); setOpt(vis, v); rest(vis, it, isPicked(k)); }
+function restoreAll() { flat().forEach(function (it) { restoreVis(it.k); }); }
+/* peek: hover an option for a moment and its end state shows as a ghost; leave and the real state returns */
+var HOVER = window.matchMedia && matchMedia('(hover: hover)').matches, peekT = null;
+function peek(k, v) {
+  var vis = visOf(k), it = find(k); if (!vis || !it.steps || vis._playing || vis.classList.contains('ip-comparing') || V.v[k] === v) return;
+  vis.classList.add('ip-peeking'); setOpt(vis, v); mark(vis, it, it.steps.length - 1);
+  var o = it.opts.filter(function (x) { return x[0] === v; })[0]; $('.ip-peek-lbl', vis).textContent = 'peek · ' + (o ? o[1] : v);
+}
+/* ---------- the picks text ---------- */
+function optLabel(it, v) { if (v === 'skip') return 'skip'; var o = it.opts.filter(function (x) { return x[0] === v; })[0]; return o ? o[1] : v; }
+function sizeLine() {
+  var c = { S: 0, M: 0, L: 0 }, un = 0;
+  flat().forEach(function (it) { if (!isPicked(it.k)) return; if (c[it.effort] != null) c[it.effort]++; else un++; });
+  if (!c.S && !c.M && !c.L) return '';
+  var verdict = (c.L >= 1 || c.M >= 3) ? 'a bigger build' : (c.M >= 1 ? 'a medium build' : 'a small build');
+  return 'Build size: ' + c.S + ' S · ' + c.M + ' M · ' + c.L + ' L → ' + verdict + (un ? ' (' + un + ' untagged)' : '');
+}
+function checklist() { var L = []; flat().forEach(function (it) { if (isPicked(it.k)) L.push((L.length + 1) + '. ' + it.t + ' → ' + optLabel(it, V.v[it.k])); }); return L; }
+function pkText() {
+  var L = [APP + ' · ' + TOPIC + ' — my picks'];
+  IDEAS.forEach(function (g) {
+    var rows = [];
+    g.items.forEach(function (it) {
+      var v = V.v[it.k]; if (!v) return;
+      var extra = [];
+      if (v !== 'skip' && V.conf[it.k] === 'leaning') extra.push('leaning');
+      if (v !== 'skip' && locked(it)) { var p = find(it.needs); extra.push('needs ' + (p ? p.t : it.needs) + ' — not picked'); }
+      rows.push('· ' + it.t + ': ' + optLabel(it, v) + (extra.length ? ' (' + extra.join('; ') + ')' : ''));
+      var n = (V.notes[it.k] || '').trim(); if (n) rows.push('  note: ' + n);
+    });
+    if (rows.length) { L.push(g.group + ':'); L = L.concat(rows); }
+  });
+  var left = total - Object.keys(V.v).length; if (left) L.push('(not picked yet: ' + left + ')');
+  if (V.note.trim()) L.push('Notes: ' + V.note.trim());
+  var sz = sizeLine(); if (sz) L.push(sz);
+  var cl = checklist(); if (cl.length) { L.push(''); L.push('Build checklist:'); L = L.concat(cl); }
+  return L.join('\n');
+}
+/* ---------- state → screen ---------- */
+function counts() { var u = 0, p = 0, s = 0; flat().forEach(function (it) { var v = V.v[it.k]; if (!v) u++; else if (v === 'skip') s++; else p++; }); return { u: u, p: p, s: s, n: p + s }; }
+function visible(it) { var v = V.v[it.k]; return V.filter === 'all' || (V.filter === 'unpicked' && !v) || (V.filter === 'picked' && isPicked(it.k)) || (V.filter === 'skipped' && v === 'skip'); }
+function renderPreview() {
+  var m = $('#ip-preview'), has = (typeof COMPONENT === 'string' && COMPONENT) || typeof PREVIEW === 'function';
+  m.hidden = !has; $('.ip-layout').classList.toggle('has-prev', has); if (!has) return;
+  var root = $('.ip-prev-root', m);
+  if (!root) { m.innerHTML = '<h2>Live preview<small>updates with every pick</small></h2><div class="ip-prev-root">' + (typeof COMPONENT === 'string' ? COMPONENT : '') + '</div>'; root = $('.ip-prev-root', m); }
+  flat().forEach(function (it) { var v = V.v[it.k]; if (isPicked(it.k)) root.setAttribute('data-p-' + it.k, v); else root.removeAttribute('data-p-' + it.k); });
+  if (typeof PREVIEW === 'function') { try { PREVIEW({ v: V.v, conf: V.conf, notes: V.notes, note: V.note, th: V.th, root: root, mount: m, ideas: IDEAS, app: APP, topic: TOPIC }); } catch (e) { root.innerHTML = '<p style="margin:0;color:var(--ink3);font-size:12px">Preview unavailable: ' + esc(e.message) + '</p>'; } }
+}
+function sync() {
+  D.documentElement.setAttribute('data-th', V.th);
+  $$('.ip-bar .ip-seg button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.th === V.th)); });
+  $$('.ip-opt').forEach(function (b) { b.setAttribute('aria-pressed', String(V.v[b.dataset.k] === b.dataset.v)); });
+  $$('[data-conf]').forEach(function (b) { b.setAttribute('aria-pressed', String((V.conf[b.dataset.k] || 'sure') === b.dataset.conf)); });
+  $$('.ip-idea').forEach(function (a) { var it = find(a.dataset.k); a.classList.toggle('picked', isPicked(a.dataset.k)); a.classList.toggle('ip-locked', locked(it)); a.hidden = !visible(it); });
+  var c = counts(); $('#ip-n').textContent = c.n ? c.n + '/' + total : '';
+  $('.ip-prog-bar i').style.width = Math.round((c.n / total) * 100) + '%'; $('#ip-prog-lab').textContent = c.n + ' of ' + total + ' decided';
+  $$('[data-f]').forEach(function (b) { var f = b.dataset.f; b.textContent = b.dataset.label + ' ' + (f === 'all' ? total : f === 'unpicked' ? c.u : f === 'picked' ? c.p : c.s); b.setAttribute('aria-pressed', String(V.filter === f)); });
+  $$('[data-sort]').forEach(function (b) { b.setAttribute('aria-pressed', String(V.sort === b.dataset.sort)); });
+  renderPreview();
+}
+/* ---------- the current card (keyboard) and auto-scroll ---------- */
+var curK = null;
+function setCur(k, scroll) { curK = k; $$('.ip-idea').forEach(function (a) { a.classList.toggle('ip-cur', a.dataset.k === k); }); if (scroll && k) { var a = $('.ip-idea[data-k="' + k + '"]'); if (a) a.scrollIntoView({ block: 'nearest', behavior: RM ? 'auto' : 'smooth' }); } }
+function shown() { return $$('.ip-idea').filter(function (a) { return !a.hidden; }).map(function (a) { return a.dataset.k; }); }
+function move(d) { var ks = shown(); if (!ks.length) return; var i = ks.indexOf(curK); i = i < 0 ? (d > 0 ? 0 : ks.length - 1) : Math.max(0, Math.min(ks.length - 1, i + d)); setCur(ks[i], true); }
+function nextUnpicked(fromK) { var ks = shown(), i = ks.indexOf(fromK); for (var j = i + 1; j < ks.length; j++) if (!V.v[ks[j]]) return ks[j]; return null; }
+/* ---------- undo ---------- */
+var HIST = [];
+function snap() { HIST.push(JSON.stringify({ v: V.v, conf: V.conf })); if (HIST.length > 60) HIST.shift(); }
+function undo() { if (!HIST.length) { toast('Nothing to undo'); return; } var s = JSON.parse(HIST.pop()); V.v = s.v; V.conf = s.conf; save(); restoreAll(); sync(); draw(); toast('Undone'); }
+/* ---------- compare: any two options, side by side at their end state ---------- */
+function openCmp(k, a, b) {
+  var it = find(k), vis = visOf(k); if (!it || it.opts.length < 2 || !vis) return;
+  $$('.ip-vis.ip-comparing').forEach(function (x) { if (x !== vis) x.classList.remove('ip-comparing'); });
+  a = a || it.opts[0][0]; b = b || it.opts[1][0];
+  $$('.ip-sel', vis).forEach(function (s) { s.innerHTML = it.opts.map(function (x) { return '<option value="' + x[0] + '">' + esc(x[1]) + '</option>'; }).join(''); s.value = s.dataset.side === 'a' ? a : b; });
+  var A = $('.ip-cmp-a', vis), B = $('.ip-cmp-b', vis), body = $('.ip-body', vis).innerHTML;
+  [[A, a], [B, b]].forEach(function (p) { p[0].innerHTML = body; p[0].dataset.opt = p[1]; p[0].className = p[0].className.replace(/\bip-s-\S+/g, '').trim(); if (it.steps) { it.steps.forEach(function (s) { p[0].classList.add('ip-s-' + s[0]); }); p[0].dataset.step = it.steps[it.steps.length - 1][0]; } });
+  V.cmp = { k: k, a: a, b: b }; vis.classList.add('ip-comparing');
+}
+/* ---------- Your picks panel ---------- */
+function draw() {
+  var w = $('#ip-picks'); w.hidden = !V.open; if (!V.open) return;
+  var ta = $('#ip-note'); if (ta && D.activeElement === ta) { $('#ip-picks pre').textContent = pkText(); return; }
+  w.innerHTML = '<div class="ip-ph"><b>Your picks</b><button type="button" data-pk="x" aria-label="Close">✕</button></div><pre>' + esc(pkText()) + '</pre>' +
+    '<label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:var(--ink2)">Anything else<textarea id="ip-note" placeholder="Anything to add or change">' + esc(V.note) + '</textarea></label>' +
+    '<label class="ip-ck"><input type="checkbox" id="ip-auto"' + (V.auto ? ' checked' : '') + '> Scroll to the next unpicked card after each pick</label>' +
+    '<div class="ip-actions"><button type="button" class="ip-btn pri" data-pk="copy" style="justify-content:center;height:34px;flex:1 1 100%">Copy for the chat</button>' +
+    '<button type="button" class="ip-btn" data-pk="dl">Download .json</button><button type="button" class="ip-btn" data-pk="up">Import .json</button><button type="button" class="ip-btn" data-pk="pdf">PDF / Print</button><button type="button" class="ip-btn" data-pk="reset" style="margin-left:auto;color:var(--bad)">Reset all</button></div>' +
+    '<input type="file" class="ip-file" id="ip-file" accept="application/json,.json">';
+}
+function toast(m, act) { var t = $('.ip-toast'); if (t) t.remove(); t = D.createElement('div'); t.className = 'ip-toast'; t.innerHTML = '<span>' + esc(m) + '</span>' + (act ? '<button type="button">' + esc(act.label) + '</button>' : ''); if (act) $('button', t).onclick = function () { t.remove(); act.fn(); }; D.body.appendChild(t); clearTimeout(toast.h); toast.h = setTimeout(function () { t.remove(); }, act ? 5000 : 2600); }
+function copy(tx) {
+  var fb = function () { var ta = D.createElement('textarea'); ta.value = tx; D.body.appendChild(ta); ta.select(); try { D.execCommand('copy'); toast('Copied — paste it in the chat.'); } catch (e) { toast('Select the text and copy it.'); } ta.remove(); };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(tx).then(function () { toast('Copied — paste it in the chat.'); }, fb); else fb();
+}
+function downloadJson() { var blob = new Blob([JSON.stringify({ app: APP, topic: TOPIC, key: KEY, v: V.v, conf: V.conf, notes: V.notes, note: V.note, th: V.th }, null, 2)], { type: 'application/json' }); var a = D.createElement('a'); a.href = URL.createObjectURL(blob); a.download = KEY + '.json'; D.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 500); toast('Downloaded ' + KEY + '.json'); }
+function importJson(file) { var r = new FileReader(); r.onload = function () { try { snap(); load(JSON.parse(String(r.result || '{}'))); save(); restoreAll(); sync(); draw(); toast('Imported picks', { label: 'Undo', fn: undo }); } catch (e) { toast('Could not read that .json'); } }; r.readAsText(file); }
+/* ---------- changes ---------- */
+function setPick(k, v) {
+  var it = find(k), vis = visOf(k), was = V.v[k]; snap();
+  if (was === v) { delete V.v[k]; delete V.conf[k]; } else V.v[k] = v;
+  save(); sync(); draw(); setCur(k, false);
+  vis.classList.remove('ip-comparing'); vis.classList.remove('ip-peeking'); setOpt(vis, V.v[k]);
+  if (isPicked(k)) play(vis, it); else rest(vis, it, 0);
+  flat().forEach(function (x) { if (x.needs === k) restoreVis(x.k); });
+  if (V.v[k]) { var lbl = optLabel(it, V.v[k]); toast((V.v[k] === 'skip' ? 'Skipped ' : 'Picked ') + it.t.replace(/^(.{34}).+/, '$1…') + (V.v[k] === 'skip' ? '' : ' → ' + lbl), { label: 'Undo', fn: undo }); }
+  if (V.v[k] && V.auto) { var n = nextUnpicked(k); if (n) setTimeout(function () { setCur(n, true); }, 350); }
+}
+function acceptAll() { snap(); var n = 0; flat().forEach(function (it) { if (!V.v[it.k] && it.opts.length) { V.v[it.k] = it.opts[0][0]; n++; } }); save(); restoreAll(); sync(); draw(); toast(n ? 'Accepted ' + n + ' recommended' : 'Nothing left to fill', n ? { label: 'Undo', fn: undo } : null); }
+function resetAll() { var n = Object.keys(V.v).length; if (!n) { toast('Nothing to reset'); return; } snap(); V.v = {}; V.conf = {}; save(); restoreAll(); sync(); draw(); toast('Cleared ' + n + ' pick' + (n === 1 ? '' : 's'), { label: 'Undo', fn: undo }); }
+D.addEventListener('click', function (ev) {
+  var t = ev.target, b;
+  if ((b = t.closest('.ip-bar .ip-seg button'))) { V.th = b.dataset.th; save(); sync(); return; }
+  if (t.closest('#ip-open')) { V.open = !V.open; draw(); return; }
+  if (t.closest('#ip-accept')) { acceptAll(); return; }
+  if (t.closest('#ip-warn')) { toast(t.closest('#ip-warn').dataset.msg || ''); return; }
+  if ((b = t.closest('[data-f]'))) { V.filter = b.dataset.f; save(); sync(); return; }
+  if ((b = t.closest('[data-sort]'))) { V.sort = b.dataset.sort; save(); var c = V.cmp; buildSecs(); restoreAll(); sync(); if (c) openCmp(c.k, c.a, c.b); setCur(curK, false); return; }
+  if ((b = t.closest('[data-cmp]'))) { var vis = visOf(b.dataset.cmp); if (vis.classList.contains('ip-comparing')) { vis.classList.remove('ip-comparing'); V.cmp = null; } else openCmp(b.dataset.cmp); return; }
+  if ((b = t.closest('[data-conf]'))) { snap(); V.conf[b.dataset.k] = b.dataset.conf; save(); sync(); draw(); return; }
+  if ((b = t.closest('[data-pk]'))) { var a = b.dataset.pk; if (a === 'x') { V.open = false; draw(); } else if (a === 'copy') copy(pkText()); else if (a === 'dl') downloadJson(); else if (a === 'up') $('#ip-file').click(); else if (a === 'pdf') setTimeout(function () { window.print(); }, 50); else if (a === 'reset') resetAll(); return; }
+  if ((b = t.closest('.ip-replay'))) { var vs = b.closest('.ip-vis'); play(vs, find(vs.closest('.ip-idea').dataset.k)); return; }
+  if ((b = t.closest('.ip-dots i'))) { var vz = b.closest('.ip-vis'); clearTimeout(vz._t); vz._playing = false; mark(vz, find(vz.closest('.ip-idea').dataset.k), +b.dataset.n); return; }
+  if ((b = t.closest('.ip-opt'))) { setPick(b.dataset.k, b.dataset.v); return; }
+  if ((b = t.closest('.ip-idea'))) setCur(b.dataset.k, false);
+});
+D.addEventListener('change', function (ev) {
+  var t = ev.target;
+  if (t.id === 'ip-file' && t.files && t.files[0]) { importJson(t.files[0]); t.value = ''; }
+  if (t.id === 'ip-auto') { V.auto = t.checked; save(); }
+  if (t.classList.contains('ip-sel')) { var vis = t.closest('.ip-vis'), k = vis.closest('.ip-idea').dataset.k, a = $('.ip-sel[data-side="a"]', vis).value, b = $('.ip-sel[data-side="b"]', vis).value; openCmp(k, a, b); }
+});
+D.addEventListener('input', function (ev) {
+  var t = ev.target;
+  if (t.id === 'ip-note') { V.note = t.value; save(); $('#ip-picks pre').textContent = pkText(); renderPreview(); }
+  if (t.classList.contains('ip-idea-note')) { V.notes[t.dataset.nk] = t.value; save(); renderPreview(); if (V.open) $('#ip-picks pre').textContent = pkText(); }
+});
+if (HOVER) {
+  D.addEventListener('mouseover', function (ev) { var b = ev.target.closest('.ip-opt'); if (!b || b.dataset.v === 'skip') return; clearTimeout(peekT); peekT = setTimeout(function () { peek(b.dataset.k, b.dataset.v); }, 450); });
+  D.addEventListener('mouseout', function (ev) { var b = ev.target.closest('.ip-opt'); if (!b || (ev.relatedTarget && ev.relatedTarget.closest && ev.relatedTarget.closest('.ip-opt') === b)) return; clearTimeout(peekT); var vis = visOf(b.dataset.k); if (vis && vis.classList.contains('ip-peeking')) restoreVis(b.dataset.k); });
+}
+D.addEventListener('keydown', function (ev) {
+  if (ev.key === 'Escape') { if (V.open) { V.open = false; draw(); } return; }
+  var tag = (ev.target.tagName || '').toLowerCase(); if (tag === 'input' || tag === 'textarea' || tag === 'select' || ev.metaKey || ev.ctrlKey || ev.altKey) return;
+  var key = ev.key.toLowerCase();
+  if (key === 'j' || key === 'arrowdown') { move(1); ev.preventDefault(); return; }
+  if (key === 'k' || key === 'arrowup') { move(-1); ev.preventDefault(); return; }
+  if (key === 'z') { undo(); return; }
+  if (!curK) { if (/^[1-4s]$/.test(key)) { move(1); } else return; }
+  var it = find(curK); if (!it) return;
+  if (key === 's') { setPick(curK, 'skip'); ev.preventDefault(); return; }
+  if (/^[1-4]$/.test(key)) { var o = it.opts[+key - 1]; if (o) setPick(curK, o[0]); ev.preventDefault(); }
+});
+/* ---------- the accuracy check: every option and step named in IDEAS should have a CSS rule ---------- */
+function ipCheck() {
+  var css = ''; try { $$('style').forEach(function (s) { css += s.textContent; }); } catch (e) {}
+  var out = [];
+  flat().forEach(function (it) {
+    it.opts.forEach(function (o) { if (css.indexOf('[data-opt="' + o[0] + '"]') < 0) out.push(it.k + ': option "' + o[0] + '" has no [data-opt="' + o[0] + '"] rule (it will look like the others)'); });
+    (it.steps || []).forEach(function (s, j) { if (j && css.indexOf('.ip-s-' + s[0]) < 0 && css.indexOf('[data-step="' + s[0] + '"]') < 0) out.push(it.k + ': step "' + s[0] + '" has no .ip-s-' + s[0] + ' or [data-step="' + s[0] + '"] rule (nothing will change)'); });
+    if (it.steps) { var ms = it.steps.reduce(function (a, s) { return a + s[1]; }, 0); if (ms < 2500 || ms > 7000) out.push(it.k + ': sequence runs ' + ms + ' ms (aim for 3–6 s)'); }
+    if (it.needs && !find(it.needs)) out.push(it.k + ': needs "' + it.needs + '" which is not an idea');
+    (it.vis.match(/class="[^"]*"/g) || []).forEach(function (c) { c.slice(7, -1).split(/\s+/).forEach(function (n) { if (n && !/^(v-|ip-)/.test(n)) out.push(it.k + ': class "' + n + '" in the visual is not prefixed v-'); }); });
+  });
+  var w = $('#ip-warn'); if (out.length && /check/.test(location.search)) { w.style.display = 'inline-flex'; w.textContent = out.length + ' to fix'; w.dataset.msg = out[0]; }
+  if (out.length) console.warn('Idea picker check:\n' + out.join('\n')); else console.info('Idea picker check: every option and step has a rule.');
+  return out;
+}
+/* ---------- go ---------- */
+buildSecs(); restoreAll(); sync(); ipCheck();
+</script>
+</body>
+</html>

@@ -340,6 +340,7 @@ ro-page/time-tab.js
 ro-page/tab-actions.js
 ro-page/operation-header.js
 ro-page/picking.js
+ro-page/messages-chat.js
 ro-page/build-and-fold.js
 ro-page/collapse-expand.js
 ro-page/steady-redraw.js

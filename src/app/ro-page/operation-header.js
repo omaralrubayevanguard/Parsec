@@ -122,15 +122,15 @@ function ropOpRow(j, i, on, stash) {
   return row;
 }
 function ropOpBody(j, stash) {
-  var body = el('div', { class: 'px-op', 'data-key': 'pxop-' + j.id });   /* its own key: another operation's card opens with its glide, the same one stays still (steady-redraw.js) */
-  body.appendChild(ropFacts(j));   /* Parsec 17.1 */
-  /* the links that rode with the codes (the claim, fixed before, filled in from) stay, on their own line; codes live in the Fault codes block */
-  /* Parsec 17.1: the codes and documents line, which carries those links too */
-  if (!RO.shop) body.appendChild(faultBar(j, { noFg: 1 }));
+  var body = el('div', { class: 'px-op rop-op172', 'data-key': 'pxop-' + j.id });   /* its own key: another operation's card opens with its unroll, the same one stays still (steady-redraw.js) */
+  /* Parsec 17.2: one card — the facts and codes line above the clock, the Time / Parts / Files tabs under the bar, all inside the clock card */
+  var top = el('div', { class: 'rop-ockf' }, [ropFacts(j)]);
+  if (!RO.shop) top.appendChild(faultBar(j, { noFg: 1 }));
   else { var head = stash && stash.querySelector('.card[data-job="' + j.id + '"] > .cardHead'), links = head ? Array.prototype.slice.call(head.querySelectorAll('.fltLink')) : [];
-    if (links.length) { var lr = el('div', { class: 'px-ophead rop-olinks' }); links.forEach(function (a) { lr.appendChild(a); }); body.appendChild(lr); } }
-  body.appendChild(pxTime(j));
-  body.appendChild(pxTabs(j, stash));
+    if (links.length) { var lr = el('div', { class: 'px-ophead rop-olinks' }); links.forEach(function (a) { lr.appendChild(a); }); top.appendChild(lr); } }
+  var ock = pxTime(j), tabs = pxTabs(j, stash);
+  if (ock && ock.classList && ock.classList.contains('ock')) { ock.insertBefore(top, ock.firstChild); ock.appendChild(tabs); body.appendChild(ock); }
+  else { body.appendChild(top); if (ock) body.appendChild(ock); body.appendChild(tabs); }
   return body;
 }
 /* the operation's facts, at the top of its card (Parsec 17.1): the job type (a click changes it), the function group,

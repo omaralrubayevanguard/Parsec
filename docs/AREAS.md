@@ -348,22 +348,23 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `build-and-fold.js` | ropBuild draws the RO page's sections in order; every section folds (Parsec 14.4) and remembers it. | 6 | 5 | 1 |
 | `builders.js` | Small builders: fields, dropdowns, the pop-over pinning (a pop-over stays put while the page redraws), live updaters for totals. | 19 | 17 | 3 |
 | `bulletins.js` | Files on the RO: saving to the folder (or IndexedDB until there is one), shrinking images, thumbnails, the bulletin log entries that carry files. | 17 | 26 | 12 |
-| `clock-card-actions.js` | What you do on the clock card: hold to stop with a reason, lap / split, fix the start, notes, reopen; ockAuto for lunch and the end of the day (reminders only since Parsec 15). | 14 | 16 | 3 |
-| `clock-card-draw.js` | The clock card's pieces, markup and ticker: the big time, the ring, segments and facts; focus mode (the big shop-floor view); ockTick updates every card in place each second; the time bar's initials and note pins, and the note added where you click (17.1). | 45 | 71 | 0 |
-| `clock-card-model.js` | The operation clock card (Parsec 12.4 / 12.5), the model: the numbers each page counts (ockModel), the shop day, similar jobs and the tech's usual pace, parts on the job, the punches' notes (and each note's time, p.noteAt) and splits. | 16 | 38 | 21 |
+| `clock-card-actions.js` | What you do on the clock card: hold to stop with a reason, lap / split, fix the start, notes, reopen; ockAuto for lunch and the end of the day (reminders only since Parsec 15). | 25 | 23 | 8 |
+| `clock-card-draw.js` | The clock card's pieces, markup and ticker: the big time, the ring, segments and facts; focus mode (the big shop-floor view); ockTick updates every card in place each second; the time bar's initials and note pins, and the note added where you click (17.1). | 52 | 83 | 1 |
+| `clock-card-model.js` | The operation clock card (Parsec 12.4 / 12.5), the model: the numbers each page counts (ockModel), the shop day, similar jobs and the tech's usual pace, parts on the job, the punches' notes (and each note's time, p.noteAt) and splits. | 18 | 41 | 22 |
 | `collapse-expand.js` | Collapse all / Expand all on the sections below the operations (Parsec 15), one switch. | 19 | 20 | 0 |
 | `constants.js` | The RO page's constants: job types, status looks, task kinds. | 3 | 3 | 6 |
 | `declined.js` | Declined on the operation's status menu (14.8 A) and the complaint edited in place while the clock runs or not. | 15 | 13 | 1 |
 | `extract-operations.js` | Extract operations into this RO from pasted text or a screenshot (Parsec 14.8 B): complaint, status, quoted time and approval only; matched to existing operations before anything is added. | 20 | 15 | 2 |
 | `fault-codes.js` | Fault codes on each operation (SPN / FMI, P-codes): reading what was typed, what a code means, the chips on the tile and the card, and the note a chip starts; Add ▾ for a code, a document or the Library (17.1). | 8 | 10 | 1 |
-| `header-page.js` | The RO page header (pxHeader): breadcrumb with the RO number (click copies it), the pager, the customer and contact with its menu (16.3 B), the counters (hours, parts, files), the options menu. | 31 | 22 | 1 |
+| `header-page.js` | The RO page header (pxHeader): breadcrumb with the RO number (click copies it), the pager, the customer and contact with its menu (16.3 B), the counters (hours, parts, files), the options menu. | 32 | 22 | 2 |
 | `helpers.js` | DOM and format helpers local to the RO page (el, svg, hm, hms, uid…) and the attachment store in IndexedDB for files not yet in the folder. | 17 | 22 | 6 |
 | `icons.js` | The icon set the RO page uses (IC) and tecRender(), the RO page's way to ask the app to redraw. | 12 | 1 | 1 |
 | `ivory.js` | The Ivory / Graphite look on the RO page: ivOn, the operation side panel, clockCalm. | 6 | 4 | 0 |
 | `job-cards.js` | The operation cards: the efficiency bar, the start / stop reason questions, the complete gate, the drag order, glide between renders. | 21 | 21 | 6 |
 | `job-road.js` | The job road: the small animated scene under an open job card (truck, road, sky by time of day) — RD_SCENES and the SVG builders; ROAD_CSS is appended to JC_CSS. | 23 | 10 | 18 |
-| `layout.js` | The RO page in your layout (Parsec 12): the one-panel page — operations in the middle, the truck card and the sections on the right (ROPS), who is on it, the right column's fit. | 12 | 22 | 3 |
+| `layout.js` | The RO page in your layout (Parsec 12): the one-panel page — operations in the middle, the truck card and the sections on the right (ROPS), who is on it, the right column's fit. | 10 | 21 | 3 |
 | `library-on-ro.js` | The Library on the RO page: each operation’s codes, function group and documents, what each code means, the documents that cover its codes (Attach / Not now), the documents strip above the operations, and PDFs offered to the Library before they attach. | 7 | 7 | 0 |
+| `messages-chat.js` | Messages \| Customer above the operations (17.2): one box with a segmented pill, the RO's messages as a chat (bubbles or lines, To and @ for anyone in the shop, files and the operation, a seen dot, quick lines by role) and the Customer fields. | 18 | 16 | 3 |
 | `modal-export-print.js` | The RO page's modal, and export / import / print of one RO (sheetFromRO, importSheet). | 10 | 15 | 2 |
 | `one-ro-view.js` | One RO view (14.3 B): the Technician page's middle and right are the RO page itself; TCX says when the RO page is embedded there. | 1 | 3 | 2 |
 | `op-card.js` | The open operation card (jobCard): header, body, parts, the day strip and rail, the metrics and the quote; built fresh on every render. | 58 | 1 | 0 |

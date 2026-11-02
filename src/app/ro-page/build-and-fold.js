@@ -10,8 +10,10 @@ function ropBuild(page, stash, slotEl) {
   /* the job tile list stays out of sight with the classic page (Next step went with it, as picked) */
   if (slotEl) stash.appendChild(slotEl);
   var ops = pxOps(stash); ropDecorOps(ops);
-  var col = el('div', { class: 'px-ro__col rop-col' + (ropAny() ? ' rop-any' : '') }, [ops]);
-  [ropInbox, ropCustomer].forEach(   /* Parsec 15: below Operations, only Messages and Customer — what the other sections did lives on its own page (Parts, Warranty, Assets, each operation's Parts tab, the truck card) */function (f) { try { var x = f(); if (x) col.appendChild(x); } catch (e) { console.error(e); } });
+  var col = el('div', { class: 'px-ro__col rop-col' + (ropAny() ? ' rop-any' : '') }, []);
+  try { col.appendChild(ropMC()); } catch (e) { console.error(e); }   /* Parsec 17.2: Messages | Customer above the operations */
+  col.appendChild(ops);
+  /* Parsec 15 put only Messages and Customer below Operations; 17.2 moved them into the box above */
   var bar = ropSelBar(); if (bar) col.appendChild(bar);
   try { HOST.classList.toggle('rop-picking', !!bar); } catch (e) {}   /* the toasts rise above the bar */
   if (bar) requestAnimationFrame(function () { try { document.body.style.setProperty('--rop-sbh', (bar.offsetHeight || 52) + 'px'); } catch (e) {} });
@@ -61,7 +63,7 @@ function ropFoldOne(box, head, key, label, opt) {
 }
 function ropFoldAll(root) {
   var col = root.querySelector('.rop-col'), rail = root.querySelector('.rop-rail'); if (!col) return; ROPF.root = root;
-  var ops = col.firstElementChild; if (ops && ops.querySelector(':scope > .rop-sech0')) ropFoldOne(ops, ops.querySelector(':scope > .rop-sech0'), 'ops', 'Operations', { spacer: 1 });
+  var ops = Array.prototype.filter.call(col.children, function (c) { return !!c.querySelector(':scope > .rop-sech0'); })[0]; if (ops) ropFoldOne(ops, ops.querySelector(':scope > .rop-sech0'), 'ops', 'Operations', { spacer: 1 });
   Array.prototype.forEach.call(col.querySelectorAll(':scope > section.rop-blk'), function (s) {
     var k = (/\brop-k-([\w-]+)/.exec(s.className) || [])[1] || 'blk', h = s.querySelector(':scope > .rop-sech'); ropFoldOne(s, h, 'c-' + k, (h && h.querySelector('h3') || {}).textContent || 'this section', { spacer: 1 });
   });

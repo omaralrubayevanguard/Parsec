@@ -1,6 +1,17 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 17 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 17.2 is the newest.
 
+
+Parsec 17.2 — the operation card redesigned (picked in seven mock-up rounds)
+  For the shop floor:
+  · Messages | Customer sit above the operations in one box with a sliding switch; Messages is a chat for the RO with everyone in the shop: bubbles or lines, All / Only mine, @mentions, an Op chip, files and pasted pictures, seen dots, quick chips by role
+  · The clock card holds the Time, Parts and Files tabs (icons, counts, a sliding pill); the RO facts sit at its top as chips
+  · The clock bar: small avatars over the bar, an hour scale, hatched typed-in time, a usual-finish mark
+  · Similar jobs: a band under the bar shows the usual range from jobs with the same codes; tap it for the list, switch to your own jobs, open any of them
+  · Notes are flags on the bar at the time they were written: hover to read, tap to reply, edit or delete, drag a flag to move its time; unread flags stand out
+  · Add a note anywhere on the bar, to the second, with @mentions that send a message; a note you leave open is kept as a draft
+  · The timer button: bevelled, green glow while running, presses in, turns a quarter between play and stop; hold the ring to stop, it snaps back with a shake if let go early
+  · Motion across the card: tab slides, count pops, a flash when a part's status changes, a check when a field saves
 
 Parsec 17 — the same Parsec, from organized source (nothing changes on screen)
   Why: the one 8 MB file had become too big to change safely — 61 patch files making 723 text edits over Parsec 8, a four-minute build, and no way to work on two things at once.

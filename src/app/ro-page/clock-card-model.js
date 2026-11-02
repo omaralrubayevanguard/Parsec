@@ -1,9 +1,9 @@
 /* Parsec · ro-page · clock-card-model.js
    The operation clock card (Parsec 12.4 / 12.5), the model: the numbers each page counts (ockModel), the shop day, similar jobs and the tech's usual pace, parts on the job, the punches' notes (and each note's time, p.noteAt) and splits.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   ockCalm ockE ockHms ockMs ockHm ockCd ockClk ockIni ockFirst ockIso ockMe ockSame … (38 functions, 21 constants)
+   declares   ockCalm ockE ockHms ockMs ockHm ockCd ockClk ockIni ockFirst ockIso ockMe ockSame … (41 functions, 22 constants)
    state      punches ros
-   uses       access/ automations/ clock/ data/ kit/ pages/ pages/fixes/ pages/foreman/ pages/warranty/ ro/ shell/ state/
+   uses       access/ automations/ clock/ data/ kit/ library/ pages/ pages/fixes/ pages/foreman/ pages/warranty/ ro/ shell/ state/
    at load    builds OCK_VIEW (a closure)
 */
 /* ============================== Parsec 12.4 / 12.5 — the operation clock card ==============================
@@ -95,18 +95,34 @@ function ockEndAt(now, remS, run){
   return ockClk(Math.round(t / 300000) * 300000);
 }
 /* ---------- similar jobs (the Fixes list: the same complaint, finished) and the tech's usual pace ---------- */
-function ockSim(op){
-  var c = OCK_SIM[op.id], now = Date.now(); if(c && now - c.at < 60000) return c.v;
-  var v = null;
-  try{
-    var key = fixKeyOf(op.complaint);
-    if(key){
-      var hrs = fixAll().filter(function(x){ return x.opId !== op.id && x.hours > 0.05 && fixKeyOf(x.complaint) === key; }).map(function(x){ return x.hours; }).sort(function(a, b){ return a - b; });
-      if(hrs.length >= 3){ var qn = function(p){ var i = (hrs.length - 1) * p, lo = Math.floor(i), hi = Math.ceil(i); return hrs[lo] + (hrs[hi] - hrs[lo]) * (i - lo); }; v = { lo: qn(0.25), hi: qn(0.75), md: qn(0.5), n: hrs.length }; }
-    }
-  }catch(e){}
-  OCK_SIM[op.id] = { at: now, v: v }; return v;
+/* similar jobs (17.2): the same fault codes and function group when the operation has codes, the same complaint words when it doesn't;
+   the shop's, or only one person's (the card's Mine switch, OCK_SIMW). Under 3 jobs there is no range — the card says why. */
+var OCK_SIMW = {};
+function ockSimMatch(op){
+  var codes = {}, fg = "", key = "", J = [];
+  try{ opFaultCodes(op).forEach(function(c){ codes[c] = 1; }); }catch(e){}
+  try{ fg = libOpFgrp(op); }catch(e){}
+  try{ key = fixKeyOf(op.complaint); }catch(e){}
+  var hasC = Object.keys(codes).length > 0;
+  try{ fixAll().forEach(function(x){
+    if(x.manual || x.opId === op.id || !(x.hours > 0.05)) return;
+    var hit = false;
+    if(hasC){
+      hit = (x.codes || []).some(function(c){ return codes[c]; });
+      if(hit && fg){ var g2 = ""; try{ g2 = libOpFgrp(getOp(x.roId, x.opId)); }catch(e){} if(g2 && g2 !== fg) hit = false; }
+    } else hit = !!key && fixKeyOf(x.complaint) === key;
+    if(hit) J.push({ roId: x.roId, opId: x.opId, ro: x.ro, tech: x.tech || "", h: x.hours, date: x.date || "" });
+  }); }catch(e){}
+  return { J: J, by: hasC ? "codes" : "words" };
 }
+function ockSim(op, who){
+  var w = who === undefined ? (OCK_SIMW[op.id] || "") : who, ck = op.id + "|" + w, c = OCK_SIM[ck], now = Date.now(); if(c && now - c.at < 60000) return c.v;
+  var M = ockSimMatch(op), J = w ? M.J.filter(function(x){ return String(x.tech).split(/,\s*/).some(function(t){ return ockSame(t, w); }); }) : M.J, v = null;
+  var hrs = J.map(function(x){ return x.h; }).sort(function(a, b){ return a - b; });
+  if(hrs.length >= 3){ var qn = function(p){ var i = (hrs.length - 1) * p, lo = Math.floor(i), hi = Math.ceil(i); return hrs[lo] + (hrs[hi] - hrs[lo]) * (i - lo); }; v = { lo: qn(0.25), hi: qn(0.75), md: qn(0.5), n: hrs.length, J: J, by: M.by, who: w }; }
+  OCK_SIM[ck] = { at: now, v: v, few: hrs.length, J: J, by: M.by }; return v;
+}
+function ockSimInfo(op){ ockSim(op); return OCK_SIM[op.id + "|" + (OCK_SIMW[op.id] || "")] || { few: 0, J: [] }; }
 function ockTech(m, ro){ var p = m.mine || m.runs[0] || m.ps[m.ps.length - 1]; return (p && p.by) || (ro && ro.assignedTech) || ""; }
 function ockUsual(tech){
   if(!tech) return null; var c = OCK_UP[tech], now = Date.now(); if(c && now - c.at < 120000) return c.v;
@@ -138,8 +154,8 @@ var OCK_SYS_NOTE = /^(Split \d+ · |Start moved back )/;
 function ockNotes(p){
   var E = []; try{ E = noteEntries(p.notes); }catch(e){}
   var st = +new Date(p.start);
-  return E.map(function(e){ var mm = /^(\d+):(\d{2})$/.exec(e.ran || ""), tx = String(e.text || "").trim(), sv = mm ? null : ockNoteAt(p, tx);
-    return { at: mm ? st + (+mm[1] * 60 + +mm[2]) * 60000 : sv != null ? sv : st, text: tx, known: !!mm || sv != null }; }).filter(function(x){ return x.text; });
+  return E.map(function(e){ var mm = /^(\d+):(\d{2})$/.exec(e.ran || ""), tx = String(e.text || "").trim(), sv = ockNoteAt(p, tx);   /* 17.2: a time set by hand wins over the stamp */
+    return { at: sv != null ? sv : mm ? st + (+mm[1] * 60 + +mm[2]) * 60000 : st, text: tx, known: !!mm || sv != null }; }).filter(function(x){ return x.text; });
 }
 function ockLastNote(p){ var L = ockNotes(p).filter(function(x){ return !OCK_SYS_NOTE.test(x.text); }); return L[L.length - 1] || null; }
 /* ---------- a note's time (Parsec 17.1): kept beside the note, so its pin sits where it happened on the time bar ----------
@@ -154,6 +170,19 @@ function ockNoteTime(p, text, at){
   p.noteAt[k] = new Date(t).toISOString();
 }
 function ockSplits(p){ return Array.isArray(p.splits) ? p.splits.map(function(x){ return +new Date(x); }).filter(function(x){ return !isNaN(x); }) : []; }
+/* 17.2: a note changed or taken off from its flag — the words where they were written, and its time beside it */
+function ockNoteEdit(p, old, neu, at){
+  var o = String(old || "").trim(), n = String(neu || "").trim(); if(!p || !o) return false;
+  var L = String(p.notes || "").split("\n"), k = -1;
+  for(var i = L.length - 1; i >= 0; i--){ if(L[i].trim() === o || L[i].trim().slice(-o.length) === o){ k = i; break; } }
+  if(k < 0) return false;
+  var m = p.noteAt && typeof p.noteAt === "object" ? p.noteAt : null, was = m ? m[o] : null;
+  if(!n){ L.splice(k, 1); if(m) delete m[o]; }
+  else { try{ n = autoPunct(n); }catch(e){} var ln = L[k], ix = ln.lastIndexOf(o); L[k] = ln.slice(0, ix) + n + ln.slice(ix + o.length); if(m && n !== o){ delete m[o]; if(was) m[n] = was; } }
+  p.notes = L.join("\n");
+  if(n && at != null) ockNoteTime(p, n, at);
+  return true;
+}
 function ockAddNote(p, text, at){
   var t = String(text || "").trim(); if(!t) return;
   try{ t = autoPunct(t); }catch(e){}

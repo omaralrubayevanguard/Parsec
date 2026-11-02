@@ -1,7 +1,7 @@
 /* Parsec · ro-page · header-page.js
    The RO page header (pxHeader): breadcrumb with the RO number (click copies it), the pager, the customer and contact with its menu (16.3 B), the counters (hours, parts, files), the options menu.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   v163bIc v163bPh v163bCopyId v163bIdOn v163bId v163bTitle v163bCanEd v163bContact v163bMenu v163bEdit pxHeader pxTitle … (22 functions, 1 constant)
+   declares   v163bIc v163bPh v163bCopyId v163bIdOn v163bId v163bTitle v163bCanEd v163bContact v163bMenu v163bEdit pxHeader pxTitle … (22 functions, 2 constants)
    uses       access/ automations/ clock/ data/ import/new-ro/ kit/ pages/rolist/ pages/triage/ ro/ shell/ state/ trucks/
 */
 /* ---------- the page ---------- */
@@ -227,35 +227,54 @@ OCK_CB.jc = {
 };
 
 function pxTime(job) { return ockJc(job); }   /* Parsec 12.4 */
+var PXT = { last: null, cnt: {}, pst: {} };
 function pxTabs(job, stash) {
   UI.ivTab = UI.ivTab || {};
   var cur = UI.ivTab[job.id] || 'parts'; if (cur === 'notes') cur = 'time';   /* Parsec 12: the notes live in the Time tab */
   var punches = punchesOf(job), parts = (job.parts || []).filter(function (p) { return p && (p.description || p.partNumber || PT_EDIT[p.id]); });
   var inHand = parts.filter(partInHand).length, files = allFiles().filter(function (x) { return x.f.op === job.id; });
   var notes = (Array.isArray(job.offNotes) ? job.offNotes : []).length + punches.filter(function (p) { return noteEntries(p.notes).length; }).length;
-  var defs = [['time', 'Time', (punches.length + notes) || ''], ['parts', 'Parts', parts.length ? inHand + '/' + parts.length : ''], ['files', 'Files', files.length || '']];
-  var tabs = el('div', { class: 'px-tabs has-ink', role: 'tablist' }), ink = el('span', { class: 'px-tabs__ink' });
+  var defs = [['time', 'Time', (punches.length + notes) || '', 'clock'], ['parts', 'Parts', parts.length ? inHand + '/' + parts.length : '', 'box'], ['files', 'Files', files.length || '', 'clip']];
+  /* 17.2: icons and counts, a tinted pill that slides to the open tab, the pane slides in from that side, a count that changes pops once */
+  var last = PXT.last && PXT.last.job === job.id ? PXT.last : null, ix = function (k) { for (var i = 0; i < defs.length; i++) if (defs[i][0] === k) return i; return 0; };
+  var tabs = el('div', { class: 'px-tabs has-ink rop-otabs', role: 'tablist', 'aria-label': 'Time, parts and files' }), ink = el('span', { class: 'px-tabs__ink' });
   var paneBox = el('div', { class: 'px-panes' });
+  tabs.appendChild(ink);
   defs.forEach(function (d) {
-    tabs.appendChild(el('button', { class: 'px-tab' + (d[0] === cur ? ' is-on' : ''), type: 'button', role: 'tab', 'aria-selected': d[0] === cur ? 'true' : 'false', 'data-tab': d[0],
-      html: esc(d[1]) + (d[2] !== '' ? '<span class="px-tab__n">' + esc(String(d[2])) + '</span>' : ''),
+    var ck = job.id + ':' + d[0], was = PXT.cnt[ck], pop = was !== undefined && String(was) !== String(d[2]) && d[2] !== ''; PXT.cnt[ck] = d[2];
+    tabs.appendChild(el('button', { class: 'px-tab' + (d[0] === cur ? ' is-on' : ''), type: 'button', role: 'tab', 'aria-selected': d[0] === cur ? 'true' : 'false', 'data-tab': d[0], title: d[1], 'aria-label': d[1] + (d[2] !== '' ? ' ' + d[2] : ''),
+      html: ri(d[3], 15) + (d[2] !== '' ? '<span class="px-tab__n' + (pop ? ' is-pop' : '') + '"' + (pop ? ' data-key="tc-' + esc(ck) + '-' + esc(String(d[2])) + '"' : '') + '>' + esc(String(d[2])) + '</span>' : ''),
       onClick: function (e) { e.stopPropagation(); UI.ivTab[job.id] = d[0]; render(); } }));
   });
-  tabs.appendChild(ink);
-  requestAnimationFrame(function () { var on = tabs.querySelector('.px-tab.is-on'); if (on) { ink.style.left = on.offsetLeft + 'px'; ink.style.width = on.offsetWidth + 'px'; } });
+  requestAnimationFrame(function () {
+    var on = tabs.querySelector('.px-tab.is-on'); if (!on) return;
+    var L = on.offsetLeft, Wd = on.offsetWidth;
+    if (last && last.tab !== cur && last.w && !ropCalm()) {
+      ink.style.left = last.l + 'px'; ink.style.width = last.w + 'px'; void ink.offsetWidth;
+      ink.style.transition = 'left .2s cubic-bezier(.23,1,.32,1), width .2s cubic-bezier(.23,1,.32,1)';
+    }
+    ink.style.left = L + 'px'; ink.style.width = Wd + 'px';
+    PXT.last = { job: job.id, tab: cur, l: L, w: Wd };
+  });
+  if (last && last.tab !== cur && !ropCalm()) { var dir = ix(cur) > ix(last.tab) ? 1 : -1; paneBox.classList.add(dir > 0 ? 'rop-in-r' : 'rop-in-l'); paneBox.setAttribute('data-key', 'pn-' + job.id + '-' + cur); }
   var pane = el('div', { class: 'px-list' });
   if (cur === 'time') {
     ropTimeline(job, pane);   /* Parsec 12: each punch from start to stop, its notes in between */
   } else if (cur === 'parts') {
     ropPartsHead(job, parts, pane);
+    var adding = ROPT.padd === job.id || UI.ivPartAdd === job.id;   /* 17.2: the new part's row is at the top, at once */
+    if (adding) ropPartAdd(job, pane, parts.length);
     parts.forEach(function (p) {
       var st = p.status || 'Not Ordered';
       var b = pgStEl('part', st, { of: p, ofKind: 'part', menu: 1, cls: 'sm px-pstat', title: 'Part status and options' });   /* Parsec 14 */
       b.addEventListener('click', function (e) { e.stopPropagation(); pxPartMenu(b, job, p); });
       var eta = ptEtaText(p);
-      pane.appendChild(ropPartRow(job, p, b, eta, parts));
+      var row = ropPartRow(job, p, b, eta, parts), pk = p.id || p.partNumber || p.description, was = PXT.pst[pk];
+      if (was !== undefined && was !== st && row) { row.classList.add('rop-flash'); row.setAttribute('data-key', 'pf-' + pk + '-' + st); }   /* a status that just changed flashes its row */
+      PXT.pst[pk] = st;
+      pane.appendChild(row);
     });
-    ropPartAdd(job, pane, parts.length);
+    if (!adding) ropPartAdd(job, pane, parts.length);
   } else if (cur === 'notes') {
     var items = [];
     punches.forEach(function (p) { noteEntries(p.notes).forEach(function (n) { items.push({ at: +new Date(p.start), by: p.by, text: n.text, k: p.startReason }); }); });
@@ -284,7 +303,7 @@ function pxTabs(job, stash) {
     if (!files.length) pane.appendChild(el('div', { class: 'px-li', html: '<small>No files on this operation yet.</small>' }));
   }
   paneBox.appendChild(pane);
-  return el('div', { class: 'px-optabs' }, [el('div', { class: 'rop-tabrow' }, [tabs, ropTabActs(job, cur)]), paneBox]);
+  return el('div', { class: 'px-optabs rop-ocktabs' }, [el('div', { class: 'rop-tabrow' }, [tabs, ropTabActs(job, cur)]), paneBox]);
 }
 function pxOps(stash) {
   var box = el('div', {});

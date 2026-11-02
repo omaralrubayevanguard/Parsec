@@ -1,0 +1,134 @@
+/* ===== Parsec 17.2: the RO page from the component picks — Messages | Customer above the operations, the operation card ===== */
+:host, .pxr { --e-out: cubic-bezier(.23, 1, .32, 1); }
+
+/* ---------- Messages | Customer: one box, a segmented pill ---------- */
+.rop-mc { margin-bottom: 8px; }
+.rop-blk.rop-mc > .rop-sech.rop-mc__h { margin: 24px 0 8px; }
+.rop-mc__pill { position: relative; display: inline-flex; gap: 2px; padding: 2px; border-radius: 10px; background: var(--fill); }
+.rop-mc__th { position: absolute; left: 2px; top: 2px; bottom: 2px; width: 0; border-radius: 8px; background: var(--raised); box-shadow: 0 0 0 1px var(--hairline), 0 1px 2px rgba(0,0,0,.06); transition: transform .2s var(--e-out), width .2s var(--e-out); }
+.rop-mc__t { all: unset; box-sizing: border-box; position: relative; z-index: 1; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 30px; padding: 0 14px; border-radius: 8px; font: 500 13px/1 var(--font-sans); color: var(--ink-3); transition: color .2s ease; }
+.rop-mc__t.is-on { color: var(--ink); }
+.rop-mc__t:focus-visible { box-shadow: var(--shadow-focus); }
+.rop-mc__n { font: 600 11px/18px var(--font-mono); padding: 0 6px; border-radius: 6px; background: var(--raised); color: var(--ink-2); box-shadow: inset 0 0 0 1px var(--hairline); }
+.rop-mc__t.is-on .rop-mc__n { background: var(--accent-tint); color: var(--accent-text); box-shadow: none; }
+.rop-mc__body { position: relative; }
+.rop-mc.is-shut .rop-mc__body { display: none; }
+
+/* ---------- the chat ---------- */
+.rop-chat { display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: var(--radius-lg); background: var(--panel); box-shadow: inset 0 0 0 1px var(--hairline); }
+.rop-chat__tools { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.rop-cfs, .rop-cvs { display: inline-flex; gap: 2px; padding: 2px; border-radius: 8px; background: var(--fill); }
+.rop-cf, .rop-cv { all: unset; box-sizing: border-box; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; height: 24px; padding: 0 10px; border-radius: 6px; font: 500 12px/1 var(--font-sans); color: var(--ink-3); transition: background-color .15s ease, color .15s ease; }
+.rop-cv { width: 28px; padding: 0; }
+.rop-cf.is-on, .rop-cv.is-on { background: var(--raised); color: var(--ink); box-shadow: 0 0 0 1px var(--hairline); }
+.rop-cf:focus-visible, .rop-cv:focus-visible { box-shadow: var(--shadow-focus); }
+.rop-chat__list { display: flex; flex-direction: column; gap: 6px; padding: 4px 0; }
+.rop-day { align-self: center; padding: 2px 0; font: 600 10.5px/1 var(--font-sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.rop-more2 { all: unset; cursor: pointer; align-self: center; padding: 3px 10px; border-radius: 999px; font-size: 12px; color: var(--ink-2); background: var(--fill); }
+.rop-msg { display: flex; align-items: flex-end; gap: 8px; max-width: 84%; animation: rop-rise .25s var(--e-out) both; }
+@keyframes rop-rise { from { opacity: 0; transform: translateY(8px); } }
+.rop-msg.is-me { align-self: flex-end; flex-direction: row-reverse; }
+.rop-msg.is-sent .rop-msg__b { animation: rop-sending .7s ease-out both; }
+@keyframes rop-sending { 0%, 40% { opacity: .55; } 100% { opacity: 1; } }
+.rop-msg__av { flex: none; }
+.rop-msg__b { min-width: 0; display: flex; flex-direction: column; gap: 2px; padding: 7px 11px 6px; border-radius: 14px 14px 14px 4px; background: var(--raised); box-shadow: 0 0 0 1px var(--hairline), 0 1px 2px rgba(0,0,0,.04); }
+.rop-msg.is-me .rop-msg__b { border-radius: 14px 14px 4px 14px; background: var(--accent-tint); box-shadow: inset 0 0 0 1px var(--accent-line); }
+.rop-msg__w { font-size: 11.5px; color: var(--ink-3); white-space: nowrap; }
+.rop-msg__w b { font-weight: 600; color: var(--ink-2); }
+.rop-msg__w em { font-style: normal; margin-left: 6px; }
+.rop-msg.is-me .rop-msg__w { display: none; }
+.rop-msg__t { font-size: 13.5px; line-height: 1.4; color: var(--ink); overflow-wrap: anywhere; }
+.rop-men { color: var(--accent-text); font-weight: 600; }
+.rop-msg__f { all: unset; box-sizing: border-box; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; max-width: 100%; margin-top: 2px; padding: 3px 8px; border-radius: 6px; background: var(--fill); font-size: 12px; color: var(--ink-2); }
+.rop-msg__f span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rop-msg__m { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: var(--ink-3); }
+.rop-msg.is-me .rop-msg__m { justify-content: flex-end; }
+.rop-opc { all: unset; cursor: pointer; padding: 0 6px; border-radius: 5px; font: 600 10.5px/16px var(--font-mono); background: var(--fill); color: var(--ink-2); }
+.rop-opc:hover { color: var(--ink); }
+.rop-seen { width: 6px; height: 6px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--ink-4); transition: background-color .3s ease, box-shadow .3s ease; }
+.rop-seen.is-read { background: var(--accent); box-shadow: none; }
+/* lines: the same thread, one row each, newest at the bottom */
+.rop-chat.is-lines .rop-msg, .rop-chat.is-lines .rop-msg.is-me { max-width: none; align-self: stretch; flex-direction: row; align-items: flex-start; padding: 6px 0; box-shadow: inset 0 1px 0 var(--hairline); }
+.rop-chat.is-lines .rop-day + .rop-msg { box-shadow: none; }
+.rop-chat.is-lines .rop-msg__b, .rop-chat.is-lines .rop-msg.is-me .rop-msg__b { flex: 1; padding: 0; border-radius: 0; background: none; box-shadow: none; }
+.rop-chat.is-lines .rop-msg.is-me .rop-msg__w { display: block; }
+.rop-chat.is-lines .rop-msg.is-me .rop-msg__m { justify-content: flex-start; }
+.rop-chat.is-lines .rop-msg.is-me::before { content: ""; flex: none; width: 22px; }
+/* the composer */
+.rop-comp { position: relative; display: flex; flex-direction: column; gap: 8px; }
+.rop-quick { display: flex; flex-wrap: wrap; gap: 6px; }
+.rop-qc { all: unset; box-sizing: border-box; cursor: pointer; height: 26px; padding: 0 10px; border-radius: 999px; font-size: 12px; color: var(--ink-2); box-shadow: inset 0 0 0 1px var(--border); transition: background-color .15s ease, color .15s ease, transform .12s var(--e-out); }
+.rop-qc:active { transform: scale(.97); }
+@media (hover: hover) and (pointer: fine) { .rop-qc:hover { background: var(--fill); color: var(--ink); } }
+.rop-cin { margin-top: 0; gap: 6px; padding: 0 5px 0 5px; }
+.rop-tob { all: unset; box-sizing: border-box; cursor: pointer; flex: none; display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 8px; border-radius: 7px; background: var(--fill); font-size: 12px; color: var(--ink-3); white-space: nowrap; }
+.rop-tob b { font-weight: 600; color: var(--ink); }
+.rop-opt { all: unset; box-sizing: border-box; cursor: pointer; flex: none; height: 24px; padding: 0 8px; border-radius: 6px; font: 600 11px/24px var(--font-mono); color: var(--ink-3); box-shadow: inset 0 0 0 1px var(--border); }
+.rop-opt.is-on { background: var(--accent-tint); color: var(--accent-text); box-shadow: none; }
+.rop-clip, .rop-send { all: unset; box-sizing: border-box; cursor: pointer; flex: none; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 8px; color: var(--ink-3); transition: transform .12s var(--e-out), background-color .15s ease; }
+.rop-clip:hover { background: var(--fill); color: var(--ink); }
+.rop-send { background: var(--primary); color: var(--on-primary); }
+.rop-send:active, .rop-clip:active { transform: scale(.96); }
+.rop-tob:focus-visible, .rop-opt:focus-visible, .rop-clip:focus-visible, .rop-send:focus-visible, .rop-qc:focus-visible { box-shadow: var(--shadow-focus); }
+.rop-file { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.rop-staged { display: flex; flex-wrap: wrap; gap: 6px; }
+.rop-sf { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 4px 0 9px; border-radius: 6px; background: var(--fill); font-size: 12px; color: var(--ink-2); animation: rop-rise .2s var(--e-out) both; }
+.rop-sfx { all: unset; cursor: pointer; width: 18px; height: 18px; display: grid; place-items: center; border-radius: 4px; color: var(--ink-3); }
+.rop-sug { position: absolute; left: 90px; bottom: 46px; z-index: 30; display: flex; flex-direction: column; min-width: 220px; padding: 4px; border-radius: 10px; background: var(--raised); box-shadow: var(--shadow-raised); transform-origin: left bottom; animation: rop-grow .15s var(--e-out) both; }
+.rop-sug[hidden] { display: none; }
+.rop-sg { all: unset; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 8px; border-radius: 7px; font-size: 13px; color: var(--ink); }
+.rop-sg small { margin-left: auto; font-size: 11.5px; color: var(--ink-3); }
+.rop-sg.is-on, .rop-sg:hover { background: var(--fill); }
+.rop-topop { max-height: 360px; overflow: auto; }
+@keyframes rop-grow { from { opacity: 0; transform: scale(.97); } }
+
+/* ---------- Customer: edited in place, a check draws in ---------- */
+.rop-cus { padding: 4px 12px 12px; border-radius: var(--radius-lg); background: var(--panel); box-shadow: inset 0 0 0 1px var(--hairline); }
+.rop-saved { display: inline-grid; place-items: center; width: 16px; height: 16px; margin-left: 6px; vertical-align: -3px; border-radius: 50%; background: var(--good-tint); color: var(--good); animation: rop-savedfade 1.5s ease-out both; }
+.rop-saved svg { width: 11px; height: 11px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 22; animation: rop-draw .35s var(--e-out) .05s both; }
+@keyframes rop-draw { from { stroke-dashoffset: 22; } to { stroke-dashoffset: 0; } }
+@keyframes rop-savedfade { 0%, 75% { opacity: 1; } 100% { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .rop-mc__th, .rop-msg, .rop-msg__b, .rop-sf, .rop-sug, .rop-saved, .rop-saved svg { transition: none !important; animation: none !important; }
+}
+
+/* ---------- the operation card: one surface, hairlines between its parts ---------- */
+.px-op.rop-op172 { gap: 0; animation: rop-unroll .22s var(--e-out) both; }
+@keyframes rop-unroll { from { clip-path: inset(0 0 100% 0); opacity: .85; } to { clip-path: inset(0 0 0 0); opacity: 1; } }
+.px-op .ock > .rop-ockf { grid-column: 1 / -1; grid-row: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-width: 0; padding: 0 0 12px; margin: 0 0 12px; box-shadow: inset 0 -1px 0 var(--hairline); }
+.px-op .ock > .ock-tm { grid-row: 2; }
+.px-op .ock > .ock-lbl { grid-row: 3; }
+.px-op .ock > .ock-side { grid-row: 2 / span 2; }
+/* the facts as tinted chips: the label quiet, the value strong */
+.rop-ockf .rop-facts { display: contents; }
+.rop-ockf .rop-fact { flex-direction: row; align-items: center; gap: 5px; height: 24px; padding: 0 9px; border-radius: 7px; background: var(--accent-tint); color: var(--accent-text); }
+.rop-ockf .rop-fact > small { font: 500 11px/1 var(--font-sans); letter-spacing: 0; color: color-mix(in srgb, var(--accent-text) 70%, transparent); }
+.rop-ockf .rop-fact > .rop-fv { font-size: 12px; line-height: 1; color: var(--accent-text); }
+.rop-ockf .rop-fact > .rop-fv.rop-jtv { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; font: 600 12px/1 var(--font-sans); color: var(--accent-text); }
+.rop-ockf .rop-fact > .rop-chip, .rop-ockf .rop-fact > .libFg, .rop-ockf .rop-fact > .libSteps { height: auto; line-height: 1; background: none; padding: 0; }
+.rop-ockf .fltBar { display: contents; }
+.rop-ockf .fltRow { display: contents; }
+.rop-ockf .rop-olinks { display: contents; }
+/* the tabs, under the bar, inside the card */
+.px-op .ock > .rop-ocktabs { grid-column: 1 / -1; margin-top: 14px; padding-top: 6px; box-shadow: inset 0 1px 0 var(--hairline); }
+.rop-ocktabs .rop-tabrow { box-shadow: none; }
+.rop-otabs { gap: 4px; padding: 3px 0; box-shadow: none; }
+.rop-otabs .px-tab { position: relative; z-index: 1; height: 30px; padding: 0 10px; border-radius: 8px; gap: 6px; font-size: 13px; }
+.rop-otabs .px-tab.is-on { color: var(--accent-text); box-shadow: none; }
+.rop-otabs .px-tab .px-ico { flex: none; }
+.rop-otabs .px-tabs__ink { top: 3px; bottom: 3px; height: auto; border-radius: 8px; background: var(--accent-tint); transition: none; }
+.rop-otabs .px-tab__n { font: 600 11px/1 var(--font-mono); color: inherit; }
+.rop-otabs .px-tab__n.is-pop { display: inline-block; animation: rop-pop .35s var(--e-out) 1; }
+@keyframes rop-pop { 40% { transform: scale(1.25); } 100% { transform: none; } }
+.px-panes.rop-in-r { animation: rop-slr .22s var(--e-out) both; }
+.px-panes.rop-in-l { animation: rop-sll .22s var(--e-out) both; }
+@keyframes rop-slr { from { opacity: 0; transform: translateX(16px); } }
+@keyframes rop-sll { from { opacity: 0; transform: translateX(-16px); } }
+.rop-flash { animation: rop-flash 1.2s ease-out 1; }
+@keyframes rop-flash { 0% { background-color: color-mix(in srgb, var(--good) 24%, transparent); } 100% { background-color: transparent; } }
+/* the status menu grows out of its pill */
+.rop-stpop { transform-origin: top right; animation: rop-grow .15s var(--e-out) both; }
+@media (prefers-reduced-motion: reduce) {
+  .px-op.rop-op172, .rop-otabs .px-tab__n.is-pop, .px-panes.rop-in-r, .px-panes.rop-in-l, .rop-flash, .rop-stpop { animation: none !important; }
+}

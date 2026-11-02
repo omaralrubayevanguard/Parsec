@@ -58,6 +58,7 @@ function pxProp(label, value, opts) {
   var b = el('b', { class: (opts.empty ? 'px-empty ' : '') + (opts.num ? 'px-num' : '') });
   if (opts.id) b.innerHTML = '<span class="px-id">' + esc(value) + '</span>'; else if (typeof value === 'string') b.textContent = value; else if (value) b.appendChild(value);
   var row = el('div', { class: 'px-prop' + (opts.edit ? ' is-edit' : '') }, [el('span', { text: label }), b]);
+  if (opts.edit && ROPC.saved && ROPC.saved.label === label && Date.now() - ROPC.saved.at < 1500) b.appendChild(el('span', { class: 'rop-saved', 'aria-label': 'Saved', html: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>' }));   /* 17.2: a check draws in where it was saved */
   if (opts.copy) row.appendChild(el('button', { class: 'px-copy', type: 'button', title: 'Copy', html: pxI('copy', 13) + pxI('check', 13), onClick: function (e) {
     e.stopPropagation(); var c = e.currentTarget; pxCopy(opts.copy, label + ' copied'); c.classList.add('is-done'); setTimeout(function () { c.classList.remove('is-done'); }, 1400); } }));
   if (opts.edit) row.addEventListener('click', function (e) {
@@ -65,7 +66,7 @@ function pxProp(label, value, opts) {
     var cur = opts.edit.get(), inp = el('input', { class: 'px-input', style: 'width:100%;height:26px;font-size:13px', value: cur || '', type: opts.edit.type || 'text' });
     b.innerHTML = ''; b.appendChild(inp); inp.focus(); if (inp.select) try { inp.select(); } catch (er) {}
     var done = false;
-    function commit(keep) { if (done) return; done = true; var v = inp.value.trim(); if (keep && v !== String(cur || '')) { pushUndo(label.toLowerCase()); opts.edit.set(v); save(true); } render(); tecRender(); }
+    function commit(keep) { if (done) return; done = true; var v = inp.value.trim(); if (keep && v !== String(cur || '')) { pushUndo(label.toLowerCase()); opts.edit.set(v); save(true); ROPC.saved = { label: label, at: Date.now() }; } render(); tecRender(); }
     inp.addEventListener('keydown', function (ev) { ev.stopPropagation(); if (ev.key === 'Enter') { ev.preventDefault(); commit(true); } else if (ev.key === 'Escape') { ev.preventDefault(); commit(false); } });
     inp.addEventListener('blur', function () { commit(true); });
   });

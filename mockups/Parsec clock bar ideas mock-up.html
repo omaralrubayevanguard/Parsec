@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="en" data-th="ivory">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parsec clock bar ideas</title>
+<style>
+/* ---------- tokens: four themes · Ivory / Graphite (warm) · Mist / Obsidian (cool). Keep the names. ---------- */
+:root,[data-th="ivory"]{--canvas:#F2F0EA;--panel:#FBFAF7;--raised:#fff;--fill:#F0EDE6;--hair:#E6E2D8;--border:#D6D0C3;--ink:#1D1C1A;--ink2:#57534B;--ink3:#67625A;--acc:#86643A;--acct:#F4EDE1;--accl:#D9C5A3;--primary:#1D1C1A;--onprimary:#FBFAF7;--good:#3A8C60;--goodt:#E8F5EE;--warn:#AD7210;--bad:#C0503F;--shadow:0 0 0 1px rgba(29,28,26,.06),0 1px 3px rgba(29,28,26,.04);--raise:0 0 0 1px rgba(29,28,26,.08),0 18px 44px -14px rgba(29,28,26,.28);color-scheme:light}
+[data-th="graphite"]{--canvas:#0E0E0D;--panel:#151514;--raised:#1D1D1B;--fill:#222220;--hair:#262624;--border:#363532;--ink:#EDEBE6;--ink2:#B0ACA3;--ink3:#9A968D;--acc:#D1B184;--acct:#2A241B;--accl:#6B5A40;--primary:#EDEBE6;--onprimary:#151514;--good:#5BBE8B;--goodt:#1A2E24;--warn:#E2A84C;--bad:#EC7F6C;--shadow:0 0 0 1px rgba(255,255,255,.06);--raise:0 0 0 1px rgba(255,255,255,.08),0 20px 50px -14px rgba(0,0,0,.7);color-scheme:dark}
+[data-th="mist"]{--canvas:#EEF1F4;--panel:#F7F9FB;--raised:#fff;--fill:#E8EDF2;--hair:#DEE3E9;--border:#C9D1DA;--ink:#171A1F;--ink2:#4E5661;--ink3:#626B77;--acc:#3F6A8A;--acct:#E4EDF4;--accl:#A9C4D8;--primary:#1F2A36;--onprimary:#F7F9FB;--good:#2F8A5E;--goodt:#E2F1E9;--warn:#A86F0E;--bad:#BF4F3F;--shadow:0 0 0 1px rgba(23,26,31,.06),0 1px 3px rgba(23,26,31,.05);--raise:0 0 0 1px rgba(23,26,31,.08),0 18px 44px -14px rgba(23,26,31,.3);color-scheme:light}
+[data-th="obsidian"]{--canvas:#0C0E11;--panel:#13161A;--raised:#1A1E24;--fill:#1F242B;--hair:#242930;--border:#343B45;--ink:#E8ECF1;--ink2:#A9B2BD;--ink3:#8E98A4;--acc:#8FB6D4;--acct:#1B2733;--accl:#3E5B73;--primary:#E8ECF1;--onprimary:#13161A;--good:#5BBE8B;--goodt:#182B22;--warn:#E2A84C;--bad:#EC7F6C;--shadow:0 0 0 1px rgba(255,255,255,.06);--raise:0 0 0 1px rgba(255,255,255,.08),0 20px 50px -14px rgba(0,0,0,.75);color-scheme:dark}
+:root{--sans:"Inter","Segoe UI",system-ui,sans-serif;--serif:"Iowan Old Style",Georgia,serif;--mono:"Cascadia Mono",Consolas,monospace}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{margin:0;background:var(--canvas);color:var(--ink);font:400 14px/1.45 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button,input,textarea,select{font:inherit;color:inherit}
+/* ---------- the frame (prefix ip- so the drawn visuals' classes can't collide) ---------- */
+.ip-bar{position:sticky;top:0;z-index:60;background:var(--canvas);box-shadow:inset 0 -1px 0 var(--hair)}
+.ip-r1,.ip-r2{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 16px}
+.ip-r2{padding-top:0;padding-bottom:8px}
+.ip-bar h1{margin:0 auto 0 0;display:flex;align-items:baseline;gap:10px;font:500 19px/24px var(--serif)}
+.ip-bar h1 small{font:500 11px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.ip-jump{display:flex;gap:2px;flex-wrap:wrap}.ip-jump a{padding:4px 9px;border-radius:7px;font-size:12.5px;color:var(--ink2);text-decoration:none}.ip-jump a:hover{background:var(--fill)}
+.ip-seg{display:inline-flex;gap:2px;padding:2px;border-radius:9px;background:var(--fill)}
+.ip-seg button{all:unset;cursor:pointer;height:26px;padding:0 10px;border-radius:7px;font-size:12.5px;font-weight:500;color:var(--ink2);white-space:nowrap}.ip-seg button[aria-pressed="true"]{background:var(--raised);color:var(--ink);box-shadow:var(--shadow)}
+.ip-btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 11px;border-radius:8px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--border);font:500 12.5px/1 var(--sans);white-space:nowrap}
+.ip-btn.pri{background:var(--primary);color:var(--onprimary);box-shadow:none}.ip-btn em{font-style:normal;opacity:.7;font-size:11px}
+.ip-btn:focus-visible,.ip-opt:focus-visible,.ip-seg button:focus-visible,.ip-chip:focus-visible,.ip-dots i:focus-visible,.ip-sel:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.ip-prog{display:flex;align-items:center;gap:10px;flex:1 1 220px;min-width:160px}
+.ip-prog-bar{flex:1;height:6px;border-radius:999px;background:var(--fill);overflow:hidden}
+.ip-prog-bar i{display:block;height:100%;width:0;background:var(--acc);border-radius:999px;transition:width .35s}
+.ip-prog span{font-size:12px;color:var(--ink3);white-space:nowrap}
+.ip-tabs{display:inline-flex;gap:2px;padding:2px;border-radius:9px;background:var(--fill);flex-wrap:wrap}
+.ip-chip{all:unset;cursor:pointer;height:26px;padding:0 10px;border-radius:7px;font-size:12px;font-weight:500;color:var(--ink2);white-space:nowrap}
+.ip-chip[aria-pressed="true"]{background:var(--raised);color:var(--ink);box-shadow:var(--shadow)}
+.ip-warn{display:none;align-items:center;height:26px;padding:0 10px;border-radius:7px;background:var(--warn);color:#fff;font-size:12px;font-weight:600;cursor:pointer}
+.ip-wrap{max-width:1500px;margin:0 auto;padding:18px 16px 120px}
+.ip-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.ip-layout.has-prev{grid-template-columns:minmax(0,1fr) min(360px,34vw)}
+@media (max-width:1100px){.ip-layout.has-prev{grid-template-columns:1fr}}
+#ip-preview{position:sticky;top:96px;align-self:start;max-height:calc(100vh - 110px);overflow:auto;padding:12px;border-radius:14px;background:var(--panel);box-shadow:var(--shadow)}
+#ip-preview[hidden]{display:none}
+#ip-preview h2{margin:0 0 8px;font:500 14px/1 var(--serif)}
+#ip-preview h2 small{font:400 11px var(--sans);color:var(--ink3);margin-left:6px}
+.ip-prev-root{position:relative;min-height:80px;padding:12px;border-radius:10px;background:var(--canvas);box-shadow:inset 0 0 0 1px var(--hair);font-size:12.5px;overflow:hidden}
+.ip-now{margin:0 0 16px;padding:14px 16px;border-radius:14px;background:var(--panel);box-shadow:var(--shadow)}.ip-now h2{margin:0 0 8px;font:500 15px/1 var(--serif)}
+.ip-now-row{display:flex;gap:10px;flex-wrap:wrap}.ip-now-row>div{flex:1 1 220px;padding:8px 10px;border-radius:9px;background:var(--canvas);box-shadow:inset 0 0 0 1px var(--hair);font-size:12.5px;color:var(--ink2)}.ip-now-row b{color:var(--ink)}
+.ip-lead{margin:0 2px 14px;color:var(--ink2)}
+.ip-keys{margin:0 2px 14px;font-size:11.5px;color:var(--ink3)} .ip-keys kbd{display:inline-block;min-width:18px;padding:0 5px;border-radius:4px;background:var(--raised);box-shadow:inset 0 -1.5px 0 var(--border),inset 0 0 0 1px var(--border);font:600 10.5px/17px var(--mono);text-align:center;color:var(--ink2)}
+.ip-sec{margin:0 0 26px;scroll-margin-top:100px}.ip-sec h2{display:flex;align-items:baseline;gap:10px;margin:0 2px 10px;font:500 22px/28px var(--serif)}.ip-sec h2 small{font:400 12.5px var(--sans);color:var(--ink3)}
+.ip-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(440px,1fr));gap:14px}@media (max-width:980px){.ip-grid{grid-template-columns:1fr}}
+.ip-idea{min-width:0;display:flex;flex-direction:column;gap:10px;padding:14px 14px 10px;border-radius:14px;background:var(--panel);box-shadow:var(--shadow);scroll-margin-top:104px;transition:box-shadow .2s}
+.ip-idea.picked{box-shadow:0 0 0 1.5px var(--accl),var(--shadow)}
+.ip-idea.ip-cur{box-shadow:0 0 0 2px var(--acc),var(--shadow)}
+.ip-idea[hidden]{display:none}
+.ip-idea.ip-locked .ip-vis,.ip-idea.ip-locked .ip-ol,.ip-idea.ip-locked .ip-card-tools{opacity:.5}
+.ip-idea h3{margin:0;font:600 15px/20px var(--sans);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ip-idea header p{margin:3px 0 0;font-size:12.5px;line-height:17px;color:var(--ink3)}
+.ip-tags{display:inline-flex;gap:4px}
+.ip-tag{display:inline-flex;align-items:center;height:18px;padding:0 6px;border-radius:5px;font:600 10px/1 var(--sans);background:var(--fill);color:var(--ink2)}
+.ip-tag.hi{background:var(--goodt);color:var(--good)}
+.ip-tag.lo{background:var(--acct);color:var(--acc)}
+.ip-need{display:inline-flex;align-items:center;gap:4px;height:18px;padding:0 7px;border-radius:5px;font:600 10px/1 var(--sans);background:var(--acct);color:var(--acc);letter-spacing:.02em}
+.ip-idea:not(.ip-locked) .ip-need{background:var(--goodt);color:var(--good)}
+.ip-rec{position:relative;display:inline-flex;align-items:center;height:16px;padding:0 6px;border-radius:4px;font:600 9px/1 var(--sans);letter-spacing:.04em;text-transform:uppercase;background:var(--acct);color:var(--acc);cursor:help}
+.ip-rec[data-tip]::after{content:attr(data-tip);position:absolute;left:0;top:calc(100% + 6px);z-index:7;min-width:180px;max-width:260px;padding:6px 9px;border-radius:7px;background:var(--primary);color:var(--onprimary);font:400 11.5px/1.4 var(--sans);text-transform:none;letter-spacing:0;white-space:normal;opacity:0;transform:translateY(-3px);pointer-events:none;transition:opacity .15s,transform .15s}
+.ip-rec[data-tip]:hover::after,.ip-rec[data-tip]:focus::after,.ip-opt:focus-visible .ip-rec[data-tip]::after{opacity:1;transform:none}
+.ip-vis{position:relative;min-height:96px;padding:12px;border-radius:11px;background:var(--canvas);box-shadow:inset 0 0 0 1px var(--hair);font-size:12.5px;overflow:hidden}
+.ip-hint{position:absolute;left:8px;bottom:8px;z-index:5;padding:3px 8px;border-radius:7px;background:var(--raised);box-shadow:var(--shadow);font-size:11px;color:var(--ink3);pointer-events:none}
+.ip-vis.ip-has .ip-hint,.ip-vis.ip-skip .ip-hint,.ip-vis.ip-peeking .ip-hint,.ip-vis:not(.ip-has) .ip-replay,.ip-vis:not(.ip-has) .ip-dots{display:none}
+.ip-vis.ip-skip>*:not(.ip-replay):not(.ip-cmp){opacity:.45}
+.ip-replay{all:unset;cursor:pointer;position:absolute;right:8px;bottom:8px;z-index:5;width:24px;height:24px;border-radius:7px;display:grid;place-items:center;background:var(--raised);box-shadow:var(--shadow);color:var(--ink3);font-size:11px}
+.ip-dots{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:5;display:flex;gap:6px;padding:4px 7px;border-radius:999px;background:var(--raised);box-shadow:var(--shadow)}
+.ip-dots i{all:unset;cursor:pointer;width:9px;height:9px;border-radius:50%;background:var(--fill);box-shadow:inset 0 0 0 1.5px var(--border);transition:background .2s,box-shadow .2s}
+.ip-dots i.f{background:var(--acc);box-shadow:none}
+.ip-vis.ip-peeking{box-shadow:inset 0 0 0 1.5px var(--acc)}
+.ip-peek-lbl{display:none;position:absolute;left:8px;bottom:8px;z-index:5;padding:3px 8px;border-radius:7px;background:var(--acc);color:var(--onprimary);font-size:11px;font-weight:600;pointer-events:none}
+.ip-vis.ip-peeking .ip-peek-lbl{display:block}
+.ip-vis.ip-peeking .ip-dots,.ip-vis.ip-peeking .ip-replay{display:none}
+.ip-cmp{display:none;position:absolute;inset:0;z-index:3;background:var(--canvas)}
+.ip-vis.ip-comparing .ip-cmp{display:block}
+.ip-vis.ip-comparing{min-height:150px}
+.ip-cmp-a .v-cur,.ip-cmp-b .v-cur{display:none}
+.ip-vis.ip-comparing>.ip-body,.ip-vis.ip-comparing>.ip-hint,.ip-vis.ip-comparing>.ip-dots,.ip-vis.ip-comparing>.ip-replay{visibility:hidden}
+.ip-cmp-a,.ip-cmp-b{position:absolute;top:34px;bottom:0;width:50%;padding:12px;overflow:hidden}
+.ip-cmp-a{left:0;box-shadow:inset -1px 0 0 var(--hair)}.ip-cmp-b{left:50%}
+.ip-cmp-top{position:absolute;left:0;right:0;top:0;height:34px;display:flex;align-items:center;gap:6px;padding:0 8px;font-size:11px;color:var(--ink3);background:var(--panel);box-shadow:inset 0 -1px 0 var(--hair);z-index:5}
+.ip-cmp-top b{flex:1;text-align:center;font-weight:500;color:var(--ink2)}
+.ip-sel{all:unset;box-sizing:border-box;cursor:pointer;height:22px;padding:0 20px 0 7px;border-radius:6px;background:var(--raised) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23888'/%3E%3C/svg%3E") no-repeat right 7px center;box-shadow:inset 0 0 0 1px var(--border);font:500 11px/22px var(--sans);color:var(--ink);max-width:150px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;-webkit-appearance:none;appearance:none}
+.ip-ol{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:2px}
+.ip-opt{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:14px minmax(0,1fr);gap:8px;padding:6px 8px;border-radius:9px;font-size:12.5px;line-height:16px;color:var(--ink2)}
+.ip-opt:hover{background:var(--fill)}.ip-opt i{width:14px;height:14px;margin-top:1px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--border)}
+.ip-opt b{display:block;font-weight:500;color:var(--ink)}.ip-opt small{display:block;font-size:11.5px;color:var(--ink3)}
+.ip-opt[aria-pressed="true"]{background:var(--acct)}.ip-opt[aria-pressed="true"] i{box-shadow:inset 0 0 0 4.5px var(--acc)}
+.ip-opt .ip-rec{margin-left:4px;vertical-align:middle}
+.ip-opt kbd{float:right;margin-left:6px;min-width:16px;padding:0 4px;border-radius:4px;background:var(--raised);box-shadow:inset 0 -1.5px 0 var(--border),inset 0 0 0 1px var(--border);font:600 9.5px/15px var(--mono);text-align:center;color:var(--ink3)}
+.ip-idea-note{width:100%;min-height:34px;padding:7px 10px;border:0;border-radius:9px;background:var(--fill);font-size:12.5px;resize:vertical;outline:none}
+.ip-idea-note:focus{box-shadow:inset 0 0 0 1.5px var(--accl)}
+.ip-card-tools{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.ip-card-tools .ip-seg{display:none}.ip-idea.picked .ip-card-tools .ip-seg{display:inline-flex}
+.ip-card-tools .ip-seg button{height:22px;font-size:11.5px}
+#ip-picks{position:fixed;z-index:85;right:16px;top:96px;width:470px;max-width:calc(100vw - 32px);max-height:calc(100vh - 112px);overflow:auto;padding:12px 14px 14px;border-radius:16px;background:var(--raised);box-shadow:var(--raise);display:flex;flex-direction:column;gap:10px}
+#ip-picks[hidden]{display:none}
+#ip-picks pre{margin:0;padding:10px 12px;border-radius:10px;background:var(--fill);font:400 12px/1.55 var(--mono);white-space:pre-wrap}
+#ip-picks textarea{min-height:60px;padding:8px 10px;border:0;border-radius:9px;background:var(--fill);font-size:13px;resize:vertical;outline:none}
+#ip-picks label.ip-ck{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink2)}
+.ip-ph{display:flex;align-items:center;font:500 18px/1 var(--serif)}.ip-ph b{flex:1;font-weight:500}.ip-ph button{all:unset;cursor:pointer;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;color:var(--ink3)}
+.ip-actions{display:flex;flex-wrap:wrap;gap:6px}
+.ip-toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:99;display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;background:var(--primary);color:var(--onprimary);font-size:13px;box-shadow:var(--raise);max-width:calc(100vw - 32px)}
+.ip-toast button{all:unset;cursor:pointer;font-weight:600;color:var(--accl);padding:2px 4px;border-radius:4px}
+.ip-file{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+@media (max-width:640px){ .ip-grid{grid-template-columns:1fr} #ip-picks{left:16px;right:16px;width:auto} .ip-bar h1 small{display:none} .ip-layout.has-prev{grid-template-columns:1fr} .ip-r2 [data-sort]{display:none} .ip-keys{display:none} #ip-preview{position:static;max-height:none} }
+@media print{
+  body{background:#fff;color:#000}
+  .ip-bar .ip-seg,.ip-bar #ip-open,.ip-bar #ip-accept,.ip-r2,.ip-ol,.ip-replay,.ip-hint,.ip-dots,.ip-card-tools,.ip-idea-note,#ip-preview,.ip-cmp,.ip-keys,.ip-actions,.ip-ck{display:none!important}
+  #ip-picks{position:static!important;display:flex!important;width:100%!important;max-width:none;max-height:none;box-shadow:none;border:1px solid #ccc;page-break-before:avoid}
+  .ip-vis{break-inside:avoid}
+  .ip-idea[hidden]{display:flex!important}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.ip-prog-bar i{transition:none}}
+
+/* ---------- the drawn visuals: prefix v- · animate with [data-step], .ip-s-<step> and [data-opt] on .ip-vis ---------- */
+:root{--v-out:cubic-bezier(.23,1,.32,1)}
+.v-cur{position:absolute;left:200px;top:20px;width:14px;height:14px;z-index:6;pointer-events:none;opacity:0;transition:left .6s var(--v-out),top .6s var(--v-out),opacity .25s}
+.ip-s-point .v-cur{opacity:1}.ip-s-done .v-cur{opacity:0;transition-delay:.35s}
+.v-cur::before{content:"";position:absolute;inset:0;clip-path:polygon(0 0,0 100%,30% 72%,52% 100%,64% 94%,44% 66%,80% 66%);background:var(--ink)}
+.v-cur::after{content:"";position:absolute;left:-8px;top:-8px;width:30px;height:30px;border-radius:50%;background:var(--acc);opacity:0;transform:scale(.3)}
+@keyframes v-ripple{0%{opacity:.35;transform:scale(.3)}100%{opacity:0;transform:scale(1.4)}}
+[data-step="click"] .v-cur::after{animation:v-ripple .45s ease-out}
+
+/* the card: a slice of the clock card around the bar (RO 48213 · Op 1 · quoted 2.50 h · 1.70 h on it) */
+.v-card{position:relative;width:362px;height:112px;border-radius:12px;background:var(--panel);box-shadow:var(--shadow);font-size:12px;color:var(--ink)}
+.v-top{position:absolute;left:14px;top:12px;display:flex;align-items:baseline;gap:8px;white-space:nowrap}
+.v-top b{font:500 18px/1 var(--sans);font-variant-numeric:tabular-nums}
+.v-top span{font-size:11px;color:var(--ink3)}
+.v-bar{position:absolute;left:14px;top:52px;width:334px;height:6px;border-radius:3px;background:var(--fill);transition:height .3s var(--v-out),top .3s var(--v-out)}
+.v-in{position:absolute;inset:0;transform-origin:left center;transition:transform .5s var(--v-out)}
+.v-sg{position:absolute;top:0;height:100%;border-radius:2px;transition:background-color .4s ease,left .4s var(--v-out),width .4s var(--v-out)}
+.v-sty{left:0;width:22px;background:color-mix(in srgb,var(--ink3) 55%,transparent)}
+.v-sd{left:24px;width:117px;background:var(--warn)}
+.v-sr{left:143px;width:60px;background:var(--good)}
+.v-gh{position:absolute;top:0;height:100%;left:205px;width:93px;border-radius:2px;background:repeating-linear-gradient(90deg,color-mix(in srgb,var(--ink3) 38%,transparent) 0 4px,transparent 4px 7px);transition:opacity .3s,background .3s,box-shadow .3s}
+.v-qt{position:absolute;left:297px;top:-4px;bottom:-4px;width:2px;border-radius:1px;background:var(--ink)}
+.v-ms{position:absolute;top:-3px;bottom:-3px;width:4px;margin-left:-2px;border-radius:2px;background:var(--panel);box-shadow:inset 0 0 0 1.5px var(--border);transition:opacity .3s}
+.v-ms1{left:149px;background:var(--good);box-shadow:none}.v-ms2{left:224px}
+.v-ini{position:absolute;top:-15px;font:600 9px/12px var(--sans);color:var(--ink3);transition:top .3s var(--v-out),color .3s,opacity .3s}
+.v-i1{left:28px}.v-i2{left:147px}
+.v-pin{position:absolute;top:-9px;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 2px var(--panel);transition:opacity .3s,border-radius .3s,transform .3s}
+.v-p1{left:80px}.v-p2{left:180px}
+.v-band{position:absolute;left:215px;width:96px;top:10px;height:3px;border-radius:2px;background:color-mix(in srgb,var(--acc) 45%,transparent);opacity:0;transition:opacity .3s,top .3s,height .3s}
+.v-bmd{position:absolute;left:262px;top:9px;width:2px;height:5px;background:var(--acc);opacity:0;transition:opacity .3s,top .3s}
+.v-pace{position:absolute;left:250px;top:-11px;width:0;height:0;margin-left:-4px;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid var(--ink2);opacity:0;transition:opacity .3s}
+.v-lab{position:absolute;top:16px;font:500 10px/1 var(--mono);color:var(--ink3);white-space:nowrap;opacity:0;transition:opacity .3s}
+.v-lq{left:286px}.v-ll{left:186px;color:var(--good)}
+.v-hr{position:absolute;top:10px;width:1px;height:4px;background:var(--border);opacity:0;transition:opacity .3s}
+.v-hr::after{position:absolute;top:6px;left:-3px;font:500 9px/1 var(--mono);color:var(--ink3)}
+.v-h1{left:119px}.v-h1::after{content:"1h"}.v-h2{left:238px}.v-h2::after{content:"2h"}
+.v-off{position:absolute;top:2px;height:2px;opacity:0;background:repeating-linear-gradient(90deg,var(--border) 0 2px,transparent 2px 4px);transition:opacity .3s}
+.v-o1{left:141px;width:18px}
+.v-chip{position:absolute;left:14px;top:84px;display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:999px;background:var(--fill);font:500 10.5px/1 var(--sans);color:var(--ink2);opacity:0;transform:translateY(4px);transition:opacity .25s,transform .25s var(--v-out)}
+.v-txt{position:absolute;left:14px;top:84px;font-size:11px;color:var(--ink3);white-space:nowrap;opacity:0;transition:opacity .3s}
+.v-txt b{color:var(--ink);font-weight:500}
+.v-av{position:absolute;top:14px;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;font:600 7.5px/1 var(--sans);background:var(--fill);color:var(--ink2);box-shadow:inset 0 0 0 1px var(--border);opacity:0;transition:opacity .3s}
+.v-a1{left:24px}.v-a2{left:143px}
+.v-hl{position:absolute;top:-10px;bottom:-10px;left:96px;width:1px;background:var(--ink);opacity:0;transition:opacity .15s}
+.v-ht{position:absolute;left:82px;top:-30px;padding:3px 7px;border-radius:6px;background:var(--primary);color:var(--onprimary);font-size:10px;white-space:nowrap;opacity:0;transition:opacity .15s}
+.v-nadd{position:absolute;left:14px;top:80px;display:flex;align-items:center;gap:6px;height:24px;padding:0 8px;border-radius:8px;background:var(--raised);box-shadow:var(--raise);font-size:11px;white-space:nowrap;opacity:0;transform:translateY(-4px);transition:opacity .2s,transform .2s var(--v-out)}
+.v-nadd b{font-weight:600}.v-nadd span{color:var(--ink3)}
+@media (prefers-reduced-motion:reduce){.v-cur,.v-bar,.v-in,.v-sg,.v-gh,.v-ms,.v-ini,.v-pin,.v-band,.v-bmd,.v-pace,.v-lab,.v-hr,.v-off,.v-chip,.v-txt,.v-av,.v-hl,.v-ht,.v-nadd{transition:none!important}.v-cur::after{animation:none!important}}
+
+/* ===== Shape and scale ===== */
+/* height */
+[data-k="height"] [data-opt="h8"].ip-s-show .v-bar{height:8px;border-radius:4px}
+[data-k="height"] [data-opt="h14"].ip-s-show .v-bar{height:14px;top:48px;border-radius:5px}
+[data-k="height"] [data-opt="h14"].ip-s-show .v-sg{border-radius:4px}
+[data-k="height"] [data-opt="h14"].ip-s-show .v-ini{top:1px;color:#fff}
+[data-k="height"] [data-opt="h14"].ip-s-show .v-pin{top:-10px}
+[data-k="height"] [data-opt="h6"].ip-s-show .v-bar{box-shadow:inset 0 0 0 1px var(--accl)}
+/* scale */
+[data-k="scale"] .v-ini{display:none}
+[data-k="scale"] [data-opt="fixed"].ip-s-show .v-in{transform:scaleX(.9)}
+[data-k="scale"] [data-opt="fixed"].ip-s-show .v-lq::after{content:" · 80% of the bar"}
+[data-k="scale"] [data-opt="fixed"] .v-lq,[data-k="scale"] [data-opt="full"] .v-lq{opacity:1}
+[data-k="scale"] [data-opt="fixed"].ip-s-show .v-lq{left:252px}
+[data-k="scale"] [data-opt="today"].ip-s-show .v-in{transform:scaleX(.97)}
+[data-k="scale"] [data-opt="full"].ip-s-show .v-in{transform:scaleX(1.124)}
+[data-k="scale"] [data-opt="full"].ip-s-show .v-lq{left:300px}
+/* remaining up to the quote */
+[data-k="rest"] [data-opt="plain"].ip-s-show .v-gh{opacity:0}
+[data-k="rest"] [data-opt="outline"].ip-s-show .v-gh{background:none;box-shadow:inset 0 0 0 1px var(--ink3);border-radius:2px}
+[data-k="rest"] [data-opt="ghost"].ip-s-show .v-gh{opacity:1}
+/* milestones */
+[data-k="miles"] [data-opt="off"].ip-s-show .v-ms{opacity:0}
+[data-k="miles"] [data-opt="pips"].ip-s-show .v-ms1{transform:scale(1.2)}
+[data-k="miles"] [data-opt="labels"].ip-s-show .v-ms{opacity:0}
+[data-k="miles"] [data-opt="labels"].ip-s-show .v-hr{opacity:1}
+
+/* ===== What the segments say ===== */
+/* colour */
+[data-k="color"] [data-opt="reason"].ip-s-show .v-sd{box-shadow:0 0 0 1.5px var(--accl)}
+[data-k="color"] [data-opt="reason"].ip-s-show .v-txt{opacity:1}
+[data-k="color"] .v-txt::after{content:"amber · Diag   green · Repair   grey · typed in"}
+[data-k="color"] [data-opt="person"].ip-s-show .v-sd{background:var(--acc)}
+[data-k="color"] [data-opt="person"].ip-s-show .v-sr{background:var(--acc);left:143px}
+[data-k="color"] [data-opt="person"].ip-s-show .v-sty{background:var(--acc)}
+[data-k="color"] [data-opt="person"].ip-s-show .v-sr{background:color-mix(in srgb,var(--acc) 55%,var(--good))}
+[data-k="color"] [data-opt="person"].ip-s-show .v-txt{opacity:1}
+[data-k="color"] [data-opt="person"] .v-txt::after{content:"bronze · Mike   teal · Dana"}
+[data-k="color"] [data-opt="one"].ip-s-show .v-sd,[data-k="color"] [data-opt="one"].ip-s-show .v-sty{background:color-mix(in srgb,var(--good) 55%,var(--fill))}
+[data-k="color"] [data-opt="one"].ip-s-show .v-sr{background:var(--good)}
+[data-k="color"] [data-opt="one"] .v-txt::after{content:"lighter · done   full · on the clock now"}
+[data-k="color"] [data-opt="one"].ip-s-show .v-txt{opacity:1}
+/* who */
+[data-k="who"] [data-opt="over"].ip-s-show .v-ini{color:var(--ink)}
+[data-k="who"] [data-opt="avatars"].ip-s-show .v-ini{opacity:0}
+[data-k="who"] [data-opt="avatars"].ip-s-show .v-av{opacity:1}
+[data-k="who"] [data-opt="none"].ip-s-show .v-ini{opacity:0}
+/* gaps */
+[data-k="gaps"] [data-opt="gap"].ip-s-show .v-sr{left:145px}
+[data-k="gaps"] [data-opt="off"].ip-s-show .v-sr{left:161px}
+[data-k="gaps"] [data-opt="off"].ip-s-show .v-off{opacity:1}
+[data-k="gaps"] [data-opt="off"].ip-s-show .v-gh{left:223px;width:75px}
+[data-k="gaps"] [data-opt="merge"].ip-s-show .v-sd{left:22px;width:121px;border-radius:0}
+[data-k="gaps"] [data-opt="merge"].ip-s-show .v-sty{border-radius:2px 0 0 2px}
+[data-k="gaps"] [data-opt="merge"].ip-s-show .v-sr{border-radius:0 2px 2px 0}
+/* typed-in time */
+[data-k="typed"] [data-opt="hatch"].ip-s-show .v-sty{background:repeating-linear-gradient(-45deg,color-mix(in srgb,var(--ink3) 60%,transparent) 0 2px,transparent 2px 4px);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ink3) 50%,transparent)}
+[data-k="typed"] [data-opt="grey"].ip-s-show .v-sty{background:color-mix(in srgb,var(--ink3) 70%,transparent)}
+[data-k="typed"] [data-opt="chip"].ip-s-show .v-sty{width:0}
+[data-k="typed"] [data-opt="chip"].ip-s-show .v-sd{left:0}
+[data-k="typed"] [data-opt="chip"].ip-s-show .v-sr{left:119px}
+[data-k="typed"] [data-opt="chip"].ip-s-show .v-chip{opacity:1;transform:none}
+
+/* ===== Markers on the bar ===== */
+/* similar jobs */
+[data-k="similar"] [data-opt="under"].ip-s-show .v-band,[data-k="similar"] [data-opt="under"].ip-s-show .v-bmd{opacity:1}
+[data-k="similar"] [data-opt="under"].ip-s-show .v-txt{opacity:1}
+[data-k="similar"] .v-txt::after{content:"Similar jobs 1.8–2.6 h · usually 2.2"}
+[data-k="similar"] [data-opt="on"].ip-s-show .v-band{opacity:1;top:0;height:6px;background:color-mix(in srgb,var(--acc) 22%,transparent)}
+[data-k="similar"] [data-opt="on"].ip-s-show .v-bmd{opacity:1;top:-2px;height:10px}
+[data-k="similar"] [data-opt="text"].ip-s-show .v-txt{opacity:1}
+/* usual pace finish */
+[data-k="pace"] [data-opt="tri"].ip-s-show .v-pace{opacity:1}
+[data-k="pace"] .v-txt::after{content:"At Mike’s usual 119%: done about 11:05"}
+[data-k="pace"] [data-opt="tri"].ip-s-show .v-txt,[data-k="pace"] [data-opt="text"].ip-s-show .v-txt{opacity:1}
+[data-k="pace"] [data-opt="off"].ip-s-show .v-txt{opacity:0}
+[data-k="pace"] [data-opt="off"].ip-s-show .v-pace{opacity:0}
+/* note pins */
+[data-k="pins"] [data-opt="dots"].ip-s-show .v-pin{transform:scale(1.15)}
+[data-k="pins"] [data-opt="flags"].ip-s-show .v-pin{border-radius:1px 4px 4px 0;width:8px;height:7px;top:-13px}
+[data-k="pins"] [data-opt="flags"].ip-s-show .v-pin::before{content:"";position:absolute;left:0;top:7px;width:1.5px;height:8px;background:var(--acc)}
+[data-k="pins"] [data-opt="off"].ip-s-show .v-pin{opacity:0}
+[data-k="pins"] [data-opt="off"].ip-s-show .v-chip{opacity:1;transform:none}
+[data-k="pins"] .v-chip::after{content:"2 notes — in the Time tab"}
+/* labels */
+[data-k="labels"] [data-opt="ends"].ip-s-show .v-lq,[data-k="labels"] [data-opt="ends"].ip-s-show .v-ll{opacity:1}
+[data-k="labels"] [data-opt="hours"].ip-s-show .v-hr{opacity:1}
+[data-k="labels"] [data-opt="hours"].ip-s-show .v-lq{opacity:1;top:-16px}
+[data-k="labels"] [data-opt="none"].ip-s-show .v-qt{background:var(--ink2)}
+/* add a note where you click */
+[data-k="addnote"] .ip-s-point .v-cur{left:96px;top:54px}
+[data-k="addnote"] [data-opt="preview"].ip-s-show .v-hl,[data-k="addnote"] [data-opt="preview"].ip-s-show .v-ht{opacity:1}
+[data-k="addnote"] [data-opt].ip-s-done .v-hl,[data-k="addnote"] [data-opt].ip-s-done .v-ht{opacity:0}
+[data-k="addnote"] [data-opt="preview"].ip-s-done .v-nadd,[data-k="addnote"] [data-opt="click"].ip-s-done .v-nadd{opacity:1;transform:none}
+[data-k="addnote"] [data-opt="click"].ip-s-show .v-bar{box-shadow:0 0 0 1px var(--border)}
+[data-k="addnote"] [data-opt="off"].ip-s-done .v-chip{opacity:1;transform:none}
+[data-k="addnote"] .v-chip::after{content:"Notes are added in the Time tab"}
+
+/* ===== the live preview: the bar with every pick ===== */
+.ip-prev-root .v-card{width:100%}
+.ip-prev-root .v-bar{width:calc(100% - 28px)}
+.ip-prev-root .v-in{transform:scaleX(var(--v-k,1))}
+.ip-prev-root[data-p-height="h8"] .v-bar{height:8px;border-radius:4px}
+.ip-prev-root[data-p-height="h14"] .v-bar{height:14px;top:48px;border-radius:5px}
+.ip-prev-root[data-p-height="h14"] .v-ini{top:1px;color:#fff}
+.ip-prev-root[data-p-rest="plain"] .v-gh{opacity:0}
+.ip-prev-root[data-p-rest="outline"] .v-gh{background:none;box-shadow:inset 0 0 0 1px var(--ink3)}
+.ip-prev-root[data-p-miles="off"] .v-ms,.ip-prev-root[data-p-miles="labels"] .v-ms{opacity:0}
+.ip-prev-root[data-p-miles="labels"] .v-hr,.ip-prev-root[data-p-labels="hours"] .v-hr{opacity:1}
+.ip-prev-root[data-p-color="person"] .v-sd,.ip-prev-root[data-p-color="person"] .v-sty{background:var(--acc)}
+.ip-prev-root[data-p-color="one"] .v-sd,.ip-prev-root[data-p-color="one"] .v-sty{background:color-mix(in srgb,var(--good) 55%,var(--fill))}
+.ip-prev-root[data-p-who="avatars"] .v-ini,.ip-prev-root[data-p-who="none"] .v-ini{opacity:0}
+.ip-prev-root[data-p-who="avatars"] .v-av{opacity:1}
+.ip-prev-root[data-p-gaps="off"] .v-off{opacity:1}
+.ip-prev-root[data-p-gaps="off"] .v-sr{left:161px}
+.ip-prev-root[data-p-typed="hatch"] .v-sty{background:repeating-linear-gradient(-45deg,color-mix(in srgb,var(--ink3) 60%,transparent) 0 2px,transparent 2px 4px)}
+.ip-prev-root[data-p-typed="chip"] .v-sty{width:0}
+.ip-prev-root[data-p-typed="chip"] .v-chip{opacity:1;transform:none}
+.ip-prev-root[data-p-similar="under"] .v-band,.ip-prev-root[data-p-similar="under"] .v-bmd{opacity:1}
+.ip-prev-root[data-p-similar="on"] .v-band{opacity:1;top:0;height:6px;background:color-mix(in srgb,var(--acc) 22%,transparent)}
+.ip-prev-root[data-p-pace="tri"] .v-pace{opacity:1}
+.ip-prev-root[data-p-pins="off"] .v-pin{opacity:0}
+.ip-prev-root[data-p-pins="flags"] .v-pin{border-radius:1px 4px 4px 0;top:-13px}
+.ip-prev-root[data-p-labels="ends"] .v-lq,.ip-prev-root[data-p-labels="ends"] .v-ll{opacity:1}
+.ip-prev-root[data-p-labels="hours"] .v-lq{opacity:1;top:-16px}
+.ip-prev-root[data-p-similar="under"][data-p-labels] .v-lab,.ip-prev-root[data-p-similar="under"][data-p-labels="hours"] .v-hr{top:20px}
+</style>
+</head>
+<body>
+<header class="ip-bar">
+<div class="ip-r1"><h1>Parsec <small>The clock bar itself</small></h1><nav class="ip-jump" id="ip-jump"></nav>
+<div class="ip-seg" role="group" aria-label="Theme"><button type="button" data-th="ivory" aria-pressed="true">Ivory</button><button type="button" data-th="graphite" aria-pressed="false">Graphite</button><button type="button" data-th="mist" aria-pressed="false">Mist</button><button type="button" data-th="obsidian" aria-pressed="false">Obsidian</button></div>
+<span class="ip-warn" id="ip-warn" title="Open the console for the list"></span>
+<button type="button" class="ip-btn" id="ip-accept">Accept all recommended</button>
+<button type="button" class="ip-btn pri" id="ip-open">Your picks <em id="ip-n"></em></button></div>
+<div class="ip-r2">
+<div class="ip-prog" id="ip-prog"><div class="ip-prog-bar"><i></i></div><span id="ip-prog-lab">0 of 0 decided</span></div>
+<div class="ip-tabs" role="group" aria-label="Filter"><button type="button" class="ip-chip" data-f="all" data-label="All" aria-pressed="true">All</button><button type="button" class="ip-chip" data-f="unpicked" data-label="Unpicked" aria-pressed="false">Unpicked</button><button type="button" class="ip-chip" data-f="picked" data-label="Picked" aria-pressed="false">Picked</button><button type="button" class="ip-chip" data-f="skipped" data-label="Skipped" aria-pressed="false">Skipped</button></div>
+<div class="ip-tabs" role="group" aria-label="Sort"><button type="button" class="ip-chip" data-sort="author" aria-pressed="true">Author order</button><button type="button" class="ip-chip" data-sort="impact" aria-pressed="false">By impact</button><button type="button" class="ip-chip" data-sort="effort" aria-pressed="false">By effort</button></div>
+</div>
+</header>
+<main class="ip-wrap">
+<section class="ip-now"><h2>How it looks now</h2><div class="ip-now-row"><div><b>6 px bar</b>, 112 % of the quote · one piece per punch in its start reason’s colour · typed-in time first in grey · 2 px gaps · initials above</div><div><b>On it</b>: the quote tick · a dotted ghost up to it · 50 % and 75 % pips · overrun stripes · note dots · the similar-jobs range and the usual-pace finish</div><div><b>9 kinds of marks</b> on one 6 px line, and no numbers on it</div></div></section>
+<p class="ip-lead" id="ip-lead"></p>
+<p class="ip-keys"><kbd>J</kbd> <kbd>K</kbd> next / previous card · <kbd>1</kbd>–<kbd>4</kbd> pick an option · <kbd>S</kbd> skip · <kbd>Z</kbd> undo · hover an option to peek at its result</p>
+<div class="ip-layout" id="ip-layout">
+  <div id="ip-secs"></div>
+  <aside id="ip-preview" hidden></aside>
+</div>
+</main>
+<div id="ip-picks" hidden></div>
+<script>
+/* ---------- the content: groups → ideas → options (Skip is added to each) ---------- */
+var APP = 'Parsec', TOPIC = 'The clock bar itself', KEY = 'ip-parsec-clock-bar';
+var AUTOSCROLL = true;
+/* the bar as it is today (sample: quoted 2.50 h, 1.70 h on it — 0:12 typed in, 1.00 h Diag by Mike, 0.50 h Repair by Dana, live) */
+function bar() {
+  return '<div class="v-card"><div class="v-top"><b>1:42:07</b><span>On it · quoted 2.50 h</span></div>'
+    + '<div class="v-bar v-target"><div class="v-in">'
+    + '<i class="v-sg v-sty" title="Typed in"></i><i class="v-sg v-sd"></i><i class="v-off v-o1"></i><i class="v-sg v-sr"></i><i class="v-gh"></i>'
+    + '<i class="v-ms v-ms1"></i><i class="v-ms v-ms2"></i><i class="v-band"></i><i class="v-bmd"></i><i class="v-pace"></i>'
+    + '<span class="v-ini v-i1">MR</span><span class="v-ini v-i2">DK</span><i class="v-pin v-p1"></i><i class="v-pin v-p2"></i>'
+    + '<span class="v-av v-a1">MR</span><span class="v-av v-a2">DK</span>'
+    + '<i class="v-hr v-h1"></i><i class="v-hr v-h2"></i><span class="v-lab v-lq">2.50 h</span><span class="v-lab v-ll">1.70</span>'
+    + '<i class="v-hl"></i><span class="v-ht">9:05 am · Mike’s punch</span>'
+    + '<i class="v-qt"></i></div></div>'
+    + '<span class="v-chip">+0:12 typed in</span><span class="v-txt"></span>'
+    + '<div class="v-nadd"><b>Note at 9:05</b><span>Mike’s punch · type and Enter</span></div>'
+    + '<span class="v-cur"></span></div>';
+}
+var SHOW = [['idle', 900], ['show', 1800]];
+var IDEAS = [
+  { group: 'Shape and scale', items: [
+    { k: 'height', t: 'How tall the bar is', why: 'Today 6 px, with the initials above each piece.', pri: 'M', effort: 'S',
+      rec: 'A touch more presence; initials still sit above, so the bar stays a clean line.',
+      vis: bar(), steps: SHOW,
+      opts: [['h8', 'A · 8 px', 'initials above'], ['h14', 'B · 14 px', 'initials inside each piece'], ['h6', 'C · 6 px, as today']] },
+    { k: 'scale', t: 'Where the quote sits on the bar', why: 'Today the bar spans 112 % of the quote, and the scale stretches once it goes past.', pri: 'H', effort: 'S',
+      rec: 'The quote tick never moves: the same spot on every card, so you read “how far” at a glance across operations.',
+      vis: bar(), steps: SHOW,
+      opts: [['fixed', 'A · Always at 80 % of the bar', 'the last fifth is room for overrun'], ['today', 'B · 112 % of the quote, as today'], ['full', 'C · The quote is the full bar', 'overrun goes past the end']] },
+    { k: 'rest', t: 'The time left up to the quote', why: 'Today a dotted ghost fills from “now” to the quote tick.', pri: 'M', effort: 'S',
+      rec: 'The empty track already says it; one less pattern on the bar.',
+      vis: bar(), steps: SHOW,
+      opts: [['plain', 'A · Plain track'], ['outline', 'B · A thin outline up to the quote'], ['ghost', 'C · The dotted ghost, as today']] },
+    { k: 'miles', t: 'The 50 % and 75 % marks', why: 'Today two small pips; the one you passed turns green.', pri: 'L', effort: 'S',
+      rec: 'The quote tick is the mark that matters; the pips are noise most of the time.',
+      vis: bar(), steps: SHOW,
+      opts: [['off', 'A · Remove them'], ['pips', 'B · Keep the pips, as today'], ['labels', 'C · Hour ticks instead', '1h · 2h under the bar']] }
+  ]},
+  { group: 'What each piece says', items: [
+    { k: 'color', t: 'The colour of each piece', why: 'Today each punch wears its start reason’s colour (Diag amber, Repair green); typed-in time is grey.', pri: 'H', effort: 'S',
+      rec: 'The same reason colours as the Time tab and the Time Log, so one colour means one thing everywhere.',
+      vis: bar(), steps: SHOW,
+      opts: [['reason', 'A · By start reason, as today'], ['person', 'B · By who worked it'], ['one', 'C · One colour', 'lighter for done, full for now']] },
+    { k: 'who', t: 'Who worked each piece', why: 'Today the initials sit above any piece wider than 3.5 % of the bar.', pri: 'M', effort: 'S',
+      rec: 'Cheap to read, no extra row.',
+      vis: bar(), steps: SHOW,
+      opts: [['over', 'A · Initials above, as today'], ['avatars', 'B · Small avatars under the bar'], ['none', 'C · None', 'the tip on hover says it']] },
+    { k: 'gaps', t: 'The breaks between punches', why: 'Today a 2 px gap, whatever the break was — 5 minutes or a day.', pri: 'M', effort: 'S',
+      rec: 'The bar is time on the job; a gap is enough to show “stopped here”. Time off belongs to the Time tab.',
+      vis: bar(), steps: SHOW,
+      opts: [['gap', 'A · A small gap, as today'], ['off', 'B · Time off as a dotted stretch', 'longer breaks look longer'], ['merge', 'C · No gaps', 'one continuous bar']] },
+    { k: 'typed', t: 'Time typed in by hand', why: 'Today it comes first, in grey, before the punches.', pri: 'M', effort: 'S',
+      rec: 'Hatched reads as “not from the clock” without a legend.',
+      vis: bar(), steps: SHOW,
+      opts: [['hatch', 'A · First, hatched grey'], ['grey', 'B · First, solid grey, as today'], ['chip', 'C · Off the bar', 'a “+0:12 typed in” chip under it']] }
+  ]},
+  { group: 'Markers on and around the bar', items: [
+    { k: 'similar', t: 'Similar jobs', why: 'Today a range shows how long similar jobs ran, with a mark at the usual time.', pri: 'M', effort: 'S',
+      rec: 'Under the bar it never covers the punches, and still lines up with them.',
+      vis: bar(), steps: SHOW,
+      opts: [['under', 'A · A thin band under the bar', 'with the line of text'], ['on', 'B · A tint on the bar itself'], ['text', 'C · Only the line of text']] },
+    { k: 'pace', t: 'The tech’s usual finish', why: 'Today a line says when you’d finish at your usual pace.', pri: 'L', effort: 'S',
+      rec: 'A small mark shows where that is on the bar, next to the words.',
+      vis: bar(), steps: SHOW,
+      opts: [['tri', 'A · A small mark above the bar, plus the line'], ['text', 'B · Only the line'], ['off', 'C · Neither']] },
+    { k: 'pins', t: 'Notes on the bar', why: 'Today each note is a dot above the bar where it was written; point at it to read it.', pri: 'M', effort: 'S',
+      rec: 'Small, and shows where in the job the note happened.',
+      vis: bar(), steps: SHOW,
+      opts: [['dots', 'A · Dots, as today'], ['flags', 'B · Little flags'], ['off', 'C · Off the bar', 'notes only in the Time tab']] },
+    { k: 'labels', t: 'Numbers on the bar', why: 'Today the bar has no numbers; the 2.50 quote is in the tiles under it.', pri: 'M', effort: 'S',
+      rec: 'The quote under its tick and the hours at the live end — the two numbers people look for.',
+      vis: bar(), steps: SHOW,
+      opts: [['ends', 'A · The quote and now', '2.50 h under the tick, 1.70 at the end'], ['hours', 'B · An hour scale', '1h · 2h ticks'], ['none', 'C · None, as today']] },
+    { k: 'addnote', t: 'Click the bar to add a note', why: 'Today a click on the bar adds a note at that moment, to the punch under it — with no hint first.', pri: 'M', effort: 'S',
+      rec: 'Pointing shows the time and whose punch it is before you click, so the click isn’t a surprise.',
+      vis: bar(), steps: [['idle', 900], ['point', 700], ['show', 1000], ['click', 400], ['done', 1500]],
+      opts: [['preview', 'A · A line and the time on hover, then click'], ['click', 'B · Click only, as today'], ['off', 'C · Off', 'notes from the Time tab']] }
+  ]}
+];
+var COMPONENT = bar();
+var PREVIEW = null;
+/* ---------- the page (v3 shell) ---------- */
+var D = document, $ = function (s, r) { return (r || D).querySelector(s); }, $$ = function (s, r) { return [].slice.call((r || D).querySelectorAll(s)); };
+function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]; }); }
+function flat() { var a = []; IDEAS.forEach(function (g) { g.items.forEach(function (it) { a.push(it); }); }); return a; }
+function find(k) { var r = null; flat().forEach(function (it) { if (it.k === k) r = it; }); return r; }
+var THEMES = ['ivory', 'graphite', 'mist', 'obsidian'], THMAP = { light: 'ivory', dark: 'graphite' };
+var V = { th: 'ivory', open: false, v: {}, conf: {}, notes: {}, note: '', filter: 'all', sort: 'author', cmp: null, auto: AUTOSCROLL };
+function load(d) { if (!d || typeof d !== 'object') return; if (d.v) V.v = d.v; if (d.conf) V.conf = d.conf; if (d.notes) V.notes = d.notes; if (typeof d.note === 'string') V.note = d.note; if (d.th) V.th = THMAP[d.th] || d.th; if (d.filter) V.filter = d.filter; if (d.sort) V.sort = d.sort; if (typeof d.auto === 'boolean') V.auto = d.auto; }
+try { load(JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
+try { var hm = (location.hash || '').match(/[#&]p=([^&]+)/); if (hm) load(JSON.parse(decodeURIComponent(hm[1]))); } catch (e) {}
+if (THEMES.indexOf(V.th) < 0) V.th = 'ivory';
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify({ v: V.v, conf: V.conf, notes: V.notes, note: V.note, th: V.th, filter: V.filter, sort: V.sort, auto: V.auto })); } catch (e) {}
+  try { var next = '#p=' + encodeURIComponent(JSON.stringify({ v: V.v, conf: V.conf, notes: V.notes, note: V.note, th: V.th })); if (location.hash !== next) history.replaceState(null, '', location.pathname + location.search + next); } catch (e) {}
+}
+var total = flat().length;
+$('#ip-lead').textContent = total + ' idea' + (total === 1 ? '' : 's') + ' for the ' + TOPIC.replace(/^The\s+/i, '').toLowerCase() + ' — pick an option to see it play, or Skip, then copy Your picks into the chat.';
+$('#ip-jump').innerHTML = IDEAS.map(function (g, i) { return '<a href="#ip-s' + i + '">' + esc(g.group) + '</a>'; }).join('');
+/* ---------- cards ---------- */
+function priRank(p) { return { H: 0, M: 1, L: 2 }[p] != null ? { H: 0, M: 1, L: 2 }[p] : 9; }
+function effRank(e) { return { S: 0, M: 1, L: 2 }[e] != null ? { S: 0, M: 1, L: 2 }[e] : 9; }
+function isPicked(k) { var v = V.v[k]; return !!v && v !== 'skip'; }
+function locked(it) { return !!it.needs && !isPicked(it.needs); }
+function tagHtml(it) {
+  var b = [];
+  if (it.pri) b.push('<span class="ip-tag' + (it.pri === 'H' ? ' hi' : it.pri === 'L' ? ' lo' : '') + '" title="Impact: ' + ({ H: 'high', M: 'medium', L: 'low' })[it.pri] + '">' + esc(it.pri) + '</span>');
+  if (it.effort) b.push('<span class="ip-tag" title="Effort: ' + ({ S: 'small', M: 'medium', L: 'large' })[it.effort] + '">' + esc(it.effort) + '</span>');
+  if (it.needs) { var p = find(it.needs); b.push('<span class="ip-need" data-need="' + esc(it.needs) + '">needs: ' + esc(p ? p.t : it.needs) + '</span>'); }
+  return b.length ? '<span class="ip-tags">' + b.join('') + '</span>' : '';
+}
+function buildSecs() {
+  var order = flat().slice();
+  if (V.sort === 'impact') order.sort(function (a, b) { return priRank(a.pri) - priRank(b.pri) || effRank(a.effort) - effRank(b.effort); });
+  else if (V.sort === 'effort') order.sort(function (a, b) { return effRank(a.effort) - effRank(b.effort) || priRank(a.pri) - priRank(b.pri); });
+  $('#ip-secs').innerHTML = IDEAS.map(function (g, i) {
+    var list = order.filter(function (it) { return g.items.indexOf(it) >= 0; });
+    return '<section class="ip-sec" id="ip-s' + i + '"><h2>' + esc(g.group) + ' <small>' + list.length + ' idea' + (list.length !== 1 ? 's' : '') + '</small></h2><div class="ip-grid">' + list.map(function (it) {
+      var o = it.opts.concat([['skip', 'Skip', '']]);
+      return '<article class="ip-idea" data-k="' + it.k + '" tabindex="-1"><header><h3>' + esc(it.t) + ' ' + tagHtml(it) + '</h3><p>' + esc(it.why) + '</p></header>' +
+        '<div class="ip-vis" data-step="' + (it.steps ? it.steps[0][0] : '') + '"><div class="ip-body">' + it.vis + '</div>' +
+        (it.steps ? '<span class="ip-hint">Pick an option to see it play</span><span class="ip-peek-lbl"></span><span class="ip-dots" role="group" aria-label="Steps">' + it.steps.map(function (s, j) { return '<i tabindex="0" role="button" data-n="' + j + '" title="' + esc(s[0]) + '" aria-label="Jump to step ' + esc(s[0]) + '"></i>'; }).join('') + '</span><button type="button" class="ip-replay" aria-label="Play it again" title="Play it again">↻</button>' : '') +
+        '<div class="ip-cmp" aria-hidden="true"><div class="ip-cmp-top"><select class="ip-sel" data-side="a" aria-label="Left side"></select><b>vs</b><select class="ip-sel" data-side="b" aria-label="Right side"></select></div><div class="ip-cmp-a"></div><div class="ip-cmp-b"></div></div></div>' +
+        '<div class="ip-ol">' + o.map(function (x, xi) {
+          var rec = (xi === 0 && x[0] !== 'skip') ? ' <span class="ip-rec" tabindex="0"' + (it.rec ? ' data-tip="' + esc(it.rec) + '" title="' + esc(it.rec) + '"' : '') + '>Recommended</span>' : '';
+          var key = x[0] === 'skip' ? 'S' : (xi < 4 ? String(xi + 1) : '');
+          return '<button type="button" class="ip-opt" data-k="' + it.k + '" data-v="' + x[0] + '" aria-pressed="false"><i></i><span><b>' + (key ? '<kbd>' + key + '</kbd>' : '') + esc(x[1]) + rec + '</b>' + (x[2] ? '<small>' + esc(x[2]) + '</small>' : '') + '</span></button>';
+        }).join('') + '</div>' +
+        '<div class="ip-card-tools"><button type="button" class="ip-btn" data-cmp="' + it.k + '">Compare</button><div class="ip-seg" role="group" aria-label="How sure"><button type="button" data-conf="sure" data-k="' + it.k + '" aria-pressed="true">Sure</button><button type="button" data-conf="leaning" data-k="' + it.k + '" aria-pressed="false">Leaning</button></div></div>' +
+        '<textarea class="ip-idea-note" data-nk="' + it.k + '" placeholder="Note for this idea (optional)">' + esc(V.notes[it.k] || '') + '</textarea></article>';
+    }).join('') + '</div></section>';
+  }).join('');
+}
+/* ---------- the animations: still until you pick — then that option plays once and holds (↻ replays, dots jump to a step) ---------- */
+var RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+function mark(vis, it, n) { if (!it.steps) return; vis._n = n; it.steps.forEach(function (s, j) { vis.classList.toggle('ip-s-' + s[0], j <= n); }); vis.dataset.step = it.steps[n][0]; $$('.ip-dots i', vis).forEach(function (d, j) { d.classList.toggle('f', j <= n); }); }
+function rest(vis, it, end) { clearTimeout(vis._t); vis._playing = false; if (it.steps) mark(vis, it, end ? it.steps.length - 1 : 0); }
+function play(vis, it) {
+  clearTimeout(vis._t); if (!it.steps) return;
+  if (RM) { rest(vis, it, 1); return; }
+  vis._playing = true; var i = 0;
+  (function next() { var s = it.steps[i]; mark(vis, it, i); i++; if (i < it.steps.length) vis._t = setTimeout(next, s[1]); else vis._playing = false; })();
+}
+function setOpt(vis, v) { if (v && v !== 'skip') vis.dataset.opt = v; else delete vis.dataset.opt; vis.classList.toggle('ip-has', !!v && v !== 'skip'); vis.classList.toggle('ip-skip', v === 'skip'); }
+function visOf(k) { return $('.ip-idea[data-k="' + k + '"] .ip-vis'); }
+function restoreVis(k) { var vis = visOf(k), it = find(k), v = V.v[k]; if (!vis) return; vis.classList.remove('ip-peeking'); setOpt(vis, v); rest(vis, it, isPicked(k)); }
+function restoreAll() { flat().forEach(function (it) { restoreVis(it.k); }); }
+/* peek: hover an option for a moment and its end state shows as a ghost; leave and the real state returns */
+var HOVER = window.matchMedia && matchMedia('(hover: hover)').matches, peekT = null;
+function peek(k, v) {
+  var vis = visOf(k), it = find(k); if (!vis || !it.steps || vis._playing || vis.classList.contains('ip-comparing') || V.v[k] === v) return;
+  vis.classList.add('ip-peeking'); setOpt(vis, v); mark(vis, it, it.steps.length - 1);
+  var o = it.opts.filter(function (x) { return x[0] === v; })[0]; $('.ip-peek-lbl', vis).textContent = 'peek · ' + (o ? o[1] : v);
+}
+/* ---------- the picks text ---------- */
+function optLabel(it, v) { if (v === 'skip') return 'skip'; var o = it.opts.filter(function (x) { return x[0] === v; })[0]; return o ? o[1] : v; }
+function sizeLine() {
+  var c = { S: 0, M: 0, L: 0 }, un = 0;
+  flat().forEach(function (it) { if (!isPicked(it.k)) return; if (c[it.effort] != null) c[it.effort]++; else un++; });
+  if (!c.S && !c.M && !c.L) return '';
+  var verdict = (c.L >= 1 || c.M >= 3) ? 'a bigger build' : (c.M >= 1 ? 'a medium build' : 'a small build');
+  return 'Build size: ' + c.S + ' S · ' + c.M + ' M · ' + c.L + ' L → ' + verdict + (un ? ' (' + un + ' untagged)' : '');
+}
+function checklist() { var L = []; flat().forEach(function (it) { if (isPicked(it.k)) L.push((L.length + 1) + '. ' + it.t + ' → ' + optLabel(it, V.v[it.k])); }); return L; }
+function pkText() {
+  var L = [APP + ' · ' + TOPIC + ' — my picks'];
+  IDEAS.forEach(function (g) {
+    var rows = [];
+    g.items.forEach(function (it) {
+      var v = V.v[it.k]; if (!v) return;
+      var extra = [];
+      if (v !== 'skip' && V.conf[it.k] === 'leaning') extra.push('leaning');
+      if (v !== 'skip' && locked(it)) { var p = find(it.needs); extra.push('needs ' + (p ? p.t : it.needs) + ' — not picked'); }
+      rows.push('· ' + it.t + ': ' + optLabel(it, v) + (extra.length ? ' (' + extra.join('; ') + ')' : ''));
+      var n = (V.notes[it.k] || '').trim(); if (n) rows.push('  note: ' + n);
+    });
+    if (rows.length) { L.push(g.group + ':'); L = L.concat(rows); }
+  });
+  var left = total - Object.keys(V.v).length; if (left) L.push('(not picked yet: ' + left + ')');
+  if (V.note.trim()) L.push('Notes: ' + V.note.trim());
+  var sz = sizeLine(); if (sz) L.push(sz);
+  var cl = checklist(); if (cl.length) { L.push(''); L.push('Build checklist:'); L = L.concat(cl); }
+  return L.join('\n');
+}
+/* ---------- state → screen ---------- */
+function counts() { var u = 0, p = 0, s = 0; flat().forEach(function (it) { var v = V.v[it.k]; if (!v) u++; else if (v === 'skip') s++; else p++; }); return { u: u, p: p, s: s, n: p + s }; }
+function visible(it) { var v = V.v[it.k]; return V.filter === 'all' || (V.filter === 'unpicked' && !v) || (V.filter === 'picked' && isPicked(it.k)) || (V.filter === 'skipped' && v === 'skip'); }
+function renderPreview() {
+  var m = $('#ip-preview'), has = (typeof COMPONENT === 'string' && COMPONENT) || typeof PREVIEW === 'function';
+  m.hidden = !has; $('.ip-layout').classList.toggle('has-prev', has); if (!has) return;
+  var root = $('.ip-prev-root', m);
+  if (!root) { m.innerHTML = '<h2>Live preview<small>updates with every pick</small></h2><div class="ip-prev-root">' + (typeof COMPONENT === 'string' ? COMPONENT : '') + '</div>'; root = $('.ip-prev-root', m); }
+  flat().forEach(function (it) { var v = V.v[it.k]; if (isPicked(it.k)) root.setAttribute('data-p-' + it.k, v); else root.removeAttribute('data-p-' + it.k); });
+  if (typeof PREVIEW === 'function') { try { PREVIEW({ v: V.v, conf: V.conf, notes: V.notes, note: V.note, th: V.th, root: root, mount: m, ideas: IDEAS, app: APP, topic: TOPIC }); } catch (e) { root.innerHTML = '<p style="margin:0;color:var(--ink3);font-size:12px">Preview unavailable: ' + esc(e.message) + '</p>'; } }
+}
+function sync() {
+  D.documentElement.setAttribute('data-th', V.th);
+  $$('.ip-bar .ip-seg button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.th === V.th)); });
+  $$('.ip-opt').forEach(function (b) { b.setAttribute('aria-pressed', String(V.v[b.dataset.k] === b.dataset.v)); });
+  $$('[data-conf]').forEach(function (b) { b.setAttribute('aria-pressed', String((V.conf[b.dataset.k] || 'sure') === b.dataset.conf)); });
+  $$('.ip-idea').forEach(function (a) { var it = find(a.dataset.k); a.classList.toggle('picked', isPicked(a.dataset.k)); a.classList.toggle('ip-locked', locked(it)); a.hidden = !visible(it); });
+  var c = counts(); $('#ip-n').textContent = c.n ? c.n + '/' + total : '';
+  $('.ip-prog-bar i').style.width = Math.round((c.n / total) * 100) + '%'; $('#ip-prog-lab').textContent = c.n + ' of ' + total + ' decided';
+  $$('[data-f]').forEach(function (b) { var f = b.dataset.f; b.textContent = b.dataset.label + ' ' + (f === 'all' ? total : f === 'unpicked' ? c.u : f === 'picked' ? c.p : c.s); b.setAttribute('aria-pressed', String(V.filter === f)); });
+  $$('[data-sort]').forEach(function (b) { b.setAttribute('aria-pressed', String(V.sort === b.dataset.sort)); });
+  renderPreview();
+}
+/* ---------- the current card (keyboard) and auto-scroll ---------- */
+var curK = null;
+function setCur(k, scroll) { curK = k; $$('.ip-idea').forEach(function (a) { a.classList.toggle('ip-cur', a.dataset.k === k); }); if (scroll && k) { var a = $('.ip-idea[data-k="' + k + '"]'); if (a) a.scrollIntoView({ block: 'nearest', behavior: RM ? 'auto' : 'smooth' }); } }
+function shown() { return $$('.ip-idea').filter(function (a) { return !a.hidden; }).map(function (a) { return a.dataset.k; }); }
+function move(d) { var ks = shown(); if (!ks.length) return; var i = ks.indexOf(curK); i = i < 0 ? (d > 0 ? 0 : ks.length - 1) : Math.max(0, Math.min(ks.length - 1, i + d)); setCur(ks[i], true); }
+function nextUnpicked(fromK) { var ks = shown(), i = ks.indexOf(fromK); for (var j = i + 1; j < ks.length; j++) if (!V.v[ks[j]]) return ks[j]; return null; }
+/* ---------- undo ---------- */
+var HIST = [];
+function snap() { HIST.push(JSON.stringify({ v: V.v, conf: V.conf })); if (HIST.length > 60) HIST.shift(); }
+function undo() { if (!HIST.length) { toast('Nothing to undo'); return; } var s = JSON.parse(HIST.pop()); V.v = s.v; V.conf = s.conf; save(); restoreAll(); sync(); draw(); toast('Undone'); }
+/* ---------- compare: any two options, side by side at their end state ---------- */
+function openCmp(k, a, b) {
+  var it = find(k), vis = visOf(k); if (!it || it.opts.length < 2 || !vis) return;
+  $$('.ip-vis.ip-comparing').forEach(function (x) { if (x !== vis) x.classList.remove('ip-comparing'); });
+  a = a || it.opts[0][0]; b = b || it.opts[1][0];
+  $$('.ip-sel', vis).forEach(function (s) { s.innerHTML = it.opts.map(function (x) { return '<option value="' + x[0] + '">' + esc(x[1]) + '</option>'; }).join(''); s.value = s.dataset.side === 'a' ? a : b; });
+  var A = $('.ip-cmp-a', vis), B = $('.ip-cmp-b', vis), body = $('.ip-body', vis).innerHTML;
+  [[A, a], [B, b]].forEach(function (p) { p[0].innerHTML = body; p[0].dataset.opt = p[1]; p[0].className = p[0].className.replace(/\bip-s-\S+/g, '').trim(); if (it.steps) { it.steps.forEach(function (s) { p[0].classList.add('ip-s-' + s[0]); }); p[0].dataset.step = it.steps[it.steps.length - 1][0]; } });
+  V.cmp = { k: k, a: a, b: b }; vis.classList.add('ip-comparing');
+}
+/* ---------- Your picks panel ---------- */
+function draw() {
+  var w = $('#ip-picks'); w.hidden = !V.open; if (!V.open) return;
+  var ta = $('#ip-note'); if (ta && D.activeElement === ta) { $('#ip-picks pre').textContent = pkText(); return; }
+  w.innerHTML = '<div class="ip-ph"><b>Your picks</b><button type="button" data-pk="x" aria-label="Close">✕</button></div><pre>' + esc(pkText()) + '</pre>' +
+    '<label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:var(--ink2)">Anything else<textarea id="ip-note" placeholder="Anything to add or change">' + esc(V.note) + '</textarea></label>' +
+    '<label class="ip-ck"><input type="checkbox" id="ip-auto"' + (V.auto ? ' checked' : '') + '> Scroll to the next unpicked card after each pick</label>' +
+    '<div class="ip-actions"><button type="button" class="ip-btn pri" data-pk="copy" style="justify-content:center;height:34px;flex:1 1 100%">Copy for the chat</button>' +
+    '<button type="button" class="ip-btn" data-pk="dl">Download .json</button><button type="button" class="ip-btn" data-pk="up">Import .json</button><button type="button" class="ip-btn" data-pk="pdf">PDF / Print</button><button type="button" class="ip-btn" data-pk="reset" style="margin-left:auto;color:var(--bad)">Reset all</button></div>' +
+    '<input type="file" class="ip-file" id="ip-file" accept="application/json,.json">';
+}
+function toast(m, act) { var t = $('.ip-toast'); if (t) t.remove(); t = D.createElement('div'); t.className = 'ip-toast'; t.innerHTML = '<span>' + esc(m) + '</span>' + (act ? '<button type="button">' + esc(act.label) + '</button>' : ''); if (act) $('button', t).onclick = function () { t.remove(); act.fn(); }; D.body.appendChild(t); clearTimeout(toast.h); toast.h = setTimeout(function () { t.remove(); }, act ? 5000 : 2600); }
+function copy(tx) {
+  var fb = function () { var ta = D.createElement('textarea'); ta.value = tx; D.body.appendChild(ta); ta.select(); try { D.execCommand('copy'); toast('Copied — paste it in the chat.'); } catch (e) { toast('Select the text and copy it.'); } ta.remove(); };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(tx).then(function () { toast('Copied — paste it in the chat.'); }, fb); else fb();
+}
+function downloadJson() { var blob = new Blob([JSON.stringify({ app: APP, topic: TOPIC, key: KEY, v: V.v, conf: V.conf, notes: V.notes, note: V.note, th: V.th }, null, 2)], { type: 'application/json' }); var a = D.createElement('a'); a.href = URL.createObjectURL(blob); a.download = KEY + '.json'; D.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 500); toast('Downloaded ' + KEY + '.json'); }
+function importJson(file) { var r = new FileReader(); r.onload = function () { try { snap(); load(JSON.parse(String(r.result || '{}'))); save(); restoreAll(); sync(); draw(); toast('Imported picks', { label: 'Undo', fn: undo }); } catch (e) { toast('Could not read that .json'); } }; r.readAsText(file); }
+/* ---------- changes ---------- */
+function setPick(k, v) {
+  var it = find(k), vis = visOf(k), was = V.v[k]; snap();
+  if (was === v) { delete V.v[k]; delete V.conf[k]; } else V.v[k] = v;
+  save(); sync(); draw(); setCur(k, false);
+  vis.classList.remove('ip-comparing'); vis.classList.remove('ip-peeking'); setOpt(vis, V.v[k]);
+  if (isPicked(k)) play(vis, it); else rest(vis, it, 0);
+  flat().forEach(function (x) { if (x.needs === k) restoreVis(x.k); });
+  if (V.v[k]) { var lbl = optLabel(it, V.v[k]); toast((V.v[k] === 'skip' ? 'Skipped ' : 'Picked ') + it.t.replace(/^(.{34}).+/, '$1…') + (V.v[k] === 'skip' ? '' : ' → ' + lbl), { label: 'Undo', fn: undo }); }
+  if (V.v[k] && V.auto) { var n = nextUnpicked(k); if (n) setTimeout(function () { setCur(n, true); }, 350); }
+}
+function acceptAll() { snap(); var n = 0; flat().forEach(function (it) { if (!V.v[it.k] && it.opts.length) { V.v[it.k] = it.opts[0][0]; n++; } }); save(); restoreAll(); sync(); draw(); toast(n ? 'Accepted ' + n + ' recommended' : 'Nothing left to fill', n ? { label: 'Undo', fn: undo } : null); }
+function resetAll() { var n = Object.keys(V.v).length; if (!n) { toast('Nothing to reset'); return; } snap(); V.v = {}; V.conf = {}; save(); restoreAll(); sync(); draw(); toast('Cleared ' + n + ' pick' + (n === 1 ? '' : 's'), { label: 'Undo', fn: undo }); }
+D.addEventListener('click', function (ev) {
+  var t = ev.target, b;
+  if ((b = t.closest('.ip-bar .ip-seg button'))) { V.th = b.dataset.th; save(); sync(); return; }
+  if (t.closest('#ip-open')) { V.open = !V.open; draw(); return; }
+  if (t.closest('#ip-accept')) { acceptAll(); return; }
+  if (t.closest('#ip-warn')) { toast(t.closest('#ip-warn').dataset.msg || ''); return; }
+  if ((b = t.closest('[data-f]'))) { V.filter = b.dataset.f; save(); sync(); return; }
+  if ((b = t.closest('[data-sort]'))) { V.sort = b.dataset.sort; save(); var c = V.cmp; buildSecs(); restoreAll(); sync(); if (c) openCmp(c.k, c.a, c.b); setCur(curK, false); return; }
+  if ((b = t.closest('[data-cmp]'))) { var vis = visOf(b.dataset.cmp); if (vis.classList.contains('ip-comparing')) { vis.classList.remove('ip-comparing'); V.cmp = null; } else openCmp(b.dataset.cmp); return; }
+  if ((b = t.closest('[data-conf]'))) { snap(); V.conf[b.dataset.k] = b.dataset.conf; save(); sync(); draw(); return; }
+  if ((b = t.closest('[data-pk]'))) { var a = b.dataset.pk; if (a === 'x') { V.open = false; draw(); } else if (a === 'copy') copy(pkText()); else if (a === 'dl') downloadJson(); else if (a === 'up') $('#ip-file').click(); else if (a === 'pdf') setTimeout(function () { window.print(); }, 50); else if (a === 'reset') resetAll(); return; }
+  if ((b = t.closest('.ip-replay'))) { var vs = b.closest('.ip-vis'); play(vs, find(vs.closest('.ip-idea').dataset.k)); return; }
+  if ((b = t.closest('.ip-dots i'))) { var vz = b.closest('.ip-vis'); clearTimeout(vz._t); vz._playing = false; mark(vz, find(vz.closest('.ip-idea').dataset.k), +b.dataset.n); return; }
+  if ((b = t.closest('.ip-opt'))) { setPick(b.dataset.k, b.dataset.v); return; }
+  if ((b = t.closest('.ip-idea'))) setCur(b.dataset.k, false);
+});
+D.addEventListener('change', function (ev) {
+  var t = ev.target;
+  if (t.id === 'ip-file' && t.files && t.files[0]) { importJson(t.files[0]); t.value = ''; }
+  if (t.id === 'ip-auto') { V.auto = t.checked; save(); }
+  if (t.classList.contains('ip-sel')) { var vis = t.closest('.ip-vis'), k = vis.closest('.ip-idea').dataset.k, a = $('.ip-sel[data-side="a"]', vis).value, b = $('.ip-sel[data-side="b"]', vis).value; openCmp(k, a, b); }
+});
+D.addEventListener('input', function (ev) {
+  var t = ev.target;
+  if (t.id === 'ip-note') { V.note = t.value; save(); $('#ip-picks pre').textContent = pkText(); renderPreview(); }
+  if (t.classList.contains('ip-idea-note')) { V.notes[t.dataset.nk] = t.value; save(); renderPreview(); if (V.open) $('#ip-picks pre').textContent = pkText(); }
+});
+if (HOVER) {
+  D.addEventListener('mouseover', function (ev) { var b = ev.target.closest('.ip-opt'); if (!b || b.dataset.v === 'skip') return; clearTimeout(peekT); peekT = setTimeout(function () { peek(b.dataset.k, b.dataset.v); }, 450); });
+  D.addEventListener('mouseout', function (ev) { var b = ev.target.closest('.ip-opt'); if (!b || (ev.relatedTarget && ev.relatedTarget.closest && ev.relatedTarget.closest('.ip-opt') === b)) return; clearTimeout(peekT); var vis = visOf(b.dataset.k); if (vis && vis.classList.contains('ip-peeking')) restoreVis(b.dataset.k); });
+}
+D.addEventListener('keydown', function (ev) {
+  if (ev.key === 'Escape') { if (V.open) { V.open = false; draw(); } return; }
+  var tag = (ev.target.tagName || '').toLowerCase(); if (tag === 'input' || tag === 'textarea' || tag === 'select' || ev.metaKey || ev.ctrlKey || ev.altKey) return;
+  var key = ev.key.toLowerCase();
+  if (key === 'j' || key === 'arrowdown') { move(1); ev.preventDefault(); return; }
+  if (key === 'k' || key === 'arrowup') { move(-1); ev.preventDefault(); return; }
+  if (key === 'z') { undo(); return; }
+  if (!curK) { if (/^[1-4s]$/.test(key)) { move(1); } else return; }
+  var it = find(curK); if (!it) return;
+  if (key === 's') { setPick(curK, 'skip'); ev.preventDefault(); return; }
+  if (/^[1-4]$/.test(key)) { var o = it.opts[+key - 1]; if (o) setPick(curK, o[0]); ev.preventDefault(); }
+});
+/* ---------- the accuracy check: every option and step named in IDEAS should have a CSS rule ---------- */
+function ipCheck() {
+  var css = ''; try { $$('style').forEach(function (s) { css += s.textContent; }); } catch (e) {}
+  var out = [];
+  flat().forEach(function (it) {
+    it.opts.forEach(function (o) { if (css.indexOf('[data-opt="' + o[0] + '"]') < 0) out.push(it.k + ': option "' + o[0] + '" has no [data-opt="' + o[0] + '"] rule (it will look like the others)'); });
+    (it.steps || []).forEach(function (s, j) { if (j && css.indexOf('.ip-s-' + s[0]) < 0 && css.indexOf('[data-step="' + s[0] + '"]') < 0) out.push(it.k + ': step "' + s[0] + '" has no .ip-s-' + s[0] + ' or [data-step="' + s[0] + '"] rule (nothing will change)'); });
+    if (it.steps) { var ms = it.steps.reduce(function (a, s) { return a + s[1]; }, 0); if (ms < 2500 || ms > 7000) out.push(it.k + ': sequence runs ' + ms + ' ms (aim for 3–6 s)'); }
+    if (it.needs && !find(it.needs)) out.push(it.k + ': needs "' + it.needs + '" which is not an idea');
+    (it.vis.match(/class="[^"]*"/g) || []).forEach(function (c) { c.slice(7, -1).split(/\s+/).forEach(function (n) { if (n && !/^(v-|ip-)/.test(n)) out.push(it.k + ': class "' + n + '" in the visual is not prefixed v-'); }); });
+  });
+  var w = $('#ip-warn'); if (out.length && /check/.test(location.search)) { w.style.display = 'inline-flex'; w.textContent = out.length + ' to fix'; w.dataset.msg = out[0]; }
+  if (out.length) console.warn('Idea picker check:\n' + out.join('\n')); else console.info('Idea picker check: every option and step has a rule.');
+  return out;
+}
+/* ---------- go ---------- */
+buildSecs(); restoreAll(); sync(); ipCheck();
+</script>
+</body>
+</html>

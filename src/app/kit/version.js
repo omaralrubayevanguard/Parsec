@@ -4,5 +4,5 @@
    ── facts (generated; run tools/headers.py to refresh) ──
    declares   BUILD BUILD_WAS (2 constants)
 */
-var BUILD = "Parsec 17 · the same Parsec, from organized source: the code in files by area, a two-second build, guards and one test command — nothing changes on screen";
-var BUILD_WAS = "Parsec 16.3 · every RO number opens its RO, with a peek · one picture per RO everywhere · shop buttons by department · the customer contact on the RO and in New RO";
+var BUILD = "Parsec 17.2 · the operation card redesigned: Messages and Customer above the operations, Time, Parts and Files inside the clock card, a new clock bar with similar jobs and note flags, a bevelled timer button";
+var BUILD_WAS = "Parsec 17 · the same Parsec, from organized source: the code in files by area, a two-second build, guards and one test command — nothing changes on screen";

@@ -57,6 +57,7 @@ for k in trk_keys:
     trk[k] = "data:image/webp;base64," + base64.b64encode(open(P("assets", "trucks", k + ".webp"), "rb").read()).decode()
 TRK_MARK = "/*@@ASSET-MAP:trucks@@*/{}"
 ro_css = "\n".join(read("styles", "ro-page", f) for f in sorted(os.listdir(P("styles", "ro-page"))) if f.endswith(".css"))
+ro_css += "\n" + read("styles", "app", "59-clock-172.css")   # 17.2: the clock card's picks, shared with the RO page
 CSS_MARK = '/*@@CSS-STRING:ro-page@@*/""'
 def fill_app(app):
     if app.count(TRK_MARK) != 1 or app.count(CSS_MARK) != 1: fail("the picture marker or the RO page CSS marker is missing or doubled in src/app")

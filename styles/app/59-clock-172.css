@@ -1,0 +1,119 @@
+/* ===== Parsec 17.2 — the operation clock card from the component picks: timer, start / stop button, bar, similar jobs, note flags.
+   Shared by the app and the RO page (build.py adds this file to the RO page's stylesheet too). ===== */
+.ock { --oe: cubic-bezier(.23, 1, .32, 1); }
+
+/* ---------- the timer: the seconds blur in (ockCol), the colons pulse slowly, a tap crossfades ---------- */
+.ock-big .dc { transition: none !important; }
+.ock.run .ock-big .k { animation: ock-soft 2s ease-in-out infinite; }
+@keyframes ock-soft { 50% { opacity: .45; } }
+.ock-big.fl { animation: ock-swap .22s var(--oe); }
+@keyframes ock-swap { from { filter: blur(4px); opacity: .15; } }
+/* passing the quote: the red edge (already there), the over chip and one small shake */
+.ock-ovl.in { animation: ock-shk .4s ease 1 both; }
+.ock:has(.ock-ovl.in) .ock-tm { animation: ock-shk .4s ease 1; }
+@keyframes ock-shk { 20% { transform: translateX(-3px); } 40% { transform: translateX(3px); } 60% { transform: translateX(-2px); } 80% { transform: translateX(1px); } }
+
+/* ---------- the start / stop button: a bevelled dark face, green with a soft glow while it runs ---------- */
+.ock-pb { background: linear-gradient(180deg, #3d3d3b, #1c1c1b); color: color-mix(in srgb, var(--o-good) 55%, #fff); box-shadow: inset 0 1px 0 rgba(255,255,255,.22), inset 0 -2px 4px rgba(0,0,0,.45), 0 2px 6px rgba(0,0,0,.3); transition: transform .14s var(--oe), background .25s ease, box-shadow .25s ease, color .25s ease; }
+.ock-pb:active { transform: scale(.96); }
+.ock-pb.on { background: linear-gradient(180deg, color-mix(in srgb, var(--o-run) 82%, #fff), var(--o-run)); color: #fff; box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 0 0 5px color-mix(in srgb, var(--o-run) 18%, transparent), 0 8px 22px -6px color-mix(in srgb, var(--o-run) 65%, transparent); }
+.ock-pb .ock-ic { transition: transform .26s var(--oe); }
+.ock-pb.on .ock-ic { transform: rotate(90deg); }   /* play turns a quarter as it morphs into stop */
+/* drawn fresh on a start or a stop (the RO page redraws), the morph and the turn play from the old shape */
+.ock-pb.on .ock-ic { animation: ock-turn .26s var(--oe) 1 both; }
+.ock-pb.on .ock-ic path { animation: ock-tostop .22s var(--oe) 1 both; }
+.ock-pb:not(.on):not(.lk) .ock-ic path { animation: ock-toplay .22s var(--oe) 1 both; }
+@keyframes ock-turn { from { transform: rotate(0deg); } to { transform: rotate(90deg); } }
+@keyframes ock-tostop { from { d: path("M8 5.5 L19 12 L19 12 L8 18.5 Z"); } }
+@keyframes ock-toplay { from { d: path("M6.5 6.5 L17.5 6.5 L17.5 17.5 L6.5 17.5 Z"); } }
+.ock-pb.lk, .ock-pb.ro { background: var(--o-fill); box-shadow: none; }
+.ock-pb.ro.on { background: color-mix(in srgb, var(--o-run) 18%, var(--o-fill)); color: var(--o-run); }
+.ock-pb:disabled { box-shadow: none; }
+.ock-ring .h { stroke: var(--o-ink); }
+
+/* ---------- the bar: 8 px, a plain track, hatched typed-in time, avatars over it, an hour scale under it ---------- */
+.ock-bar { height: 8px; border-radius: 4px; margin-bottom: 22px; }
+.ock-bar.has-w { margin-top: 30px; }
+.ock-gh { display: none; }
+.ock-segs i.ty { background: repeating-linear-gradient(-45deg, color-mix(in srgb, var(--o-ink3) 70%, transparent) 0 2px, transparent 2px 4px) !important; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--o-ink3) 45%, transparent); }
+.ock-segs i[data-w]::before { left: 0; bottom: calc(100% + 5px); width: 17px; height: 17px; border-radius: 50%; display: grid; place-items: center; font: 600 7.5px/17px var(--o-sans); letter-spacing: 0; text-align: center; color: var(--o-ink2); background: var(--o-raised); box-shadow: inset 0 0 0 1px var(--o-hair), 0 0 0 1.5px color-mix(in srgb, var(--c) 65%, transparent); }
+.ock-hrs { position: absolute; left: 0; right: 0; top: calc(100% + 10px); height: 12px; pointer-events: none; }
+.ock-hr { position: absolute; top: 0; width: 1px; height: 4px; background: var(--o-hair); }
+.ock-hr b { position: absolute; top: 5px; left: 0; transform: translateX(-50%); font: 500 9.5px/1 var(--o-mono); color: var(--o-ink3); white-space: nowrap; }
+/* the usual finish: a small mark above the bar (the line of text says the rest) */
+.ock-up { top: -9px; bottom: auto; width: 0; height: 0; margin-left: -4px; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid var(--o-ink2); border-radius: 0; background: none; }
+.ock-up.hit { opacity: .45; }
+
+/* ---------- similar jobs: a band under the bar that fades at its ends, a dot for "usually", red once you're past it ---------- */
+.ock-band { top: calc(100% + 4px); bottom: auto; height: 4px; border-radius: 2px; box-shadow: none; cursor: pointer; z-index: 2;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--o-acc) 80%, transparent) 24%, color-mix(in srgb, var(--o-acc) 80%, transparent) 76%, transparent); transition: background .3s ease; }
+.ock-band::before { content: ""; position: absolute; left: 0; right: 0; top: -5px; bottom: -5px; }
+.ock-band.hi { background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--o-bad) 85%, transparent) 24%, color-mix(in srgb, var(--o-bad) 85%, transparent) 76%, transparent); }
+.ock-band:focus-visible { outline: 2px solid var(--o-acc); outline-offset: 3px; }
+.ock-bu { top: calc(100% + 3px); bottom: auto; width: 6px; height: 6px; margin-left: -3px; border: 0; border-radius: 50%; background: var(--o-acc); box-shadow: 0 0 0 1.5px var(--o-raised); pointer-events: none; z-index: 3; }
+.ock-band.hi + .ock-bu { background: var(--o-bad); }
+.ock-bandpop { position: absolute; z-index: 8; left: 0; top: calc(100% + 26px); width: min(340px, 100%); display: flex; flex-direction: column; gap: 2px; padding: 8px; border-radius: 12px; background: var(--o-raised); box-shadow: 0 0 0 1px var(--o-hair), 0 18px 40px -12px rgba(0,0,0,.35); transform-origin: left top; animation: ock-grow .16s var(--oe) both; cursor: default; }
+@keyframes ock-grow { from { opacity: 0; transform: scale(.97); } }
+.ock-bph { display: flex; align-items: center; gap: 8px; padding: 0 0 4px; }
+.ock-bph b { font-weight: 600; font-size: 13px; color: var(--o-ink); }
+.ock-bpw { display: inline-flex; gap: 2px; padding: 2px; margin-left: auto; border-radius: 8px; background: var(--o-fill); }
+.ock-bpw button { all: unset; cursor: pointer; height: 22px; padding: 0 9px; border-radius: 6px; font-size: 12px; font-weight: 500; color: var(--o-ink3); }
+.ock-bpw button.on { background: var(--o-raised); color: var(--o-ink); box-shadow: 0 0 0 1px var(--o-hair); }
+.ock-bandpop > small { padding: 0 2px 4px; font-size: 11.5px; color: var(--o-ink3); }
+.ock-bpr { all: unset; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 8px; border-radius: 8px; font-size: 12.5px; color: var(--o-ink); }
+.ock-bpr small { margin-left: auto; font: 500 11px/1 var(--o-mono); color: var(--o-ink3); }
+.ock-bpr:hover, .ock-bpr:focus-visible { background: var(--o-fill); outline: none; }
+.ock-bpn { padding: 6px 8px; color: var(--o-ink3); }
+
+/* ---------- notes: little flags in the punch's colour ---------- */
+.ock-pins .ock-pin { all: unset; box-sizing: border-box; position: absolute; top: auto; bottom: 100%; width: 12px; height: 18px; margin: 0 0 0 calc(var(--dx, 0px) - 1px); cursor: pointer; pointer-events: auto; z-index: 3; touch-action: none; animation: none; transition: height .25s var(--oe); }
+.ock-pins .ock-pin::before { content: ""; position: absolute; left: 0; bottom: 0; width: 1.5px; height: 100%; border-radius: 1px; background: var(--pc, var(--o-acc)); }
+.ock-pins .ock-pin::after { content: ""; position: absolute; inset: auto; left: 1.5px; top: 0; width: 10px; height: 7px; border-radius: 0; background: var(--pc, var(--o-acc)); clip-path: polygon(0 0, 100% 50%, 0 100%); transition: opacity .12s ease; }
+.ock-pins .ock-pin:hover::after, .ock-pins .ock-pin:focus::after { inset: auto; }
+.ock-pins .ock-pin.hi { height: 40px; }   /* meets an avatar: it rises above it */
+.ock-pins .ock-pin.drag { cursor: grabbing; z-index: 6; }
+.ock-pins .ock-pin.in { animation: ock-pdrop .45s cubic-bezier(.34, 1.4, .5, 1) 1 both; }
+@keyframes ock-pdrop { from { transform: translateY(-14px); opacity: 0; } }
+.ock-pins .ock-pin:focus-visible { outline: 2px solid var(--o-acc); outline-offset: 2px; }
+.ock-pud { display: none; position: absolute; left: 9px; top: -3px; width: 5px; height: 5px; border-radius: 50%; background: var(--o-bad); box-shadow: 0 0 0 1.5px var(--o-raised); }
+.ock-pin.un .ock-pud { display: block; }
+/* pointing: the flag opens into a label */
+.ock-pins .ock-pin .ock-pn { position: absolute; left: 1.5px; right: auto; top: 0; bottom: auto; z-index: 1; display: flex; align-items: baseline; gap: 6px; width: max-content; max-width: min(300px, 60vw); height: 18px; padding: 0 9px 0 8px; border-radius: 0 6px 6px 0; box-shadow: none;
+  background: color-mix(in srgb, var(--pc, var(--o-acc)) 88%, #000); color: #fff; font: 500 11.5px/18px var(--o-sans); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  opacity: 0; visibility: hidden; transform: scaleX(.35); transform-origin: left center; transition: opacity .14s ease-out, transform .18s var(--oe), visibility 0s .18s; }
+.ock-pins .ock-pin .ock-pn b { display: inline; margin: 0; font-size: 11px; font-weight: 600; color: rgba(255,255,255,.75); }
+.ock-pins .ock-pin .ock-pt { overflow: hidden; text-overflow: ellipsis; }
+.ock-pins .ock-pin.r .ock-pn { left: auto; right: calc(100% - 1.5px); border-radius: 6px 0 0 6px; transform-origin: right center; }
+.ock-pins .ock-pin:hover .ock-pn, .ock-pins .ock-pin:focus .ock-pn, .ock-pins .ock-pin.drag .ock-pn { opacity: 1; visibility: visible; transform: none; transition: opacity .14s ease-out, transform .18s var(--oe), visibility 0s; }
+.ock-pins .ock-pin:hover::after, .ock-pins .ock-pin:focus::after { opacity: 0; }
+/* a click opens it in place: Reply · Edit · Delete */
+.ock-pins .ock-pin.open { z-index: 7; }
+.ock-pins .ock-pin.open::after { opacity: 0; }
+.ock-pins .ock-pin.open .ock-pn { opacity: 1; visibility: visible; transform: none; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; height: auto; width: 280px; max-width: min(280px, 70vw); padding: 8px 10px 9px; border-radius: 0 10px 10px 10px; white-space: normal; background: var(--o-raised); color: var(--o-ink); box-shadow: inset 3px 0 0 var(--pc, var(--o-acc)), 0 0 0 1px var(--o-hair), 0 16px 36px -12px rgba(0,0,0,.35); font-size: 12.5px; line-height: 1.4; cursor: default; }
+.ock-pins .ock-pin.open.r .ock-pn { border-radius: 10px 0 10px 10px; box-shadow: inset -3px 0 0 var(--pc, var(--o-acc)), 0 0 0 1px var(--o-hair), 0 16px 36px -12px rgba(0,0,0,.35); }
+.ock-pins .ock-pin.open .ock-pn b { color: var(--o-ink3); }
+.ock-pa { display: flex; gap: 12px; margin-top: 2px; }
+.ock-pe { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; margin-top: 2px; }
+.ock-pe input[type=text] { flex: 1 1 100%; min-width: 0; height: 28px; padding: 0 8px; border: 0; border-radius: 7px; background: var(--o-fill); font: inherit; color: var(--o-ink); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--o-acc) 40%, transparent); }
+.ock-pe input[type=time] { height: 28px; padding: 0 6px; border: 0; border-radius: 7px; background: var(--o-fill); font: 500 12px var(--o-mono); color: var(--o-ink); }
+
+/* ---------- adding a note: a faint flag follows the pointer with the time, a small box opens at the spot ---------- */
+.ock-gst { top: auto; bottom: 100%; width: 11px; height: 18px; margin-left: -1px; border-radius: 0; background: none; }
+.ock-gst::before { content: ""; position: absolute; inset: 0; background: color-mix(in srgb, var(--o-ink) 30%, transparent); clip-path: polygon(0 0, 100% 3.5px, 1.5px 7px, 1.5px 100%, 0 100%); }
+.ock-gst::after { left: 0; transform: translateX(-50%); }
+.ock-npt { top: auto; bottom: 100%; width: 12px; height: 18px; margin: 0 0 0 -1px; border-radius: 0; background: none; box-shadow: none; pointer-events: none; animation: none; }
+.ock-npt::before { content: ""; position: absolute; left: 0; bottom: 0; width: 1.5px; height: 100%; background: var(--o-acc); }
+.ock-npt::after { content: ""; position: absolute; left: 1.5px; top: 0; width: 10px; height: 7px; background: var(--o-acc); clip-path: polygon(0 0, 100% 50%, 0 100%); }
+.ock-npt.dr { pointer-events: auto; cursor: pointer; opacity: .5; }   /* a draft: a faint flag where it was started */
+.ock-npt.dr:hover { opacity: .85; }
+.ock-nadd { top: calc(100% + 26px); left: clamp(0px, calc(var(--x) - 24px), calc(100% - min(300px, 100%))); width: min(300px, 100%); transform-origin: left top; animation: ock-grow .16s var(--oe) both; }
+.ock-nsug { display: flex; flex-direction: column; margin-top: 6px; }
+.ock-nsug[hidden] { display: none; }
+.ock-nsg { all: unset; cursor: pointer; height: 26px; padding: 0 8px; border-radius: 6px; font-size: 12.5px; color: var(--o-ink); }
+.ock-nsg.on, .ock-nsg:hover { background: var(--o-fill); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ock.run .ock-big .k, .ock-big.fl, .ock-ovl.in, .ock-tm, .ock-pins .ock-pin.in, .ock-bandpop, .ock-nadd { animation: none !important; }
+  .ock-pb, .ock-pb .ock-ic, .ock-pins .ock-pin .ock-pn, .ock-band { transition: none !important; }
+  .ock-pb .ock-ic, .ock-pb .ock-ic path { animation: none !important; }
+}

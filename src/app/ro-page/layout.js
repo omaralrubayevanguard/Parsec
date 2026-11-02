@@ -1,7 +1,7 @@
 /* Parsec · ro-page · layout.js
    The RO page in your layout (Parsec 12): the one-panel page — operations in the middle, the truck card and the sections on the right (ROPS), who is on it, the right column's fit.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   ri ropH1 ropN ropFirst ropMe ropIsMe ropPerson ropWriter ropAgo ropClk ropLive ropRun … (22 functions, 3 constants)
+   declares   ri ropH1 ropN ropFirst ropMe ropIsMe ropPerson ropWriter ropAgo ropClk ropLive ropRun … (21 functions, 3 constants)
    state      punches ros
    uses       access/ kit/ pages/ pages/inbox/ pages/triage/ ro/ shell/ state/
 */
@@ -58,32 +58,9 @@ function ropSec(key, title, sub, body, act) {
   return el('section', { class: 'rop-blk rop-k-' + key }, [head].concat(body));
 }
 
-function ropInbox() {
-  var L = []; try { L = IB.store().items.filter(function (n) { return n.ro === RO.id; }).sort(function (a, b) { return new Date(b.at) - new Date(a.at); }); } catch (e) {}
-  var box = el('div', { class: 'px-list' });
-  L.slice(0, ROPU.msgAll ? 40 : 4).forEach(function (n) {
-    box.appendChild(el('div', { class: 'px-li rop-ms', html: ropAv(n.from) + '<span><b>' + esc(ropFirst(n.from)) + ' → ' + esc(ropFirst(n.to)) + '</b><small>' + esc(n.q || n.b || n.t || '') + '</small></span><time>' + esc(ropAgo(n.at)) + '</time>' }));
-  });
-  if (!L.length) box.appendChild(ropNone('No messages about this RO yet.'));
-  var body = [box];
-  if (L.length > 4) body.push(el('div', { class: 'px-adds rop-more' }, [ropIb(ROPU.msgAll ? 'chevUp' : 'chevDn', ROPU.msgAll ? 'Show fewer' : 'Show all ' + L.length, function () { ROPU.msgAll = !ROPU.msgAll; render(); })]));
-  var ppl = [[ropPerson('Foreman'), 'Foreman'], [ropPerson('Parts'), 'Parts'], [ropWriter() || RO.createdBy || '', 'Advisor'], [RO.assignedTech || '', 'Technician']].filter(function (x) { return x[0] && !ropIsMe(x[0]); });
-  var seen = {}; ppl = ppl.filter(function (x) { var k = x[0].toLowerCase(); if (seen[k]) return false; seen[k] = 1; return true; });
-  if (ppl.length) {
-    if (!ROPU.msgTo || !ppl.some(function (x) { return x[0] === ROPU.msgTo; })) ROPU.msgTo = ppl[0][0];
-    var to = el('div', { class: 'rop-to' }, [el('span', { text: 'To' })].concat(ppl.map(function (x) { return el('button', { class: ROPU.msgTo === x[0] ? 'is-on' : '', type: 'button', html: esc(ropFirst(x[0])) + '<small>' + x[1] + '</small>', onClick: function (e) { e.stopPropagation(); ROPU.msgTo = x[0]; render(); } }); })));
-    var inp = el('input', { class: 'rop-in__i', placeholder: 'Message about ' + (RO.roNumber || 'this RO') + '… Enter sends it', 'aria-label': 'Message' });
-    inp.addEventListener('keydown', function (e) {
-      e.stopPropagation(); if (e.key !== 'Enter' || !inp.value.trim()) return; e.preventDefault();
-      var job = S.jobs.filter(function (j) { return j.id === S.ui.card; })[0] || null, who = ROPU.msgTo;
-      if (ropNote(who, 'men', job, ropFirst(ropMe()) + ' wrote about ' + ropNo(), (RO.customerName || '') + (job ? ' · Op ' + ropN(job) + ' — ' + (job.complaint || '') : ''), inp.value.trim())) { toast('Sent to ' + ropFirst(who) + ' — it’s under Messages on this RO.'); render(); requestAnimationFrame(function () { var i2 = R.querySelector('.rop-k-inbox .rop-in__i'); if (i2) i2.focus(); }); }
-    });
-    body.push(to, el('label', { class: 'rop-in' }, [el('span', { html: ri('send', 14) }), inp]));
-  }
-  return ropSec('inbox', 'Messages about this RO', L.length ? String(L.length) : '', body);
-}
+/* Messages about this RO now live in the box above the operations (messages-chat.js, 17.2) */
 function ropOpenRo(id) { UI.view = 'ros'; UI.selectedRo = id; UI.modal = null; tecRender(); }
-function ropCustomer() {
+function ropCustomerBody() {
   var c = RO.customerName || '', mine = STATE.ros.filter(function (x) { return c && x.customerName === c && !x.shop && x.id !== SHOP_RO_ID; }), open = mine.filter(function (x) { return x.id !== RO.id && !roIsDone(x); });
   var ct = (RO.contacts || []).slice(-1)[0];
   var warr = pxToggle(!!RO.warranty, function (v) { pushUndo('warranty RO'); RO.warranty = v; save(true); render(); tecRender(); }, 'Warranty RO');
@@ -102,7 +79,7 @@ function ropCustomer() {
     pxProp('Warranty RO', warr)]);
   var body = [props, el('div', { class: 'rop-cu', html: '<small>' + mine.length + ' RO' + (mine.length === 1 ? '' : 's') + ' in Parsec' + (open.length ? ' · ' + open.length + ' other open' : '') + '</small>' + (ct ? '<small>Last contact: ' + esc(ct.kind || 'Contact') + (ct.out ? ' — ' + esc(ct.out) : '') + (ct.note ? ' · ' + esc(ct.note) : '') + ' · ' + esc(ropAgo(ct.at)) + '</small>' : '') })];
   if (open.length) { var box = el('div', { class: 'px-list' }); open.slice(0, 3).forEach(function (x) { box.appendChild(el('button', { class: 'px-li rop-hr', type: 'button', title: 'Open ' + roLabel(x), onClick: function (e) { e.stopPropagation(); ropOpenRo(x.id); }, html: '<span class="px-id">' + esc(tgNum(x)) + '</span><span><b>' + (x.unitNumber ? 'Unit ' + esc(x.unitNumber) + ' · ' : '') + esc(roStatus(x).status) + '</b><small>' + esc(((raLive(x)[0]) || {}).complaint || '') + '</small></span><span></span>' })); }); body.push(box); }
-  return ropSec('customer', 'Customer', '', body);
+  return body;
 }
 
 /* ---------- the right ---------- */
