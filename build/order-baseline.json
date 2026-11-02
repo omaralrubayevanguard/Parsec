@@ -496,6 +496,7 @@
 "ro/stages.js \u00b7 var RS_KEYS",
 "ro/stages.js \u00b7 var RS_NAME",
 "ro/ro-panel.js \u00b7 var RP_FOLD0",
+"ro/ro-panel.js \u00b7 var RP_ANIM",
 "ro/ro-panel.js \u00b7 document.addEventListener() \u00b7 on document click (capture)",
 "ro/ro-panel.js \u00b7 var RP_CHEV_U,RP_CHEV_D",
 "ro/ro-panel.js \u00b7 var RP_KEYS",

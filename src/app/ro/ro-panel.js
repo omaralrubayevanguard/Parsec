@@ -19,7 +19,8 @@ var RP_FOLD0 = { vehicle: true, customer: true, people: false, schedule: false, 
 function rpWho(){ try{ var sf = viewAsStaff(); return sf ? sf.id : "admin"; }catch(e){ return "admin"; } }
 function rpFolds(){ try{ return JSON.parse(localStorage.getItem("rpfold:" + rpWho()) || "{}") || {}; }catch(e){ return {}; } }
 function rpFold(k){ var F = rpFolds(); return F[k] == null ? !!RP_FOLD0[k] : !!F[k]; }   /* true = folded */
-function rpFoldSet(k, shut){ var F = rpFolds(); F[k] = !!shut; try{ localStorage.setItem("rpfold:" + rpWho(), JSON.stringify(F)); }catch(e){} }
+var RP_ANIM = { k: null, at: 0 };   /* the section just opened glides open (only that one, only then) */
+function rpFoldSet(k, shut){ if(!shut){ RP_ANIM.k = k; RP_ANIM.at = Date.now(); } var F = rpFolds(); F[k] = !!shut; try{ localStorage.setItem("rpfold:" + rpWho(), JSON.stringify(F)); }catch(e){} }
 
 /* ---------- the pieces ---------- */
 function rpE(t){ return String(t == null ? "" : t).replace(/[&<>"]/g, function(c){ return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
@@ -51,7 +52,7 @@ function rpOpsHtml(ro, cur){
     return '<button type="button" class="rp-op' + (cur === o.id ? " on" : "") + '" data-rp-op="' + rpE(o.id) + '">' + pgSt("ro", os, { iconOnly: 1, noTip: 1 }) + '<span class="n">' + (i + 1) + '</span><span class="t">' + rpE(o.complaint || "Operation") + '</span><span class="h">' + bb.toFixed(2) + " / " + (+o.quoted || 0).toFixed(2) + " h</span></button>";
   }).join("");
   var shut = rpFold("ops");
-  return '<div class="rp-ops' + (shut ? " shut" : "") + '"><button type="button" class="rp-gh" data-rp-fold="ops" aria-expanded="' + !shut + '"><i></i><b>Operations</b><small>' + L.length + "</small></button>" + (shut ? "" : '<div class="rp-opl">' + (rows || '<span class="rp-none">No operations yet</span>') + "</div>") + "</div>";
+  return '<div class="rp-ops' + (shut ? " shut" : "") + (!shut && RP_ANIM.k === "ops" && Date.now() - RP_ANIM.at < 700 ? " rp-anim" : "") + '"><button type="button" class="rp-gh" data-rp-fold="ops" aria-expanded="' + !shut + '"><i></i><b>Operations</b><small>' + L.length + "</small></button>" + (shut ? "" : '<div class="rp-opl">' + (rows || '<span class="rp-none">No operations yet</span>') + "</div>") + "</div>";
 }
 /* the buttons by role, for the pages outside the RO page (the RO page builds its own with the same rules) */
 function rpActsHtml(ro, o){
@@ -89,6 +90,8 @@ function rpPanelHtml(ro, o){
   var pill = pgSt("ro", s.status, { of: ro, ofKind: "ro", menu: mayS ? 1 : 0, sub: sub, attrs: mayS ? (o.page === "ro" ? 'data-rp-st="1"' : 'data-a="status" data-id="' + rpE(ro.id) + '"') + ' title="Set status (S)"' : "" });   /* on the RO page: its own status menu */
   var av = tech ? '<span class="tg-av" title="' + rpE(tech) + '"' + (typeof v149eAvAttr === "function" ? v149eAvAttr(tech) : "") + ">" + rpE(PG.ini(tech)) + "</span>" : "";
   var det = ""; try{ det = roDetailsHtml(ro); }catch(e){}
+  var anim = Date.now() - RP_ANIM.at < 700 ? RP_ANIM.k : null;
+  if(anim) det = det.replace('<div class="rod-g"><button type="button" class="rod-gh" data-rod-g="' + anim + '"', '<div class="rod-g rp-anim"><button type="button" class="rod-gh" data-rod-g="' + anim + '"');
   return '<aside class="rq-peek rp rp-' + (o.page || "list") + '" data-rp-ro="' + rpE(ro.id) + '"><div class="rq-peek__top"><span class="id">' + rpE(roLabelFull(ro)) + "</span><span>·</span><span>" + (ro.dateClosed ? "closed" : days == null ? "" : days === 0 ? "opened today" : days + " days open") + "</span>"
     + (o.close ? '<button class="btn btn-sm ib tg-gh" data-a="peekx" title="Close (Esc)">' + tgI("x", 15) + "</button>" : "") + "</div>"
     + '<div class="rp-nm">' + (typeof trkThumb === "function" ? trkThumb(ro) : "") + "<h2>" + rifHtml(ro, "customerName", ro.customerName || "", "Customer") + '</h2></div><div class="sub">' + rifVeh(ro, veh) + (spot && spot !== "—" ? " · " + rpE(spot) : "") + v149KeySeg(ro) + "</div>"

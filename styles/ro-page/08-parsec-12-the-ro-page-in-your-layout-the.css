@@ -414,7 +414,7 @@
 .pgst.t-acc{--c:var(--tg-acc,var(--st-acc,#86643A));}
 .pgst.t-bad .pgst-l{color:var(--c);}
 /* the one you can change */
-.pgst.m{height:26px;padding:0 7px 0 7px;border:1px solid var(--tg-border,var(--line,#DDD8CE));border-radius:999px;background:var(--tg-raised,var(--surface,transparent));cursor:pointer;font-size:12.5px;font-weight:500;color:var(--tg-ink,var(--ink,#1D1C1A));transition:background-color .12s ease,border-color .12s ease;}
+.pgst.m{height:26px;padding:0 7px 0 7px;border:1px solid var(--tg-border,var(--line,#DDD8CE));border-radius:8px;background:var(--tg-raised,var(--surface,transparent));cursor:pointer;font-size:12.5px;font-weight:500;color:var(--tg-ink,var(--ink,#1D1C1A));transition:background-color .12s ease,border-color .12s ease;}
 .pgst.m:hover{background:var(--tg-fill,var(--fill,rgba(0,0,0,.04)));border-color:var(--tg-bs,var(--line-strong,#BDB7AB));}
 .pgst.m:focus-visible{outline:2px solid var(--tg-acc,#86643A);outline-offset:2px;}
 .pgst.m[disabled]{cursor:default;opacity:.6;}

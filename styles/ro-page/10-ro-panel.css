@@ -24,7 +24,7 @@
 .rp-op .h { font: 500 11.5px/1 var(--mono, ui-monospace, monospace); color: var(--ink-3, #67625A); white-space: nowrap; }
 .rp-none { font-size: 12.5px; color: var(--ink-3, #67625A); }
 /* the buttons at the bottom of the column, always in reach */
-.rop-foot { position: sticky; bottom: -32px; z-index: 4; margin: auto -18px -32px; padding: 12px 18px 14px; display: flex; flex-direction: column; gap: 8px; background: var(--panel, #FBFAF7); box-shadow: 0 -1px 0 var(--hairline), 0 -10px 18px -14px rgba(0,0,0,.35); }
+.rop-foot { position: sticky; bottom: -32px; z-index: 4; margin: auto 0 -32px; padding: 12px 0 14px; display: flex; flex-direction: column; gap: 8px; background: var(--panel, #FBFAF7); box-shadow: 0 -1px 0 var(--hairline), 0 -10px 18px -14px rgba(0,0,0,.35); }
 .rop-foot .rop-acts { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; }
 :host([data-device=phone]) .rop-foot { position: static; margin: 0; box-shadow: none; padding: 0; }
 /* the drag edge (shell/widths.js) */
@@ -36,3 +36,15 @@
 /* 17.1 (b) — the right column is the RO list's panel, slotted in; the buttons stay at the bottom */
 .rop-rail-rp > slot[name=rp] { display: block; flex: none; }
 .rop-rail-rp { gap: 0 !important; }
+
+/* 17.1 (c) — the column fits its width: the panel never runs past the right edge, the buttons wrap */
+.rop-rail-rp { min-width: 0; }
+.rop-rail-rp > slot[name=rp] { min-width: 0; max-width: 100%; }
+.rop-foot .rop-acts > * { flex: 1 1 auto; min-width: 0; }
+.rop-foot .rop-acts .px-btn { white-space: normal; text-align: center; height: auto; min-height: 30px; }
+/* smooth motion: what opens slides in, what folds glides */
+@media (prefers-reduced-motion: no-preference) {
+  .px-pop { animation: rpGlide .2s cubic-bezier(.2,.8,.2,1) both; }
+  .px-btn, .pgst.m, .px-pg__chev { transition: background-color .15s, color .15s, box-shadow .15s, transform .18s; }
+}
+@keyframes rpGlide { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }

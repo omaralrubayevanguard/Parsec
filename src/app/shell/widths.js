@@ -37,7 +37,7 @@ document.addEventListener("click", function(e){ if(e.target && e.target.closest 
 
 /* ---------- the panes ---------- */
 /* [selector, key, the edge you drag ('r' = right, 'l' = left), smallest, largest share of the window] */
-var PXW_PANES = [[".tg-body > .tg-list", "list", "r", 220, .5], [".px-body > .px-list", "plist", "r", 220, .45], [".rq-peek", "peek", "l", 300, .6], [".lib-view", "libv", "l", 380, .8], [".px-ro__rail", "rorail", "l", 300, .5]];
+var PXW_PANES = [[".tg-body > .tg-list", "list", "r", 220, .5], [".px-body > .px-list", "plist", "r", 220, .45], [".rq-peek:not(.rp-ro)", "peek", "l", 300, .6], [".lib-view", "libv", "l", 380, .8], [".px-ro__rail", "rorail", "l", 300, .5]];
 /* the page's own key — the RO page's right column (in its shadow root) by the page it sits on, so each page remembers */
 function pxwKey(el, k){ if(el.getRootNode && el.getRootNode() !== document) return k + ":" + UI.view; var pg = el.closest("[data-pg]"); return k + ":" + (pg ? pg.getAttribute("data-pg") : UI.view); }
 function pxwRoots(){ var L = [document]; document.querySelectorAll(".jc-host").forEach(function(h){ if(h.shadowRoot) L.push(h.shadowRoot); }); return L; }

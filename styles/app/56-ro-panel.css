@@ -27,3 +27,24 @@
 .rp-all{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 9px;border-radius:7px;font:500 12px/1 var(--tg-sans,inherit);color:var(--tg-ink3);}
 .rp-all:hover{background:var(--tg-fill);color:var(--tg-ink);} .rp-all:focus-visible{outline:2px solid var(--tg-acc,#86643A);outline-offset:1px;}
 .rp-nm .trk-th{cursor:pointer;border-radius:6px;} .rp-nm .trk-th:hover{box-shadow:0 0 0 2px var(--tg-hair);}
+
+/* 17.1 (c) — responsive: the panel and its rows fit any width; long words break instead of running off */
+.rq-peek.rp,.rq-peek.rp *{min-width:0;}
+.rq-peek.rp{max-width:100%;overflow-wrap:anywhere;}
+.rq-peek.rp.rp-ro{width:100% !important;flex-basis:auto !important;}
+.rp-nm h2{overflow-wrap:anywhere;}
+.rq-peek.rp .rq-strow{flex-wrap:wrap;row-gap:6px;}
+.rp-op .t{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.rq-peek.rp .rod-gh{flex-wrap:wrap;} .rq-peek.rp .rod-gh small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:50%;}
+.rq-peek.rp .rod-r{grid-template-columns:minmax(80px,38%) minmax(0,1fr) auto;} .rq-peek.rp .rod-r b{overflow-wrap:anywhere;}
+.rp-acts>*{flex:1 1 auto;justify-content:center;}
+/* smooth motion: side panels slide in, what opens glides open, hovers ease */
+@media (prefers-reduced-motion:no-preference){
+  .rq-peek:not(.rp-ro){animation:rpSlide .26s cubic-bezier(.2,.8,.2,1) both !important;}
+  .lib-view{animation:rpSlide .28s cubic-bezier(.2,.8,.2,1) both;}
+  .rp-anim .rod-rows,.rp-ops.rp-anim .rp-opl,.lib-ftbs,.tg-pop,.rq-bulk{animation:rpGlide .22s cubic-bezier(.2,.8,.2,1) both;}
+  .rp-op,.rod-r,.btn,.pgst.m,.rp-all,.tg-it,.rq-row,.lib-row{transition:background-color .15s,color .15s,box-shadow .15s,transform .15s;}
+  .rod-gh i,.rp-gh i{transition:transform .18s cubic-bezier(.2,.8,.2,1);}
+}
+@keyframes rpSlide{from{opacity:0;transform:translateX(18px);}to{opacity:1;transform:none;}}
+@keyframes rpGlide{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
