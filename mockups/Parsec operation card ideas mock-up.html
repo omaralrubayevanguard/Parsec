@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="en" data-th="ivory">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parsec · Operation cards</title>
+<style>
+/* ---------- tokens: four themes · Ivory / Graphite (warm) · Mist / Obsidian (cool). Keep the names. ---------- */
+:root,[data-th="ivory"]{--canvas:#F2F0EA;--panel:#FBFAF7;--raised:#fff;--fill:#F0EDE6;--hair:#E6E2D8;--border:#D6D0C3;--ink:#1D1C1A;--ink2:#57534B;--ink3:#67625A;--acc:#86643A;--acct:#F4EDE1;--accl:#D9C5A3;--primary:#1D1C1A;--onprimary:#FBFAF7;--good:#3A8C60;--goodt:#E8F5EE;--warn:#AD7210;--bad:#C0503F;--shadow:0 0 0 1px rgba(29,28,26,.06),0 1px 3px rgba(29,28,26,.04);--raise:0 0 0 1px rgba(29,28,26,.08),0 18px 44px -14px rgba(29,28,26,.28);color-scheme:light}
+[data-th="graphite"]{--canvas:#0E0E0D;--panel:#151514;--raised:#1D1D1B;--fill:#222220;--hair:#262624;--border:#363532;--ink:#EDEBE6;--ink2:#B0ACA3;--ink3:#9A968D;--acc:#D1B184;--acct:#2A241B;--accl:#6B5A40;--primary:#EDEBE6;--onprimary:#151514;--good:#5BBE8B;--goodt:#1A2E24;--warn:#E2A84C;--bad:#EC7F6C;--shadow:0 0 0 1px rgba(255,255,255,.06);--raise:0 0 0 1px rgba(255,255,255,.08),0 20px 50px -14px rgba(0,0,0,.7);color-scheme:dark}
+[data-th="mist"]{--canvas:#EEF1F4;--panel:#F7F9FB;--raised:#fff;--fill:#E8EDF2;--hair:#DEE3E9;--border:#C9D1DA;--ink:#171A1F;--ink2:#4E5661;--ink3:#626B77;--acc:#3F6A8A;--acct:#E4EDF4;--accl:#A9C4D8;--primary:#1F2A36;--onprimary:#F7F9FB;--good:#2F8A5E;--goodt:#E2F1E9;--warn:#A86F0E;--bad:#BF4F3F;--shadow:0 0 0 1px rgba(23,26,31,.06),0 1px 3px rgba(23,26,31,.05);--raise:0 0 0 1px rgba(23,26,31,.08),0 18px 44px -14px rgba(23,26,31,.3);color-scheme:light}
+[data-th="obsidian"]{--canvas:#0C0E11;--panel:#13161A;--raised:#1A1E24;--fill:#1F242B;--hair:#242930;--border:#343B45;--ink:#E8ECF1;--ink2:#A9B2BD;--ink3:#8E98A4;--acc:#8FB6D4;--acct:#1B2733;--accl:#3E5B73;--primary:#E8ECF1;--onprimary:#13161A;--good:#5BBE8B;--goodt:#182B22;--warn:#E2A84C;--bad:#EC7F6C;--shadow:0 0 0 1px rgba(255,255,255,.06);--raise:0 0 0 1px rgba(255,255,255,.08),0 20px 50px -14px rgba(0,0,0,.75);color-scheme:dark}
+:root{--sans:"Inter","Segoe UI",system-ui,sans-serif;--serif:"Iowan Old Style",Georgia,serif;--mono:"Cascadia Mono",Consolas,monospace}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{margin:0;background:var(--canvas);color:var(--ink);font:400 14px/1.45 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button,input,textarea,select{font:inherit;color:inherit}
+/* ---------- the frame (prefix ip- so the drawn visuals' classes can't collide) ---------- */
+.ip-bar{position:sticky;top:0;z-index:60;background:var(--canvas);box-shadow:inset 0 -1px 0 var(--hair)}
+.ip-r1,.ip-r2{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 16px}
+.ip-r2{padding-top:0;padding-bottom:8px}
+.ip-bar h1{margin:0 auto 0 0;display:flex;align-items:baseline;gap:10px;font:500 19px/24px var(--serif)}
+.ip-bar h1 small{font:500 11px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.ip-jump{display:flex;gap:2px;flex-wrap:wrap}.ip-jump a{padding:4px 9px;border-radius:7px;font-size:12.5px;color:var(--ink2);text-decoration:none}.ip-jump a:hover{background:var(--fill)}
+.ip-seg{display:inline-flex;gap:2px;padding:2px;border-radius:9px;background:var(--fill)}
+.ip-seg button{all:unset;cursor:pointer;height:26px;padding:0 10px;border-radius:7px;font-size:12.5px;font-weight:500;color:var(--ink2);white-space:nowrap}.ip-seg button[aria-pressed="true"]{background:var(--raised);color:var(--ink);box-shadow:var(--shadow)}
+.ip-btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 11px;border-radius:8px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--border);font:500 12.5px/1 var(--sans);white-space:nowrap}
+.ip-btn.pri{background:var(--primary);color:var(--onprimary);box-shadow:none}.ip-btn em{font-style:normal;opacity:.7;font-size:11px}
+.ip-btn:focus-visible,.ip-opt:focus-visible,.ip-seg button:focus-visible,.ip-chip:focus-visible,.ip-dots i:focus-visible,.ip-sel:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.ip-prog{display:flex;align-items:center;gap:10px;flex:1 1 220px;min-width:160px}
+.ip-prog-bar{flex:1;height:6px;border-radius:999px;background:var(--fill);overflow:hidden}
+.ip-prog-bar i{display:block;height:100%;width:0;background:var(--acc);border-radius:999px;transition:width .35s}
+.ip-prog span{font-size:12px;color:var(--ink3);white-space:nowrap}
+.ip-tabs{display:inline-flex;gap:2px;padding:2px;border-radius:9px;background:var(--fill);flex-wrap:wrap}
+.ip-chip{all:unset;cursor:pointer;height:26px;padding:0 10px;border-radius:7px;font-size:12px;font-weight:500;color:var(--ink2);white-space:nowrap}
+.ip-chip[aria-pressed="true"]{background:var(--raised);color:var(--ink);box-shadow:var(--shadow)}
+.ip-warn{display:none;align-items:center;height:26px;padding:0 10px;border-radius:7px;background:var(--warn);color:#fff;font-size:12px;font-weight:600;cursor:pointer}
+.ip-wrap{max-width:1500px;margin:0 auto;padding:18px 16px 120px}
+.ip-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.ip-layout.has-prev{grid-template-columns:minmax(0,1fr) min(360px,34vw)}
+@media (max-width:1100px){.ip-layout.has-prev{grid-template-columns:1fr}}
+#ip-preview{position:sticky;top:96px;align-self:start;max-height:calc(100vh - 110px);overflow:auto;padding:12px;border-radius:14px;background:var(--panel);box-shadow:var(--shadow)}
+#ip-preview[hidden]{display:none}
+#ip-preview h2{margin:0 0 8px;font:500 14px/1 var(--serif)}
+#ip-preview h2 small{font:400 11px var(--sans);color:var(--ink3);margin-left:6px}
+.ip-prev-root{position:relative;min-height:80px;padding:12px;border-radius:10px;background:var(--canvas);box-shadow:inset 0 0 0 1px var(--hair);font-size:12.5px;overflow:hidden}
+.ip-now{margin:0 0 16px;padding:14px 16px;border-radius:14px;background:var(--panel);box-shadow:var(--shadow)}.ip-now h2{margin:0 0 8px;font:500 15px/1 var(--serif)}
+.ip-now-row{display:flex;gap:10px;flex-wrap:wrap}.ip-now-row>div{flex:1 1 220px;padding:8px 10px;border-radius:9px;background:var(--canvas);box-shadow:inset 0 0 0 1px var(--hair);font-size:12.5px;color:var(--ink2)}.ip-now-row b{color:var(--ink)}
+.ip-lead{margin:0 2px 14px;color:var(--ink2)}
+.ip-keys{margin:0 2px 14px;font-size:11.5px;color:var(--ink3)} .ip-keys kbd{display:inline-block;min-width:18px;padding:0 5px;border-radius:4px;background:var(--raised);box-shadow:inset 0 -1.5px 0 var(--border),inset 0 0 0 1px var(--border);font:600 10.5px/17px var(--mono);text-align:center;color:var(--ink2)}
+.ip-sec{margin:0 0 26px;scroll-margin-top:100px}.ip-sec h2{display:flex;align-items:baseline;gap:10px;margin:0 2px 10px;font:500 22px/28px var(--serif)}.ip-sec h2 small{font:400 12.5px var(--sans);color:var(--ink3)}
+.ip-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(440px,1fr));gap:14px}@media (max-width:980px){.ip-grid{grid-template-columns:1fr}}
+.ip-idea{min-width:0;display:flex;flex-direction:column;gap:10px;padding:14px 14px 10px;border-radius:14px;background:var(--panel);box-shadow:var(--shadow);scroll-margin-top:104px;transition:box-shadow .2s}
+.ip-idea.picked{box-shadow:0 0 0 1.5px var(--accl),var(--shadow)}
+.ip-idea.ip-cur{box-shadow:0 0 0 2px var(--acc),var(--shadow)}
+.ip-idea[hidden]{display:none}
+.ip-idea.ip-locked .ip-vis,.ip-idea.ip-locked .ip-ol,.ip-idea.ip-locked .ip-card-tools{opacity:.5}
+.ip-idea h3{margin:0;font:600 15px/20px var(--sans);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ip-idea header p{margin:3px 0 0;font-size:12.5px;line-height:17px;color:var(--ink3)}
+.ip-tags{display:inline-flex;gap:4px}
+.ip-tag{display:inline-flex;align-items:center;height:18px;padding:0 6px;border-radius:5px;font:600 10px/1 var(--sans);background:var(--fill);color:var(--ink2)}
+.ip-tag.hi{background:var(--goodt);color:var(--good)}
+.ip-tag.lo{background:var(--acct);color:var(--acc)}
+.ip-need{display:inline-flex;align-items:center;gap:4px;height:18px;padding:0 7px;border-radius:5px;font:600 10px/1 var(--sans);background:var(--acct);color:var(--acc);letter-spacing:.02em}
+.ip-idea:not(.ip-locked) .ip-need{background:var(--goodt);color:var(--good)}
+.ip-rec{position:relative;display:inline-flex;align-items:center;height:16px;padding:0 6px;border-radius:4px;font:600 9px/1 var(--sans);letter-spacing:.04em;text-transform:uppercase;background:var(--acct);color:var(--acc);cursor:help}
+.ip-rec[data-tip]::after{content:attr(data-tip);position:absolute;left:0;top:calc(100% + 6px);z-index:7;min-width:180px;max-width:260px;padding:6px 9px;border-radius:7px;background:var(--primary);color:var(--onprimary);font:400 11.5px/1.4 var(--sans);text-transform:none;letter-spacing:0;white-space:normal;opacity:0;transform:translateY(-3px);pointer-events:none;transition:opacity .15s,transform .15s}
+.ip-rec[data-tip]:hover::after,.ip-rec[data-tip]:focus::after,.ip-opt:focus-visible .ip-rec[data-tip]::after{opacity:1;transform:none}
+.ip-vis{position:relative;min-height:96px;padding:12px;border-radius:11px;background:var(--canvas);box-shadow:inset 0 0 0 1px var(--hair);font-size:12.5px;overflow:hidden}
+.ip-hint{position:absolute;left:8px;bottom:8px;z-index:5;padding:3px 8px;border-radius:7px;background:var(--raised);box-shadow:var(--shadow);font-size:11px;color:var(--ink3);pointer-events:none}
+.ip-vis.ip-has .ip-hint,.ip-vis.ip-skip .ip-hint,.ip-vis.ip-peeking .ip-hint,.ip-vis:not(.ip-has) .ip-replay,.ip-vis:not(.ip-has) .ip-dots{display:none}
+.ip-vis.ip-skip>*:not(.ip-replay):not(.ip-cmp){opacity:.45}
+.ip-replay{all:unset;cursor:pointer;position:absolute;right:8px;bottom:8px;z-index:5;width:24px;height:24px;border-radius:7px;display:grid;place-items:center;background:var(--raised);box-shadow:var(--shadow);color:var(--ink3);font-size:11px}
+.ip-dots{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:5;display:flex;gap:6px;padding:4px 7px;border-radius:999px;background:var(--raised);box-shadow:var(--shadow)}
+.ip-dots i{all:unset;cursor:pointer;width:9px;height:9px;border-radius:50%;background:var(--fill);box-shadow:inset 0 0 0 1.5px var(--border);transition:background .2s,box-shadow .2s}
+.ip-dots i.f{background:var(--acc);box-shadow:none}
+.ip-vis.ip-peeking{box-shadow:inset 0 0 0 1.5px var(--acc)}
+.ip-peek-lbl{display:none;position:absolute;left:8px;bottom:8px;z-index:5;padding:3px 8px;border-radius:7px;background:var(--acc);color:var(--onprimary);font-size:11px;font-weight:600;pointer-events:none}
+.ip-vis.ip-peeking .ip-peek-lbl{display:block}
+.ip-vis.ip-peeking .ip-dots,.ip-vis.ip-peeking .ip-replay{display:none}
+.ip-cmp{display:none;position:absolute;inset:0;z-index:3;background:var(--canvas)}
+.ip-vis.ip-comparing .ip-cmp{display:block}
+.ip-vis.ip-comparing{min-height:150px}
+.ip-cmp-a .v-cur,.ip-cmp-b .v-cur{display:none}
+.ip-vis.ip-comparing>.ip-body,.ip-vis.ip-comparing>.ip-hint,.ip-vis.ip-comparing>.ip-dots,.ip-vis.ip-comparing>.ip-replay{visibility:hidden}
+.ip-cmp-a,.ip-cmp-b{position:absolute;top:34px;bottom:0;width:50%;padding:12px;overflow:hidden}
+.ip-cmp-a{left:0;box-shadow:inset -1px 0 0 var(--hair)}.ip-cmp-b{left:50%}
+.ip-cmp-top{position:absolute;left:0;right:0;top:0;height:34px;display:flex;align-items:center;gap:6px;padding:0 8px;font-size:11px;color:var(--ink3);background:var(--panel);box-shadow:inset 0 -1px 0 var(--hair);z-index:5}
+.ip-cmp-top b{flex:1;text-align:center;font-weight:500;color:var(--ink2)}
+.ip-sel{all:unset;box-sizing:border-box;cursor:pointer;height:22px;padding:0 20px 0 7px;border-radius:6px;background:var(--raised) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23888'/%3E%3C/svg%3E") no-repeat right 7px center;box-shadow:inset 0 0 0 1px var(--border);font:500 11px/22px var(--sans);color:var(--ink);max-width:150px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;-webkit-appearance:none;appearance:none}
+.ip-ol{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:2px}
+.ip-opt{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:14px minmax(0,1fr);gap:8px;padding:6px 8px;border-radius:9px;font-size:12.5px;line-height:16px;color:var(--ink2)}
+.ip-opt:hover{background:var(--fill)}.ip-opt i{width:14px;height:14px;margin-top:1px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--border)}
+.ip-opt b{display:block;font-weight:500;color:var(--ink)}.ip-opt small{display:block;font-size:11.5px;color:var(--ink3)}
+.ip-opt[aria-pressed="true"]{background:var(--acct)}.ip-opt[aria-pressed="true"] i{box-shadow:inset 0 0 0 4.5px var(--acc)}
+.ip-opt .ip-rec{margin-left:4px;vertical-align:middle}
+.ip-opt kbd{float:right;margin-left:6px;min-width:16px;padding:0 4px;border-radius:4px;background:var(--raised);box-shadow:inset 0 -1.5px 0 var(--border),inset 0 0 0 1px var(--border);font:600 9.5px/15px var(--mono);text-align:center;color:var(--ink3)}
+.ip-idea-note{width:100%;min-height:34px;padding:7px 10px;border:0;border-radius:9px;background:var(--fill);font-size:12.5px;resize:vertical;outline:none}
+.ip-idea-note:focus{box-shadow:inset 0 0 0 1.5px var(--accl)}
+.ip-card-tools{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.ip-card-tools .ip-seg{display:none}.ip-idea.picked .ip-card-tools .ip-seg{display:inline-flex}
+.ip-card-tools .ip-seg button{height:22px;font-size:11.5px}
+#ip-picks{position:fixed;z-index:85;right:16px;top:96px;width:470px;max-width:calc(100vw - 32px);max-height:calc(100vh - 112px);overflow:auto;padding:12px 14px 14px;border-radius:16px;background:var(--raised);box-shadow:var(--raise);display:flex;flex-direction:column;gap:10px}
+#ip-picks[hidden]{display:none}
+#ip-picks pre{margin:0;padding:10px 12px;border-radius:10px;background:var(--fill);font:400 12px/1.55 var(--mono);white-space:pre-wrap}
+#ip-picks textarea{min-height:60px;padding:8px 10px;border:0;border-radius:9px;background:var(--fill);font-size:13px;resize:vertical;outline:none}
+#ip-picks label.ip-ck{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink2)}
+.ip-ph{display:flex;align-items:center;font:500 18px/1 var(--serif)}.ip-ph b{flex:1;font-weight:500}.ip-ph button{all:unset;cursor:pointer;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;color:var(--ink3)}
+.ip-actions{display:flex;flex-wrap:wrap;gap:6px}
+.ip-toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:99;display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;background:var(--primary);color:var(--onprimary);font-size:13px;box-shadow:var(--raise);max-width:calc(100vw - 32px)}
+.ip-toast button{all:unset;cursor:pointer;font-weight:600;color:var(--accl);padding:2px 4px;border-radius:4px}
+.ip-file{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+@media (max-width:640px){ .ip-grid{grid-template-columns:1fr} #ip-picks{left:16px;right:16px;width:auto} .ip-bar h1 small{display:none} .ip-layout.has-prev{grid-template-columns:1fr} .ip-r2 [data-sort]{display:none} .ip-keys{display:none} #ip-preview{position:static;max-height:none} }
+@media print{
+  body{background:#fff;color:#000}
+  .ip-bar .ip-seg,.ip-bar #ip-open,.ip-bar #ip-accept,.ip-r2,.ip-ol,.ip-replay,.ip-hint,.ip-dots,.ip-card-tools,.ip-idea-note,#ip-preview,.ip-cmp,.ip-keys,.ip-actions,.ip-ck{display:none!important}
+  #ip-picks{position:static!important;display:flex!important;width:100%!important;max-width:none;max-height:none;box-shadow:none;border:1px solid #ccc;page-break-before:avoid}
+  .ip-vis{break-inside:avoid}
+  .ip-idea[hidden]{display:flex!important}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.ip-prog-bar i{transition:none}}
+
+/* ---------- the drawn visuals: prefix v- · animate with [data-step], .ip-s-<step> and [data-opt] on .ip-vis ---------- */
+.v-btn{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:7px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--border);font:500 12px/1 var(--sans);white-space:nowrap;transition:background .2s,color .2s}
+.v-tip{position:absolute;left:12px;top:48px;padding:6px 9px;border-radius:7px;background:var(--primary);color:var(--onprimary);font-size:12px;font-weight:500;white-space:nowrap;opacity:0;transform:translateY(-4px);transition:opacity .18s,transform .18s}
+.v-cur{position:absolute;left:250px;top:40px;width:14px;height:14px;z-index:6;pointer-events:none;transition:left .6s cubic-bezier(.2,.75,.25,1),top .6s cubic-bezier(.2,.75,.25,1)}
+.v-cur::before{content:"";position:absolute;inset:0;clip-path:polygon(0 0,0 100%,30% 72%,52% 100%,64% 94%,44% 66%,80% 66%);background:var(--ink)}
+.v-cur::after{content:"";position:absolute;left:-8px;top:-8px;width:30px;height:30px;border-radius:50%;background:var(--acc);opacity:0;transform:scale(.3)}
+@keyframes v-ripple{0%{opacity:.35;transform:scale(.3)}100%{opacity:0;transform:scale(1.4)}}
+[data-step="click"] .v-cur::after{animation:v-ripple .45s ease-out}
+@media (prefers-reduced-motion:reduce){.v-cur,.v-tip,.v-btn,.v-delay i{transition:none!important}.v-cur::after{animation:none!important}}
+
+
+/* ---------- an operation, drawn small: the row, then the open card (shared by every card and the live preview) ---------- */
+.v-op{position:relative;width:400px;display:flex;flex-direction:column;gap:6px;font-size:11px;line-height:14px;color:var(--ink2)}
+.v-row{position:relative;display:flex;align-items:center;gap:5px;height:30px;padding:0 6px;border-radius:8px;background:var(--fill);transition:height .3s,padding .3s}
+.v-row::before{content:"";position:absolute;left:0;top:4px;bottom:4px;width:0;border-radius:2px;background:var(--acc);transition:width .25s}
+.v-sti{width:9px;height:9px;flex:none;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--warn)}
+.v-n{flex:none;color:var(--ink3)}
+.v-cm{flex:1 1 80px;min-width:80px;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:all .25s}
+.v-blk{flex:0 1 auto;color:var(--ink3);font-size:10px;white-space:nowrap;transition:opacity .25s,max-width .3s;max-width:70px;overflow:hidden;text-overflow:ellipsis}
+.v-jt{flex:none;height:15px;padding:0 4px;border-radius:4px;background:var(--acct);color:var(--acc);font:600 8.5px/15px var(--mono);transition:opacity .25s,max-width .3s;max-width:60px;overflow:hidden}
+.v-hr{flex:none;font-family:var(--mono);font-size:9.5px;color:var(--ink2);white-space:nowrap;transition:opacity .25s,max-width .3s;max-width:80px;overflow:hidden}
+.v-pb{flex:none;width:22px;height:3px;border-radius:2px;background:var(--hair);overflow:hidden;transition:opacity .25s,width .3s} .v-pb i{display:block;width:25%;height:100%;background:var(--ink2)}
+.v-av{flex:none;width:15px;height:15px;border-radius:50%;display:grid;place-items:center;background:var(--raised);font:600 7px/1 var(--sans);color:var(--ink2);transition:opacity .25s,width .3s;overflow:hidden}
+.v-st{flex:none;height:18px;padding:0 6px;border-radius:6px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--border);color:var(--ink);font-size:9.5px;line-height:18px;white-space:nowrap}
+.v-st::before{content:"◌ ";color:var(--warn)}
+.v-more{flex:none;color:var(--ink3);letter-spacing:1px}
+.v-ico{display:none;flex:none;width:11px;height:11px;border-radius:50%;background:var(--warn);color:#fff;font:700 8px/11px var(--sans);text-align:center}
+.v-uline{position:absolute;left:24px;right:8px;bottom:2px;height:2px;border-radius:1px;background:var(--hair);overflow:hidden;opacity:0;transition:opacity .25s} .v-uline i{display:block;width:25%;height:100%;background:var(--acc)}
+.v-sub{display:none;padding:0 6px 0 30px;gap:4px;align-items:center;flex-wrap:wrap;margin-top:-4px}
+/* the open card */
+.v-body{display:flex;flex-direction:column;gap:6px;padding:0 4px 0 26px}
+.v-strip{display:none;flex-wrap:wrap;gap:4px;align-items:center;padding:5px 6px;border-radius:8px;box-shadow:inset 0 0 0 1px var(--hair);background:var(--panel)}
+.v-strip span{display:inline-flex;align-items:center;gap:3px;height:17px;padding:0 6px;border-radius:5px;background:var(--fill);color:var(--ink);font-size:9.5px;white-space:nowrap}
+.v-grid{display:none;grid-template-columns:auto 1fr auto 1fr;gap:2px 8px;padding:5px 6px;border-radius:8px;box-shadow:inset 0 0 0 1px var(--hair);font-size:9.5px} .v-grid b{font-weight:500;color:var(--ink)}
+.v-acts{position:relative;display:flex;flex-wrap:wrap;gap:4px}
+.v-ch{height:17px;padding:0 6px;border-radius:9px;box-shadow:inset 0 0 0 1px var(--border);font-size:9.5px;line-height:17px;color:var(--ink2);white-space:nowrap}
+.v-ch.v-claim{box-shadow:none;background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)} .v-ch.v-fix{box-shadow:none;background:var(--acct);color:var(--acc)}
+.v-ch.v-add{display:none;background:var(--primary);color:var(--onprimary);box-shadow:none}
+.v-addm{display:none;position:absolute;left:0;top:21px;z-index:4;flex-direction:column;padding:4px;border-radius:7px;background:var(--raised);box-shadow:var(--raise);font-size:10px} .v-addm span{padding:2px 8px;color:var(--ink)}
+/* the clock card and its time bar */
+.v-clk{position:relative;padding:7px 8px 8px;border-radius:9px;box-shadow:inset 0 0 0 1.5px var(--accl);background:var(--panel)}
+.v-tm{display:flex;align-items:baseline;gap:8px;font:500 15px/18px var(--mono);color:var(--ink)} .v-tm small{font:400 9.5px var(--sans);color:var(--ink3)}
+.v-tmx{display:none;margin-left:auto;font:400 9.5px var(--sans);color:var(--ink2);gap:4px} .v-tmx b{color:var(--ink)}
+.v-bar{position:relative;height:6px;margin:10px 0 4px;border-radius:3px;background:var(--hair)}
+.v-seg{position:absolute;top:0;bottom:0;border-radius:3px;background:var(--good)} .v-seg.v-s1{left:0;width:38%} .v-seg.v-s2{left:41%;width:22%} .v-seg.v-s3{left:66%;width:12%;background:var(--acc)}
+.v-sw{position:absolute;top:-13px;font:600 7.5px/10px var(--sans);color:var(--ink3);opacity:0;transition:opacity .25s} .v-sw.v-w1{left:2%} .v-sw.v-w2{left:43%} .v-sw.v-w3{left:67%}
+.v-q{position:absolute;top:-3px;bottom:-3px;left:84%;width:2px;background:var(--ink)}
+.v-pin{position:absolute;top:-9px;width:12px;height:12px;margin-left:-6px;border-radius:50% 50% 50% 0;transform:rotate(-45deg) scale(0);background:var(--acc);box-shadow:0 0 0 2px var(--panel);transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.v-pin.v-p1{left:12%} .v-pin.v-p2{left:52%} .v-pin.v-p3{left:72%}
+.v-cnt{display:none;position:absolute;right:8px;top:7px;height:16px;padding:0 6px;border-radius:8px;background:var(--acct);color:var(--acc);font-size:9.5px;line-height:16px}
+.v-feed{display:none;flex-direction:column;gap:2px;margin-top:4px;font-size:9.5px} .v-feed span{color:var(--ink)} .v-feed i{font-style:normal;color:var(--ink3);margin-right:4px;font-family:var(--mono)}
+.v-nbtn{position:absolute;right:-50px;top:-5px;display:none;height:16px;padding:0 6px;border-radius:8px;background:var(--primary);color:var(--onprimary);font-size:9px;line-height:16px}
+.v-nline{display:none;margin-top:6px;height:20px;padding:0 6px;border-radius:6px;background:var(--fill);color:var(--ink3);font-size:9.5px;line-height:20px;white-space:nowrap;overflow:hidden}
+.v-nbox{position:absolute;left:30%;top:24px;z-index:5;width:150px;padding:5px 7px;border-radius:7px;background:var(--raised);box-shadow:var(--raise);font-size:9.5px;color:var(--ink);opacity:0;transform:translateY(-4px);transition:opacity .2s,transform .2s;pointer-events:none}
+.v-nbox b{display:block;font-size:8.5px;color:var(--ink3);font-weight:500}
+.v-tabs{display:flex;gap:10px;padding-top:2px;font-size:10.5px;color:var(--ink3)} .v-tabs span.v-on{color:var(--ink);box-shadow:0 2px 0 var(--ink)}
+.v-cap{display:block;margin:10px 0 32px;font-size:11.5px;line-height:15px;color:var(--ink3)} .v-cap::after{content:attr(data-now)} .ip-s-done .v-cap{color:var(--ink)}
+.v-cur{left:340px;top:24px}
+
+/* ---------- each idea's outcome ---------- */
+/* 1 · what stays on the row */
+.ip-s-point .v-row .v-cur{left:46%;top:8px}
+.ip-s-done[data-opt="r-min"] .v-row :is(.v-blk,.v-jt,.v-hr,.v-pb,.v-av){opacity:0;max-width:0;width:0;padding:0;margin:0}
+.ip-s-done[data-opt="r-hrs"] .v-row :is(.v-blk,.v-jt,.v-pb,.v-av){opacity:0;max-width:0;width:0;padding:0;margin:0}
+.ip-s-done[data-opt="r-two"] .v-row{height:24px} .ip-s-done[data-opt="r-two"] .v-row :is(.v-blk,.v-jt,.v-hr,.v-pb,.v-av){display:none} .ip-s-done[data-opt="r-two"] .v-sub{display:flex}
+.ip-s-done[data-opt="r-min"] .v-cap::after{content:"Status, number, complaint, status, ⋯ — the complaint gets the room"}
+.ip-s-done[data-opt="r-hrs"] .v-cap::after{content:"…and the hours stay, to scan the RO at a glance"}
+.ip-s-done[data-opt="r-two"] .v-cap::after{content:"The complaint on its own line; the chips sit under it"}
+/* 2 · the complaint */
+.ip-s-done[data-opt="c-wrap"] .v-row{height:40px} .ip-s-done[data-opt="c-wrap"] .v-cm{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.ip-s-done[data-opt="c-one"] .v-cm{color:var(--ink)} .ip-s-done[data-opt="c-one"] .v-nbox.v-ctip{opacity:1;transform:none}
+.ip-s-done[data-opt="c-full"] .v-row :is(.v-blk,.v-jt,.v-hr,.v-pb,.v-av,.v-st){display:none} .ip-s-done[data-opt="c-full"] .v-cm{white-space:nowrap}
+.ip-s-done[data-opt="c-wrap"] .v-cap::after{content:"Up to two lines, then …"}
+.ip-s-done[data-opt="c-one"] .v-cap::after{content:"One line; point at it for the whole complaint"}
+.ip-s-done[data-opt="c-full"] .v-cap::after{content:"One line, the whole width — the status moves inside too"}
+.v-ctip{left:40px;top:34px;width:220px}
+/* 3 · job type */
+.ip-s-done[data-opt="jt-edge"] .v-row::before{width:3px} .ip-s-done[data-opt="jt-edge"] .v-row .v-jt{opacity:0;max-width:0;padding:0}
+.ip-s-done[data-opt="jt-in"] .v-row .v-jt{opacity:0;max-width:0;padding:0} .ip-s-done[data-opt="jt-in"] .v-strip{display:flex}
+.ip-s-done[data-opt="jt-row"] .v-row .v-jt{box-shadow:0 0 0 1.5px var(--accl)}
+.ip-s-done[data-opt="jt-edge"] .v-cap::after{content:"A coloured edge says the type at a glance; REPAIR, WARR, DIAG are spelled out inside"}
+.ip-s-done[data-opt="jt-in"] .v-cap::after{content:"Only inside the card"}
+.ip-s-done[data-opt="jt-row"] .v-cap::after{content:"Stays on the row"}
+/* 4 · hours */
+.ip-s-done[data-opt="pg-line"] .v-row :is(.v-hr,.v-pb){opacity:0;max-width:0;width:0} .ip-s-done[data-opt="pg-line"] .v-uline{opacity:1}
+.ip-s-done[data-opt="pg-in"] .v-row :is(.v-hr,.v-pb){opacity:0;max-width:0;width:0} .ip-s-done[data-opt="pg-in"] .v-tmx{display:flex}
+.ip-s-done[data-opt="pg-row"] .v-row .v-hr{color:var(--acc)}
+.ip-s-done[data-opt="pg-line"] .v-cap::after{content:"A thin bar along the row's bottom; the numbers are inside"}
+.ip-s-done[data-opt="pg-in"] .v-cap::after{content:"0.20 / 0.80 h only on the clock card"}
+.ip-s-done[data-opt="pg-row"] .v-cap::after{content:"Stay on the row"}
+/* 5 · where the details go */
+.ip-s-done[data-opt="st-strip"] .v-strip{display:flex}
+.ip-s-done[data-opt="st-grid"] .v-grid{display:grid}
+.ip-s-done[data-opt="st-bar"] .v-tmx{display:flex}
+.ip-s-done[data-opt="st-strip"] .v-cap::after{content:"One strip at the top of the card: type · status · tech · hours · blocker"}
+.ip-s-done[data-opt="st-grid"] .v-cap::after{content:"A small grid of facts, label and value"}
+.ip-s-done[data-opt="st-bar"] .v-cap::after{content:"Beside the time on the clock card"}
+/* 6 · the technician */
+.ip-s-done[data-opt="w-name"] .v-strip{display:flex} .ip-s-done[data-opt="w-name"] .v-strip .v-who{background:var(--acct)}
+.ip-s-done[data-opt="w-seg"] .v-sw{opacity:1}
+.ip-s-done[data-opt="w-both"] .v-strip{display:flex} .ip-s-done[data-opt="w-both"] .v-sw{opacity:1}
+.ip-s-done[data-opt="w-name"] .v-cap::after{content:"Face and name in the strip"}
+.ip-s-done[data-opt="w-seg"] .v-cap::after{content:"Initials over each piece of the time bar — who clocked which part"}
+.ip-s-done[data-opt="w-both"] .v-cap::after{content:"Both"}
+/* 7 · the action chips */
+.ip-s-done[data-opt="ch-one"] .v-strip{display:flex} .ip-s-done[data-opt="ch-one"] .v-acts{display:none} .ip-s-done[data-opt="ch-one"] .v-strip .v-xa{display:inline-flex}
+.v-strip .v-xa{display:none}
+.ip-s-done[data-opt="ch-menu"] .v-acts .v-plain{display:none} .ip-s-done[data-opt="ch-menu"] .v-acts .v-add{display:inline-block} .ip-s-done[data-opt="ch-menu"] .v-addm{display:flex}
+.ip-s-done[data-opt="ch-keep"] .v-acts .v-ch{box-shadow:inset 0 0 0 1.5px var(--accl)}
+.ip-s-done[data-opt="ch-one"] .v-cap::after{content:"One row with the strip"}
+.ip-s-done[data-opt="ch-menu"] .v-cap::after{content:"+ code, + document, Library behind Add ▾; Claim and Fixed before stay"}
+.ip-s-done[data-opt="ch-keep"] .v-cap::after{content:"As they are"}
+/* 8 · a blocker */
+.ip-s-done[data-opt="bk-st"] .v-row :is(.v-blk,.v-pb){opacity:0;max-width:0;width:0} .ip-s-done[data-opt="bk-st"] .v-st::after{content:" · 1 part on the way";color:var(--ink3)}
+.ip-s-done[data-opt="bk-icon"] .v-row .v-blk{opacity:0;max-width:0} .ip-s-done[data-opt="bk-icon"] .v-ico{display:inline-block} .ip-s-done[data-opt="bk-icon"] .v-nbox.v-btip{opacity:1;transform:none}
+.v-btip{left:150px;top:34px;width:110px}
+.ip-s-done[data-opt="bk-st"] .v-cap::after{content:"Beside the status"}
+.ip-s-done[data-opt="bk-icon"] .v-cap::after{content:"A small sign on the row; the words on hover"}
+/* 9 · notes on the bar */
+.ip-s-done[data-opt="np-pin"] .v-pin{transform:rotate(-45deg) scale(1)}
+.ip-s-done[data-opt="np-count"] .v-cnt{display:block}
+.ip-s-done[data-opt="np-feed"] .v-feed{display:flex}
+.ip-s-done[data-opt="np-pin"] .v-cap::after{content:"A pin where each note was written"}
+.ip-s-done[data-opt="np-count"] .v-cap::after{content:"A count above the bar; click for the list"}
+.ip-s-done[data-opt="np-feed"] .v-cap::after{content:"The last two notes under the bar"}
+/* 10 · adding a note */
+.v-clk .v-cur{left:300px;top:30px}
+.ip-s-point[data-opt="na-bar"] .v-clk .v-cur{left:96px;top:36px}
+.ip-s-point[data-opt="na-btn"] .v-clk .v-cur{left:300px;top:22px}
+.ip-s-point[data-opt="na-line"] .v-clk .v-cur{left:60px;top:62px}
+[data-opt="na-btn"] .v-nbtn{display:block} [data-opt="na-btn"] .v-bar,.ip-prev-root[data-p-nadd="na-btn"] .v-bar{margin-right:50px}
+[data-opt="na-line"] .v-nline{display:block}
+.ip-s-done[data-opt="na-bar"] .v-nbox.v-add1{opacity:1;transform:none;left:24%}
+.ip-s-done[data-opt="na-btn"] .v-nbox.v-add1{opacity:1;transform:none;left:46%}
+.ip-s-done[data-opt="na-line"] .v-nline{color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--accl)}
+.ip-s-done[data-opt="na-bar"] .v-cap::after{content:"Click the bar where it happened — the note lands at that time"}
+.ip-s-done[data-opt="na-btn"] .v-cap::after{content:"A Note button at the end of the bar — it lands at now"}
+.ip-s-done[data-opt="na-line"] .v-cap::after{content:"Type it in a line under the bar"}
+/* 11 · reading a note */
+.v-rc{left:300px;top:40px}
+.ip-s-done[data-opt="nr-hover"] .v-nbox.v-read{opacity:1;transform:none}
+.ip-s-done[data-opt="nr-open"] .v-feed.v-one{display:flex}
+.v-read{left:38%;top:-30px}
+.ip-s-done[data-opt="nr-hover"] .v-cap::after{content:"Point at a pin: the note, who wrote it, when"}
+.ip-s-done[data-opt="nr-open"] .v-cap::after{content:"Click a pin: it opens under the bar, to read or change"}
+.v-pins-on .v-pin{transform:rotate(-45deg) scale(1)}
+/* 12 · the Time tab */
+.ip-s-done[data-opt="tt-gone"] .v-tabs .v-tt{display:none}
+.ip-s-done[data-opt="tt-punch"] .v-tabs .v-tt::after{content:" · punches"}
+.ip-s-done[data-opt="tt-hist"] .v-tabs .v-tt{font-size:0} .ip-s-done[data-opt="tt-hist"] .v-tabs .v-tt::before{content:"History";font-size:10.5px}
+.ip-s-done[data-opt="tt-gone"] .v-cap::after{content:"Gone — click a piece of the bar to fix that punch"}
+.ip-s-done[data-opt="tt-punch"] .v-cap::after{content:"Stays, for fixing punches; the notes are on the bar"}
+.ip-s-done[data-opt="tt-hist"] .v-cap::after{content:"Becomes History — punches and notes, read only"}
+.ip-s-point .v-tabs .v-cur{left:4px;top:12px}
+.v-tabs{position:relative}
+
+/* the pointer steps aside once the result shows, so it never covers it */
+.v-cur{transition:left .6s cubic-bezier(.2,.75,.25,1),top .6s cubic-bezier(.2,.75,.25,1),opacity .25s .35s} .ip-s-done .v-cur{opacity:0}
+/* the inside-the-card ideas start with the card shut; the click on the row opens it */
+.v-shut .v-body{max-height:0;opacity:0;overflow:hidden;transition:max-height .45s cubic-bezier(.2,.8,.2,1),opacity .3s}
+.ip-s-done .v-shut .v-body{max-height:320px;opacity:1}
+.ip-s-done .v-shut .v-row :is(.v-blk,.v-jt,.v-hr,.v-pb,.v-av){opacity:0;max-width:0;width:0;padding:0;margin:0}
+.v-shut .v-row .v-more{transition:transform .3s} .ip-s-done .v-shut .v-row .v-more{transform:rotate(90deg)}
+.ip-s-point .v-clk > .v-cur{left:150px;top:22px}
+.ip-s-point .v-clk .v-cur.v-rc{left:50%;top:-6px}
+/* ---------- the live preview: one operation with every pick on it ---------- */
+.ip-prev-root .v-op{width:auto} .ip-prev-root .v-cm{flex-basis:120px;min-width:120px} .ip-prev-root .v-st{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis} .ip-prev-root .v-cur,.ip-prev-root .v-cap,.ip-prev-root .v-addm{display:none}
+.ip-prev-root[data-p-row="r-min"] .v-row :is(.v-blk,.v-jt,.v-hr,.v-pb,.v-av){display:none}
+.ip-prev-root[data-p-row="r-hrs"] .v-row :is(.v-blk,.v-jt,.v-pb,.v-av){display:none}
+.ip-prev-root[data-p-row="r-two"] .v-row :is(.v-blk,.v-jt,.v-hr,.v-pb,.v-av){display:none} .ip-prev-root[data-p-row="r-two"] .v-sub{display:flex}
+.ip-prev-root[data-p-cmp="c-wrap"] .v-row{height:auto;min-height:30px;padding:4px 6px} .ip-prev-root[data-p-cmp="c-wrap"] .v-cm{white-space:normal}
+.ip-prev-root[data-p-jt="jt-edge"] .v-row::before{width:3px} .ip-prev-root:is([data-p-jt="jt-edge"],[data-p-jt="jt-in"]) .v-row .v-jt{display:none}
+.ip-prev-root:is([data-p-prog="pg-line"],[data-p-prog="pg-in"]) .v-row :is(.v-hr,.v-pb){display:none} .ip-prev-root[data-p-prog="pg-line"] .v-uline{opacity:1}
+.ip-prev-root[data-p-prog="pg-in"] .v-tmx,.ip-prev-root[data-p-strip="st-bar"] .v-tmx{display:flex}
+.ip-prev-root:is([data-p-strip="st-strip"],[data-p-who="w-name"],[data-p-who="w-both"],[data-p-chips="ch-one"],[data-p-jt="jt-in"]) .v-strip{display:flex}
+.ip-prev-root[data-p-strip="st-grid"] .v-grid{display:grid}
+.ip-prev-root:is([data-p-who="w-seg"],[data-p-who="w-both"]) .v-sw{opacity:1}
+.ip-prev-root[data-p-chips="ch-one"] .v-acts{display:none} .ip-prev-root[data-p-chips="ch-one"] .v-strip .v-xa{display:inline-flex}
+.ip-prev-root[data-p-chips="ch-menu"] .v-acts .v-plain{display:none} .ip-prev-root[data-p-chips="ch-menu"] .v-acts .v-add{display:inline-block}
+.ip-prev-root:is([data-p-blk="bk-st"],[data-p-blk="bk-icon"]) .v-row .v-blk{display:none} .ip-prev-root[data-p-blk="bk-st"] .v-st::after{content:" · 1 part on the way";color:var(--ink3)} .ip-prev-root[data-p-blk="bk-icon"] .v-ico{display:inline-block}
+.ip-prev-root[data-p-npin="np-pin"] .v-pin{transform:rotate(-45deg) scale(1)} .ip-prev-root[data-p-npin="np-count"] .v-cnt{display:block} .ip-prev-root[data-p-npin="np-feed"] .v-feed{display:flex}
+.ip-prev-root[data-p-nadd="na-btn"] .v-nbtn{display:block} .ip-prev-root[data-p-nadd="na-line"] .v-nline{display:block}
+.ip-prev-root[data-p-ttab="tt-gone"] .v-tabs .v-tt{display:none} .ip-prev-root[data-p-ttab="tt-hist"] .v-tabs .v-tt{font-size:0} .ip-prev-root[data-p-ttab="tt-hist"] .v-tabs .v-tt::before{content:"History";font-size:10.5px}
+@media (max-width:520px){.ip-vis .v-op{zoom:.76}}
+@media (prefers-reduced-motion:reduce){.v-row,.v-cm,.v-blk,.v-jt,.v-hr,.v-pb,.v-av,.v-pin,.v-nbox,.v-sw,.v-uline{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="ip-bar">
+<div class="ip-r1"><h1>Parsec <small>Operation cards and notes</small></h1><nav class="ip-jump" id="ip-jump"></nav>
+<div class="ip-seg" role="group" aria-label="Theme"><button type="button" data-th="ivory" aria-pressed="true">Ivory</button><button type="button" data-th="graphite" aria-pressed="false">Graphite</button><button type="button" data-th="mist" aria-pressed="false">Mist</button><button type="button" data-th="obsidian" aria-pressed="false">Obsidian</button></div>
+<span class="ip-warn" id="ip-warn" title="Open the console for the list"></span>
+<button type="button" class="ip-btn" id="ip-accept">Accept all recommended</button>
+<button type="button" class="ip-btn pri" id="ip-open">Your picks <em id="ip-n"></em></button></div>
+<div class="ip-r2">
+<div class="ip-prog" id="ip-prog"><div class="ip-prog-bar"><i></i></div><span id="ip-prog-lab">0 of 0 decided</span></div>
+<div class="ip-tabs" role="group" aria-label="Filter"><button type="button" class="ip-chip" data-f="all" data-label="All" aria-pressed="true">All</button><button type="button" class="ip-chip" data-f="unpicked" data-label="Unpicked" aria-pressed="false">Unpicked</button><button type="button" class="ip-chip" data-f="picked" data-label="Picked" aria-pressed="false">Picked</button><button type="button" class="ip-chip" data-f="skipped" data-label="Skipped" aria-pressed="false">Skipped</button></div>
+<div class="ip-tabs" role="group" aria-label="Sort"><button type="button" class="ip-chip" data-sort="author" aria-pressed="true">Author order</button><button type="button" class="ip-chip" data-sort="impact" aria-pressed="false">By impact</button><button type="button" class="ip-chip" data-sort="effort" aria-pressed="false">By effort</button></div>
+</div>
+</header>
+<main class="ip-wrap">
+<section class="ip-now"><h2>How it looks now</h2><div class="ip-now-row"><div><b>10 things</b> on one operation row: status, number, complaint, blocker, job type, hours, bar, tech, status, ⋯</div><div>At 1440 px the complaint gets <b>~150 px</b>: “Driver side mirror br…”</div><div><b>Notes</b> live in the Time tab, between the punches; the clock card shows the last one only while it runs</div></div></section>
+<p class="ip-lead" id="ip-lead"></p>
+<p class="ip-keys"><kbd>J</kbd> <kbd>K</kbd> next / previous card · <kbd>1</kbd>–<kbd>4</kbd> pick an option · <kbd>S</kbd> skip · <kbd>Z</kbd> undo · hover an option to peek at its result</p>
+<div class="ip-layout" id="ip-layout">
+  <div id="ip-secs"></div>
+  <aside id="ip-preview" hidden></aside>
+</div>
+</main>
+<div id="ip-picks" hidden></div>
+<script>
+/* ---------- the content: groups → ideas → options (Skip is added to each) ---------- */
+var APP = 'Parsec', TOPIC = 'Operation cards and notes', KEY = 'ip-parsec-op-cards';   /* KEY: unique per mock-up */
+var AUTOSCROLL = true;                                                 /* after a pick, bring the next unpicked card into view */
+var IDEAS = [
+  { group: 'The operation row', items: [
+    { k: 'row', t: 'What stays on the row', why: 'Ten things share one line today; the complaint gets about 150 px.', pri: 'H', effort: 'M', rec: 'The complaint and the status are what you scan for; everything else is one click away inside.',
+      vis: '<div class="v-op"><div class="v-row"><i class="v-sti"></i><span class="v-n">2</span><span class="v-cm">Driver side mirror broken — glass and housing cracked</span><span class="v-ico">!</span><span class="v-blk">1 part on the way</span><span class="v-jt">REPAIR</span><span class="v-hr">0.20 / 0.80 h</span><span class="v-pb"><i></i></span><span class="v-av">DK</span><span class="v-st">Waiting – Parts</span><span class="v-more">⋯</span><span class="v-uline"><i></i></span><span class="v-cur"></span></div><div class="v-sub"><span class="v-jt">REPAIR</span><span class="v-hr">0.20 / 0.80 h</span><span class="v-av">DK</span><span class="v-blk">1 part on the way</span></div><span class="v-nbox v-ctip">Driver side mirror broken — glass and housing cracked, heater wire loose</span><span class="v-nbox v-btip">1 part on the way · ETA Fri</span><div class="v-body"><div class="v-strip"><span>REPAIR</span><span>◌ Waiting – Parts · 1 part on the way</span><span class="v-who">DK Dana Kowalski</span><span>0.20 / 0.80 h</span><span class="v-xa">+ code</span><span class="v-xa">+ document</span><span class="v-xa">Library</span></div><div class="v-grid"><span>Type</span><b>Repair</b><span>Status</span><b>Waiting – Parts</b><span>Tech</span><b>Dana K.</b><span>Hours</span><b>0.20 / 0.80</b></div><div class="v-acts"><span class="v-ch v-plain">+ code</span><span class="v-ch v-plain">+ document</span><span class="v-ch v-plain">Library</span><span class="v-ch v-add">Add ▾</span><span class="v-ch v-claim">Claim · Returned</span><span class="v-ch v-fix">Fixed 19× before</span><span class="v-addm"><span>+ code</span><span>+ document</span><span>Library</span></span></div><div class="v-clk"><div class="v-tm">0:12:00<small>2 entries</small><span class="v-tmx"><b>0.20</b>/ 0.80 h · DK</span></div><span class="v-cnt">✎ 3 notes</span><div class="v-bar"><span class="v-seg v-s1"></span><span class="v-seg v-s2"></span><span class="v-seg v-s3"></span><span class="v-q"></span><span class="v-pin v-p1"></span><span class="v-pin v-p2"></span><span class="v-pin v-p3"></span><span class="v-sw v-w1">DK</span><span class="v-sw v-w2">DK</span><span class="v-sw v-w3">LM</span><span class="v-nbtn">✎ Note</span></div><span class="v-nbox v-read"><b>Dana · Tue 1:33 pm</b>Mirror glass ordered, housing ok.</span><span class="v-nbox v-add1"><b>Note at 9:10 am</b>Old harness clip broke, replaced</span><div class="v-feed"><span><i>1:33</i>Mirror glass ordered, housing ok.</span><span><i>3:01</i>Waiting on glass, moved to Op 3.</span></div><div class="v-feed v-one"><span><i>Tue 1:33 · Dana</i>Mirror glass ordered, housing ok.</span></div><div class="v-nline">What are you on right now?</div></div><div class="v-tabs"><span class="v-tt">Time 4</span><span class="v-on">Parts 1/1</span><span>Files</span></div></div></div><span class="v-cap" data-now="Today: “Driver side mirror br…”"></span>',
+      steps: [['idle', 800], ['point', 700], ['click', 500], ['done', 1500]],
+      opts: [['r-min', 'A · Number, complaint, status', 'the rest moves inside'], ['r-hrs', 'B · …and the hours'], ['r-two', 'C · Two lines', 'complaint on top, chips under it']] },
+    { k: 'cmp', t: 'A long complaint', why: '“Wheel seal leaking - drive axle, oil on the brake shoes” never fits.', pri: 'M', effort: 'S', rec: 'Two lines shows almost every complaint whole without making the list long.',
+      vis: '<div class="v-op"><div class="v-row"><i class="v-sti"></i><span class="v-n">2</span><span class="v-cm">Driver side mirror broken — glass and housing cracked</span><span class="v-ico">!</span><span class="v-blk">1 part on the way</span><span class="v-jt">REPAIR</span><span class="v-hr">0.20 / 0.80 h</span><span class="v-pb"><i></i></span><span class="v-av">DK</span><span class="v-st">Waiting – Parts</span><span class="v-more">⋯</span><span class="v-uline"><i></i></span><span class="v-cur"></span></div><div class="v-sub"><span class="v-jt">REPAIR</span><span class="v-hr">0.20 / 0.80 h</span><span class="v-av">DK</span><span class="v-blk">1 part on the way</span></div><span class="v-nbox v-ctip">Driver side mirror broken — glass and housing cracked, heater wire loose</span><span class="v-nbox v-btip">1 part on the way · ETA Fri</span><div class="v-body"><div class="v-strip"><span>REPAIR</span><span>◌ Waiting – Parts · 1 part on the way</span><span class="v-who">DK Dana Kowalski</span><span>0.20 / 0.80 h</span><span class="v-xa">+ code</span><span class="v-xa">+ document</span><span class="v-xa">Library</span></div><div class="v-grid"><span>Type</span><b>Repair</b><span>Status</span><b>Waiting – Parts</b><span>Tech</span><b>Dana K.</b><span>Hours</span><b>0.20 / 0.80</b></div><div class="v-acts"><span class="v-ch v-plain">+ code</span><span class="v-ch v-plain">+ document</span><span class="v-ch v-plain">Library</span><span class="v-ch v-add">Add ▾</span><span class="v-ch v-claim">Claim · Returned</span><span class="v-ch v-fix">Fixed 19× before</span><span class="v-addm"><span>+ code</span><span>+ document</span><span>Library</span></span></div><div class="v-clk"><div class="v-tm">0:12:00<small>2 entries</small><span class="v-tmx"><b>0.20</b>/ 0.80 h · DK</span></div><span class="v-cnt">✎ 3 notes</span><div class="v-bar"><span class="v-seg v-s1"></span><span class="v-seg v-s2"></span><span class="v-seg v-s3"></span><span class="v-q"></span><span class="v-pin v-p1"></span><span class="v-pin v-p2"></span><span class="v-pin v-p3"></span><span class="v-sw v-w1">DK</span><span class="v-sw v-w2">DK</span><span class="v-sw v-w3">LM</span><span class="v-nbtn">✎ Note</span></div><span class="v-nbox v-read"><b>Dana · Tue 1:33 pm</b>Mirror glass ordered, housing ok.</span><span class="v-nbox v-add1"><b>Note at 9:10 am</b>Old harness clip broke, replaced</span><div class="v-feed"><span><i>1:33</i>Mirror glass ordered, housing ok.</span><span><i>3:01</i>Waiting on glass, moved to Op 3.</span></div><div class="v-feed v-one"><span><i>Tue 1:33 · Dana</i>Mirror glass ordered, housing ok.</span></div><div class="v-nline">What are you on right now?</div></div><div class="v-tabs"><span class="v-tt">Time 4</span><span class="v-on">Parts 1/1</span><span>Files</span></div></div></div><span class="v-cap" data-now="Today: cut with …"></span>',
+      steps: [['idle', 800], ['point', 700], ['click', 500], ['done', 1500]],
+      opts: [['c-wrap', 'A · Wraps to two lines'], ['c-one', 'B · One line, the rest on hover'], ['c-full', 'C · One line, the whole width', 'the status moves inside too']] },
+    { k: 'jt', t: 'Job type (REPAIR, WARR, DIAG)', why: 'A coloured tag on every row.', pri: 'L', effort: 'S', rec: 'The colour still tells warranty from repair at a glance, in a sliver of space.',
+      vis: '<div class="v-op"><div class="v-row"><i class="v-sti"></i><span class="v-n">2</span><span class="v-cm">Driver side mirror broken — glass and housing cracked</span><span class="v-ico">!</span><span class="v-blk">1 part on the way</span><span class="v-jt">REPAIR</span><span class="v-hr">0.20 / 0.80 h</span><span class="v-pb"><i></i></span><span class="v-av">DK</span><span class="v-st">Waiting – Parts</span><span class="v-more">⋯</span><span class="v-uline"><i></i></span><span class="v-cur"></span></div><div class="v-sub"><span class="v-jt">REPAIR</span><span class="v-hr">0.20 / 0.80 h</span><span class="v-av">DK</span><span class="v-blk">1 part on the way</span></div><span class="v-nbox v-ctip">Driver side mirror broken — glass and housing cracked, heater wire loose</span><span class="v-nbox v-btip">1 part on the way · ETA Fri</span><div class="v-body"><div class="v-strip"><span>REPAIR</span><span>◌ Waiting – Parts · 1 part on the way</span><span class="v-who">DK Dana Kowalski</span><span>0.20 / 0.80 h</span><span class="v-xa">+ code</span><span class="v-xa">+ document</span><span class="v-xa">Library</span></div><div class="v-grid"><span>Type</span><b>Repair</b><span>Status</span><b>Waiting – Parts</b><span>Tech</span><b>Dana K.</b><span>Hours</span><b>0.20 / 0.80</b></div><div class="v-acts"><span class="v-ch v-plain">+ code</span><span class="v-ch v-plain">+ document</span><span class="v-ch v-plain">Library</span><span class="v-ch v-add">Add ▾</span><span class="v-ch v-claim">Claim · Returned</span><span class="v-ch v-fix">Fixed 19× before</span><span class="v-addm"><span>+ code</span><span>+ document</span><span>Library</span></span></div><div class="v-clk"><div class="v-tm">0:12:00<small>2 entries</small><span class="v-tmx"><b>0.20</b>/ 0.80 h · DK</span></div><span class="v-cnt">✎ 3 notes</span><div class="v-bar"><span class="v-seg v-s1"></span><span class="v-seg v-s2"></span><span class="v-seg v-s3"></span><span class="v-q"></span><span class="v-pin v-p1"></span><span class="v-pin v-p2"></span><span class="v-pin v-p3"></span><span class="v-sw v-w1">DK</span><span class="v-sw v-w2">DK</span><span class="v-sw v-w3">LM</span><span class="v-nbtn">✎ Note</span></div><span class="v-nbox v-read"><b>Dana · Tue 1:33 pm</b>Mirror glass ordered, housing ok.</span><span class="v-nbox v-add1"><b>Note at 9:10 am</b>Old harness clip broke, replaced</span><div class="v-feed"><span><i>1:33</i>Mirror glass ordered, housing ok.</span><span><i>3:01</i>Waiting on glass, moved to Op 3.</span></div><div class="v-feed v-one"><span><i>Tue 1:33 · Dana</i>Mirror glass ordered, housing ok.</span></div><div class="v-nline">What are you on right now?</div></div><div class="v-tabs"><span class="v-tt">Time 4</span><span class="v-on">Parts 1/1</span><span>Files</span></div></div></div><span class="v-cap" data-now="Today: a tag on the row"></span>',
+      steps: [['idle', 800], ['point', 700], ['click', 500], ['done', 1500]],
+      opts: [['jt-edge', 'A · A coloured edge on the row', 'the name is inside'], ['jt-in', 'B · Inside the card only'], ['jt-row', 'C · Stays on the row']] },
+    { k: 'prog', t: 'Hours and progress', why: '“0.20 / 0.80 h” and a little bar on every row.', pri: 'M', effort: 'S', rec: 'The thin line keeps the at-a-glance progress without the numbers.',
+      vis: '<div class="v-op"><div class="v-row"><i class="v-sti"></i><span class="v-n">2</span><span class="v-cm">Driver side mirror broken — glass and housing cracked</span><span class="v-ico">!</span><span class="v-blk">1 part on the way</span><span class="v-jt">REPAIR</span><span class="v-hr">0.20 / 0.80 h</span><span class="v-pb"><i></i></span><span class="v-av">DK</span><span class="v-st">Waiting – Parts</span><span class="v-more">⋯</span><span class="v-uline"><i></i></span><span class="v-cur"></span></div><div class="v-sub"><span class="v-jt">REPAIR</span><span class="v-hr">0.20 / 0.80 h</span><span class="v-av">DK</span><span class="v-blk">1 part on the way</span></div><span class="v-nbox v-ctip">Driver side mirror broken — glass and housing cracked, heater wire loose</span><span class="v-nbox v-btip">1 part on the way · ETA Fri</span><div class="v-body"><div class="v-strip"><span>REPAIR</span><span>◌ Waiting – Parts · 1 part on the way</span><span class="v-who">DK Dana Kowalski</span><span>0.20 / 0.80 h</span><span class="v-xa">+ code</span><span class="v-xa">+ document</span><span class="v-xa">Library</span></div><div class="v-grid"><span>Type</span><b>Repair</b><span>Status</span><b>Waiting – Parts</b><span>Tech</span><b>Dana K.</b><span>Hours</span><b>0.20 / 0.80</b></div><div class="v-acts"><span class="v-ch v-plain">+ code</span><span class="v-ch v-plain">+ document</span><span class="v-ch v-plain">Library</span><span class="v-ch v-add">Add ▾</span><span class="v-ch v-claim">Claim · Returned</span><span class="v-ch v-fix">Fixed 19× before</span><span class="v-addm"><span>+ code</span><span>+ document</span><span>Library</span></span></div><div class="v-clk"><div class="v-tm">0:12:00<small>2 entries</small><span class="v-tmx"><b>0.20</b>/ 0.80 h · DK</span></div><span class="v-cnt">✎ 3 notes</span><div class="v-bar"><span class="v-seg v-s1"></span><span class="v-seg v-s2"></span><span class="v-seg v-s3"></span><span class="v-q"></span><span class="v-pin v-p1"></span><span class="v-pin v-p2"></span><span class="v-pin v-p3"></span><span class="v-sw v-w1">DK</span><span class="v-sw v-w2">DK</span><span class="v-sw v-w3">LM</span><span class="v-nbtn">✎ Note</span></div><span class="v-nbox v-read"><b>Dana · Tue 1:33 pm</b>Mirror glass ordered, housing ok.</span><span class="v-nbox v-add1"><b>Note at 9:10 am</b>Old harness clip broke, replaced</span><div class="v-feed"><span><i>1:33</i>Mirror glass ordered, housing ok.</span><span><i>3:01</i>Waiting on glass, moved to Op 3.</span></div><div class="v-feed v-one"><span><i>Tue 1:33 · Dana</i>Mirror glass ordered, housing ok.</span></div><div class="v-nline">What are you on right now?</div></div><div class="v-tabs"><span class="v-tt">Time 4</span><span class="v-on">Parts 1/1</span><span>Files</span></div></div></div><span class="v-cap" data-now="Today: numbers and a bar on the row"></span>',
+      steps: [['idle', 800], ['point', 700], ['click', 500], ['done', 1500]],
+      opts: [['pg-line', 'A · A thin line along the row', 'numbers inside'], ['pg-in', 'B · Inside the card only'], ['pg-row', 'C · Stay on the row']] }
+  ]},
+  { group: 'Inside the card', items: [
+    { k: 'strip', t: 'Where the details go', why: 'Type, status, tech, hours and blockers need a home inside.', pri: 'H', effort: 'M', rec: 'One strip reads left to right like the row did, right where the card opens.',
+      vis: '<div class="v-op v-shut"><div class="v-row"><i class="v-sti"></i><span class="v-n">2</span><span class="v-cm">Driver side mirror broken — glass and housing cracked</span><span class="v-ico">!</span><span class="v-blk">1 part on the way</span><span class="v-jt">REPAIR</span><span class="v-hr">0.20 / 0.80 h</span><span class="v-pb"><i></i></span><span class="v-av">DK</span><span class="v-st">Waiting – Parts</span><span class="v-more">⋯</span><span class="v-uline"><i></i></span><span class="v-cur"></span></div><div class="v-sub"><span class="v-jt">REPAIR</span><span class="v-hr">0.20 / 0.80 h</span><span class="v-av">DK</span><span class="v-blk">1 part on the way</span></div><span class="v-nbox v-ctip">Driver side mirror broken — glass and housing cracked, heater wire loose</span><span class="v-nbox v-btip">1 part on the way · ETA Fri</span><div class="v-body"><div class="v-strip"><span>REPAIR</span><span>◌ Waiting – Parts · 1 part on the way</span><span class="v-who">DK Dana Kowalski</span><span>0.20 / 0.80 h</span><span class="v-xa">+ code</span><span class="v-xa">+ document</span><span class="v-xa">Library</span></div><div class="v-grid"><span>Type</span><b>Repair</b><span>Status</span><b>Waiting – Parts</b><span>Tech</span><b>Dana K.</b><span>Hours</span><b>0.20 / 0.80</b></div><div class="v-acts"><span class="v-ch v-plain">+ code</span><span class="v-ch v-plain">+ document</span><span class="v-ch v-plain">Library</span><span class="v-ch v-add">Add ▾</span><span class="v-ch v-claim">Claim · Returned</span><span class="v-ch v-fix">Fixed 19× before</span><span class="v-addm"><span>+ code</span><span>+ document</span><span>Library</span></span></div><div class="v-clk"><div class="v-tm">0:12:00<small>2 entries</small><span class="v-tmx"><b>0.20</b>/ 0.80 h · DK</span></div><span class="v-cnt">✎ 3 notes</span><div class="v-bar"><span class="v-seg v-s1"></span><span class="v-seg v-s2"></span><span class="v-seg v-s3"></span><span class="v-q"></span><span class="v-pin v-p1"></span><span class="v-pin v-p2"></span><span class="v-pin v-p3"></span><span class="v-sw v-w1">DK</span><span class="v-sw v-w2">DK</span><span class="v-sw v-w3">LM</span><span class="v-nbtn">✎ Note</span></div><span class="v-nbox v-read"><b>Dana · Tue 1:33 pm</b>Mirror glass ordered, housing ok.</span><span class="v-nbox v-add1"><b>Note at 9:10 am</b>Old harness clip broke, replaced</span><div class="v-feed"><span><i>1:33</i>Mirror glass ordered, housing ok.</span><span><i>3:01</i>Waiting on glass, moved to Op 3.</span></div><div class="v-feed v-one"><span><i>Tue 1:33 · Dana</i>Mirror glass ordered, housing ok.</span></div><div class="v-nline">What are you on right now?</div></div><div class="v-tabs"><span class="v-tt">Time 4</span><span class="v-on">Parts 1/1</span><span>Files</span></div></div></div><span class="v-cap" data-now="Today: they are on the row"></span>',
+      steps: [['idle', 800], ['point', 700], ['click', 500], ['done', 1500]],
+      opts: [['st-strip', 'A · One strip at the top of the card'], ['st-grid', 'B · A small facts grid'], ['st-bar', 'C · Beside the time on the clock card']] },
+    { k: 'who', t: 'The technician', why: 'Today one face on the row, even when two people worked it.', pri: 'M', effort: 'M', rec: 'Name in the strip for who has it; initials on the bar for who did which part.',
+      vis: '<div class="v-op v-shut"><div class="v-row"><i class="v-sti"></i><span class="v-n">2</span><span class="v-cm">Driver side mirror broken — glass and housing cracked</span><span class="v-ico">!</span><span class="v-blk">1 part on the way</span><span class="v-jt">REPAIR</span><span class="v-hr">0.20 / 0.80 h</span><span class="v-pb"><i></i></span><span class="v-av">DK</span><span class="v-st">Waiting – Parts</span><span class="v-more">⋯</span><span class="v-uline"><i></i></span><span class="v-cur"></span></div><div class="v-sub"><span class="v-jt">REPAIR</span><span class="v-hr">0.20 / 0.80 h</span><span class="v-av">DK</span><span class="v-blk">1 part on the way</span></div><span class="v-nbox v-ctip">Driver side mirror broken — glass and housing cracked, heater wire loose</span><span class="v-nbox v-btip">1 part on the way · ETA Fri</span><div class="v-body"><div class="v-strip"><span>REPAIR</span><span>◌ Waiting – Parts · 1 part on the way</span><span class="v-who">DK Dana Kowalski</span><span>0.20 / 0.80 h</span><span class="v-xa">+ code</span><span class="v-xa">+ document</span><span class="v-xa">Library</span></div><div class="v-grid"><span>Type</span><b>Repair</b><span>Status</span><b>Waiting – Parts</b><span>Tech</span><b>Dana K.</b><span>Hours</span><b>0.20 / 0.80</b></div><div class="v-acts"><span class="v-ch v-plain">+ code</span><span class="v-ch v-plain">+ document</span><span class="v-ch v-plain">Library</span><span class="v-ch v-add">Add ▾</span><span class="v-ch v-claim">Claim · Returned</span><span class="v-ch v-fix">Fixed 19× before</span><span class="v-addm"><span>+ code</span><span>+ document</span><span>Library</span></span></div><div class="v-clk"><div class="v-tm">0:12:00<small>2 entries</small><span class="v-tmx"><b>0.20</b>/ 0.80 h · DK</span></div><span class="v-cnt">✎ 3 notes</span><div class="v-bar"><span class="v-seg v-s1"></span><span class="v-seg v-s2"></span><span class="v-seg v-s3"></span><span class="v-q"></span><span class="v-pin v-p1"></span><span class="v-pin v-p2"></span><span class="v-pin v-p3"></span><span class="v-sw v-w1">DK</span><span class="v-sw v-w2">DK</span><span class="v-sw v-w3">LM</span><span class="v-nbtn">✎ Note</span></div><span class="v-nbox v-read"><b>Dana · Tue 1:33 pm</b>Mirror glass ordered, housing ok.</span><span class="v-nbox v-add1"><b>Note at 9:10 am</b>Old harness clip broke, replaced</span><div class="v-feed"><span><i>1:33</i>Mirror glass ordered, housing ok.</span><span><i>3:01</i>Waiting on glass, moved to Op 3.</span></div><div class="v-feed v-one"><span><i>Tue 1:33 · Dana</i>Mirror glass ordered, housing ok.</span></div><div class="v-nline">What are you on right now?</div></div><div class="v-tabs"><span class="v-tt">Time 4</span><span class="v-on">Parts 1/1</span><span>Files</span></div></div></div><span class="v-cap" data-now="Today: one face on the row"></span>',
+      steps: [['idle', 800], ['point', 700], ['click', 500], ['done', 1500]],
+      opts: [['w-both', 'A · Both', 'name in the strip, initials on the bar'], ['w-name', 'B · Face and name in the strip'], ['w-seg', 'C · Initials on each piece of the time bar']] },
+    { k: 'chips', t: '+ code, + document, Library, Claim, Fixed before', why: 'Five chips on their own row under the operation.', pri: 'M', effort: 'S', rec: 'Folding the three “add” chips into one button leaves only the ones that tell you something.',
+      vis: '<div class="v-op v-shut"><div class="v-row"><i class="v-sti"></i><span class="v-n">2</span><span class="v-cm">Driver side mirror broken — glass and housing cracked</span><span class="v-ico">!</span><span class="v-blk">1 part on the way</span><span class="v-jt">REPAIR</span><span class="v-hr">0.20 / 0.80 h</span><span class="v-pb"><i></i></span><span class="v-av">DK</span><span class="v-st">Waiting – Parts</span><span class="v-more">⋯</span><span class="v-uline"><i></i></span><span class="v-cur"></span></div><div class="v-sub"><span class="v-jt">REPAIR</span><span class="v-hr">0.20 / 0.80 h</span><span class="v-av">DK</span><span class="v-blk">1 part on the way</span></div><span class="v-nbox v-ctip">Driver side mirror broken — glass and housing cracked, heater wire loose</span><span class="v-nbox v-btip">1 part on the way · ETA Fri</span><div class="v-body"><div class="v-strip"><span>REPAIR</span><span>◌ Waiting – Parts · 1 part on the way</span><span class="v-who">DK Dana Kowalski</span><span>0.20 / 0.80 h</span><span class="v-xa">+ code</span><span class="v-xa">+ document</span><span class="v-xa">Library</span></div><div class="v-grid"><span>Type</span><b>Repair</b><span>Status</span><b>Waiting – Parts</b><span>Tech</span><b>Dana K.</b><span>Hours</span><b>0.20 / 0.80</b></div><div class="v-acts"><span class="v-ch v-plain">+ code</span><span class="v-ch v-plain">+ document</span><span class="v-ch v-plain">Library</span><span class="v-ch v-add">Add ▾</span><span class="v-ch v-claim">Claim · Returned</span><span class="v-ch v-fix">Fixed 19× before</span><span class="v-addm"><span>+ code</span><span>+ document</span><span>Library</span></span></div><div class="v-clk"><div class="v-tm">0:12:00<small>2 entries</small><span class="v-tmx"><b>0.20</b>/ 0.80 h · DK</span></div><span class="v-cnt">✎ 3 notes</span><div class="v-bar"><span class="v-seg v-s1"></span><span class="v-seg v-s2"></span><span class="v-seg v-s3"></span><span class="v-q"></span><span class="v-pin v-p1"></span><span class="v-pin v-p2"></span><span class="v-pin v-p3"></span><span class="v-sw v-w1">DK</span><span class="v-sw v-w2">DK</span><span class="v-sw v-w3">LM</span><span class="v-nbtn">✎ Note</span></div><span class="v-nbox v-read"><b>Dana · Tue 1:33 pm</b>Mirror glass ordered, housing ok.</span><span class="v-nbox v-add1"><b>Note at 9:10 am</b>Old harness clip broke, replaced</span><div class="v-feed"><span><i>1:33</i>Mirror glass ordered, housing ok.</span><span><i>3:01</i>Waiting on glass, moved to Op 3.</span></div><div class="v-feed v-one"><span><i>Tue 1:33 · Dana</i>Mirror glass ordered, housing ok.</span></div><div class="v-nline">What are you on right now?</div></div><div class="v-tabs"><span class="v-tt">Time 4</span><span class="v-on">Parts 1/1</span><span>Files</span></div></div></div><span class="v-cap" data-now="Today: a row of five chips"></span>',
+      steps: [['idle', 800], ['point', 700], ['click', 500], ['done', 1500]],
+      opts: [['ch-menu', 'A · Add ▾ for the three adds', 'Claim and Fixed before stay'], ['ch-one', 'B · All on one row with the strip'], ['ch-keep', 'C · As they are']] },
+    { k: 'blk', t: 'A blocker (“1 part on the way”)', why: 'Today in grey words on the row, before the job type.', pri: 'M', effort: 'S', rec: 'Beside the status it explains the status — they belong together.',
+      vis: '<div class="v-op"><div class="v-row"><i class="v-sti"></i><span class="v-n">2</span><span class="v-cm">Driver side mirror broken — glass and housing cracked</span><span class="v-ico">!</span><span class="v-blk">1 part on the way</span><span class="v-jt">REPAIR</span><span class="v-hr">0.20 / 0.80 h</span><span class="v-pb"><i></i></span><span class="v-av">DK</span><span class="v-st">Waiting – Parts</span><span class="v-more">⋯</span><span class="v-uline"><i></i></span><span class="v-cur"></span></div><div class="v-sub"><span class="v-jt">REPAIR</span><span class="v-hr">0.20 / 0.80 h</span><span class="v-av">DK</span><span class="v-blk">1 part on the way</span></div><span class="v-nbox v-ctip">Driver side mirror broken — glass and housing cracked, heater wire loose</span><span class="v-nbox v-btip">1 part on the way · ETA Fri</span><div class="v-body"><div class="v-strip"><span>REPAIR</span><span>◌ Waiting – Parts · 1 part on the way</span><span class="v-who">DK Dana Kowalski</span><span>0.20 / 0.80 h</span><span class="v-xa">+ code</span><span class="v-xa">+ document</span><span class="v-xa">Library</span></div><div class="v-grid"><span>Type</span><b>Repair</b><span>Status</span><b>Waiting – Parts</b><span>Tech</span><b>Dana K.</b><span>Hours</span><b>0.20 / 0.80</b></div><div class="v-acts"><span class="v-ch v-plain">+ code</span><span class="v-ch v-plain">+ document</span><span class="v-ch v-plain">Library</span><span class="v-ch v-add">Add ▾</span><span class="v-ch v-claim">Claim · Returned</span><span class="v-ch v-fix">Fixed 19× before</span><span class="v-addm"><span>+ code</span><span>+ document</span><span>Library</span></span></div><div class="v-clk"><div class="v-tm">0:12:00<small>2 entries</small><span class="v-tmx"><b>0.20</b>/ 0.80 h · DK</span></div><span class="v-cnt">✎ 3 notes</span><div class="v-bar"><span class="v-seg v-s1"></span><span class="v-seg v-s2"></span><span class="v-seg v-s3"></span><span class="v-q"></span><span class="v-pin v-p1"></span><span class="v-pin v-p2"></span><span class="v-pin v-p3"></span><span class="v-sw v-w1">DK</span><span class="v-sw v-w2">DK</span><span class="v-sw v-w3">LM</span><span class="v-nbtn">✎ Note</span></div><span class="v-nbox v-read"><b>Dana · Tue 1:33 pm</b>Mirror glass ordered, housing ok.</span><span class="v-nbox v-add1"><b>Note at 9:10 am</b>Old harness clip broke, replaced</span><div class="v-feed"><span><i>1:33</i>Mirror glass ordered, housing ok.</span><span><i>3:01</i>Waiting on glass, moved to Op 3.</span></div><div class="v-feed v-one"><span><i>Tue 1:33 · Dana</i>Mirror glass ordered, housing ok.</span></div><div class="v-nline">What are you on right now?</div></div><div class="v-tabs"><span class="v-tt">Time 4</span><span class="v-on">Parts 1/1</span><span>Files</span></div></div></div><span class="v-cap" data-now="Today: grey words on the row"></span>',
+      steps: [['idle', 800], ['point', 700], ['click', 500], ['done', 1500]],
+      opts: [['bk-st', 'A · Beside the status', '“Waiting – Parts · 1 part on the way”'], ['bk-icon', 'B · A sign on the row', 'the words on hover']] }
+  ]},
+  { group: 'Notes on the time bar', items: [
+    { k: 'npin', t: 'How notes show on the bar', why: 'Today the notes are in the Time tab, between the punches.', pri: 'H', effort: 'M', rec: 'A pin at the moment it was written ties the note to the time, which is what a note on a punch is.',
+      vis: '<div class="v-op"><div class="v-row"><i class="v-sti"></i><span class="v-n">2</span><span class="v-cm">Driver side mirror broken — glass and housing cracked</span><span class="v-ico">!</span><span class="v-blk">1 part on the way</span><span class="v-jt">REPAIR</span><span class="v-hr">0.20 / 0.80 h</span><span class="v-pb"><i></i></span><span class="v-av">DK</span><span class="v-st">Waiting – Parts</span><span class="v-more">⋯</span><span class="v-uline"><i></i></span></div><div class="v-sub"><span class="v-jt">REPAIR</span><span class="v-hr">0.20 / 0.80 h</span><span class="v-av">DK</span><span class="v-blk">1 part on the way</span></div><span class="v-nbox v-ctip">Driver side mirror broken — glass and housing cracked, heater wire loose</span><span class="v-nbox v-btip">1 part on the way · ETA Fri</span><div class="v-body"><div class="v-strip"><span>REPAIR</span><span>◌ Waiting – Parts · 1 part on the way</span><span class="v-who">DK Dana Kowalski</span><span>0.20 / 0.80 h</span><span class="v-xa">+ code</span><span class="v-xa">+ document</span><span class="v-xa">Library</span></div><div class="v-grid"><span>Type</span><b>Repair</b><span>Status</span><b>Waiting – Parts</b><span>Tech</span><b>Dana K.</b><span>Hours</span><b>0.20 / 0.80</b></div><div class="v-acts"><span class="v-ch v-plain">+ code</span><span class="v-ch v-plain">+ document</span><span class="v-ch v-plain">Library</span><span class="v-ch v-add">Add ▾</span><span class="v-ch v-claim">Claim · Returned</span><span class="v-ch v-fix">Fixed 19× before</span><span class="v-addm"><span>+ code</span><span>+ document</span><span>Library</span></span></div><div class="v-clk"><span class="v-cur"></span><div class="v-tm">0:12:00<small>2 entries</small><span class="v-tmx"><b>0.20</b>/ 0.80 h · DK</span></div><span class="v-cnt">✎ 3 notes</span><div class="v-bar"><span class="v-seg v-s1"></span><span class="v-seg v-s2"></span><span class="v-seg v-s3"></span><span class="v-q"></span><span class="v-pin v-p1"></span><span class="v-pin v-p2"></span><span class="v-pin v-p3"></span><span class="v-sw v-w1">DK</span><span class="v-sw v-w2">DK</span><span class="v-sw v-w3">LM</span><span class="v-nbtn">✎ Note</span></div><span class="v-nbox v-read"><b>Dana · Tue 1:33 pm</b>Mirror glass ordered, housing ok.</span><span class="v-nbox v-add1"><b>Note at 9:10 am</b>Old harness clip broke, replaced</span><div class="v-feed"><span><i>1:33</i>Mirror glass ordered, housing ok.</span><span><i>3:01</i>Waiting on glass, moved to Op 3.</span></div><div class="v-feed v-one"><span><i>Tue 1:33 · Dana</i>Mirror glass ordered, housing ok.</span></div><div class="v-nline">What are you on right now?</div></div><div class="v-tabs"><span class="v-tt">Time 4</span><span class="v-on">Parts 1/1</span><span>Files</span></div></div></div><span class="v-cap" data-now="Today: in the Time tab"></span>',
+      steps: [['idle', 800], ['point', 700], ['click', 500], ['done', 1500]],
+      opts: [['np-pin', 'A · Pins on the bar at their time'], ['np-count', 'B · A count above the bar'], ['np-feed', 'C · The last two under the bar']] },
+    { k: 'nadd', t: 'Adding a note', why: 'Today: “What are you on right now?” while the clock runs, or the Time tab.', pri: 'H', effort: 'M', rec: 'A button is easy to find and lands at now; Enter saves.',
+      vis: '<div class="v-op"><div class="v-row"><i class="v-sti"></i><span class="v-n">2</span><span class="v-cm">Driver side mirror broken — glass and housing cracked</span><span class="v-ico">!</span><span class="v-blk">1 part on the way</span><span class="v-jt">REPAIR</span><span class="v-hr">0.20 / 0.80 h</span><span class="v-pb"><i></i></span><span class="v-av">DK</span><span class="v-st">Waiting – Parts</span><span class="v-more">⋯</span><span class="v-uline"><i></i></span></div><div class="v-sub"><span class="v-jt">REPAIR</span><span class="v-hr">0.20 / 0.80 h</span><span class="v-av">DK</span><span class="v-blk">1 part on the way</span></div><span class="v-nbox v-ctip">Driver side mirror broken — glass and housing cracked, heater wire loose</span><span class="v-nbox v-btip">1 part on the way · ETA Fri</span><div class="v-body"><div class="v-strip"><span>REPAIR</span><span>◌ Waiting – Parts · 1 part on the way</span><span class="v-who">DK Dana Kowalski</span><span>0.20 / 0.80 h</span><span class="v-xa">+ code</span><span class="v-xa">+ document</span><span class="v-xa">Library</span></div><div class="v-grid"><span>Type</span><b>Repair</b><span>Status</span><b>Waiting – Parts</b><span>Tech</span><b>Dana K.</b><span>Hours</span><b>0.20 / 0.80</b></div><div class="v-acts"><span class="v-ch v-plain">+ code</span><span class="v-ch v-plain">+ document</span><span class="v-ch v-plain">Library</span><span class="v-ch v-add">Add ▾</span><span class="v-ch v-claim">Claim · Returned</span><span class="v-ch v-fix">Fixed 19× before</span><span class="v-addm"><span>+ code</span><span>+ document</span><span>Library</span></span></div><div class="v-clk"><span class="v-cur"></span><div class="v-tm">0:12:00<small>2 entries</small><span class="v-tmx"><b>0.20</b>/ 0.80 h · DK</span></div><span class="v-cnt">✎ 3 notes</span><div class="v-bar"><span class="v-seg v-s1"></span><span class="v-seg v-s2"></span><span class="v-seg v-s3"></span><span class="v-q"></span><span class="v-pin v-p1"></span><span class="v-pin v-p2"></span><span class="v-pin v-p3"></span><span class="v-sw v-w1">DK</span><span class="v-sw v-w2">DK</span><span class="v-sw v-w3">LM</span><span class="v-nbtn">✎ Note</span></div><span class="v-nbox v-read"><b>Dana · Tue 1:33 pm</b>Mirror glass ordered, housing ok.</span><span class="v-nbox v-add1"><b>Note at 9:10 am</b>Old harness clip broke, replaced</span><div class="v-feed"><span><i>1:33</i>Mirror glass ordered, housing ok.</span><span><i>3:01</i>Waiting on glass, moved to Op 3.</span></div><div class="v-feed v-one"><span><i>Tue 1:33 · Dana</i>Mirror glass ordered, housing ok.</span></div><div class="v-nline">What are you on right now?</div></div><div class="v-tabs"><span class="v-tt">Time 4</span><span class="v-on">Parts 1/1</span><span>Files</span></div></div></div><span class="v-cap" data-now="Today: only while the clock runs"></span>',
+      steps: [['idle', 800], ['point', 700], ['click', 500], ['done', 1500]],
+      opts: [['na-btn', 'A · A Note button at the end of the bar', 'it lands at now'], ['na-bar', 'B · Click the bar where it happened', 'the note lands at that time'], ['na-line', 'C · A line under the bar to type in']] },
+    { k: 'nread', t: 'Reading a note', why: 'A pin needs a way to read it.', pri: 'M', effort: 'S', rec: 'Pointing reads it without a click; a click still opens it to change.', needs: 'npin',
+      vis: '<div class="v-op v-pins-on"><div class="v-row"><i class="v-sti"></i><span class="v-n">2</span><span class="v-cm">Driver side mirror broken — glass and housing cracked</span><span class="v-ico">!</span><span class="v-blk">1 part on the way</span><span class="v-jt">REPAIR</span><span class="v-hr">0.20 / 0.80 h</span><span class="v-pb"><i></i></span><span class="v-av">DK</span><span class="v-st">Waiting – Parts</span><span class="v-more">⋯</span><span class="v-uline"><i></i></span></div><div class="v-sub"><span class="v-jt">REPAIR</span><span class="v-hr">0.20 / 0.80 h</span><span class="v-av">DK</span><span class="v-blk">1 part on the way</span></div><span class="v-nbox v-ctip">Driver side mirror broken — glass and housing cracked, heater wire loose</span><span class="v-nbox v-btip">1 part on the way · ETA Fri</span><div class="v-body"><div class="v-strip"><span>REPAIR</span><span>◌ Waiting – Parts · 1 part on the way</span><span class="v-who">DK Dana Kowalski</span><span>0.20 / 0.80 h</span><span class="v-xa">+ code</span><span class="v-xa">+ document</span><span class="v-xa">Library</span></div><div class="v-grid"><span>Type</span><b>Repair</b><span>Status</span><b>Waiting – Parts</b><span>Tech</span><b>Dana K.</b><span>Hours</span><b>0.20 / 0.80</b></div><div class="v-acts"><span class="v-ch v-plain">+ code</span><span class="v-ch v-plain">+ document</span><span class="v-ch v-plain">Library</span><span class="v-ch v-add">Add ▾</span><span class="v-ch v-claim">Claim · Returned</span><span class="v-ch v-fix">Fixed 19× before</span><span class="v-addm"><span>+ code</span><span>+ document</span><span>Library</span></span></div><div class="v-clk"><div class="v-tm">0:12:00<small>2 entries</small><span class="v-tmx"><b>0.20</b>/ 0.80 h · DK</span></div><span class="v-cnt">✎ 3 notes</span><div class="v-bar"><span class="v-seg v-s1"></span><span class="v-seg v-s2"></span><span class="v-seg v-s3"></span><span class="v-q"></span><span class="v-pin v-p1"></span><span class="v-pin v-p2"></span><span class="v-pin v-p3"></span><span class="v-sw v-w1">DK</span><span class="v-sw v-w2">DK</span><span class="v-sw v-w3">LM</span><span class="v-nbtn">✎ Note</span><span class="v-cur v-rc"></span></div><span class="v-nbox v-read"><b>Dana · Tue 1:33 pm</b>Mirror glass ordered, housing ok.</span><span class="v-nbox v-add1"><b>Note at 9:10 am</b>Old harness clip broke, replaced</span><div class="v-feed"><span><i>1:33</i>Mirror glass ordered, housing ok.</span><span><i>3:01</i>Waiting on glass, moved to Op 3.</span></div><div class="v-feed v-one"><span><i>Tue 1:33 · Dana</i>Mirror glass ordered, housing ok.</span></div><div class="v-nline">What are you on right now?</div></div><div class="v-tabs"><span class="v-tt">Time 4</span><span class="v-on">Parts 1/1</span><span>Files</span></div></div></div><span class="v-cap" data-now="Pins on the bar"></span>',
+      steps: [['idle', 800], ['point', 700], ['click', 500], ['done', 1500]],
+      opts: [['nr-hover', 'A · Point at a pin', 'the note, who, when'], ['nr-open', 'B · Click a pin: it opens under the bar']] },
+    { k: 'ttab', t: 'The Time tab, after', why: 'With notes on the bar, the tab only holds the punches.', pri: 'M', effort: 'M', rec: 'Fixing a punch still needs its times; the tab stays for that, without the notes.',
+      vis: '<div class="v-op"><div class="v-row"><i class="v-sti"></i><span class="v-n">2</span><span class="v-cm">Driver side mirror broken — glass and housing cracked</span><span class="v-ico">!</span><span class="v-blk">1 part on the way</span><span class="v-jt">REPAIR</span><span class="v-hr">0.20 / 0.80 h</span><span class="v-pb"><i></i></span><span class="v-av">DK</span><span class="v-st">Waiting – Parts</span><span class="v-more">⋯</span><span class="v-uline"><i></i></span></div><div class="v-sub"><span class="v-jt">REPAIR</span><span class="v-hr">0.20 / 0.80 h</span><span class="v-av">DK</span><span class="v-blk">1 part on the way</span></div><span class="v-nbox v-ctip">Driver side mirror broken — glass and housing cracked, heater wire loose</span><span class="v-nbox v-btip">1 part on the way · ETA Fri</span><div class="v-body"><div class="v-strip"><span>REPAIR</span><span>◌ Waiting – Parts · 1 part on the way</span><span class="v-who">DK Dana Kowalski</span><span>0.20 / 0.80 h</span><span class="v-xa">+ code</span><span class="v-xa">+ document</span><span class="v-xa">Library</span></div><div class="v-grid"><span>Type</span><b>Repair</b><span>Status</span><b>Waiting – Parts</b><span>Tech</span><b>Dana K.</b><span>Hours</span><b>0.20 / 0.80</b></div><div class="v-acts"><span class="v-ch v-plain">+ code</span><span class="v-ch v-plain">+ document</span><span class="v-ch v-plain">Library</span><span class="v-ch v-add">Add ▾</span><span class="v-ch v-claim">Claim · Returned</span><span class="v-ch v-fix">Fixed 19× before</span><span class="v-addm"><span>+ code</span><span>+ document</span><span>Library</span></span></div><div class="v-clk"><div class="v-tm">0:12:00<small>2 entries</small><span class="v-tmx"><b>0.20</b>/ 0.80 h · DK</span></div><span class="v-cnt">✎ 3 notes</span><div class="v-bar"><span class="v-seg v-s1"></span><span class="v-seg v-s2"></span><span class="v-seg v-s3"></span><span class="v-q"></span><span class="v-pin v-p1"></span><span class="v-pin v-p2"></span><span class="v-pin v-p3"></span><span class="v-sw v-w1">DK</span><span class="v-sw v-w2">DK</span><span class="v-sw v-w3">LM</span><span class="v-nbtn">✎ Note</span></div><span class="v-nbox v-read"><b>Dana · Tue 1:33 pm</b>Mirror glass ordered, housing ok.</span><span class="v-nbox v-add1"><b>Note at 9:10 am</b>Old harness clip broke, replaced</span><div class="v-feed"><span><i>1:33</i>Mirror glass ordered, housing ok.</span><span><i>3:01</i>Waiting on glass, moved to Op 3.</span></div><div class="v-feed v-one"><span><i>Tue 1:33 · Dana</i>Mirror glass ordered, housing ok.</span></div><div class="v-nline">What are you on right now?</div></div><div class="v-tabs"><span class="v-tt">Time 4</span><span class="v-on">Parts 1/1</span><span>Files</span><span class="v-cur"></span></div></div></div><span class="v-cap" data-now="Today: Time · Parts · Files"></span>',
+      steps: [['idle', 800], ['point', 700], ['click', 500], ['done', 1500]],
+      opts: [['tt-punch', 'A · Punches only', 'to fix times'], ['tt-gone', 'B · Gone', 'click a piece of the bar to fix that punch'], ['tt-hist', 'C · History', 'punches and notes, read only']] }
+  ]}
+];
+/* Optional live preview of one component. The picks arrive as data-p-<idea>="<option>" on .ip-prev-root; style them in CSS. Set to null to hide the pane. */
+var COMPONENT = '<div class="v-op"><div class="v-row"><i class="v-sti"></i><span class="v-n">2</span><span class="v-cm">Driver side mirror broken — glass and housing cracked</span><span class="v-ico">!</span><span class="v-blk">1 part on the way</span><span class="v-jt">REPAIR</span><span class="v-hr">0.20 / 0.80 h</span><span class="v-pb"><i></i></span><span class="v-av">DK</span><span class="v-st">Waiting – Parts</span><span class="v-more">⋯</span><span class="v-uline"><i></i></span></div><div class="v-sub"><span class="v-jt">REPAIR</span><span class="v-hr">0.20 / 0.80 h</span><span class="v-av">DK</span><span class="v-blk">1 part on the way</span></div><span class="v-nbox v-ctip">Driver side mirror broken — glass and housing cracked, heater wire loose</span><span class="v-nbox v-btip">1 part on the way · ETA Fri</span><div class="v-body"><div class="v-strip"><span>REPAIR</span><span>◌ Waiting – Parts · 1 part on the way</span><span class="v-who">DK Dana Kowalski</span><span>0.20 / 0.80 h</span><span class="v-xa">+ code</span><span class="v-xa">+ document</span><span class="v-xa">Library</span></div><div class="v-grid"><span>Type</span><b>Repair</b><span>Status</span><b>Waiting – Parts</b><span>Tech</span><b>Dana K.</b><span>Hours</span><b>0.20 / 0.80</b></div><div class="v-acts"><span class="v-ch v-plain">+ code</span><span class="v-ch v-plain">+ document</span><span class="v-ch v-plain">Library</span><span class="v-ch v-add">Add ▾</span><span class="v-ch v-claim">Claim · Returned</span><span class="v-ch v-fix">Fixed 19× before</span><span class="v-addm"><span>+ code</span><span>+ document</span><span>Library</span></span></div><div class="v-clk"><div class="v-tm">0:12:00<small>2 entries</small><span class="v-tmx"><b>0.20</b>/ 0.80 h · DK</span></div><span class="v-cnt">✎ 3 notes</span><div class="v-bar"><span class="v-seg v-s1"></span><span class="v-seg v-s2"></span><span class="v-seg v-s3"></span><span class="v-q"></span><span class="v-pin v-p1"></span><span class="v-pin v-p2"></span><span class="v-pin v-p3"></span><span class="v-sw v-w1">DK</span><span class="v-sw v-w2">DK</span><span class="v-sw v-w3">LM</span><span class="v-nbtn">✎ Note</span></div><span class="v-nbox v-read"><b>Dana · Tue 1:33 pm</b>Mirror glass ordered, housing ok.</span><span class="v-nbox v-add1"><b>Note at 9:10 am</b>Old harness clip broke, replaced</span><div class="v-feed"><span><i>1:33</i>Mirror glass ordered, housing ok.</span><span><i>3:01</i>Waiting on glass, moved to Op 3.</span></div><div class="v-feed v-one"><span><i>Tue 1:33 · Dana</i>Mirror glass ordered, housing ok.</span></div><div class="v-nline">What are you on right now?</div></div><div class="v-tabs"><span class="v-tt">Time 4</span><span class="v-on">Parts 1/1</span><span>Files</span></div></div></div>';
+var PREVIEW = null;                                                    /* optional: function (ctx) { ... } runs after every change; ctx = { v, conf, notes, note, th, root, mount, ideas, app, topic } */
+/* ---------- the page (v3 shell) ---------- */
+var D = document, $ = function (s, r) { return (r || D).querySelector(s); }, $$ = function (s, r) { return [].slice.call((r || D).querySelectorAll(s)); };
+function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]; }); }
+function flat() { var a = []; IDEAS.forEach(function (g) { g.items.forEach(function (it) { a.push(it); }); }); return a; }
+function find(k) { var r = null; flat().forEach(function (it) { if (it.k === k) r = it; }); return r; }
+var THEMES = ['ivory', 'graphite', 'mist', 'obsidian'], THMAP = { light: 'ivory', dark: 'graphite' };
+var V = { th: 'ivory', open: false, v: {}, conf: {}, notes: {}, note: '', filter: 'all', sort: 'author', cmp: null, auto: AUTOSCROLL };
+function load(d) { if (!d || typeof d !== 'object') return; if (d.v) V.v = d.v; if (d.conf) V.conf = d.conf; if (d.notes) V.notes = d.notes; if (typeof d.note === 'string') V.note = d.note; if (d.th) V.th = THMAP[d.th] || d.th; if (d.filter) V.filter = d.filter; if (d.sort) V.sort = d.sort; if (typeof d.auto === 'boolean') V.auto = d.auto; }
+try { load(JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
+try { var hm = (location.hash || '').match(/[#&]p=([^&]+)/); if (hm) load(JSON.parse(decodeURIComponent(hm[1]))); } catch (e) {}
+if (THEMES.indexOf(V.th) < 0) V.th = 'ivory';
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify({ v: V.v, conf: V.conf, notes: V.notes, note: V.note, th: V.th, filter: V.filter, sort: V.sort, auto: V.auto })); } catch (e) {}
+  try { var next = '#p=' + encodeURIComponent(JSON.stringify({ v: V.v, conf: V.conf, notes: V.notes, note: V.note, th: V.th })); if (location.hash !== next) history.replaceState(null, '', location.pathname + location.search + next); } catch (e) {}
+}
+var total = flat().length;
+$('#ip-lead').textContent = total + ' idea' + (total === 1 ? '' : 's') + ' for the ' + TOPIC.replace(/^The\s+/i, '').toLowerCase() + ' — pick an option to see it play, or Skip, then copy Your picks into the chat.';
+$('#ip-jump').innerHTML = IDEAS.map(function (g, i) { return '<a href="#ip-s' + i + '">' + esc(g.group) + '</a>'; }).join('');
+/* ---------- cards ---------- */
+function priRank(p) { return { H: 0, M: 1, L: 2 }[p] != null ? { H: 0, M: 1, L: 2 }[p] : 9; }
+function effRank(e) { return { S: 0, M: 1, L: 2 }[e] != null ? { S: 0, M: 1, L: 2 }[e] : 9; }
+function isPicked(k) { var v = V.v[k]; return !!v && v !== 'skip'; }
+function locked(it) { return !!it.needs && !isPicked(it.needs); }
+function tagHtml(it) {
+  var b = [];
+  if (it.pri) b.push('<span class="ip-tag' + (it.pri === 'H' ? ' hi' : it.pri === 'L' ? ' lo' : '') + '" title="Impact: ' + ({ H: 'high', M: 'medium', L: 'low' })[it.pri] + '">' + esc(it.pri) + '</span>');
+  if (it.effort) b.push('<span class="ip-tag" title="Effort: ' + ({ S: 'small', M: 'medium', L: 'large' })[it.effort] + '">' + esc(it.effort) + '</span>');
+  if (it.needs) { var p = find(it.needs); b.push('<span class="ip-need" data-need="' + esc(it.needs) + '">needs: ' + esc(p ? p.t : it.needs) + '</span>'); }
+  return b.length ? '<span class="ip-tags">' + b.join('') + '</span>' : '';
+}
+function buildSecs() {
+  var order = flat().slice();
+  if (V.sort === 'impact') order.sort(function (a, b) { return priRank(a.pri) - priRank(b.pri) || effRank(a.effort) - effRank(b.effort); });
+  else if (V.sort === 'effort') order.sort(function (a, b) { return effRank(a.effort) - effRank(b.effort) || priRank(a.pri) - priRank(b.pri); });
+  $('#ip-secs').innerHTML = IDEAS.map(function (g, i) {
+    var list = order.filter(function (it) { return g.items.indexOf(it) >= 0; });
+    return '<section class="ip-sec" id="ip-s' + i + '"><h2>' + esc(g.group) + ' <small>' + list.length + ' idea' + (list.length !== 1 ? 's' : '') + '</small></h2><div class="ip-grid">' + list.map(function (it) {
+      var o = it.opts.concat([['skip', 'Skip', '']]);
+      return '<article class="ip-idea" data-k="' + it.k + '" tabindex="-1"><header><h3>' + esc(it.t) + ' ' + tagHtml(it) + '</h3><p>' + esc(it.why) + '</p></header>' +
+        '<div class="ip-vis" data-step="' + (it.steps ? it.steps[0][0] : '') + '"><div class="ip-body">' + it.vis + '</div>' +
+        (it.steps ? '<span class="ip-hint">Pick an option to see it play</span><span class="ip-peek-lbl"></span><span class="ip-dots" role="group" aria-label="Steps">' + it.steps.map(function (s, j) { return '<i tabindex="0" role="button" data-n="' + j + '" title="' + esc(s[0]) + '" aria-label="Jump to step ' + esc(s[0]) + '"></i>'; }).join('') + '</span><button type="button" class="ip-replay" aria-label="Play it again" title="Play it again">↻</button>' : '') +
+        '<div class="ip-cmp" aria-hidden="true"><div class="ip-cmp-top"><select class="ip-sel" data-side="a" aria-label="Left side"></select><b>vs</b><select class="ip-sel" data-side="b" aria-label="Right side"></select></div><div class="ip-cmp-a"></div><div class="ip-cmp-b"></div></div></div>' +
+        '<div class="ip-ol">' + o.map(function (x, xi) {
+          var rec = (xi === 0 && x[0] !== 'skip') ? ' <span class="ip-rec" tabindex="0"' + (it.rec ? ' data-tip="' + esc(it.rec) + '" title="' + esc(it.rec) + '"' : '') + '>Recommended</span>' : '';
+          var key = x[0] === 'skip' ? 'S' : (xi < 4 ? String(xi + 1) : '');
+          return '<button type="button" class="ip-opt" data-k="' + it.k + '" data-v="' + x[0] + '" aria-pressed="false"><i></i><span><b>' + (key ? '<kbd>' + key + '</kbd>' : '') + esc(x[1]) + rec + '</b>' + (x[2] ? '<small>' + esc(x[2]) + '</small>' : '') + '</span></button>';
+        }).join('') + '</div>' +
+        '<div class="ip-card-tools"><button type="button" class="ip-btn" data-cmp="' + it.k + '">Compare</button><div class="ip-seg" role="group" aria-label="How sure"><button type="button" data-conf="sure" data-k="' + it.k + '" aria-pressed="true">Sure</button><button type="button" data-conf="leaning" data-k="' + it.k + '" aria-pressed="false">Leaning</button></div></div>' +
+        '<textarea class="ip-idea-note" data-nk="' + it.k + '" placeholder="Note for this idea (optional)">' + esc(V.notes[it.k] || '') + '</textarea></article>';
+    }).join('') + '</div></section>';
+  }).join('');
+}
+/* ---------- the animations: still until you pick — then that option plays once and holds (↻ replays, dots jump to a step) ---------- */
+var RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+function mark(vis, it, n) { if (!it.steps) return; vis._n = n; it.steps.forEach(function (s, j) { vis.classList.toggle('ip-s-' + s[0], j <= n); }); vis.dataset.step = it.steps[n][0]; $$('.ip-dots i', vis).forEach(function (d, j) { d.classList.toggle('f', j <= n); }); }
+function rest(vis, it, end) { clearTimeout(vis._t); vis._playing = false; if (it.steps) mark(vis, it, end ? it.steps.length - 1 : 0); }
+function play(vis, it) {
+  clearTimeout(vis._t); if (!it.steps) return;
+  if (RM) { rest(vis, it, 1); return; }
+  vis._playing = true; var i = 0;
+  (function next() { var s = it.steps[i]; mark(vis, it, i); i++; if (i < it.steps.length) vis._t = setTimeout(next, s[1]); else vis._playing = false; })();
+}
+function setOpt(vis, v) { if (v && v !== 'skip') vis.dataset.opt = v; else delete vis.dataset.opt; vis.classList.toggle('ip-has', !!v && v !== 'skip'); vis.classList.toggle('ip-skip', v === 'skip'); }
+function visOf(k) { return $('.ip-idea[data-k="' + k + '"] .ip-vis'); }
+function restoreVis(k) { var vis = visOf(k), it = find(k), v = V.v[k]; if (!vis) return; vis.classList.remove('ip-peeking'); setOpt(vis, v); rest(vis, it, isPicked(k)); }
+function restoreAll() { flat().forEach(function (it) { restoreVis(it.k); }); }
+/* peek: hover an option for a moment and its end state shows as a ghost; leave and the real state returns */
+var HOVER = window.matchMedia && matchMedia('(hover: hover)').matches, peekT = null;
+function peek(k, v) {
+  var vis = visOf(k), it = find(k); if (!vis || !it.steps || vis._playing || vis.classList.contains('ip-comparing') || V.v[k] === v) return;
+  vis.classList.add('ip-peeking'); setOpt(vis, v); mark(vis, it, it.steps.length - 1);
+  var o = it.opts.filter(function (x) { return x[0] === v; })[0]; $('.ip-peek-lbl', vis).textContent = 'peek · ' + (o ? o[1] : v);
+}
+/* ---------- the picks text ---------- */
+function optLabel(it, v) { if (v === 'skip') return 'skip'; var o = it.opts.filter(function (x) { return x[0] === v; })[0]; return o ? o[1] : v; }
+function sizeLine() {
+  var c = { S: 0, M: 0, L: 0 }, un = 0;
+  flat().forEach(function (it) { if (!isPicked(it.k)) return; if (c[it.effort] != null) c[it.effort]++; else un++; });
+  if (!c.S && !c.M && !c.L) return '';
+  var verdict = (c.L >= 1 || c.M >= 3) ? 'a bigger build' : (c.M >= 1 ? 'a medium build' : 'a small build');
+  return 'Build size: ' + c.S + ' S · ' + c.M + ' M · ' + c.L + ' L → ' + verdict + (un ? ' (' + un + ' untagged)' : '');
+}
+function checklist() { var L = []; flat().forEach(function (it) { if (isPicked(it.k)) L.push((L.length + 1) + '. ' + it.t + ' → ' + optLabel(it, V.v[it.k])); }); return L; }
+function pkText() {
+  var L = [APP + ' · ' + TOPIC + ' — my picks'];
+  IDEAS.forEach(function (g) {
+    var rows = [];
+    g.items.forEach(function (it) {
+      var v = V.v[it.k]; if (!v) return;
+      var extra = [];
+      if (v !== 'skip' && V.conf[it.k] === 'leaning') extra.push('leaning');
+      if (v !== 'skip' && locked(it)) { var p = find(it.needs); extra.push('needs ' + (p ? p.t : it.needs) + ' — not picked'); }
+      rows.push('· ' + it.t + ': ' + optLabel(it, v) + (extra.length ? ' (' + extra.join('; ') + ')' : ''));
+      var n = (V.notes[it.k] || '').trim(); if (n) rows.push('  note: ' + n);
+    });
+    if (rows.length) { L.push(g.group + ':'); L = L.concat(rows); }
+  });
+  var left = total - Object.keys(V.v).length; if (left) L.push('(not picked yet: ' + left + ')');
+  if (V.note.trim()) L.push('Notes: ' + V.note.trim());
+  var sz = sizeLine(); if (sz) L.push(sz);
+  var cl = checklist(); if (cl.length) { L.push(''); L.push('Build checklist:'); L = L.concat(cl); }
+  return L.join('\n');
+}
+/* ---------- state → screen ---------- */
+function counts() { var u = 0, p = 0, s = 0; flat().forEach(function (it) { var v = V.v[it.k]; if (!v) u++; else if (v === 'skip') s++; else p++; }); return { u: u, p: p, s: s, n: p + s }; }
+function visible(it) { var v = V.v[it.k]; return V.filter === 'all' || (V.filter === 'unpicked' && !v) || (V.filter === 'picked' && isPicked(it.k)) || (V.filter === 'skipped' && v === 'skip'); }
+function renderPreview() {
+  var m = $('#ip-preview'), has = (typeof COMPONENT === 'string' && COMPONENT) || typeof PREVIEW === 'function';
+  m.hidden = !has; $('.ip-layout').classList.toggle('has-prev', has); if (!has) return;
+  var root = $('.ip-prev-root', m);
+  if (!root) { m.innerHTML = '<h2>Live preview<small>updates with every pick</small></h2><div class="ip-prev-root">' + (typeof COMPONENT === 'string' ? COMPONENT : '') + '</div>'; root = $('.ip-prev-root', m); }
+  flat().forEach(function (it) { var v = V.v[it.k]; if (isPicked(it.k)) root.setAttribute('data-p-' + it.k, v); else root.removeAttribute('data-p-' + it.k); });
+  if (typeof PREVIEW === 'function') { try { PREVIEW({ v: V.v, conf: V.conf, notes: V.notes, note: V.note, th: V.th, root: root, mount: m, ideas: IDEAS, app: APP, topic: TOPIC }); } catch (e) { root.innerHTML = '<p style="margin:0;color:var(--ink3);font-size:12px">Preview unavailable: ' + esc(e.message) + '</p>'; } }
+}
+function sync() {
+  D.documentElement.setAttribute('data-th', V.th);
+  $$('.ip-bar .ip-seg button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.th === V.th)); });
+  $$('.ip-opt').forEach(function (b) { b.setAttribute('aria-pressed', String(V.v[b.dataset.k] === b.dataset.v)); });
+  $$('[data-conf]').forEach(function (b) { b.setAttribute('aria-pressed', String((V.conf[b.dataset.k] || 'sure') === b.dataset.conf)); });
+  $$('.ip-idea').forEach(function (a) { var it = find(a.dataset.k); a.classList.toggle('picked', isPicked(a.dataset.k)); a.classList.toggle('ip-locked', locked(it)); a.hidden = !visible(it); });
+  var c = counts(); $('#ip-n').textContent = c.n ? c.n + '/' + total : '';
+  $('.ip-prog-bar i').style.width = Math.round((c.n / total) * 100) + '%'; $('#ip-prog-lab').textContent = c.n + ' of ' + total + ' decided';
+  $$('[data-f]').forEach(function (b) { var f = b.dataset.f; b.textContent = b.dataset.label + ' ' + (f === 'all' ? total : f === 'unpicked' ? c.u : f === 'picked' ? c.p : c.s); b.setAttribute('aria-pressed', String(V.filter === f)); });
+  $$('[data-sort]').forEach(function (b) { b.setAttribute('aria-pressed', String(V.sort === b.dataset.sort)); });
+  renderPreview();
+}
+/* ---------- the current card (keyboard) and auto-scroll ---------- */
+var curK = null;
+function setCur(k, scroll) { curK = k; $$('.ip-idea').forEach(function (a) { a.classList.toggle('ip-cur', a.dataset.k === k); }); if (scroll && k) { var a = $('.ip-idea[data-k="' + k + '"]'); if (a) a.scrollIntoView({ block: 'nearest', behavior: RM ? 'auto' : 'smooth' }); } }
+function shown() { return $$('.ip-idea').filter(function (a) { return !a.hidden; }).map(function (a) { return a.dataset.k; }); }
+function move(d) { var ks = shown(); if (!ks.length) return; var i = ks.indexOf(curK); i = i < 0 ? (d > 0 ? 0 : ks.length - 1) : Math.max(0, Math.min(ks.length - 1, i + d)); setCur(ks[i], true); }
+function nextUnpicked(fromK) { var ks = shown(), i = ks.indexOf(fromK); for (var j = i + 1; j < ks.length; j++) if (!V.v[ks[j]]) return ks[j]; return null; }
+/* ---------- undo ---------- */
+var HIST = [];
+function snap() { HIST.push(JSON.stringify({ v: V.v, conf: V.conf })); if (HIST.length > 60) HIST.shift(); }
+function undo() { if (!HIST.length) { toast('Nothing to undo'); return; } var s = JSON.parse(HIST.pop()); V.v = s.v; V.conf = s.conf; save(); restoreAll(); sync(); draw(); toast('Undone'); }
+/* ---------- compare: any two options, side by side at their end state ---------- */
+function openCmp(k, a, b) {
+  var it = find(k), vis = visOf(k); if (!it || it.opts.length < 2 || !vis) return;
+  $$('.ip-vis.ip-comparing').forEach(function (x) { if (x !== vis) x.classList.remove('ip-comparing'); });
+  a = a || it.opts[0][0]; b = b || it.opts[1][0];
+  $$('.ip-sel', vis).forEach(function (s) { s.innerHTML = it.opts.map(function (x) { return '<option value="' + x[0] + '">' + esc(x[1]) + '</option>'; }).join(''); s.value = s.dataset.side === 'a' ? a : b; });
+  var A = $('.ip-cmp-a', vis), B = $('.ip-cmp-b', vis), body = $('.ip-body', vis).innerHTML;
+  [[A, a], [B, b]].forEach(function (p) { p[0].innerHTML = body; p[0].dataset.opt = p[1]; p[0].className = p[0].className.replace(/\bip-s-\S+/g, '').trim(); if (it.steps) { it.steps.forEach(function (s) { p[0].classList.add('ip-s-' + s[0]); }); p[0].dataset.step = it.steps[it.steps.length - 1][0]; } });
+  V.cmp = { k: k, a: a, b: b }; vis.classList.add('ip-comparing');
+}
+/* ---------- Your picks panel ---------- */
+function draw() {
+  var w = $('#ip-picks'); w.hidden = !V.open; if (!V.open) return;
+  var ta = $('#ip-note'); if (ta && D.activeElement === ta) { $('#ip-picks pre').textContent = pkText(); return; }
+  w.innerHTML = '<div class="ip-ph"><b>Your picks</b><button type="button" data-pk="x" aria-label="Close">✕</button></div><pre>' + esc(pkText()) + '</pre>' +
+    '<label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:var(--ink2)">Anything else<textarea id="ip-note" placeholder="Anything to add or change">' + esc(V.note) + '</textarea></label>' +
+    '<label class="ip-ck"><input type="checkbox" id="ip-auto"' + (V.auto ? ' checked' : '') + '> Scroll to the next unpicked card after each pick</label>' +
+    '<div class="ip-actions"><button type="button" class="ip-btn pri" data-pk="copy" style="justify-content:center;height:34px;flex:1 1 100%">Copy for the chat</button>' +
+    '<button type="button" class="ip-btn" data-pk="dl">Download .json</button><button type="button" class="ip-btn" data-pk="up">Import .json</button><button type="button" class="ip-btn" data-pk="pdf">PDF / Print</button><button type="button" class="ip-btn" data-pk="reset" style="margin-left:auto;color:var(--bad)">Reset all</button></div>' +
+    '<input type="file" class="ip-file" id="ip-file" accept="application/json,.json">';
+}
+function toast(m, act) { var t = $('.ip-toast'); if (t) t.remove(); t = D.createElement('div'); t.className = 'ip-toast'; t.innerHTML = '<span>' + esc(m) + '</span>' + (act ? '<button type="button">' + esc(act.label) + '</button>' : ''); if (act) $('button', t).onclick = function () { t.remove(); act.fn(); }; D.body.appendChild(t); clearTimeout(toast.h); toast.h = setTimeout(function () { t.remove(); }, act ? 5000 : 2600); }
+function copy(tx) {
+  var fb = function () { var ta = D.createElement('textarea'); ta.value = tx; D.body.appendChild(ta); ta.select(); try { D.execCommand('copy'); toast('Copied — paste it in the chat.'); } catch (e) { toast('Select the text and copy it.'); } ta.remove(); };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(tx).then(function () { toast('Copied — paste it in the chat.'); }, fb); else fb();
+}
+function downloadJson() { var blob = new Blob([JSON.stringify({ app: APP, topic: TOPIC, key: KEY, v: V.v, conf: V.conf, notes: V.notes, note: V.note, th: V.th }, null, 2)], { type: 'application/json' }); var a = D.createElement('a'); a.href = URL.createObjectURL(blob); a.download = KEY + '.json'; D.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 500); toast('Downloaded ' + KEY + '.json'); }
+function importJson(file) { var r = new FileReader(); r.onload = function () { try { snap(); load(JSON.parse(String(r.result || '{}'))); save(); restoreAll(); sync(); draw(); toast('Imported picks', { label: 'Undo', fn: undo }); } catch (e) { toast('Could not read that .json'); } }; r.readAsText(file); }
+/* ---------- changes ---------- */
+function setPick(k, v) {
+  var it = find(k), vis = visOf(k), was = V.v[k]; snap();
+  if (was === v) { delete V.v[k]; delete V.conf[k]; } else V.v[k] = v;
+  save(); sync(); draw(); setCur(k, false);
+  vis.classList.remove('ip-comparing'); vis.classList.remove('ip-peeking'); setOpt(vis, V.v[k]);
+  if (isPicked(k)) play(vis, it); else rest(vis, it, 0);
+  flat().forEach(function (x) { if (x.needs === k) restoreVis(x.k); });
+  if (V.v[k]) { var lbl = optLabel(it, V.v[k]); toast((V.v[k] === 'skip' ? 'Skipped ' : 'Picked ') + it.t.replace(/^(.{34}).+/, '$1…') + (V.v[k] === 'skip' ? '' : ' → ' + lbl), { label: 'Undo', fn: undo }); }
+  if (V.v[k] && V.auto) { var n = nextUnpicked(k); if (n) setTimeout(function () { setCur(n, true); }, 350); }
+}
+function acceptAll() { snap(); var n = 0; flat().forEach(function (it) { if (!V.v[it.k] && it.opts.length) { V.v[it.k] = it.opts[0][0]; n++; } }); save(); restoreAll(); sync(); draw(); toast(n ? 'Accepted ' + n + ' recommended' : 'Nothing left to fill', n ? { label: 'Undo', fn: undo } : null); }
+function resetAll() { var n = Object.keys(V.v).length; if (!n) { toast('Nothing to reset'); return; } snap(); V.v = {}; V.conf = {}; save(); restoreAll(); sync(); draw(); toast('Cleared ' + n + ' pick' + (n === 1 ? '' : 's'), { label: 'Undo', fn: undo }); }
+D.addEventListener('click', function (ev) {
+  var t = ev.target, b;
+  if ((b = t.closest('.ip-bar .ip-seg button'))) { V.th = b.dataset.th; save(); sync(); return; }
+  if (t.closest('#ip-open')) { V.open = !V.open; draw(); return; }
+  if (t.closest('#ip-accept')) { acceptAll(); return; }
+  if (t.closest('#ip-warn')) { toast(t.closest('#ip-warn').dataset.msg || ''); return; }
+  if ((b = t.closest('[data-f]'))) { V.filter = b.dataset.f; save(); sync(); return; }
+  if ((b = t.closest('[data-sort]'))) { V.sort = b.dataset.sort; save(); var c = V.cmp; buildSecs(); restoreAll(); sync(); if (c) openCmp(c.k, c.a, c.b); setCur(curK, false); return; }
+  if ((b = t.closest('[data-cmp]'))) { var vis = visOf(b.dataset.cmp); if (vis.classList.contains('ip-comparing')) { vis.classList.remove('ip-comparing'); V.cmp = null; } else openCmp(b.dataset.cmp); return; }
+  if ((b = t.closest('[data-conf]'))) { snap(); V.conf[b.dataset.k] = b.dataset.conf; save(); sync(); draw(); return; }
+  if ((b = t.closest('[data-pk]'))) { var a = b.dataset.pk; if (a === 'x') { V.open = false; draw(); } else if (a === 'copy') copy(pkText()); else if (a === 'dl') downloadJson(); else if (a === 'up') $('#ip-file').click(); else if (a === 'pdf') setTimeout(function () { window.print(); }, 50); else if (a === 'reset') resetAll(); return; }
+  if ((b = t.closest('.ip-replay'))) { var vs = b.closest('.ip-vis'); play(vs, find(vs.closest('.ip-idea').dataset.k)); return; }
+  if ((b = t.closest('.ip-dots i'))) { var vz = b.closest('.ip-vis'); clearTimeout(vz._t); vz._playing = false; mark(vz, find(vz.closest('.ip-idea').dataset.k), +b.dataset.n); return; }
+  if ((b = t.closest('.ip-opt'))) { setPick(b.dataset.k, b.dataset.v); return; }
+  if ((b = t.closest('.ip-idea'))) setCur(b.dataset.k, false);
+});
+D.addEventListener('change', function (ev) {
+  var t = ev.target;
+  if (t.id === 'ip-file' && t.files && t.files[0]) { importJson(t.files[0]); t.value = ''; }
+  if (t.id === 'ip-auto') { V.auto = t.checked; save(); }
+  if (t.classList.contains('ip-sel')) { var vis = t.closest('.ip-vis'), k = vis.closest('.ip-idea').dataset.k, a = $('.ip-sel[data-side="a"]', vis).value, b = $('.ip-sel[data-side="b"]', vis).value; openCmp(k, a, b); }
+});
+D.addEventListener('input', function (ev) {
+  var t = ev.target;
+  if (t.id === 'ip-note') { V.note = t.value; save(); $('#ip-picks pre').textContent = pkText(); renderPreview(); }
+  if (t.classList.contains('ip-idea-note')) { V.notes[t.dataset.nk] = t.value; save(); renderPreview(); if (V.open) $('#ip-picks pre').textContent = pkText(); }
+});
+if (HOVER) {
+  D.addEventListener('mouseover', function (ev) { var b = ev.target.closest('.ip-opt'); if (!b || b.dataset.v === 'skip') return; clearTimeout(peekT); peekT = setTimeout(function () { peek(b.dataset.k, b.dataset.v); }, 450); });
+  D.addEventListener('mouseout', function (ev) { var b = ev.target.closest('.ip-opt'); if (!b || (ev.relatedTarget && ev.relatedTarget.closest && ev.relatedTarget.closest('.ip-opt') === b)) return; clearTimeout(peekT); var vis = visOf(b.dataset.k); if (vis && vis.classList.contains('ip-peeking')) restoreVis(b.dataset.k); });
+}
+D.addEventListener('keydown', function (ev) {
+  if (ev.key === 'Escape') { if (V.open) { V.open = false; draw(); } return; }
+  var tag = (ev.target.tagName || '').toLowerCase(); if (tag === 'input' || tag === 'textarea' || tag === 'select' || ev.metaKey || ev.ctrlKey || ev.altKey) return;
+  var key = ev.key.toLowerCase();
+  if (key === 'j' || key === 'arrowdown') { move(1); ev.preventDefault(); return; }
+  if (key === 'k' || key === 'arrowup') { move(-1); ev.preventDefault(); return; }
+  if (key === 'z') { undo(); return; }
+  if (!curK) { if (/^[1-4s]$/.test(key)) { move(1); } else return; }
+  var it = find(curK); if (!it) return;
+  if (key === 's') { setPick(curK, 'skip'); ev.preventDefault(); return; }
+  if (/^[1-4]$/.test(key)) { var o = it.opts[+key - 1]; if (o) setPick(curK, o[0]); ev.preventDefault(); }
+});
+/* ---------- the accuracy check: every option and step named in IDEAS should have a CSS rule ---------- */
+function ipCheck() {
+  var css = ''; try { $$('style').forEach(function (s) { css += s.textContent; }); } catch (e) {}
+  var out = [];
+  flat().forEach(function (it) {
+    it.opts.forEach(function (o) { if (css.indexOf('[data-opt="' + o[0] + '"]') < 0) out.push(it.k + ': option "' + o[0] + '" has no [data-opt="' + o[0] + '"] rule (it will look like the others)'); });
+    (it.steps || []).forEach(function (s, j) { if (j && css.indexOf('.ip-s-' + s[0]) < 0 && css.indexOf('[data-step="' + s[0] + '"]') < 0) out.push(it.k + ': step "' + s[0] + '" has no .ip-s-' + s[0] + ' or [data-step="' + s[0] + '"] rule (nothing will change)'); });
+    if (it.steps) { var ms = it.steps.reduce(function (a, s) { return a + s[1]; }, 0); if (ms < 2500 || ms > 7000) out.push(it.k + ': sequence runs ' + ms + ' ms (aim for 3–6 s)'); }
+    if (it.needs && !find(it.needs)) out.push(it.k + ': needs "' + it.needs + '" which is not an idea');
+    (it.vis.match(/class="[^"]*"/g) || []).forEach(function (c) { c.slice(7, -1).split(/\s+/).forEach(function (n) { if (n && !/^(v-|ip-)/.test(n)) out.push(it.k + ': class "' + n + '" in the visual is not prefixed v-'); }); });
+  });
+  var w = $('#ip-warn'); if (out.length && /check/.test(location.search)) { w.style.display = 'inline-flex'; w.textContent = out.length + ' to fix'; w.dataset.msg = out[0]; }
+  if (out.length) console.warn('Idea picker check:\n' + out.join('\n')); else console.info('Idea picker check: every option and step has a rule.');
+  return out;
+}
+/* ---------- go ---------- */
+buildSecs(); restoreAll(); sync(); ipCheck();
+</script>
+</body>
+</html>
