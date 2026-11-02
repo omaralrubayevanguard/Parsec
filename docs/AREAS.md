@@ -327,7 +327,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `lookups.js` | Finding things: getRO(id), the Shop RO (shop time), prices and money per part / operation / RO. | 4 | 16 | 2 |
 | `ordering.js` | How ROs sort: last touched, finished, days open; sortedROs(); pillHtml for the fast-punch pill. | 3 | 8 | 0 |
 | `reopen-question.js` | The question when a completed RO is set back to open: reopen its operations too, or just the RO. | 5 | 13 | 1 |
-| `ro-panel.js` | The one RO side panel's shared pieces: the stage line, Time · Parts · Files on one line, the operations, the buttons by role, and the folds each person keeps. | 12 | 12 | 4 |
+| `ro-panel.js` | The one RO side panel's shared pieces: the stage line, Time · Parts · Files on one line, the operations, the buttons by role, and the folds each person keeps. | 12 | 12 | 5 |
 | `road-test-and-release.js` | Road test before release (a switch per RO), what “work done” means, the stage label shown for a status (roStageInfo / pgStRo). | 5 | 14 | 0 |
 | `route.js` | The RO's route between departments: who holds it now (writer, tech, parts, foreman…), the next step for a role (rtNext / rtStepFor). | 7 | 15 | 8 |
 | `stages.js` | The six RO stages (Check-in → Close-out), each with one “done when” rule; roStages(ro) says where an RO stands, stageToggle checks one off by hand. | 12 | 5 | 2 |
@@ -416,6 +416,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `lists-fold.js` | Every page's left list folds to a strip (Parsec 12.7): LF remembers it per page, lfDecorate adds the « button after a render. | 9 | 15 | 2 |
 | `live-time.js` | The second-by-second tick: tickLive patches only the figures that move (clocks, elapsed), never a full render while you are typing (safeToRedraw). | 3 | 3 | 2 |
 | `modals.js` | modalHtml: the app's pop-up dialogs drawn from UI.modal (new RO, edit punch, PIN, reasons, backups, …) and the small date helpers they share. | 34 | 6 | 0 |
+| `motion-open.js` | Everything that opens, closes or switches moves: what closes fades out where it was, a fold eases the section to its new height, a tab or page eases in. | 7 | 10 | 5 |
 | `motion.js` | The micro-interactions (Parsec 10): MI holds what is animating; pmBeforeRender / pmAfterRender glide cards between renders; pmStageNotice flashes a stage. | 6 | 6 | 2 |
 | `nav-arrange.js` | Arranging the side bar: press and hold a page, then drag; a switch hides a page (the name menu keeps it); the shop’s order (the manager) and each person’s own. | 11 | 27 | 2 |
 | `nav-rail.js` | The nav rail: one column, every icon in the same box; PX_GROUPS orders the pages; the narrow (folded) state, the clock row, and who is signed in. | 7 | 12 | 2 |

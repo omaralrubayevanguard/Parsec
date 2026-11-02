@@ -1,0 +1,30 @@
+/* ---- 17.1 · motion and modals (shell/motion-open.js does the closing and the folds) ----
+   One scrim for every modal: the same tint and the same blur, light and dark. The lock screen keeps its heavier blur on purpose. */
+:root{--mx-scrim:rgba(29,28,26,.30);--mx-blur:blur(6px) saturate(1.05);--mx-ease:cubic-bezier(.2,.8,.2,1);}
+:root:is([data-theme$="d"],[data-theme="dark"]){--mx-scrim:rgba(0,0,0,.50);}
+:root .modal-backdrop,:root:is([data-theme="ivl"],[data-theme="ivd"]) .modal-backdrop,.overlay,.roreo,.ix-wrap,.ti-wrap,.pal-wrap,.pm-scrim,.trx-layer .trx-scrim,.lgx:not(.lock){background:var(--mx-scrim) !important;-webkit-backdrop-filter:var(--mx-blur) !important;backdrop-filter:var(--mx-blur) !important;}
+.trx-layer{-webkit-backdrop-filter:none !important;backdrop-filter:none !important;}
+.mx-out{pointer-events:none !important;}
+@media (prefers-reduced-motion:no-preference){
+  /* scrims fade in; the box on them rises in */
+  .modal-backdrop,.overlay,.roreo,.ix-wrap,.ti-wrap,.pal-wrap,.pm-scrim,.trx-scrim{animation:mxFade .18s ease both;}
+  .modal-backdrop>*,.overlay>*,.roreo-c,.ix-wrap>*,.ti-wrap>*,.pal-wrap>*,.trx-layer>.tg-pop,.pm-sheet{animation:mxRise .24s var(--mx-ease) both;}
+  /* menus, drop-downs and pop-overs open from where you clicked */
+  .tg-pop,.pxr-pop,.rl-menu,.notif-pop,.px-trk__menu,.v163b-ask,.tg-mi-sub,.rq-bulk{animation:mxPop .18s var(--mx-ease) both;}
+  .tg-ph+*{animation:none;}
+  /* side panels slide in */
+  .lib-view{animation:mxSlide .26s var(--mx-ease) both;}
+  /* what a fold opens */
+  .lib-ftbs,.lf-open{animation:mxDrop .2s var(--mx-ease) both;}
+  /* chevrons turn, rows and buttons ease */
+  .rod-gh i,.rp-gh i,.px-pg__chev,.lib-code .tg-ic,.tg-grp i,.lf-chev{transition:transform .2s var(--mx-ease);}
+  .tg-views button,.lib-tab,.rq-seg button,.fl-per button,.px-seg button,.ip-seg button,.dp-t{transition:background-color .18s,color .18s,box-shadow .18s;}
+  .dp-tabs .tg-h1.dp-on::after{animation:mxBar .26s var(--mx-ease) both;}
+  .lib-tab.on::after,.tg-views button.on::after{animation:mxBar .22s var(--mx-ease) both;}
+}
+@keyframes mxFade{from{opacity:0;}to{opacity:1;}}
+@keyframes mxRise{from{opacity:0;transform:translateY(10px) scale(.985);}to{opacity:1;transform:none;}}
+@keyframes mxPop{from{opacity:0;transform:translateY(-4px) scale(.985);}to{opacity:1;transform:none;}}
+@keyframes mxSlide{from{opacity:0;transform:translateX(22px);}to{opacity:1;transform:none;}}
+@keyframes mxDrop{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
+@keyframes mxBar{from{transform:scaleX(.3);opacity:0;}to{transform:none;opacity:1;}}

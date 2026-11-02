@@ -29,6 +29,7 @@ function render(){
   if(MI.drag && MI.drag.ghost) return;   /* a truck in hand: the floor holds still */
   if(UI.modal && UI.modal.type === "add-ro"){ UI.modal = null; setTimeout(function(){ IMPX.open({}); }, 0); }   /* Parsec 12: New RO is the import */
   try{ pmBeforeRender(); }catch(e){ console.error(e); }
+  try{ mxBefore(); }catch(e){ console.error(e); }   /* 17.1: what's open, so what closes can fade out (shell/motion-open.js) */
   LAST_RENDER = Date.now(); try{ v146Soon(); }catch(e){} try{ v147Soon(); }catch(e){} try{ v149eStamp(); }catch(e){}
   histSync();
   try{ IB.flush(); }catch(e){}
@@ -145,4 +146,5 @@ function render(){
   pinProfilePop();
   if(UI.profileOpen) requestAnimationFrame(pinProfilePop);
   try{ pmAfterRender(); }catch(e){ console.error(e); }
+  try{ mxAfter(); }catch(e){ console.error(e); }
 }

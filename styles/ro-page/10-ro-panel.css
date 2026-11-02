@@ -48,3 +48,13 @@
   .px-btn, .pgst.m, .px-pg__chev { transition: background-color .15s, color .15s, box-shadow .15s, transform .18s; }
 }
 @keyframes rpGlide { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+/* 17.1 (d) — the RO page's modals: the same scrim and blur as the rest of Parsec */
+.px-scrim, :host(.th-iv) .modalWrap, .modalWrap { background: rgba(29,28,26,.30) !important; -webkit-backdrop-filter: blur(6px) saturate(1.05) !important; backdrop-filter: blur(6px) saturate(1.05) !important; }
+:host(.dark-ui) .px-scrim, :host(.dark-ui) .modalWrap { background: rgba(0,0,0,.50) !important; }
+@media (prefers-reduced-motion: no-preference) {
+  .px-scrim, .modalWrap { animation: rpFade .18s ease both; }
+  .px-modal, .modalBox { animation: rpRise .24s cubic-bezier(.2,.8,.2,1) both; }
+  .px-tab, .px-tabs button { transition: color .18s, box-shadow .18s, background-color .18s; }
+}
+@keyframes rpFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes rpRise { from { opacity: 0; transform: translateY(10px) scale(.985); } to { opacity: 1; transform: none; } }

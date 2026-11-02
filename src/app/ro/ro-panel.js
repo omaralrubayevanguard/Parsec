@@ -1,7 +1,7 @@
 /* Parsec · ro · ro-panel.js
    The one RO side panel's shared pieces: the stage line, Time · Parts · Files on one line, the operations, the buttons by role, and the folds each person keeps.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   rpWho rpFolds rpFold rpFoldSet rpE rpStageHtml rpFactsHtml rpOpsHtml rpActsHtml rpPanelHtml rpAnyOpen rpMountRo … (12 functions, 4 constants)
+   declares   rpWho rpFolds rpFold rpFoldSet rpE rpStageHtml rpFactsHtml rpOpsHtml rpActsHtml rpPanelHtml rpAnyOpen rpMountRo … (12 functions, 5 constants)
    state      punches
    uses       access/ clock/ kit/ pages/ pages/triage/ pages/warranty/ ro-page/ shell/ state/ trucks/
    at load    2× on document click
