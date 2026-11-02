@@ -16,7 +16,7 @@ async def main():
         # ---- the foreman opens the RO page
         await pg.evaluate(SIGN(fm[0])); await pg.wait_for_timeout(300)
         await pg.evaluate(f"(()=>{{ localStorage.removeItem('rop_fold'); const U=__tg.UI(); U.view='ros'; U.selectedRo={json.dumps(rid)}; __tg.render(); }})()"); await pg.wait_for_timeout(1200)
-        t = await pg.evaluate(TIP(".px-status--button"))
+        t = await pg.evaluate(DTIP(".rp-host .rq-strow .pgst"))   # 17.1: the RO page's column is the one RO panel
         ok(t and t[0] and t[1] and t[0].split("|")[0].startswith(("Hold tech", "Working", "Waiting", "Complete")), f"RO page: the RO's status pill explains itself ({t})")
         t = await pg.evaluate(TIP(f".rop-orow[data-op=\"{oa}\"] .rop-st"))
         ok(t and t[1] and "Hold tech" in t[0], f"RO page: the operation's status pill ({t})")
@@ -43,7 +43,7 @@ async def main():
         rs = await pg.evaluate(f"(()=>{{ const r=__tg.getRO({json.dumps(rid)}); return [r.status.status, r.status.by]; }})()")
         ok(rs[1] == fm[1], f"the RO's status keeps who set it ({rs})")
         # initials: the name and the role
-        av = await pg.evaluate(J("const a=R.querySelector('.px-with .px-av'); return a ? a.getAttribute('data-tip') : null"))
+        av = await pg.evaluate("(()=>{ const a=document.querySelector('.rp-host .rq-with .tg-av'); return a ? a.getAttribute('data-tip') : null; })()")   # 17.1: the one RO panel
         ok(av == P["An"] + " · Technician", f"RO page: “with LM” says the name and the role ({av})")
         await pg.screenshot(path=os.path.join(OUT, "1_ropage.png"))
         # ---- disabled main actions (RO page selection bar): pick both, decline both → Hold and Mark done say why

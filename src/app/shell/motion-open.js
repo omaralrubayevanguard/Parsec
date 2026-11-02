@@ -25,6 +25,8 @@ function mxGhost(node, rect){
   var g = node.cloneNode(true);
   g.classList.add("mx-out"); g.removeAttribute("id"); g.removeAttribute("data-key");
   g.querySelectorAll("[id]").forEach(function(x){ x.removeAttribute("id"); });
+  g.querySelectorAll("iframe, embed, object, video, audio, canvas").forEach(function(x){ var r = document.createElement("div"); r.style.cssText = "width:" + (x.offsetWidth || x.clientWidth || 0) + "px;height:" + (x.offsetHeight || 0) + "px"; x.replaceWith(r); });   /* a copy never loads anything again */
+  g.querySelectorAll("img[src^='blob:']").forEach(function(x){ x.removeAttribute("src"); });
   g.setAttribute("aria-hidden", "true"); g.style.pointerEvents = "none";
   var fixed = false; try{ fixed = rect && rect.fixed; }catch(e){}
   if(rect && !fixed){ g.style.position = "fixed"; g.style.left = rect.left + "px"; g.style.top = rect.top + "px"; g.style.width = rect.width + "px"; g.style.height = rect.height + "px"; g.style.margin = "0"; g.style.right = "auto"; g.style.bottom = "auto"; g.style.zIndex = "9600"; }
