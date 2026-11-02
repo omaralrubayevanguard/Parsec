@@ -16,7 +16,7 @@ async def main():
         await pg.evaluate(f"(()=>{{ const U=__tg.UI(); U.view='tech'; __tg.render(); }})()"); await pg.wait_for_timeout(1200)
         x = await pg.evaluate("(()=>{ const T=__tg.tcxGet(); return T ? { ro: T.ro, n: T.list.length, list: T.list, crumb: T.crumb } : null; })()")
         ok(x and x["n"] >= 2, f"the Technician page has its context for the RO page ({x and x['crumb']}, {x and x['n']} ROs)")
-        cls = await pg.evaluate(JT("return [R.querySelectorAll('.rop-orow').length, !!R.querySelector('.px-ro__title'), !!R.querySelector('.rop-r .px-ro__main'), !!R.querySelector('.rop-band')]"))
+        cls = await pg.evaluate(JT("return [R.querySelectorAll('.rop-orow').length, !!(document.querySelector('.rp-host h2') || R.querySelector('.px-ro__title')), !!R.querySelector('.rop-r .px-ro__main'), !!R.querySelector('.rop-rail')]"))
         nops = await pg.evaluate(f"__tg.getRO('{x['ro']}').operations.filter(o=>o && (o.complaint || o.quoted)).length")
         ok(cls and cls[0] >= 1 and cls[1] and cls[2] and cls[3], f"the middle and right are the RO page: its operation rows, title, main and truck card ({cls}, ops {nops})")
         tl = await pg.evaluate(f"document.querySelector('{TP} .tch-list') && !!document.querySelector('{TP} .tch-list .tg-it.on')")
@@ -30,7 +30,7 @@ async def main():
         y = await pg.evaluate(f"[__tg.tcxGet().ro, document.querySelector('{TP} .tch-jc').dataset.jc]")
         bar2 = await pg.evaluate(BAR)
         ok(at0 + 1 < x["n"] and y[0] == x["list"][at0 + 1] and y[1] == y[0] and bar2[1].startswith(str(at0 + 2) + " of"), f"⌄ moves to the next of the tech's ROs, the mount follows ({y}, {bar2})")
-        ok(await pg.evaluate(JT("return (R.querySelector('.px-ro__title')||{}).textContent")) == await pg.evaluate(f"__tg.getRO('{y[0]}').customerName"), "…and the RO page shows that RO")
+        ok(await pg.evaluate(JT("return ((document.querySelector('.rp-host h2') || R.querySelector('.px-ro__title'))||{}).textContent")) == await pg.evaluate(f"__tg.getRO('{y[0]}').customerName"), "…and the RO page shows that RO")
         # start and stop the clock from the mounted clock card, as the tech
         Q = await pg.evaluate("""(()=>{ const T=__tg.tcxGet(); let r=null;
           for(const id of T.list){ const ro=__tg.getRO(id); if(ro.operations.filter(o=>o && T.own[o.id]).length>=2){ r=ro; break; } }

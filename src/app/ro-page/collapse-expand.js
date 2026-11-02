@@ -126,7 +126,7 @@ window.addEventListener('keydown', function (e) {
   }
   if (e.key === 'Escape' && PXP) { pxClosePop(); return; }
   var k = e.key.toLowerCase(), b = null;
-  if (k === 's') b = R.querySelector('.px-status--button');
+  if (k === 's') { b = R.querySelector('.px-status--button'); if (!b) { var lp = HOST && HOST.querySelector('.rp-host .pgst.m'); if (lp) { e.preventDefault(); e.stopPropagation(); pxStatusMenu(lp); return; } } }   /* 17.1: the pill is in the one RO panel */
   else if (k === 't') { e.preventDefault(); e.stopPropagation(); pxTransfer(); return; }
   else if (k === 'o') { e.preventDefault(); e.stopPropagation(); pxAddOp(); return; }
   else if (k === 'p') { e.preventDefault(); e.stopPropagation(); doPdf(); return; }
@@ -258,6 +258,7 @@ return { attach: attach, busy: busy, syncFiles: syncFiles, scanFolder: scanFolde
   },
   blobOf: function (f, roId) { return getBlob(f, roId); },
   rerender: function () { if (RO && R && HOST && HOST.isConnected) render(); },
+  statusMenu: function (anchor) { if (RO && R) pxStatusMenu(anchor); },   /* 17.1: the one RO panel's pill, on the RO page */
   tab: function (k) { if (!RO) return; roTab = (k && roTab !== k) ? k : null; render(); },
   details: function () { if (RO) setDetails(!detailsOpen); },
   clock: function () {

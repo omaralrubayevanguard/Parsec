@@ -86,13 +86,13 @@ function rpPanelHtml(ro, o){
   var mayS = typeof can !== "function" || can("ro.status"), tech = ro.assignedTech || "";
   var veh = ""; try{ var tm = truckYM(ro); veh = (tm && tm.line) || [ro.year, ro.make, ro.model].filter(Boolean).join(" "); }catch(e){}
   var spot = ""; try{ var sp = spotOf(ro.location); spot = sp ? tgSpotLbl(sp) : (ro.location || ""); }catch(e){ spot = ro.location || ""; }
-  var pill = pgSt("ro", s.status, { of: ro, ofKind: "ro", menu: mayS ? 1 : 0, sub: sub, attrs: mayS ? 'data-a="status" data-id="' + rpE(ro.id) + '" title="Set status (S)"' : "" });
+  var pill = pgSt("ro", s.status, { of: ro, ofKind: "ro", menu: mayS ? 1 : 0, sub: sub, attrs: mayS ? (o.page === "ro" ? 'data-rp-st="1"' : 'data-a="status" data-id="' + rpE(ro.id) + '"') + ' title="Set status (S)"' : "" });   /* on the RO page: its own status menu */
   var av = tech ? '<span class="tg-av" title="' + rpE(tech) + '"' + (typeof v149eAvAttr === "function" ? v149eAvAttr(tech) : "") + ">" + rpE(PG.ini(tech)) + "</span>" : "";
   var det = ""; try{ det = roDetailsHtml(ro); }catch(e){}
   return '<aside class="rq-peek rp rp-' + (o.page || "list") + '" data-rp-ro="' + rpE(ro.id) + '"><div class="rq-peek__top"><span class="id">' + rpE(roLabelFull(ro)) + "</span><span>·</span><span>" + (ro.dateClosed ? "closed" : days == null ? "" : days === 0 ? "opened today" : days + " days open") + "</span>"
     + (o.close ? '<button class="btn btn-sm ib tg-gh" data-a="peekx" title="Close (Esc)">' + tgI("x", 15) + "</button>" : "") + "</div>"
     + '<div class="rp-nm">' + (typeof trkThumb === "function" ? trkThumb(ro) : "") + "<h2>" + rifHtml(ro, "customerName", ro.customerName || "", "Customer") + '</h2></div><div class="sub">' + rifVeh(ro, veh) + (spot && spot !== "—" ? " · " + rpE(spot) : "") + v149KeySeg(ro) + "</div>"
-    + '<div class="rq-strow">' + pill + (tech ? '<span class="rq-with">with ' + av + " " + rpE(tech) + "</span>" : '<span class="rq-with">no tech yet</span>') + "</div>"
+    + '<div class="rq-strow">' + pill + (tech ? '<span class="rq-with">with ' + av + " " + rpE(tech) + "</span>" : '<span class="rq-with">No tech yet</span>') + "</div>"
     + rpStageHtml(ro) + rpOpsHtml(ro)
     + '<div class="rp-allw"><button type="button" class="rp-all" data-rp-all="1">' + (rpAnyOpen() ? RP_CHEV_U + "Collapse all" : RP_CHEV_D + "Expand all") + "</button></div>"
     + det
@@ -115,6 +115,8 @@ document.addEventListener("click", function(e){
   var t = e.composedPath ? e.composedPath()[0] : e.target; if(!t || !t.closest) return;
   var b = t.closest("[data-rp-all]");
   if(b){ e.preventDefault(); e.stopPropagation(); var open = !rpAnyOpen(); RP_KEYS.forEach(function(k){ rpFoldSet(k, !open); }); try{ render(); }catch(x){} try{ rpMountRo(); }catch(x){} return; }
+  var ps = t.closest("[data-rp-st]");
+  if(ps){ e.preventDefault(); e.stopPropagation(); try{ JC.statusMenu(ps); }catch(x){} return; }
   var th = t.closest(".rp-nm .trk-th");   /* the picture opens Truck & photos, as the big one did */
   if(th){ var pr = th.closest("[data-rp-ro]"), rr = pr && getRO(pr.getAttribute("data-rp-ro")); if(rr && typeof trkDlgOpen === "function"){ e.preventDefault(); e.stopPropagation(); trkDlgOpen(rr, th); } return; }
   var op = t.closest("[data-rp-op]");

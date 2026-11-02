@@ -25,7 +25,7 @@ async def main():
             await pg.evaluate(f"(()=>{{ const U=__tg.UI(); U.view='ros'; U.selectedRo='{r}'; __tg.render(); }})()"); await pg.wait_for_timeout(700)
         async def pick_ro(r, name):
             await ro_page(r)
-            await pg.evaluate(J("R.querySelector('.px-status--button').click()")); await pg.wait_for_timeout(300)
+            await pg.evaluate(J("(document.querySelector('.rp-host .pgst.m') || R.querySelector('.px-status--button')).click()")); await pg.wait_for_timeout(300)   # 17.1: the pill is in the one RO panel
             await pg.evaluate(J(f"const b=[...R.querySelectorAll('.px-menu__item')].find(x=>x.textContent.trim().toLowerCase().startsWith({json.dumps(name.lower())})); b.click()")); await pg.wait_for_timeout(500)
         # 1. the RO page: Complete – Road test → Hold tech asks; Just the RO; it holds through what happens next
         await pick_ro(ro, "Hold tech")
@@ -115,9 +115,9 @@ async def main():
         print('    a6', await pg.evaluate(RS(a6)), T6, sid6)
         await pg.evaluate(f"(()=>{{ const TU=__tg.CX.TU(); TU.ro='{a6}'; __tg.PG.go('tech'); }})()"); await pg.wait_for_timeout(1000)
         JTX = "(()=>{ const h=document.querySelector('[data-pg=tech] .jc-host'); const R=h&&h.shadowRoot; if(!R) return null; %s })()"
-        rb = await pg.evaluate(JTX % "const b=R.querySelector('.px-status--button'); return b ? b.textContent : null;")
+        rb = await pg.evaluate(JTX % "const b=(document.querySelector('.rp-host .pgst.m') || R.querySelector('.px-status--button')); return b ? b.textContent : null;")
         ok(rb and "Complete" in rb, f"Technician page (the RO page mounted): the RO's status shows, with a menu ({rb})")
-        await pg.evaluate(JTX % "const b=R.querySelector('.px-status--button'); if(b) b.click(); return 1;"); await pg.wait_for_timeout(400)
+        await pg.evaluate(JTX % "const b=(document.querySelector('.rp-host .pgst.m') || R.querySelector('.px-status--button')); if(b) b.click(); return 1;"); await pg.wait_for_timeout(400)
         items = await pg.evaluate(JTX % "return [...R.querySelectorAll('.px-pop [role=menuitemradio], .px-pop .px-menu__item')].map(x=>x.textContent.trim());")
         ok(items and len(items) >= 9 and any("Hold tech" in x or "Hold Tech" in x for x in items), f"…the menu has the RO statuses ({len(items or [])})")
         await pg.screenshot(path=os.path.join(OUT, "u3_tech_menu.png"))
@@ -128,7 +128,7 @@ async def main():
         r = await pg.evaluate(RS(a6))
         ok(r[0] == "Hold Tech" and not any(r[2]), f"…its operations reopen ({r})")
         await pg.evaluate(f"(()=>{{ const TU=__tg.CX.TU(); TU.ro='{a6}'; __tg.PG.go('tech'); }})()"); await pg.wait_for_timeout(900)
-        st = await pg.evaluate(JTX % "const b=[...R.querySelectorAll('.rop-foot button, .rop-band button')].find(x=>/^Start/.test(x.textContent.trim())); return [!!b, (R.querySelector('.px-status--button')||{}).textContent||''];")
+        st = await pg.evaluate(JTX % "const b=[...R.querySelectorAll('.rop-foot button, .rop-band button')].find(x=>/^Start/.test(x.textContent.trim())); return [!!b, ((document.querySelector('.rp-host .pgst.m') || R.querySelector('.px-status--button'))||{}).textContent||''];")
         ok(st and st[0] and "Hold" in st[1], f"…and Start is there ({st})")
         await pg.screenshot(path=os.path.join(OUT, "u4_tech_after.png"))
         # 8. the operation's own status picked on the RO page holds through what happens next

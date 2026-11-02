@@ -84,7 +84,7 @@ async def main():
         tg = await pg.evaluate("(document.querySelector('[data-pg=triage] .tg-stg, .tg-ib .tg-stg')||{}).textContent||''")
         sq = await pg.evaluate("document.querySelectorAll('.tg-top .tg-sq').length")
         await ro_page(pg, X2["id"])
-        rp = await pg.evaluate(J("return (R.querySelector('.px-stage__top')||{}).textContent||''"))
+        rp = await pg.evaluate(J("return ((document.querySelector('.rp-host .rp-stg') || R.querySelector('.px-stage__top'))||{}).textContent||''"))
         ok(tg == X2["txt"] and f"stage {X2['I'][0]} of {X2['I'][1]}" in rp and sq == 0, f"bug 12: Triage's header says the RO page's stage, no square dot ({tg!r} · RO page {rp[:40]!r})")
         await view(pg, "foreman", f"U.fmSel='{X2['id']}';")
         fm = await pg.evaluate("(document.querySelector('.tg-top .tg-stg')||{}).textContent||''")
@@ -92,7 +92,7 @@ async def main():
         # ---------- D · No tech yet ----------
         nt = await pg.evaluate("(()=>{ const S=__tg.STATE(); const r=S.ros.find(r=>!r.shop && r.id!=='shop' && !r.dateClosed && r.operations.length); r.assignedTech=''; delete r.route; __tg.render(); return r.id; })()")
         await ro_page(pg, nt)
-        w = await pg.evaluate(J("return (R.querySelector('.px-with')||{}).textContent||''"))
+        w = await pg.evaluate(J("return ((document.querySelector('.rp-host .rq-with') || R.querySelector('.px-with'))||{}).textContent||''"))
         await view(pg, "triage", f"U.tgSel='{nt}'; U.tgView='inbox';")
         w2 = await pg.evaluate("[...document.querySelectorAll('[data-pg=triage] .tg-m.sys .hd, .tg-ib .tg-m.sys .hd')].map(x=>x.textContent).join(' | ')")
         ok(w.startswith("No tech yet") and "No tech yet" in w2 and "With Technician" not in w2, f"bug 13: no tech assigned reads No tech yet ({w!r} · {w2[:80]!r})")
@@ -115,7 +115,7 @@ async def main():
         ok(tc[0] == 0 and tc[1] > 0 and tc[3], f"Technician page: no old tinted pills, the shared look, every pill opens something ({tc})")
         await pg.evaluate(f"__tg.permSet({json.dumps(dana[0])}, 'acts', 'ro.status', false)") if False else None
         may = await pg.evaluate(f"(()=>{{ try{{ const r=__tg.permRole('Technician'); return r && r.acts ? !!r.acts['ro.status'] : null; }}catch(e){{ return 'x:' + e.message; }} }})()")
-        rst = await pg.evaluate("(()=>{ const h=document.querySelector('[data-pg=tech] .jc-host'), R=h && h.shadowRoot; const b=R && R.querySelector('.px-ro__status .pgst'); return b ? [b.tagName, b.classList.contains('m'), b.tagName === 'BUTTON'] : null; })()")   # Parsec 14.3: the RO page's status, mounted
+        rst = await pg.evaluate("(()=>{ const h=document.querySelector('[data-pg=tech] .jc-host'), R=h && h.shadowRoot; const b=(h && h.querySelector('.rp-host .rq-strow .pgst')) || (R && R.querySelector('.px-ro__status .pgst')); return b ? [b.tagName, b.classList.contains('m'), b.tagName === 'BUTTON'] : null; })()")   # Parsec 14.3: the RO page's status, mounted
         ok(rst and (rst[0] == "SPAN" and not rst[2]) == (may is False or may is None), f"bug 10: the RO status menu only for those who may change it (tech may: {may}; {rst})")
         # phone
         await pg.set_viewport_size({"width": 390, "height": 844}); await pg.wait_for_timeout(600)
@@ -124,7 +124,7 @@ async def main():
         # ---------- G · the shared look on the RO page, Triage, Foreman, Warranty ----------
         await pg.evaluate(ADMIN); await pg.wait_for_timeout(300)
         await ro_page(pg, X2["id"])
-        rop = await pg.evaluate(J("return { st: !!R.querySelector('.pgst.m.px-status--button'), op: R.querySelectorAll('.pgst.m.rop-st').length, ops: R.querySelectorAll('.px-row').length, old: R.querySelectorAll('.px-si:not(.pgst-i)').length }"))
+        rop = await pg.evaluate(J("return { st: !!(document.querySelector('.rp-host .pgst.m') || R.querySelector('.pgst.m.px-status--button')), op: R.querySelectorAll('.pgst.m.rop-st').length, ops: R.querySelectorAll('.px-row').length, old: R.querySelectorAll('.px-si:not(.pgst-i)').length }"))
         ok(rop["st"] and rop["op"] >= 1 and rop["old"] == 0, f"RO page: the RO status and each operation's status are the shared pill; every icon is the shared one ({rop})")
         await pg.screenshot(path=os.path.join(OUT, "t6_ro_status.png"))
         await view(pg, "warranty")
