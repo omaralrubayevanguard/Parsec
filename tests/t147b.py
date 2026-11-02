@@ -13,16 +13,19 @@ OPEN = "(()=>{ localStorage.removeItem('tec_viewas'); localStorage.removeItem('t
 RECT = "(el)=>{ if(!el) return null; const r=el.getBoundingClientRect(); return [Math.round(r.left),Math.round(r.top),Math.round(r.right),Math.round(r.bottom)]; }"
 def inside(r, vw, vh): return bool(r) and r[0] >= 8 and r[1] >= 8 and r[2] <= vw - 8 and r[3] <= vh - 8
 async def menus(pg, tag, vw, vh):
-    # the truck picture's ⋯ menu
-    await pg.evaluate(J("const a=R.querySelector('.px-trk__act'); a.scrollIntoView({block:'center'}); a.click();")); await pg.wait_for_timeout(300)
-    m = await pg.evaluate(J(f"""const f={RECT}; const mn=R.querySelector('.px-trk__menu'); if(!mn) return null; const r=mn.getBoundingClientRect();
-      const hit=R.elementFromPoint(r.left+14, r.top+18); return [f(mn), !!(hit && mn.contains(hit)), mn.parentNode===R]"""))
-    ok(m and inside(m[0], vw, vh) and m[1], f"{tag}: the truck menu sits inside the window and isn't cut off ({m})")
-    await pg.screenshot(path=os.path.join(OUT, f"trk_{tag}.png"))
-    await pg.keyboard.press("Escape"); await pg.mouse.click(4, vh - 4); await pg.wait_for_timeout(200)
-    ok(await pg.evaluate(J("return !R.querySelector('.px-trk__menu')")), f"{tag}: the truck menu closes")
+    # the truck picture's ⋯ menu — 17.1: the RO page's column is the one RO panel; its small picture opens Truck & photos instead
+    if await pg.evaluate(J("return !!R.querySelector('.px-trk__act')")):
+        await pg.evaluate(J("const a=R.querySelector('.px-trk__act'); a.scrollIntoView({block:'center'}); a.click();")); await pg.wait_for_timeout(300)
+        m = await pg.evaluate(J(f"""const f={RECT}; const mn=R.querySelector('.px-trk__menu'); if(!mn) return null; const r=mn.getBoundingClientRect();
+          const hit=R.elementFromPoint(r.left+14, r.top+18); return [f(mn), !!(hit && mn.contains(hit)), mn.parentNode===R]"""))
+        ok(m and inside(m[0], vw, vh) and m[1], f"{tag}: the truck menu sits inside the window and isn't cut off ({m})")
+        await pg.screenshot(path=os.path.join(OUT, f"trk_{tag}.png"))
+        await pg.keyboard.press("Escape"); await pg.mouse.click(4, vh - 4); await pg.wait_for_timeout(200)
+        ok(await pg.evaluate(J("return !R.querySelector('.px-trk__menu')")), f"{tag}: the truck menu closes")
+    else: print(f"— {tag}: no big truck card on the RO page (17.1, skipped)")
     # the status picker and its second level
-    await pg.evaluate(J("const a=R.querySelector('.px-status--button'); a.scrollIntoView({block:'center'}); a.click();")); await pg.wait_for_timeout(300)
+    has_st = await pg.evaluate(J("return !!R.querySelector('.px-status--button')"))   # 17.1: the one RO panel's pill opens the status window instead
+    if has_st: await pg.evaluate(J("const a=R.querySelector('.px-status--button'); a.scrollIntoView({block:'center'}); a.click();")); await pg.wait_for_timeout(300)
     n = await pg.evaluate(J("const L=[...R.querySelectorAll('.px-smain .px-menu__item')].filter(x=>x.querySelector('.px-smenu__more')); L.forEach(()=>0); return L.length"))
     worst = None
     for i in range(n):
@@ -31,7 +34,7 @@ async def menus(pg, tag, vw, vh):
         await pg.wait_for_timeout(60)
         if not (inside(s[1], vw, vh) and inside(s[2], vw, vh)): worst = s
         if "Customer" in s[0]: await pg.screenshot(path=os.path.join(OUT, f"status_{tag}.png"))
-    if n or not tag.startswith("tech"): ok(n >= 2 and worst is None, f"{tag}: the status picker and every second level stay inside ({n} with a second level{'; out: ' + str(worst) if worst else ''})")
+    if n or (has_st and not tag.startswith("tech")): ok(n >= 2 and worst is None, f"{tag}: the status picker and every second level stay inside ({n} with a second level{'; out: ' + str(worst) if worst else ''})")
     else: print(f"— {tag}: no RO status picker for this person (skipped)")
     await pg.keyboard.press("Escape"); await pg.mouse.click(4, vh - 4); await pg.wait_for_timeout(200)
     # an operation's status menu (pxPop)
@@ -51,7 +54,7 @@ async def main():
         b, pg, errs = await setup(p, w=1366)
         me = await pg.evaluate("""(()=>{ const T=__tg.staffList().filter(s=>s.role==='Technician'); const n=s=>__tg.STATE().ros.filter(r=>r.assignedTech===s.name && !r.dateClosed).length; T.sort((a,b)=>n(b)-n(a)); localStorage.setItem('tec_viewas', T[0].id); localStorage.removeItem('tec_out'); __tg.pxSignedIn(); try{ __tg.CX.U().skipMorning=__tg.todayStr(); }catch(e){} const U=__tg.UI(); U.view='tech'; __tg.render(); return T[0].name; })()""")
         await pg.wait_for_timeout(1200)
-        has = await pg.evaluate(J("return !!R.querySelector('.px-trk__act')"))
+        has = await pg.evaluate(J("return !!R.querySelector('.rop-rail')"))
         if has: await menus(pg, "tech_1366", 1366, 900)
         else: print("— the Technician page shows no RO open here (skipped)")
         rb = await pg.evaluate(J("return !!R.querySelector('.rop-byb')")); cr = await pg.evaluate("__tg.can('ro.release')")

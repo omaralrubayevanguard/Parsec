@@ -9,7 +9,7 @@
 /* ---------- Parsec 15 — one switch: Collapse all while any is open, Expand all once they're all folded ----------
    One above the sections below Operations (Messages, Customer), one at the top of the right pane's groups (Who has it, Schedule,
    People, Vehicle, Money…). The heading or the chevron still folds one; pointing does nothing. Remembered as before (rop_fold, UI.ivFold). */
-function ropFallMain(col) { return col ? Array.prototype.slice.call(col.querySelectorAll(':scope > section.rop-blk.rop-fold')) : []; }
+function ropFallMain(col) { return col ? Array.prototype.slice.call(col.querySelectorAll(':scope > .rop-fold')) : []; }   /* 17.1: Operations too — the switch sits above them */
 function ropFallRailL(rail) { return rail ? Array.prototype.slice.call(rail.querySelectorAll('.rop-top > section.rop-rblk.rop-fold:not(.rop-stg), .px-props > section.px-pg')) : []; }
 function ropFallOpen(s) { return s.classList.contains('px-pg') ? s.classList.contains('is-open') : !s.classList.contains('is-shut'); }
 function ropFallSet(s, open) {
@@ -46,7 +46,7 @@ function ropFallBtn(kind) {
 }
 function ropFallAdd(root) {
   var col = root.querySelector('.rop-col'), rail = root.querySelector('.rop-rail');
-  var first = col && col.querySelector(':scope > section.rop-blk'); if (first) col.insertBefore(ropFallBtn('main'), first);
+  var first = col && col.firstElementChild; if (first) col.insertBefore(ropFallBtn('main'), first);   /* 17.1: above the Operations section */
   if (rail) { var top = rail.querySelector('.rop-top'), r1 = top && top.querySelector(':scope > section.rop-rblk:not(.rop-stg)'), props = rail.querySelector('.px-props');
     if (r1) top.insertBefore(ropFallBtn('rail'), r1); else if (props) props.parentNode.insertBefore(ropFallBtn('rail'), props); }
   ropFallSync();

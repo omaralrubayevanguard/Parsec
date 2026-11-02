@@ -116,16 +116,7 @@
         <div class="rq-card__ft">${st(r.st, { of: r.ro, ofKind: 'ro',  cls: 'sm', size: 12, sub: subOf(r) })}${mini(r.b, r.q)}${av(r.tech)}</div></div>`).join('') || '<div class="rq-empty">Nothing here</div>'}</div></div>`; }).join('')}</div>`;
   }
   /* 17.1 — the one RO side panel (ro/ro-panel.js): the same sections, in the same order, as the RO page's right column */
-  function peek(r){
-    const ro = r.ro;
-    const ops = rpOpsHtml(ro).replace(/data-rp-op="([^"]+)"/g, `data-a="open" data-id="${r.id}" data-op="$1"`);
-    return `<aside class="rq-peek rp"><div class="rq-peek__top"><span class="id">${esc(roLabelFull(ro))}</span><span>·</span><span>${r.done ? 'closed' : r.days == null ? '' : r.days === 0 ? 'opened today' : r.days + ' days open'}</span><button class="btn btn-sm ib tg-gh" data-a="peekx" title="Close (Esc)">${ic('x', 15)}</button></div>
-      <div class="rp-nm">${typeof trkThumb === 'function' ? trkThumb(ro) : ''}<h2>${rifHtml(ro, 'customerName', ro.customerName || '', 'Customer')}</h2></div><div class="sub">${rifVeh(ro, r.veh)}${r.spot && r.spot !== '—' ? ' · ' + esc(r.spot) : ''}${v149KeySeg(ro)}</div>
-      <div class="rq-strow">${canSt() ? st(r.st, { of: r.ro, ofKind: 'ro',  menu: 1, sub: subOf(r), attrs: `data-a="status" data-id="${r.id}" title="Set status (S)"` }) : st(r.st, { of: r.ro, ofKind: 'ro',  sub: subOf(r) })}${r.tech ? `<span class="rq-with">with ${av(r.tech)} ${esc(r.tech)}</span>` : '<span class="rq-with">no tech yet</span>'}</div>
-      ${rpStageHtml(ro)}${rpFactsHtml(ro)}${ops}
-      ${(() => { try{ return roDetailsHtml(ro); }catch(e){ return ""; } })()}
-      <div class="rp-foot">${rpActsHtml(ro, { open: 1 })}</div></aside>`;
-  }
+  function peek(r){ return rpPanelHtml(r.ro, { page: 'list', close: 1 }); }   /* 17.1: the one RO panel (ro/ro-panel.js), the same on the RO page */
   function pop(){
     const p = U.pop; if(!p) return '';
     if(p.type === 'disp') return `<div class="tg-pop rq-disp" style="width:320px"><h5>View</h5><div class="rq-seg"><button class="${U.view === 'list' ? 'on' : ''}" data-a="dv" data-v="list">${ic('list', 14)}List</button><button class="${U.view === 'board' ? 'on' : ''}" data-a="dv" data-v="board">${ic('board', 14)}Board</button></div>

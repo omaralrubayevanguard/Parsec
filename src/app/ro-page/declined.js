@@ -144,12 +144,8 @@ function ropProps() {
 var ROP_FOOT = null;
 function ropRail() {
   ROP_FOOT = null;
-  var top = el('div', { class: 'rop-top' }, [ropBand()]);
-  var stg = null; try { stg = pxStage(); } catch (e) {} if (stg) top.appendChild(el('section', { class: 'rop-rblk rop-stg' }, [stg]));
-  /* 17.1 — the one RO panel (ro/ro-panel.js): Time · Parts · Files on one line, then the operations with status and hours */
-  try { var rp = el('section', { class: 'rop-rblk rop-rp', html: rpFactsHtml(RO) + rpOpsHtml(RO, S.ui.card) });
-    rp.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('[data-rp-op]'); if (!b) return; e.stopPropagation(); S.ui.card = b.getAttribute('data-rp-op'); render(); });
-    top.appendChild(rp); } catch (e) { console.error(e); }
-  var who = null; try { who = ropWho(); } catch (e) { console.error(e); } if (who) top.appendChild(who);
-  return el('aside', { class: 'px-ro__rail rop-rail' }, [top, ropProps()].concat(ROP_FOOT ? [ROP_FOOT] : []));
+  ropBand();   /* builds the buttons (ROP_FOOT) */
+  /* 17.1 — the one RO panel: the right column shows the RO list's side panel (ro/ro-panel.js rpPanelHtml), slotted in as
+     light DOM; the band is still built for its buttons (ROP_FOOT), which stay at the bottom, always in reach */
+  return el('aside', { class: 'px-ro__rail rop-rail rop-rail-rp' }, [el('slot', { name: 'rp' })].concat(ROP_FOOT ? [ROP_FOOT] : []));
 }

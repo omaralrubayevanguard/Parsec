@@ -1,10 +1,10 @@
 /* Parsec · ro · ro-panel.js
    The one RO side panel's shared pieces: the stage line, Time · Parts · Files on one line, the operations, the buttons by role, and the folds each person keeps.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   rpWho rpFolds rpFold rpFoldSet rpE rpStageHtml rpFactsHtml rpOpsHtml rpActsHtml RP_FOLD0 (9 functions, 1 constant)
+   declares   rpWho rpFolds rpFold rpFoldSet rpE rpStageHtml rpFactsHtml rpOpsHtml rpActsHtml rpPanelHtml rpAnyOpen rpMountRo … (12 functions, 4 constants)
    state      punches
-   uses       access/ clock/ kit/ pages/ pages/triage/ pages/warranty/ ro-page/ shell/ state/
-   at load    on document click
+   uses       access/ clock/ kit/ pages/ pages/triage/ pages/warranty/ ro-page/ shell/ state/ trucks/
+   at load    2× on document click
 */
 /* ============================== one RO side panel (Parsec 17.1) ==============================
    The RO list's side panel (and the Technician's ROs tab) and the RO page's right column (and Technician › My ROs) are
@@ -73,5 +73,51 @@ function rpActsHtml(ro, o){
 document.addEventListener("click", function(e){
   var t = e.composedPath ? e.composedPath()[0] : e.target; if(!t || !t.closest) return;
   var f = t.closest("[data-rp-fold]");
-  if(f){ e.preventDefault(); e.stopPropagation(); var k = f.getAttribute("data-rp-fold"); rpFoldSet(k, !rpFold(k)); try{ render(); }catch(x){} try{ if(typeof JC !== "undefined" && JC.rerender) JC.rerender(); }catch(x){} }
+  if(f){ e.preventDefault(); e.stopPropagation(); var k = f.getAttribute("data-rp-fold"); rpFoldSet(k, !rpFold(k)); try{ render(); }catch(x){} try{ rpMountRo(); }catch(x){} try{ if(typeof JC !== "undefined" && JC.rerender) JC.rerender(); }catch(x){} }
+}, true);
+
+/* ---------- 17.1 (b): the whole panel, one HTML for both — the RO list's side panel, and the RO page's right column
+   (there it is light DOM slotted into the shadow root: <div slot="rp"> inside .jc-host, so the page's own styles and
+   clicks work the same). o = { page: 'list' | 'ro', close, foot } ---------- */
+function rpPanelHtml(ro, o){
+  o = o || {};
+  var opened = ro.dateOpened ? new Date(ro.dateOpened) : null, days = opened ? Math.max(0, Math.floor((Date.now() - opened) / 864e5)) : null;
+  var s = roStatus(ro) || { status: "Hold Tech" }, sub = s.sub ? "· " + ((typeof PGST_PART !== "undefined" && PGST_PART[pgStKey("part", s.sub)]) ? pgStLabel("part", s.sub) : s.sub) : "";
+  var mayS = typeof can !== "function" || can("ro.status"), tech = ro.assignedTech || "";
+  var veh = ""; try{ var tm = truckYM(ro); veh = (tm && tm.line) || [ro.year, ro.make, ro.model].filter(Boolean).join(" "); }catch(e){}
+  var spot = ""; try{ var sp = spotOf(ro.location); spot = sp ? tgSpotLbl(sp) : (ro.location || ""); }catch(e){ spot = ro.location || ""; }
+  var pill = pgSt("ro", s.status, { of: ro, ofKind: "ro", menu: mayS ? 1 : 0, sub: sub, attrs: mayS ? 'data-a="status" data-id="' + rpE(ro.id) + '" title="Set status (S)"' : "" });
+  var av = tech ? '<span class="tg-av" title="' + rpE(tech) + '"' + (typeof v149eAvAttr === "function" ? v149eAvAttr(tech) : "") + ">" + rpE(PG.ini(tech)) + "</span>" : "";
+  var det = ""; try{ det = roDetailsHtml(ro); }catch(e){}
+  return '<aside class="rq-peek rp rp-' + (o.page || "list") + '" data-rp-ro="' + rpE(ro.id) + '"><div class="rq-peek__top"><span class="id">' + rpE(roLabelFull(ro)) + "</span><span>·</span><span>" + (ro.dateClosed ? "closed" : days == null ? "" : days === 0 ? "opened today" : days + " days open") + "</span>"
+    + (o.close ? '<button class="btn btn-sm ib tg-gh" data-a="peekx" title="Close (Esc)">' + tgI("x", 15) + "</button>" : "") + "</div>"
+    + '<div class="rp-nm">' + (typeof trkThumb === "function" ? trkThumb(ro) : "") + "<h2>" + rifHtml(ro, "customerName", ro.customerName || "", "Customer") + '</h2></div><div class="sub">' + rifVeh(ro, veh) + (spot && spot !== "—" ? " · " + rpE(spot) : "") + v149KeySeg(ro) + "</div>"
+    + '<div class="rq-strow">' + pill + (tech ? '<span class="rq-with">with ' + av + " " + rpE(tech) + "</span>" : '<span class="rq-with">no tech yet</span>') + "</div>"
+    + rpStageHtml(ro) + rpOpsHtml(ro)
+    + '<div class="rp-allw"><button type="button" class="rp-all" data-rp-all="1">' + (rpAnyOpen() ? RP_CHEV_U + "Collapse all" : RP_CHEV_D + "Expand all") + "</button></div>"
+    + det
+    + (o.foot === false ? "" : '<div class="rp-foot">' + rpActsHtml(ro, { open: o.page !== "ro" }) + "</div>") + "</aside>";
+}
+var RP_CHEV_U = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 14.5L12 9l5.5 5.5"/></svg>', RP_CHEV_D = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 9.5L12 15l5.5-5.5"/></svg>';
+var RP_KEYS = ["ops", "vehicle", "customer", "people", "schedule", "paperwork"];
+function rpAnyOpen(){ return RP_KEYS.some(function(k){ return !rpFold(k); }); }
+/* the RO page: the panel goes into its right column, slotted */
+function rpMountRo(){
+  var pane = document.querySelector(".ro-detail-pane[data-jc]"), host = pane && pane.querySelector(":scope > .jc-host"), ro = pane && getRO(pane.getAttribute("data-jc"));
+  if(!host || !ro) return;
+  var box = host.querySelector(":scope > .rp-host");
+  if(!box){ box = document.createElement("div"); box.className = "rp-host tg rq"; box.setAttribute("data-pg", "rolist"); box.setAttribute("slot", "rp"); host.appendChild(box); }
+  var a = document.activeElement, typing = a && box.contains(a) && /^(INPUT|SELECT|TEXTAREA)$/.test(a.tagName);
+  var h = rpPanelHtml(ro, { page: "ro", foot: false });
+  if(!typing && box.__h !== h){ box.innerHTML = h; box.__h = h; }
+}
+document.addEventListener("click", function(e){
+  var t = e.composedPath ? e.composedPath()[0] : e.target; if(!t || !t.closest) return;
+  var b = t.closest("[data-rp-all]");
+  if(b){ e.preventDefault(); e.stopPropagation(); var open = !rpAnyOpen(); RP_KEYS.forEach(function(k){ rpFoldSet(k, !open); }); try{ render(); }catch(x){} try{ rpMountRo(); }catch(x){} return; }
+  var th = t.closest(".rp-nm .trk-th");   /* the picture opens Truck & photos, as the big one did */
+  if(th){ var pr = th.closest("[data-rp-ro]"), rr = pr && getRO(pr.getAttribute("data-rp-ro")); if(rr && typeof trkDlgOpen === "function"){ e.preventDefault(); e.stopPropagation(); trkDlgOpen(rr, th); } return; }
+  var op = t.closest("[data-rp-op]");
+  if(op){ var p = op.closest("[data-rp-ro]"); if(!p) return; e.preventDefault(); e.stopPropagation(); var rid = p.getAttribute("data-rp-ro");
+    if(typeof openRoAt === "function") openRoAt(rid, op.getAttribute("data-rp-op")); else if(typeof PG !== "undefined") PG.openRo(rid); }
 }, true);

@@ -431,6 +431,7 @@ function attachConsole(){
   migrateRO(ro);
   JC.attach(pane, ro);
   try{ raMount(pane, ro); }catch(e){ console.error(e); }
+  try{ rpMountRo(); }catch(e){ console.error(e); }   /* 17.1: the one RO panel in its right column */
   var oldSeam = pane.querySelector(":scope > .seam-dock"); if(oldSeam) oldSeam.remove();
   var host = pane.querySelector(".jc-host");
   if(host){ host.classList.toggle("rail-mini", railIsMini()); host.classList.remove("rail-stack"); }

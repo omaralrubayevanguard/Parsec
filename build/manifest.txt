@@ -161,6 +161,7 @@ shell/nav-rail.js
 shell/nav-arrange.js
 shell/dept-tabs.js
 shell/widths.js
+shell/smooth-scroll.js
 shell/rail-popovers.js
 
 kit/tooltip-engine.js
