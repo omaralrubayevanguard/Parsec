@@ -69,7 +69,7 @@ document.addEventListener("click", function(e){
   if(!mxOn()) return;
   var path = e.composedPath ? e.composedPath() : [e.target], t = path[0]; if(!t || !t.closest) return;
   var tab = t.closest(MX_TAB);
-  if(tab){ var list = tab.closest("[role=tablist], .tg-views, .lib-tabs, .dp-tabs, .rq-seg, .fl-tabs, .px-tabs, .pxr-nav") || tab.parentNode; MX.tab = { list: list, root: tab.getRootNode ? tab.getRootNode() : document, nav: tab.getAttribute("data-action") === "nav", at: Date.now() }; requestAnimationFrame(function(){ requestAnimationFrame(mxSettle); }); return; }
+  if(tab){ var list = tab.closest("[role=tablist], .tg-views, .lib-tabs, .dp-tabs, .rq-seg, .fl-tabs, .px-tabs, .pxr-nav") || tab.parentNode; MX.tab = { list: list, cls: (typeof list.className === "string" ? list.className : "").trim().split(/\s+/)[0] || "", root: tab.getRootNode ? tab.getRootNode() : document, nav: tab.getAttribute("data-action") === "nav", at: Date.now() }; requestAnimationFrame(function(){ requestAnimationFrame(mxSettle); }); return; }
   var f = t.closest(MX_FOLD);
   if(f && !t.closest("input, select, textarea")){ var box = mxBox(f); if(box && box.getBoundingClientRect){ MX.fold = { box: box, h: box.getBoundingClientRect().height, had: new Set(box.querySelectorAll(MX_NEW)), at: Date.now() }; requestAnimationFrame(function(){ requestAnimationFrame(mxSettle); }); } }
 }, true);
@@ -90,13 +90,15 @@ function mxSettle(){
   }
   if(T && Date.now() - T.at < 900){
     MX.tab = null;
-    var root = T.root && T.root.querySelector ? T.root : document, body = null;
+    var root = T.root && T.root.querySelector ? T.root : document, body = null, list = T.list;
+    if(list && !list.isConnected && T.cls && root.querySelector) list = root.querySelector("." + CSS.escape(T.cls));   /* a page drawn fresh (the RO page): its new tab row */
     if(T.nav) body = document.querySelector("#app .main");
-    else if(T.list && T.list.isConnected){
-      var pg = T.list.closest("[data-pg]");
-      body = (pg && pg.querySelector(":scope .tg-body, :scope .lib-list, :scope #lib-list")) || T.list.nextElementSibling || (T.list.parentNode && T.list.parentNode.nextElementSibling);
-    } else body = root.querySelector ? (root.querySelector("#app .main .tg-body") || root.querySelector(".rop-col")) : null;
-    if(body && body.animate) try{ body.animate([{ opacity: .35, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }], { duration: 220, easing: mxEase() }); }catch(e){}
+    else if(list && list.isConnected){
+      var pg = list.closest("[data-pg]");
+      var nx = list.nextElementSibling; if(nx && nx.matches(".rop-tacts, .rop-tabacts, [class*='tools']")) nx = null;   /* a row of buttons beside the tabs isn't what they show */
+      body = (pg && pg.querySelector(":scope .tg-body, :scope .lib-list, :scope #lib-list")) || nx || (list.parentNode && list.parentNode.nextElementSibling);
+    }   /* never the whole page: only what the tab shows moves */
+    if(body && body.animate) try{ body.animate([{ opacity: .85, transform: "translateY(3px)" }, { opacity: 1, transform: "none" }], { duration: 200, easing: mxEase() }); }catch(e){}
   }
 }
 /* the rows a fold opened: a short slide in, one after another */

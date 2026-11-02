@@ -52,6 +52,8 @@ Prefixes are how this codebase finds its way; keep them:
 
 **A question before an action.** `pgAsk({ head, sub, list, buttons }, cb)` (`ro/flow-gates.js`); it keeps the house wording and keyboard (Enter = the primary button, Esc = cancel).
 
+**Something that moves.** Opening, closing, folds and tabs already move (`shell/motion-open.js`, `styles/app/57-motion.css`); add a selector there rather than a new animation. Motion never dims the whole page: an ease-in starts at 85 % opacity and 3 px, and only what changed moves. On the RO page, an element with an opening animation needs a key of its own (`data-key`, `data-op` or `data-job`) so a redraw can tell a new one from the same one (`ro-page/steady-redraw.js`); never replace a panel's `innerHTML` that stays on screen — morph it (`morphChildren`).
+
 **A tooltip.** Write the `title` in plain words; `tipNorm` fixes the style and the build lints it. If a phrase needs an exact rewrite, add it to `TIPMAP` in `kit/tooltip-words.js`.
 
 ## What the build enforces

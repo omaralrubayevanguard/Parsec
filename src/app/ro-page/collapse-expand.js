@@ -215,7 +215,7 @@ function jcRunOpt(k) {
 function attach(pane, ro) {
   if (UI.jcPendingOpt && ro && ro.id === UI.selectedRo) { var pk = UI.jcPendingOpt; UI.jcPendingOpt = null; setTimeout(function () { jcRunOpt(pk); }, 90); }
   ensureHost();
-  if (HOST.parentNode !== pane) { pane.innerHTML = ''; pane.appendChild(HOST); }
+  if (HOST.parentNode !== pane) { pane.innerHTML = ''; pane.appendChild(HOST); jcSteadyMoved(); }   /* 17.1: moved, not new — nothing opens again */
   if (RO !== ro) {
     if (ATT.open) closeAttachments();
     RO = ro; S = makeFacade(ro); attach.rf = UI.roFrom || ''; soloJob = null; pickOpen = -1; hideSelToolbar();
@@ -248,7 +248,7 @@ function busy() {
   return false;
 }
 
-return { attach: attach, busy: busy, syncFiles: syncFiles, scanFolder: scanFolder,
+return { attach: attach, busy: busy, syncFiles: syncFiles, scanFolder: scanFolder, getBlob: getBlob,
   addFilesTo: function (ro, task, list, cb, opId, extra, tick) {   /* the Warranty packet's Upload; the Technician page's Files tab gives the operation; the Library adds { doc } and ticks the entry */
     var arr = Array.prototype.slice.call(list || []); if (!ro || !arr.length) { if (cb) cb(0); return; }
     var entry = bulletinFor(ro, task), d = new Date(), ts = pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());

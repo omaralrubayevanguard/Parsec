@@ -89,7 +89,7 @@ function renderNow() {
   var wasAt = cardRects();
   var scP = HOST && HOST.parentElement, scT = scP ? scP.scrollTop : 0;
   page.style.minHeight = page.offsetHeight + 'px';
-  page.innerHTML = '';
+  var steady = jcSteadyBefore(page);   /* 17.1: what was on screen stays still through the redraw (steady-redraw.js) */
   page.classList.toggle('soloMode', !!soloJob);
   TIMERS = [];
 
@@ -111,6 +111,7 @@ function renderNow() {
     mountBandControls(null);
     markSeen();
     pinOpenPops();
+    jcSteadyAfter(page, steady);
     return;
   }
 
@@ -222,6 +223,7 @@ function renderNow() {
   markSeen();
   pinOpenPops();
   page.style.minHeight = '';
+  jcSteadyAfter(page, steady);
   flipCards(wasAt);
   if (UI.jcFocusNew) { var fid = UI.jcFocusNew; UI.jcFocusNew = null;
     requestAnimationFrame(function () { var fc = R.querySelector('.cardCol > .card[data-job="' + fid + '"]'); var ff = fc && fc.querySelector('.complaintField');

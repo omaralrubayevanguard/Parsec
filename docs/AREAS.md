@@ -70,7 +70,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `photo-shrink.js` | Photos wider than 1600 px or over 2 MB become a 1600 px JPEG before they are saved (v160Shrink); PDFs and small images stay as they are. | 1 | 1 | 1 |
 | `store-api.js` | What the rest of the app asks the store for: pdRoDir / pdAttList for an RO's folder and attachments, pd16Info and the banner on Your data, writeFileToFolder, and the Parsec 15 writers kept for the migration. | 27 | 34 | 8 |
 | `store-helpers.js` | Small store helpers with no installs: gzip / gunzip through the browser's CompressionStream, SHA-256 checksums, folder lookups (pdDirAt / pdPut), timestamps. | 3 | 9 | 0 |
-| `store-merge.js` | Merging two states record by record (two computers saved the same shop): newer mark wins, deletions carry, and a clash on the same record asks Keep this / Keep that (pdClashAsk). | 16 | 12 | 0 |
+| `store-merge.js` | Merging two states record by record (two computers saved the same shop): newer mark wins, deletions carry, and a clash on the same record asks Keep this / Keep that (pdClashAsk). | 17 | 13 | 0 |
 | `store-read-write.js` | Reading and writing layout 16: pd16Read walks Parsec Data/ into a state; pd16Write writes only what changed (ROs by folder, the shop by topic, big topics by month), compressing Closed years. | 15 | 12 | 0 |
 | `store-records.js` | Records and marks: where an RO's folder goes (Open / Closed/<year>), ids on every record, updatedAt / updatedBy marks, deletion marks (tombstones in STATE.tombs), and pdCanon — the same data always gives the same text. | 9 | 16 | 1 |
 | `store-save-open.js` | The save and the open: writeFolderState → pd16Save (debounced, only changed files); readFolderState; adoptFolderState merges what the folder has with what is in memory; the one-time move from layout 15 (backup → write → read back → compare → tidy), the Parsec 15 safety net, and the poll for another computer's saves. | 19 | 15 | 3 |
@@ -347,7 +347,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `attachments-view.js` | The attachments large view: list, keys, rename, delete, open. | 24 | 17 | 5 |
 | `build-and-fold.js` | ropBuild draws the RO page's sections in order; every section folds (Parsec 14.4) and remembers it. | 6 | 5 | 1 |
 | `builders.js` | Small builders: fields, dropdowns, the pop-over pinning (a pop-over stays put while the page redraws), live updaters for totals. | 19 | 17 | 3 |
-| `bulletins.js` | Files on the RO: saving to the folder (or IndexedDB until there is one), shrinking images, thumbnails, the bulletin log entries that carry files. | 15 | 24 | 12 |
+| `bulletins.js` | Files on the RO: saving to the folder (or IndexedDB until there is one), shrinking images, thumbnails, the bulletin log entries that carry files. | 17 | 26 | 12 |
 | `clock-card-actions.js` | What you do on the clock card: hold to stop with a reason, lap / split, fix the start, notes, reopen; ockAuto for lunch and the end of the day (reminders only since Parsec 15). | 14 | 16 | 3 |
 | `clock-card-draw.js` | The clock card's pieces, markup and ticker: the big time, the ring, segments and facts; focus mode (the big shop-floor view); ockTick updates every card in place each second; the time bar's initials and note pins, and the note added where you click (17.1). | 45 | 71 | 0 |
 | `clock-card-model.js` | The operation clock card (Parsec 12.4 / 12.5), the model: the numbers each page counts (ockModel), the shop day, similar jobs and the tech's usual pace, parts on the job, the punches' notes (and each note's time, p.noteAt) and splits. | 16 | 38 | 21 |
@@ -375,8 +375,9 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `px-components.js` | The RO page's components from the Parsec design system: pop-overs (one at a time, fixed to the viewport), the modal with scrim, StatusMenu, PartStatus dropdown, the Transfer / Add operation / Delete dialogs. | 29 | 31 | 3 |
 | `release-bypass.js` | Release without checks: the truck card's way past the truck checks, with a reason and an Activity line. | 4 | 7 | 1 |
 | `render-header.js` | The RO header band: compact or open, Details, delete RO. | 17 | 4 | 2 |
-| `render.js` | The RO page's render: openState (which card is open), renderNow draws every part into the shadow root, flipCards animates, and the scroll / pin bookkeeping. | 19 | 16 | 2 |
+| `render.js` | The RO page's render: openState (which card is open), renderNow draws every part into the shadow root, flipCards animates, and the scroll / pin bookkeeping. | 20 | 16 | 2 |
 | `state.js` | The RO page's state: R (shadow root), HOST, RO, S (per-RO UI state: open card, tabs, selection), mounting into the app's page, and the small date conversions. | 10 | 30 | 16 |
+| `steady-redraw.js` | The RO page redraws without flicker (17.1): an opening plays only for what is new, a picture already showing stays, a scrolled box keeps its scroll. | 4 | 4 | 0 |
 | `summary-and-selection.js` | The work performed as one paragraph for warranty / triage (complaint, cause, correction), and the selection toolbar for marking text as a pill. | 22 | 23 | 11 |
 | `tab-actions.js` | Each tab's actions at the right of the tabs: attach, paste a screenshot, the notes paragraph to copy (Time), add a part (Parts). | 6 | 6 | 0 |
 | `task-bar.js` | Clock-string parsing for the time fields and the punch story builder. | 2 | 6 | 4 |

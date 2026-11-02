@@ -28,7 +28,7 @@ function pmBeforeRender(){
 /* after a draw: the header eases in when the RO changes; a truck that changed bays flies there; Search gets its labels */
 function pmAfterRender(){
   var key = UI.view + "|" + (UI.view === "foreman" ? UI.fmSel : UI.view === "triage" ? UI.tgSel : UI.selectedRo);
-  if(MI.sel !== null && MI.sel !== key && MI.sel.split("|")[0] === UI.view) pmAnimate(document.querySelector("#app .tg-top, #app .tg-dkh"), [{ opacity: .45, transform: "translateY(4px)" }, { opacity: 1, transform: "none" }], 180);
+  if(MI.sel !== null && MI.sel !== key && MI.sel.split("|")[0] === UI.view) pmAnimate(document.querySelector("#app .tg-top, #app .tg-dkh"), [{ opacity: .85, transform: "translateY(3px)" }, { opacity: 1, transform: "none" }], 180);
   MI.sel = key;
   document.querySelectorAll("#app .fm-bay[data-ro], #app .tg-s[data-ro]").forEach(function(n){
     var id = n.getAttribute("data-ro"), ro = getRO(id); if(!ro) return;
@@ -61,7 +61,7 @@ function pmAfterRender(){
 /* the RO page: its header eases in when you switch ROs; a stage's segment fills when it's checked off */
 function pmDetailRendered(root, ro){
   if(!root || !ro) return;
-  if(MI.det !== null && MI.det !== ro.id) pmAnimate(root.querySelector(".px-trk, .px-titleblock"), [{ opacity: .45, transform: "translateY(4px)" }, { opacity: 1, transform: "none" }], 180);
+  if(MI.det !== null && MI.det !== ro.id) pmAnimate(root.querySelector(".px-trk, .px-titleblock"), [{ opacity: .85, transform: "translateY(3px)" }, { opacity: 1, transform: "none" }], 180);
   MI.det = ro.id;
   root.querySelectorAll("[data-pm-stage]").forEach(function(n){
     var id = ro.id + "|" + n.getAttribute("data-pm-stage"), done = n.classList.contains("is-done");

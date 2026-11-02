@@ -113,7 +113,9 @@ function rpMountRo(){
   if(!box){ box = document.createElement("div"); box.className = "rp-host tg rq"; box.setAttribute("data-pg", "rolist"); box.setAttribute("slot", "rp"); host.appendChild(box); }
   var a = document.activeElement, typing = a && box.contains(a) && /^(INPUT|SELECT|TEXTAREA)$/.test(a.tagName);
   var h = rpPanelHtml(ro, { page: "ro", foot: false });
-  if(!typing && box.__h !== h){ box.innerHTML = h; box.__h = h; }
+  if(!typing && box.__h !== h){   /* only what changed is touched: the picture, the folds and the hover stay put */
+    if(box.__h != null && typeof morphChildren === "function"){ var tmp = document.createElement("div"); tmp.innerHTML = h; morphChildren(box, tmp); } else box.innerHTML = h;
+    box.__h = h; }
 }
 document.addEventListener("click", function(e){
   var t = e.composedPath ? e.composedPath()[0] : e.target; if(t && t.nodeType !== 1) t = t.parentElement; if(!t || !t.closest) return;

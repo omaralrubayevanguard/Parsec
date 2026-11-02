@@ -122,7 +122,7 @@ function ropOpRow(j, i, on, stash) {
   return row;
 }
 function ropOpBody(j, stash) {
-  var body = el('div', { class: 'px-op' });
+  var body = el('div', { class: 'px-op', 'data-key': 'pxop-' + j.id });   /* its own key: another operation's card opens with its glide, the same one stays still (steady-redraw.js) */
   body.appendChild(ropFacts(j));   /* Parsec 17.1 */
   /* the links that rode with the codes (the claim, fixed before, filled in from) stay, on their own line; codes live in the Fault codes block */
   /* Parsec 17.1: the codes and documents line, which carries those links too */

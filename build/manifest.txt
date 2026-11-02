@@ -342,6 +342,7 @@ ro-page/operation-header.js
 ro-page/picking.js
 ro-page/build-and-fold.js
 ro-page/collapse-expand.js
+ro-page/steady-redraw.js
 ro-page/_close.js
 
 shell/header-shrink.js

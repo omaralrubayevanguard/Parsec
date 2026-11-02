@@ -5,6 +5,7 @@
 :root .modal-backdrop,:root:is([data-theme="ivl"],[data-theme="ivd"]) .modal-backdrop,.overlay,.roreo,.ix-wrap,.ti-wrap,.pal-wrap,.pm-scrim,.trx-layer .trx-scrim,.lgx:not(.lock){background:var(--mx-scrim) !important;-webkit-backdrop-filter:var(--mx-blur) !important;backdrop-filter:var(--mx-blur) !important;}
 .trx-layer{-webkit-backdrop-filter:none !important;backdrop-filter:none !important;}
 .mx-out{pointer-events:none !important;}
+.mx-out,.mx-out *{animation:none !important;transition:none !important;}   /* a closing copy only fades: nothing in it opens again */
 @media (prefers-reduced-motion:no-preference){
   /* scrims fade in; the box on them rises in */
   .modal-backdrop,.overlay,.roreo,.ix-wrap,.ti-wrap,.pal-wrap,.pm-scrim,.trx-scrim{animation:mxFade .18s ease both;}
