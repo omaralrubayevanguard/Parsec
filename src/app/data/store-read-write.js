@@ -199,7 +199,8 @@ function pd16Write(S, opts){
   return pdRoot(true).then(function(d){ pd = d;
     if(opts.pending) return;
     return (opts.race ? readJsonFile(pd, PD_LAYOUT_FILE).then(function(m){ if(m && m.writeId && seen && m.writeId !== seen) raced = true; }) : Promise.resolve())
-      .then(function(){ return put(first); }).then(function(){ PD16.seen = first.writeId; });
+      .then(function(){ if(raced && opts.race){ var e = new Error("another computer saved first"); e.raced = true; throw e; } return put(first); })   /* 17.1: nothing is written over its save — the caller takes it in first */
+      .then(function(){ PD16.seen = first.writeId; });
   })
     .then(function(){ return pd16WriteRos(S, names, g.byRo); })
     .then(function(){ return pd16WriteShop(sf.files); })

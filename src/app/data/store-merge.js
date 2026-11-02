@@ -2,7 +2,7 @@
    Merging two states record by record (two computers saved the same shop): newer mark wins, deletions carry, and a clash on the same record asks Keep this / Keep that (pdClashAsk).
    Flow: adoptFolderState and pd16Poll call pdMerge; pdApplyMerge writes the result.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   pdSameShop pdAt pdMerge pdKeyLabel pdWhenTxt pdClashText pdClashWhere pdClashAsk pdApplyMerge pd16Pull pd16Nothing pdSnapOf (12 functions)
+   declares   pdSameShop pdAt pdMerge pdKeyLabel pdWhenTxt pdClashText pdClashWhere pdClashAsk pdApplyMerge pd16Pull pd16PullNow pd16Nothing … (13 functions)
    uses       access/ kit/ ro/ shell/ state/
 */
 /* ---------- the merge ---------- */
@@ -201,9 +201,14 @@ function pdApplyMerge(r, why){
 }
 /* another computer saved: read the folder, merge, and (when nobody needs to be asked) carry on */
 function pd16Pull(why){
-  if(PD16.busy) return Promise.resolve("busy");
+  if(PD16.busy) return PD16.pulling || Promise.resolve("busy");   /* 17.1: one pull at a time — a save that wants one waits for the one under way */
   PD16.busy = true;
   try{ pdMark(); }catch(e){}
+  var p = pd16PullNow(why);
+  PD16.pulling = p.then(function(r){ PD16.pulling = null; return r; }, function(e){ PD16.pulling = null; throw e; });
+  return PD16.pulling;
+}
+function pd16PullNow(why){
   return pd16ReadSettled().then(function(F){
     var base = PD16.base, res = pdMerge(base, STATE, F.state, null), nb = pdSnapOf(F.state);
     pd16Commit(F);

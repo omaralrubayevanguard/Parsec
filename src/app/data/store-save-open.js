@@ -29,6 +29,10 @@ function pd16Save(force){
           /* another computer saved while this one was writing: take its changes in now */
           if(meta && meta.raced) return pd16Pull("save").then(function(r2){ if(r2 === "merged") scheduleSave(true); return true; }, function(){ return true; });
           return true; });
+      }, function(e){
+        /* 17.1: another computer saved between the check and this write — take its changes in, then save again */
+        if(!(e && e.raced)) throw e;
+        return pd16Pull("save").then(function(r2){ if(r2 !== "asked") scheduleSave(true); return false; }, function(){ scheduleSave(true); return false; });
       });
     })
     .then(function(ok){ if(ok && typeof pdBkTick !== "function") return writeDailyBackup(JSON.stringify(STATE)).then(function(){ return ok; }); return ok; });
@@ -247,14 +251,17 @@ function pd15Remove(found){
   }, function(){});
 }
 
-/* ---------- now and then: has another computer saved? (only when nobody is typing) ---------- */
+/* ---------- every few seconds: has another computer saved? (only when nobody is typing) ---------- */
 function pd16Poll(){
   if(!PD16.on || FS.status !== "connected" || !FS.dir || PD16.busy || PD16.clash || PD_MIGRATING || writeBusy || TAB_LOCKED) return Promise.resolve(null);
   if(document.visibilityState !== "visible" || (UI && UI.modal)) return Promise.resolve(null);
   try{ if(deepActiveField()) return Promise.resolve(null); }catch(e){}
   return pd16Changed().then(function(ch){
-    if(!ch) return pd15Scan().then(function(f){ if(f){ scheduleSave(true); return "15"; } return null; });   /* a Parsec 15 computer saved here */
+    if(!ch){   /* a Parsec 15 computer saved here — looked for now and then, not at every check */
+      if(Date.now() - (PD16.scan15At || 0) < 30000) return null;
+      PD16.scan15At = Date.now();
+      return pd15Scan().then(function(f){ if(f){ scheduleSave(true); return "15"; } return null; }); }
     return pd16Pull("poll").then(function(r){ if(r === "merged") scheduleSave(true); return r; }); }).catch(function(){ return null; });
 }
-setInterval(pd16Poll, 20000);
+setInterval(pd16Poll, 5000);   /* 17.1: what another computer saved shows within seconds (only layout.json is read until something changed) */
 window.addEventListener("focus", function(){ setTimeout(pd16Poll, 700); });

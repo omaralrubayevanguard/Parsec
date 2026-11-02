@@ -1,7 +1,7 @@
 /* Parsec · ro-page · bulletins.js
    Files on the RO: saving to the folder (or IndexedDB until there is one), shrinking images, thumbnails, the bulletin log entries that carry files.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   saveFileViaAnchor saveFile downloadAttachment shrinkImage folderOn safeName roFolderName roDirByName legacyName fileHome readFromFolder uniqueName … (24 functions, 12 constants)
+   declares   saveFileViaAnchor saveFile downloadAttachment shrinkImage folderOn safeName roFolderName roDirByName legacyName fileHome readFromFolder uniqueName … (26 functions, 12 constants)
    state      ros
    uses       data/ kit/ ro/ shell/ state/
    at load    2× a timer · on window focus · on document visibilitychange
@@ -59,6 +59,10 @@ function roDirByName(name, create) {
 function legacyName(f) { return f.id + '__' + String(f.name || 'file').replace(/[\\\/:*?"<>|]+/g, '_'); }
 /* where this file sits now: {dir: Promise<handle>, name} */
 function fileHome(roId, f) {
+  if (f.folder && f.fname && f.fname.indexOf('/') > -1) {   /* 17.1: a file someone put in a folder inside Attachments */
+    var parts = f.fname.split('/'), leaf = parts.pop();
+    return { dir: roDirByName(f.folder, false).then(function (d) { return parts.reduce(function (p, nm) { return p.then(function (x) { return x.getDirectoryHandle(nm); }); }, Promise.resolve(d)); }), name: leaf };
+  }
   if (f.folder && f.fname) return { dir: roDirByName(f.folder, false), name: f.fname };
   return { dir: attachDir(roId, false), name: legacyName(f) };          /* written before the move */
 }
@@ -191,29 +195,54 @@ function stampOf(ms) {
   var d = new Date(ms || Date.now());
   return pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
 }
+/* every file in an RO's Attachments, folders inside it too (a few levels): [{ path: "Photos/hub.jpg", h }] */
+function attWalk(dir, pre, depth) {
+  var out = [];
+  return dirEntries(dir).then(function (es) {
+    return es.reduce(function (p, e) { return p.then(function () {
+      if (/^\./.test(e.name)) return;
+      var path = (pre ? pre + '/' : '') + e.name;
+      if (e.kind === 'directory') { if ((depth || 0) < 3) return attWalk(e, path, (depth || 0) + 1).then(function (L) { out = out.concat(L); }); return; }
+      out.push({ path: path, h: e });
+    }); }, Promise.resolve());
+  }).then(function () { return out; }, function () { return out; });
+}
+/* what the scan found shows: the RO page when its RO changed, and the app's lists, panels and counts */
+function jcScanShow(touched) {
+  var busy = R && R.activeElement && /^(INPUT|TEXTAREA|SELECT)$/.test(R.activeElement.tagName);
+  if (HOST && HOST.isConnected && RO && (!touched || touched[RO.id]) && !busy) render();
+  try { if (typeof tecRender === 'function') tecRender(); } catch (e) {}
+}
 function scanFolder() {
   if (!folderOn() || scanning || syncing || writeBusy || TAB_LOCKED || PD_MIGRATING || PD_LAYOUT !== 'new') return Promise.resolve(0);
   scanning = true;
   var added = [], removed = 0, touched = {};
+  /* 17.1: the RO on screen first (and drawn as soon as it changes), then the open ones; closed ROs every half minute */
+  var cur = (HOST && HOST.isConnected && RO && RO.id) || (UI && UI.selectedRo) || null, now = Date.now(), withClosed = now - (scanFolder.closedAt || 0) > 30000;
+  if (withClosed) scanFolder.closedAt = now;
+  var list = STATE.ros.filter(function (r) { return r.id === cur; }).concat(STATE.ros.filter(function (r) { return r.id !== cur && (withClosed || !r.dateClosed); }));
+  var shown = false;
   return roDataRoot(false).then(function (root) {
-    return STATE.ros.reduce(function (pr, ro) {
+    return list.reduce(function (pr, ro) {
       return pr.then(function () {
+        if (!shown && touched[cur] && ro.id !== cur) { shown = true; jcScanShow(); }
         var folder = roFolderName(ro);
         if (ROFOLDER[ro.id] && ROFOLDER[ro.id] !== folder) return;           /* folder is being renamed */
         var recs = [];
         (ro.bulletins || []).forEach(function (e) { (e.files || []).forEach(function (f) { recs.push([e, f]); }); });
-        /* the app is still copying some of this RO's files in — leave it for the next pass */
-        if (recs.some(function (r) { return !r[1].inFolder || r[1].folder !== folder; })) return;
+        /* 17.1: a file the app is still copying in (or one it couldn't) no longer holds up the rest of the RO's files */
+        var settled = recs.filter(function (r) { return r[1].inFolder && r[1].folder === folder; });
         return pdDirPath(root, folder, false)
-          .then(function (d) { return d.getDirectoryHandle(PD_ATT).then(function (a) { return dirEntries(a, 'file'); }, function () { return []; }); }, function () { return null; })
+          .then(function (d) { return d.getDirectoryHandle(PD_ATT).then(function (a) { return attWalk(a, ''); }, function () { return []; }); }, function () { return null; })
           .then(function (ents) {
             if (!ents) return;
-            var onDisk = {}; ents.forEach(function (h) { onDisk[h.name] = h; });
-            var known = {};
+            var onDisk = {}; ents.forEach(function (x) { onDisk[x.path] = x.h; });
+            var known = {}, mine = {};
             recs.forEach(function (r) { if (r[1].fname) known[r[1].fname] = r; });
+            settled.forEach(function (r) { if (r[1].fname) mine[r[1].fname] = r; });
             /* gone from the folder (two checks in a row, so a file mid-save or mid-sync isn't dropped) */
-            Object.keys(known).forEach(function (nm) {
-              var e = known[nm][0], f = known[nm][1];
+            Object.keys(mine).forEach(function (nm) {
+              var e = mine[nm][0], f = mine[nm][1];
               if (onDisk[nm]) { delete MISSING[f.id]; return; }
               MISSING[f.id] = (MISSING[f.id] || 0) + 1;
               if (MISSING[f.id] < 2) return;
@@ -223,14 +252,16 @@ function scanFolder() {
             });
             /* new in the folder */
             var fresh = Object.keys(onDisk).filter(function (nm) {
-              return nm !== RO_FILE && !SKIP_FILE.test(nm) && !known[nm] && !WRITING[folder + '/' + nm];
+              var leaf = nm.split('/').pop();
+              return nm !== RO_FILE && !SKIP_FILE.test(leaf) && !known[nm] && !WRITING[folder + '/' + nm];
             });
             return fresh.reduce(function (p2, nm) {
               return p2.then(function () {
                 return onDisk[nm].getFile().then(function (file) {
-                  var type = mimeFor(nm, file.type);
+                  var leaf = nm.split('/').pop(), type = mimeFor(leaf, file.type);
+                  if (!file.size && Date.now() - file.lastModified < 15000) return;   /* still being copied in: the next pass takes it */
                   var entry = bulletinFor(ro, /^(image|video)\//.test(type) ? 'pics' : 'report');
-                  entry.files.push({ id: uid(), name: nm, size: file.size, type: type, ts: stampOf(file.lastModified),
+                  entry.files.push({ id: uid(), name: leaf, size: file.size, type: type, ts: stampOf(file.lastModified),
                     inFolder: true, folder: folder, fname: nm, fromFolder: true });
                   added.push(ro.roNumber || 'RO'); touched[ro.id] = 1;
                 }).catch(function () {});
@@ -243,8 +274,7 @@ function scanFolder() {
     scanning = false;
     if (added.length || removed) {
       scheduleSave(true);
-      var busy = R && R.activeElement && /^(INPUT|TEXTAREA|SELECT)$/.test(R.activeElement.tagName);
-      if (HOST && HOST.isConnected && RO && touched[RO.id] && !busy) render();
+      jcScanShow(shown ? {} : touched);   /* the RO page again only if it was not drawn already */
       var ros = added.filter(function (x, i) { return added.indexOf(x) === i; });
       var say = (R && HOST && HOST.isConnected) ? toast : function (m) { pushToast(m); };   /* the RO page's toast only exists while it is open */
       if (added.length) say(added.length + (added.length === 1 ? ' file' : ' files') + ' added from the folder' + (ros.length === 1 ? ' \u00b7 RO ' + ros[0] : ' \u00b7 ' + ros.length + ' ROs'));
@@ -253,7 +283,7 @@ function scanFolder() {
     return added.length;
   });
 }
-var SCAN_EVERY = 6000;
+var SCAN_EVERY = 4000;   /* 17.1: sooner (the folder observer, where the browser has one, is sooner still) */
 setInterval(function () { if (document.visibilityState === 'visible') scanFolder(); }, SCAN_EVERY);
 window.addEventListener('focus', function () { setTimeout(scanFolder, 300); });
 document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') setTimeout(scanFolder, 300); });
@@ -264,7 +294,13 @@ function watchFolder() {
   try {
     if (fsObs) fsObs.disconnect();
     var t = null;
-    fsObs = new window.FileSystemObserver(function () { clearTimeout(t); t = setTimeout(scanFolder, 800); });
+    var t2 = null;
+    fsObs = new window.FileSystemObserver(function (recs) {
+      clearTimeout(t); t = setTimeout(scanFolder, 800);
+      /* 17.1: an RO's data changed there (another computer saved) — look now instead of at the next check */
+      var data = (recs || []).some(function (r) { var c = r.relativePathComponents || []; return c.indexOf(PD_ATT) < 0; });
+      if (data && typeof pd16Poll === 'function') { clearTimeout(t2); t2 = setTimeout(function () { if (!writeBusy) pd16Poll(); }, 1500); }
+    });
     roDataRoot(true).then(function (root) { return fsObs.observe(root, { recursive: true }); })
       .then(function () { fsObsFor = FS.dir; }).catch(function () {});
   } catch (e) {}
