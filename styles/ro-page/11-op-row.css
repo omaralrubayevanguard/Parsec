@@ -54,3 +54,5 @@
 @media (prefers-reduced-motion:reduce){.ock-pin,.ock-npt,.ock-nadd{animation:none;}.ock-pn,.ock-gst{transition:none;}}
 /* the codes line lines up with the facts above it */
 .px-op > .fltBar { padding: 0; }
+/* ---- 17.1 · selected text: the theme's accent, mid tint, the text keeps its colour (the page's own copy of the app's rule) ---- */
+::selection { background: color-mix(in srgb, var(--iv-acc, var(--accent)) 34%, transparent); color: var(--ink); }   /* a highlight reads its colours from the page root: --iv-acc follows all four themes */
