@@ -79,9 +79,9 @@ async def main():
             st = await pg.evaluate(J("const op=R.querySelector('.px-op'); const im=[...R.querySelectorAll('img')].filter(i=>/^(data|blob):/.test(i.src)); window.__k={op, im}; __tg.JC.rerender(); "
                                      "const run=R.getAnimations().filter(a=>a.animationName && a.playState==='running' && a.effect.getTiming().iterations!==Infinity).map(a=>a.animationName); "
                                      "const im2=[...R.querySelectorAll('img')].filter(i=>/^(data|blob):/.test(i.src)); return [run, im.length, im.filter(i=>im2.includes(i)).length];"))
-            ok(not [a for a in st[0] if a in ("px-unfold", "rop-in", "ock-pin-in")], f"a redraw doesn't open the open card again ({st[0]})")
+            ok(not [a for a in st[0] if a in ("px-unfold", "rop-unroll", "rop-in", "ock-pin-in")], f"a redraw doesn't open the open card again ({st[0]})")
             ok(st[1] == st[2], f"pictures already showing stay the same pictures ({st[2]} of {st[1]})")
-            other = await pg.evaluate(J("const r=[...R.querySelectorAll('.rop-orow')].find(x=>!x.classList.contains('is-on')); r.querySelector('.px-row__n').click(); return R.getAnimations().filter(a=>a.animationName==='px-unfold' && a.playState==='running').length"))
+            other = await pg.evaluate(J("const r=[...R.querySelectorAll('.rop-orow')].find(x=>!x.classList.contains('is-on')); r.querySelector('.px-row__n').click(); return R.getAnimations().filter(a=>(a.animationName==='px-unfold' || a.animationName==='rop-unroll') && a.playState==='running').length"))
             ok(other >= 1, "another operation's card still glides open")
             ok(not errs, f"no console errors: {errs[:3]}")
             await b.close()

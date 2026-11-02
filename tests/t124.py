@@ -35,6 +35,9 @@ PREP = """((who)=>{ const S=__tg.STATE(); const L=S.ros.filter(r=>!r.shop && r.i
   op.burnt=0.9; delete op.burntAdj;
   __tg.render(); return [r.id, op.id]; })"""
 SIGN = """(()=>{ const T=__tg.staffList().filter(s=>s.role==='Technician'); const n=s=>__tg.STATE().ros.filter(r=>r.assignedTech===s.name && !r.dateClosed && r.operations.length>=2).length; T.sort((a,b)=>n(b)-n(a)); localStorage.setItem('tec_viewas', T[0].id); localStorage.removeItem('tec_out'); __tg.pxSignedIn(); __tg.CX.U().skipMorning = __tg.todayStr(); __tg.render(); return T[0].name; })()"""
+async def shot(pg, path, clip):   # a card below the fold (17.2 put Messages above the operations): the picture is clamped to the window, or skipped
+    vp = pg.viewport_size; x, y = max(0, clip["x"]), max(0, clip["y"]); w, h = min(vp["width"] - x, clip["width"]), min(vp["height"] - y, clip["height"])
+    if w > 4 and h > 4: await pg.screenshot(path=path, clip={"x": x, "y": y, "width": w, "height": h})
 async def hold(pg, sel_js, ms):
     r = await pg.evaluate(sel_js)
     await pg.mouse.move(r[0], r[1]); await pg.mouse.down(); await pg.wait_for_timeout(ms); await pg.mouse.up(); await pg.wait_for_timeout(350)
@@ -57,7 +60,7 @@ async def ro_page(p):
     ok(info and len(info["segs"]) == 4 and info["segs"][0][1].strip() == "var(--rc-diag)" and info["segs"][1][1].strip() == "var(--rc-rep)" and info["segs"][2][1].strip() == "var(--rc-test)" and "live" in info["segs"][3][0], "the bar: one piece per punch in its reason's color, the live one last")
     ok(info and "Marcus" in info["who"], "who's on the clock: " + (info or {}).get("who", ""))
     ok(info and "Quoted runs out about" in info["pace"], "when quoted runs out: " + (info or {}).get("pace", ""))
-    ok(info and info["hint"] == "Hold to stop", "the hint says hold to stop")
+    ok(info and info["hint"] in ("", "Hold to stop"), "no hint until you let go early (17.2)")
     anim = await pg.evaluate(J(f"const c={C}; return c.getAnimations({{subtree:true}}).map(a=>[a.animationName, a.startTime])"))
     print("    animations:", anim)
     ok(any(a[0] == "ock-breathe" and a[1] == 0 for a in anim), "the breathing keeps one beat (startTime 0)")
@@ -74,18 +77,18 @@ async def ro_page(p):
     ms = await pg.evaluate(J(f"const c={C}; return {{ hit: c.querySelector('.ock-ms[data-p=\"0.5\"]').classList.contains('hit'), lab: (c.querySelector('.ock-mlb')||{{}}).textContent || '' }}"))
     ok(ms["hit"] and "Halfway" in ms["lab"], f"milestone: halfway reached — {ms}")
     el = await pg.evaluate(J(f"const r={C}.getBoundingClientRect(); return [r.x, r.y, r.width, r.height]"))
-    await pg.screenshot(path=os.path.join(OUT, "a2_ro_halfway.png"), clip={"x": el[0] - 10, "y": el[1] - 10, "width": el[2] + 20, "height": el[3] + 20})
+    await shot(pg, os.path.join(OUT, "a2_ro_halfway.png"), {"x": el[0] - 10, "y": el[1] - 10, "width": el[2] + 20, "height": el[3] + 20})
     # time left
     await pg.evaluate(J(f"{C}.querySelector('.ock-big').click()")); await pg.wait_for_timeout(1300)
     lf = await pg.evaluate(J(f"const c={C}; return [c.querySelector('.ock-big').dataset.t, c.querySelector('.ock-lbl').textContent]"))
     ok(lf[1].startswith("Time left") and lf[0].startswith("0:59"), f"tap the time: time left {lf}")
     await pg.evaluate(J(f"{C}.querySelector('.ock-big').click()")); await pg.wait_for_timeout(300)
     # hold to stop: a short press does nothing
-    GO = J(f"const r={C}.querySelector('[data-ock=go]').getBoundingClientRect(); return [r.x+r.width/2, r.y+r.height/2]")
+    GO = J(f"const g0={C}.querySelector('[data-ock=go]'); g0.scrollIntoView({{block:'center'}}); const r=g0.getBoundingClientRect(); return [r.x+r.width/2, r.y+r.height/2]")
     await hold(pg, GO, 250)
     st = await pg.evaluate(f"!!__tg.STATE().punches.find(p=>p.id==='pn_live' && !p.stop)")
     hn = await pg.evaluate(J(f"return {C}.querySelector('.ock-hint').textContent"))
-    ok(st and "Hold it" in hn, f"a short press doesn't stop it (hint: {hn})")
+    ok(st and "Keep holding" in hn, f"a short press doesn't stop it, the hint says keep holding (hint: {hn})")
     await pg.evaluate("window.__ev=[]; ['pointerdown','pointerup','pointermove','pointercancel','lostpointercapture','click'].forEach(k=>document.addEventListener(k,e=>window.__ev.push(k+':'+Date.now()%100000),true))")
     await hold(pg, GO, 900)
     print("    events:", await pg.evaluate("window.__ev"), await pg.evaluate("JSON.stringify(Object.values(__tg.OCK_ST).slice(-1))"))
@@ -94,13 +97,13 @@ async def ro_page(p):
     ok(st[0], f"holding stops the clock ({st})")
     ok(len(chips) >= 7 and "Complete" in chips and "Lunch" in chips, f"the stop reasons slide in: {chips}")
     ok(await pg.evaluate("!__tg.STATE().punches.some(p=>!p.stop)"), "the click after the hold didn't start it again")
-    await pg.screenshot(path=os.path.join(OUT, "a3_ro_reasons.png"), clip={"x": el[0] - 10, "y": el[1] - 10, "width": el[2] + 20, "height": el[3] + 80})
+    await shot(pg, os.path.join(OUT, "a3_ro_reasons.png"), {"x": el[0] - 10, "y": el[1] - 10, "width": el[2] + 20, "height": el[3] + 80})
     await pg.evaluate(J(f"[...{C}.querySelectorAll('.ock-rsn .ock-r')].find(b=>b.textContent==='Waiting – Approval').click()")); await pg.wait_for_timeout(500)
     r2 = await pg.evaluate("__tg.STATE().punches.find(p=>p.id==='pn_live').stopReason")
     w = await pg.evaluate(J(f"const c={C}; return [c.className, !!c.querySelector('.ock-wt'), c.querySelectorAll('.ock-rsn .ock-r').length]"))
     ok(r2 == "Waiting – Approval", "picking a chip sets the stop reason")
     ok("st-wait" in w[0] and w[1] and w[2] == 0, f"waiting: amber and still, WAIT in the circle ({w})")
-    await pg.screenshot(path=os.path.join(OUT, "a4_ro_wait.png"), clip={"x": el[0] - 10, "y": el[1] - 10, "width": el[2] + 20, "height": el[3] + 20})
+    await shot(pg, os.path.join(OUT, "a4_ro_wait.png"), {"x": el[0] - 10, "y": el[1] - 10, "width": el[2] + 20, "height": el[3] + 20})
     # WAIT starts it again; then keyboard Enter on Stop stops at once
     await pg.evaluate(J(f"{C}.querySelector('.ock-wt').click()")); await pg.wait_for_timeout(500)
     await pg.keyboard.press("Escape")
@@ -114,7 +117,7 @@ async def ro_page(p):
     await pg.evaluate(f"(()=>{{ const S=__tg.STATE(); const op=__tg.getRO('{rid}').operations.find(o=>o.id==='{op}'); op.quoted='1'; S.punches.push({{id:'pn_o', roId:'{rid}', opId:'{op}', start:new Date(Date.now()-600e3).toISOString(), stop:null, startReason:'Repairing', stopReason:null, notes:'', by:'Marcus Lee'}}); __tg.JC.rerender(); }})()"); await pg.wait_for_timeout(1300)
     ov = await pg.evaluate(J(f"const c={C}; return {{ cls: c.className, chip: (c.querySelector('.ock-ovl')||{{}}).textContent||'', w: c.querySelector('.ock-ov').style.width, left: c.querySelector('[data-ock=kk]').textContent, ring: c.querySelector('.ock-ring .p').style.getPropertyValue('--rc') }}"))
     ok("over" in ov["cls"] and "over" in ov["chip"] and ov["w"] not in ("0%", "") and ov["left"] == "Over" and "bad" in ov["ring"], f"over quoted: {ov}")
-    await pg.screenshot(path=os.path.join(OUT, "a5_ro_over.png"), clip={"x": el[0] - 10, "y": el[1] - 10, "width": el[2] + 20, "height": el[3] + 20})
+    await shot(pg, os.path.join(OUT, "a5_ro_over.png"), {"x": el[0] - 10, "y": el[1] - 10, "width": el[2] + 20, "height": el[3] + 20})
     # the quoted hours: click to change
     await pg.evaluate(J(f"{C}.querySelector('[data-ock=q]').click()")); await pg.wait_for_timeout(200)
     await pg.keyboard.press("Control+A"); await pg.keyboard.type("4.5"); await pg.keyboard.press("Enter"); await pg.wait_for_timeout(400)
@@ -128,11 +131,11 @@ async def ro_page(p):
     await pg.evaluate("__tg.JC.rerender()"); await pg.wait_for_timeout(1200); await pg.evaluate("__tg.JC.rerender()"); await pg.wait_for_timeout(200)
     dn2 = await pg.evaluate(J(f"return ({C}.querySelector('.ock-ck')||{{className:''}}).className"))
     ok("draw" not in dn2, "…and doesn't draw again on the next redraw")
-    await pg.screenshot(path=os.path.join(OUT, "a6_ro_done.png"), clip={"x": el[0] - 10, "y": el[1] - 10, "width": el[2] + 20, "height": el[3] + 20})
+    await shot(pg, os.path.join(OUT, "a6_ro_done.png"), {"x": el[0] - 10, "y": el[1] - 10, "width": el[2] + 20, "height": el[3] + 20})
     # dark
     await pg.evaluate("(()=>{ const b=document.querySelector('.px-rail .pxr-thm button[data-theme=\"ivd\"]'); b && b.click(); })()"); await pg.wait_for_timeout(500)
     await pg.evaluate(f"(()=>{{ const S=__tg.STATE(); const op=__tg.getRO('{rid}').operations.find(o=>o.id==='{op}'); op.jobStatus={{status:'Hold Tech', setAt:new Date().toISOString(), hand:true}}; op.quoted='2'; S.punches.push({{id:'pn_d', roId:'{rid}', opId:'{op}', start:new Date(Date.now()-300e3).toISOString(), stop:null, startReason:'Diagnosing', stopReason:null, notes:'', by:'Marcus Lee'}}); __tg.JC.rerender(); }})()"); await pg.wait_for_timeout(1500)
-    await pg.screenshot(path=os.path.join(OUT, "a7_ro_dark.png"), clip={"x": el[0] - 10, "y": el[1] - 10, "width": el[2] + 20, "height": el[3] + 20})
+    await shot(pg, os.path.join(OUT, "a7_ro_dark.png"), {"x": el[0] - 10, "y": el[1] - 10, "width": el[2] + 20, "height": el[3] + 20})
     print("ERRORS", errs[:6]); ok(not errs, "RO page: no console errors")
     await b.close()
 async def tech_page(p, w=1440, h=900, phone=False):
@@ -166,7 +169,7 @@ async def tech_page(p, w=1440, h=900, phone=False):
         await pg.evaluate(f"{Q}.querySelector('[data-ock=go]').click()"); await pg.wait_for_timeout(500)
         ok(await pg.evaluate("__tg.STATE().punches.some(p=>!p.stop && p.opId==='" + op + "')"), "a tap on Play starts it")
     # hold to stop
-    GO = f"(()=>{{ const r={Q}.querySelector('[data-ock=go]').getBoundingClientRect(); return [r.x+r.width/2, r.y+r.height/2]; }})()"
+    GO = f"(()=>{{ const g0={Q}.querySelector('[data-ock=go]'); g0.scrollIntoView({{block:'center'}}); const r=g0.getBoundingClientRect(); return [r.x+r.width/2, r.y+r.height/2]; }})()"
     if phone:
         r = await pg.evaluate(GO)
         await pg.evaluate(f"""(()=>{{ const g={Q}.querySelector('[data-ock=go]'); const o={{bubbles:true,composed:true,pointerId:7,pointerType:'touch',isPrimary:true,button:0,clientX:{r[0]},clientY:{r[1]}}}; g.dispatchEvent(new PointerEvent('pointerdown',o)); setTimeout(()=>{{ g.dispatchEvent(new PointerEvent('pointerup',o)); g.dispatchEvent(new MouseEvent('click',{{bubbles:true,composed:true,detail:1}})); }}, 850); }})()""")
@@ -191,7 +194,7 @@ async def calm(p):
     C = "R.querySelector('.ock[data-op]')"
     a = await pg.evaluate(J(f"const c={C}; return [getComputedStyle(c).animationName, getComputedStyle(c.querySelector('.ock-big .dc')).transitionDuration, c.getAnimations({{subtree:true}}).length]"))
     ok(a[0] == "none" and a[1] == "0s" and a[2] == 0, f"reduce motion: nothing moves ({a})")
-    GO = J(f"const r={C}.querySelector('[data-ock=go]').getBoundingClientRect(); return [r.x+r.width/2, r.y+r.height/2]")
+    GO = J(f"const g0={C}.querySelector('[data-ock=go]'); g0.scrollIntoView({{block:'center'}}); const r=g0.getBoundingClientRect(); return [r.x+r.width/2, r.y+r.height/2]")
     await hold(pg, GO, 900)
     ok(await pg.evaluate("!__tg.STATE().punches.some(p=>!p.stop)"), "reduce motion: hold to stop still works")
     print("ERRORS", errs[:6]); ok(not errs, "reduce motion: no console errors")

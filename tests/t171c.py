@@ -2,7 +2,7 @@
 # (a click changes it); the details are inside the card (a facts grid, Add ▾ for a code, a document or the Library, a blocker
 # beside the status); the time bar shows who worked each piece and the notes pinned where they happened — point at one to read
 # it, click the bar to add one at that moment (its time is kept beside the note, p.noteAt). The Time tab stays as it was.
-import asyncio, os, sys, json
+import asyncio, os, sys, json, re
 sys.argv = sys.argv[:2] if len(sys.argv) > 1 else ['x', 't12_a.html']
 _src = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "t127p.py")).read().split("async def main():")[0]
 exec(_src)
@@ -82,7 +82,7 @@ async def main():
         x = bar[0] + bar[2] * (sw[0] + (sw[1] - sw[0]) * 0.6) / 100
         await pg.mouse.move(x, bar[1] + bar[3] / 2); await pg.wait_for_timeout(250)
         gs = await pg.evaluate(J(f"const g={C}.querySelector('.ock-gst'); return [g.classList.contains('on'), g.dataset.t||'']"))
-        ok(gs[0] and gs[1].startswith("+ Note at"), f"over the bar, a mark says where the note would go ({gs[1]!r})")
+        ok(gs[0] and re.search(r"\d:\d\d:\d\d [ap]m", gs[1] or ""), f"over the bar, a mark says the time the note would get, to the second ({gs[1]!r})")   # 17.2
         # click: a note at that moment, on that punch
         await pg.mouse.click(x, bar[1] + bar[3] / 2); await pg.wait_for_timeout(400)
         na = await pg.evaluate(J(f"const n={C}.querySelector('.ock-nadd'); return n ? [n.querySelector('b').textContent, document.activeElement && document.activeElement.shadowRoot ? (document.activeElement.shadowRoot.activeElement||{{}}).tagName : ''] : null"))
@@ -99,11 +99,11 @@ async def main():
         await pg.keyboard.press("Escape"); await pg.wait_for_timeout(300)
         ok(not await pg.evaluate(J(f"return !!{C}.querySelector('.ock-nadd')")), "Escape closes it")
         # notes saved elsewhere get their time too (the Time tab's own Add a note is unchanged)
-        await pg.evaluate("(()=>{ const p=__tg.STATE().punches.find(p=>p.id==='pn_171c_b'); __tg.ockNoteTime(p, 'Hub off, seal torn.', +new Date(p.start)+30*60000); __tg.render(); })()"); await pg.wait_for_timeout(500)
+        await pg.evaluate("(()=>{ const p=__tg.STATE().punches.find(p=>p.id==='pn_171c_b'); __tg.ockNoteTime(p, 'Hub off, seal torn.', +new Date(p.start)+30*60000); __tg.render(); })()"); await pg.wait_for_timeout(1500)   # the card's ticker redraws the flags each second
         tb2 = await pg.evaluate(J(f"return [...{C}.querySelectorAll('.ock-pin')].map(p=>p.getAttribute('aria-label'))"))
-        ok(not any("during" in x for x in tb2), "a note given its time moves to it")
-        tt = await pg.evaluate(J("return [...R.querySelectorAll('.px-tabs [role=tab]')].map(b=>b.textContent.trim().split(/\\s/)[0])"))
-        ok(any(x.startswith("Time") for x in tt), f"the Time tab stays ({tt})")
+        ok(not any("during" in x for x in tb2), f"a note given its time moves to it ({tb2})")
+        tt = await pg.evaluate(J("return [...R.querySelectorAll('[role=tab][data-tab]')].map(b=>b.dataset.tab)"))   # 17.2: icon tabs inside the clock card
+        ok("time" in tt, f"the Time tab stays ({tt})")
         await pg.screenshot(path=os.path.join(OUT, "t171c_card.png"))
         ok(not errs, f"no console errors: {errs[:3]}")
         print("FAILS:", len(FAILS), FAILS)
