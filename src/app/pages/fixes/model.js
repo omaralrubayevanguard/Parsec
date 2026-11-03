@@ -67,7 +67,7 @@
   let FILT = false;
   const passF = e => !FILT || ((!U.fe || e.eng === U.fe) && (!U.fmdl || String(e.truck).includes(U.fmdl)) && (!U.fmi || band(e.miles) === U.fmi));
   const nF = () => [U.fe, U.fmdl, U.fmi].filter(Boolean).length;
-  const ents = k => { const L = (build().E[k] || []).filter(passF).sort((a, b) => (a.date || '') < (b.date || '') ? 1 : -1); const F = U.fixIds; if(!F || !F.length) return L; return L.filter(e => F.includes(e.id)).concat(L.filter(e => !F.includes(e.id))); };   /* 18: from an operation, the fixes that match it come first */
+  const ents = k => { const L = (build().E[k] || []).filter(passF).sort((a, b) => (a.date || '') < (b.date || '') ? 1 : -1); const F = U.fixIds; if(!F || !F.length) return L; return L.filter(e => F.includes(e.id)).concat(L.filter(e => !F.includes(e.id))); };   /* 17.3: from an operation, the fixes that match it come first */
   const opensOf = k => build().O.filter(o => o.k === k);
   const pend = o => !o.q || !o.parts.length;
   function stats(k){ build(); const key = 'st' + k + (FILT ? '|' + U.fe + U.fmdl + U.fmi : ''); if(C[key]) return C[key];

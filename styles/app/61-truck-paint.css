@@ -1,0 +1,18 @@
+/* Parsec · styles/app · 61-truck-paint.css
+   the truck's colour (17.3): the swatch on the Colour row, the colour picker, the paint sweeping across the picture. */
+.rod-sw{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}
+.trk-sw{position:fixed;z-index:1200;width:212px;padding:10px;border-radius:12px;background:var(--px-raised,var(--panel,#fff));color:var(--px-ink,var(--ink,#1D1C1A));box-shadow:0 0 0 1px var(--px-hair,rgba(0,0,0,.08)),0 16px 40px -12px rgba(0,0,0,.35);font:500 12.5px/1.2 var(--px-sans,system-ui,sans-serif);animation:trk-sw-in .14s ease-out}
+@keyframes trk-sw-in{from{opacity:0;transform:translateY(-4px)}}
+.trk-sw__h{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--px-ink3,#67625A);margin:0 0 8px}
+.trk-sw__g{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.trk-sw__g button{all:unset;cursor:pointer;width:24px;height:24px;border-radius:50%;background:var(--sw);box-shadow:inset 0 0 0 1px rgba(0,0,0,.22)}
+.trk-sw__g button:hover{transform:scale(1.08)}
+.trk-sw__g button[aria-checked="true"],.trk-sw__g button:focus-visible{outline:2px solid var(--px-acc,#86643A);outline-offset:2px}
+.trk-sw__c{display:flex;align-items:center;gap:8px;margin-top:10px;cursor:pointer;color:var(--px-ink2,#57534B)}
+.trk-sw__c input{width:24px;height:24px;padding:0;border:0;border-radius:50%;background:none;cursor:pointer}
+.trk-sw__x{all:unset;cursor:pointer;display:block;margin-top:8px;font-size:12px;color:var(--px-ink3,#67625A)}
+.trk-sw__x:hover{color:var(--px-ink,#1D1C1A)}
+.trk-th.trk-swp{position:relative}
+.trk-th.trk-swp > img:not(.trk-swp0){position:absolute;inset:0;width:100%;height:100%;object-fit:contain;animation:trk-sweep .9s ease-in-out both}
+@keyframes trk-sweep{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@media (prefers-reduced-motion:reduce){.trk-th.trk-swp > img:not(.trk-swp0){animation:none}}

@@ -3,7 +3,7 @@
    Flow: parse(text) → a fields object; everything else in new-ro works on that.
    ── facts (generated; run tools/headers.py to refresh) ──
    declares   pad parseWhen whenTxt whenIn money usd nameCase splitCells cellsOf labelOf labelish clean … (44 functions, 21 constants)
-   uses       import/ pages/inventory/ ro/ shell/
+   uses       import/ pages/inventory/ ro/ shell/ trucks/
 */
   /* ---------------------------------------------------------------- reading the text */
   var MON = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, sept: 9, oct: 10, nov: 11, dec: 12 };
@@ -52,6 +52,7 @@
     ["model", /^(?:truck\s*|vehicle\s*|unit\s*)?model(?!\s*year)(?=\s*:|\s*$|\s+[A-Z0-9])/i],
     ["year", /^(?:model\s*)?year(?=\s*:|\s*$|\s+\d)/i],
     ["vin", /^vin(?:\s*#)?(?=\s*:|\s*$|\s+[A-Z0-9])/i],
+    ["color", /^(?:exterior\s*|paint\s*|truck\s*)?colou?r(?=\s*:|\s*$|\s+[A-Z])/i],   /* 17.3: the truck's colour */
     ["unit", /^unit\s*(?:#|no\.?|number)?(?=\s*[:#]|\s+[A-Z0-9]|\s*$)/i],
     ["chassis", /^(?:chassis|serial)\s*(?:#|no\.?|number)?(?=\s*[:#]|\s+[A-Z0-9]|\s*$)/i],
     ["engineSerial", /^(?:eng(?:ine)?\.?\s*(?:serial|s\/n|sn|no\b\.?|number|#)(?:\s*(?:#|no\b\.?|number))?|esn)(?=\s*[:#]|\s+[A-Z0-9]|\s*$)/i],   /* Parsec 14: Engine Serial #, Engine S/N, Engine No., ESN */
@@ -86,7 +87,7 @@
       case "caseNo": m = /\b([A-Z]?-?\d{4,10})\b/i.exec(v); return m ? m[1] : "";
       case "roNumber": v = v.replace(/[Oo](?=\d)/g, "0").replace(/\b(R[AO]\d{4,10}) (\d{1,6})\b/i, function(m, a, b){ return (a + b).length <= 14 ? a + b : m; });   /* the reader's "RA0001241 190" */
         m = /\b(R[AO][\s-]?\d{4,12}|\d{5,12})\b/i.exec(v); return m ? m[1].replace(/\s/g, "").toUpperCase() : "";
-      case "customer": if(/^(?:contacts?|contact\s*info(?:rmation)?|customer\s*info(?:rmation)?|details|asset|info|notes?|operations?|vehicle|company|account)\b\s*:?$/i.test(v)) return "";   /* 18: a heading next to the label ("Contacts") isn't the customer */
+      case "customer": if(/^(?:contacts?|contact\s*info(?:rmation)?|customer\s*info(?:rmation)?|details|asset|info|notes?|operations?|vehicle|company|account)\b\s*:?$/i.test(v)) return "";   /* 17.3: a heading next to the label ("Contacts") isn't the customer */
         return v.replace(/\s*[-–]?\s*cust(?:omer)?\s*#.*$/i, "").replace(/…|\.\.\.$/, "").trim().slice(0, 60);
       case "status": return /[A-Za-z]{3}/.test(v) ? v.replace(/\s{2,}.*$/, "").slice(0, 40) : "";
       case "etr": case "followUp": case "checkedIn": return parseWhen(v);
@@ -97,6 +98,7 @@
       case "model": v = v.replace(/\s{2,}.*$/, "").replace(/\b(?:year|vin|unit|serial|engine)\b.*$/i, "").trim(); return v.length <= 28 && !/^\d{4}$/.test(v) && /[A-Za-z]/.test(v) ? v : "";
       case "year": m = /\b(19[89]\d|20\d{2})\b/.exec(v); return m ? m[1] : "";
       case "vin": return vinFrom(v);
+      case "color": return trkColorFromText(v);
       case "engine": v = brandFix(v).replace(/\b(?:serial|s\/n|engine\s*hours)\b.*$/i, "").replace(/\bD[Il|](\d)(?=\b|[A-Z])/g, "D1$1").trim();   /* Parsec 14: the reader's "DI3" is the D13 */ return v.length <= 40 && /[A-Za-z0-9]/.test(v) && !/^(volvo|mack|cummins|detroit)$/i.test(v) ? v : (/^(volvo|mack|cummins|detroit)$/i.test(v) ? v : "");
       case "miles": case "engHours": m = /^([\d,]{1,11})(?:\.\d+)?/.exec(v.replace(/\s/g, "")); if(!m) return ""; var n0 = m[1].replace(/,/g, ""); return n0 && +n0 <= (k === "miles" ? 9999999 : 999999) ? n0 : "";
       case "location": case "dept": return v.replace(/\s{2,}.*$/, "").slice(0, 30);

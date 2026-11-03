@@ -92,7 +92,7 @@ function v163bEdit(anchor) {
   if (pxPop(anchor, pop, { force: true })) setTimeout(function () { try { (RO.contactName ? i2 : i1).focus(); } catch (e) {} }, 0);
 }
 
-/* 18 — the contact in the right column, above the buttons: who to call, their number, their email */
+/* 17.3 — the contact in the right column, above the buttons: who to call, their number, their email */
 function ropContactCard() {
   if (!RO || RO.shop || RO.id === SHOP_RO_ID) return null;
   var nm = String(RO.contactName || '').trim(), ph = String(RO.contactPhone || '').trim(), em = String(RO.contactEmail || '').trim(), ed = v163bCanEd();
@@ -114,7 +114,7 @@ function pxHeader() {
   head.appendChild(el('div', { class: 'px-crumb' }, [el('a', { text: TX ? TX.crumb : 'RO list', href: '#', onClick: function (e) { e.preventDefault(); if (TX) { TX.back(); return; } UI.view = 'rolist'; UI.modal = null; tecRender(); } }), el('span', { class: 'sl', text: '/' }), v163bId()]));
   var l = [], at = -1; try { l = TX ? TX.list.map(function (id) { return { id: id }; }) : rlList(); l.forEach(function (r, n) { if (r.id === RO.id) at = n; }); } catch (e) {}
   function go(t) { return function () { if (!t) return; if (TX) { TX.go(t.id); return; } UI.view = 'ros'; UI.selectedRo = t.id; UI.modal = null; tecRender(); }; }
-  /* 18 — no stepper arrows here: J / K still go to the next / previous RO */
+  /* 17.3 — no stepper arrows here: J / K still go to the next / previous RO */
   try { if (RO.customerName && !RO.shop) head.appendChild(el('div', { class: 'v163b-who' }, [el('span', { class: 'v163b-cu', text: RO.customerName })])); } catch (e) { console.error(e); }   /* the contact moved to the right column (ropContactCard) */
   var T = totals(), nf = allFiles().length, run = S.jobs.some(function (j) { return runningPunchOf(j); });
   var tb = el('b', { text: pxNum(T.b) });

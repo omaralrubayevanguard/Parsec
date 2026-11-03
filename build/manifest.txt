@@ -127,6 +127,7 @@ phone/phone-view.js
 
 trucks/picture-data.js
 trucks/matching.js
+trucks/paint.js
 trucks/peek.js
 trucks/ask-once.js
 trucks/banner-and-menu.js

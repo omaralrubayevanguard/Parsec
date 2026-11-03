@@ -2,7 +2,7 @@
    The RO's details as one table (ROFLD): every field with its label, how it shows, how it is set, who may edit; roFldSet is the one setter (Undo, the value, an Activity line, save). The truck card, the RO list pane and the import all draw from it.
    ── facts (generated; run tools/headers.py to refresh) ──
    declares   roFldTrim roFldDT roFldPD roFldP2 roFldDay roFldDay2 roFldN roFld roFldGet roFldShow roFldCanEdit roFldSet … (15 functions, 1 constant)
-   uses       access/ data/ import/ pages/ pages/triage/ state/
+   uses       access/ data/ import/ pages/ pages/triage/ state/ trucks/
    at load    on document click
 */
 /* ---------- 8: the RO's details, one table ---------- */
@@ -25,6 +25,9 @@ var ROFLD = [
     ["year", "Model year", { num: 1, empty: "Add year", get: function(ro){ return ro.year ? String(ro.year) : ""; }, set: function(ro, v){ var y = +String(v || "").replace(/\D/g, ""); if(y >= 1980 && y <= new Date().getFullYear() + 2) ro.year = y; else delete ro.year; delete ro.trkBody; delete ro.trkTrim; } }],
     ["make", "Make", { empty: "Add make", set: function(ro, v){ v = roFldTrim(v); if(v) ro.make = v; else delete ro.make; delete ro.trkBody; } }],
     ["model", "Model", { empty: "Add model", set: function(ro, v){ ro.model = roFldTrim(v); delete ro.trkBody; delete ro.trkTrim; } }],
+    ["color", "Colour", { swatch: 1, empty: "Add colour", hide: function(ro){ try{ var P = trkPick(ro); return P.kind !== "model" || !!P.own; }catch(e){ return true; } },   /* 17.3: the truck's colour; no row on a photo */
+      get: function(ro){ return ro.color || ""; }, show: function(ro){ var c = trkColorOf(ro); return c ? trkColorName(c.c) + (c.from === "vin" ? " · from its last visit" : "") : ""; },
+      set: function(ro, v){ v = roFldTrim(v); if(v) ro.color = v; else delete ro.color; } }],
     ["buildDate", "Build date", roFldDay("buildDate")],
     ["warrantyStart", "Warranty start", roFldDay("warrantyStart")],
     ["vin", "VIN", { id: 1, copy: 1, empty: "Add VIN", set: function(ro, v){ ro.vin = roFldTrim(v).toUpperCase().replace(/[^A-Z0-9]/g, ""); }, warn: function(v){ v = roFldTrim(v); return v && v.length !== 17 ? "A VIN has 17 characters" : ""; } }],
@@ -84,16 +87,17 @@ function roDetailsHtml(ro, o){
   o = o || {}; var fold = { get: function(k){ return rpFold(k); } }, ed = o.readOnly ? false : roFldCanEdit(ro);
   var av = function(n){ var i = ""; try{ i = ivInit(n); }catch(e){ i = String(n || "").split(/\s+/).map(function(w){ return w[0] || ""; }).join("").slice(0, 2).toUpperCase(); } return '<span class="rod-av">' + v141E(i) + "</span>" + v141E(n); };
   return '<section class="rod' + (ed ? " ed" : "") + '" data-rod-ro="' + v141E(ro.id) + '">' + ROFLD.filter(function(G){ return !o.groups || o.groups.indexOf(G[0]) > -1; }).map(function(G){
-    var shut = fold.get(G[0]), F = G[2].filter(function(fd){ return !(fd[2] && fd[2].hideEmpty && !roFldGet(ro, { k: fd[0], o: fd[2] })); });
+    var shut = fold.get(G[0]), F = G[2].filter(function(fd){ return !(fd[2] && fd[2].hideEmpty && !roFldGet(ro, { k: fd[0], o: fd[2] })) && !(fd[2] && fd[2].hide && fd[2].hide(ro)); });
     var sum = G[0] === "vehicle" ? [ro.year, ro.model].filter(Boolean).join(" ") : G[0] === "customer" ? ro.customerName || "" : G[0] === "people" ? (ro.assignedTech ? (function(){ try{ return ivInit(ro.assignedTech); }catch(e){ return ""; } })() : "") : G[0] === "schedule" ? (ro.promisedAt ? fcWhen(new Date(ro.promisedAt)) : "") : ro.caseNumber || "";
     return '<div class="rod-g' + (shut ? " shut" : "") + '"><button type="button" class="rod-gh" data-rod-g="' + G[0] + '" aria-expanded="' + (!shut) + '"><i></i><b>' + v141E(G[1]) + '</b><small>' + v141E(sum) + '</small></button>'
       + (shut ? "" : '<div class="rod-rows">' + F.map(function(fd){ var f = { k: fd[0], l: fd[1], o: fd[2] || {} }, v = roFldShow(ro, f), raw = roFldGet(ro, f);
         var edR = ed && !(f.o.lock && f.o.lock(ro));   /* Parsec 14.7 */
-        return '<div class="rod-r' + (edR ? " ed" : "") + (v ? "" : " rod-empty") + (f.o.num ? " num" : "") + (f.o.id ? " id" : "") + '" data-rod-k="' + f.k + '" title="' + (edR ? "Click to change" : "") + '"><span>' + v141E(f.l) + '</span><b>' + (v ? (f.o.av ? av(v) : v141E(v)) : v141E(edR ? f.o.empty || "Add" : "—")) + "</b>"
+        return '<div class="rod-r' + (edR ? " ed" : "") + (v ? "" : " rod-empty") + (f.o.num ? " num" : "") + (f.o.id ? " id" : "") + '" data-rod-k="' + f.k + '" title="' + (edR ? "Click to change" : "") + '"><span>' + v141E(f.l) + '</span><b>' + (f.o.swatch && v ? '<i class="rod-sw" style="background:' + v141E((trkColorOf(ro) || {}).hex || '') + '"></i>' : '') + (v ? (f.o.av ? av(v) : v141E(v)) : v141E(edR ? f.o.empty || "Add" : "—")) + "</b>"
           + (f.o.copy && raw ? '<button type="button" class="rod-cp" data-rod-copy="' + v141E(raw) + '" title="Copy">' + (typeof tgI === "function" ? tgI("copy", 12) : "⧉") + "</button>" : "") + "</div>"; }).join("") + "</div>") + "</div>"; }).join("") + "</section>";
 }
 function roDetailsEdit(row){
   var sec = row.closest(".rod"), ro = sec && getRO(sec.getAttribute("data-rod-ro")), f = ro && roFld(row.getAttribute("data-rod-k")); if(!ro || !f || row.querySelector("input")) return;
+  if(f.o.swatch){ trkSwatchPop(row, ro); return; }   /* 17.3: colours, not a text box */
   var b = row.querySelector("b"), cur = roFldGet(ro, f), inp = document.createElement("input");
   inp.className = "rod-in"; inp.type = f.o.dt ? "datetime-local" : f.o.type || "text"; inp.value = cur || ""; inp.setAttribute("data-no-draft", ""); inp.autocomplete = "off";
   if(f.o.list){ var dl = document.createElement("datalist"), id = "rod-dl-" + f.k; dl.id = id; var names = []; try{ names = staffList().filter(function(s){ return f.o.list !== "tech" || s.role === "Technician"; }).map(function(s){ return s.name; }); }catch(e){}

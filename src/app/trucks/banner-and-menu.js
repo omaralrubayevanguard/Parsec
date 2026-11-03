@@ -115,7 +115,8 @@ function trkChanged(msg, undo){ scheduleSave(true); try{ render(); }catch(e){} t
 /* ---------- the small picture in lists ---------- */
 function trkThumb(ro){
   var P = trkPick(ro);
-  if(P.kind === "model") return '<span class="trk-th' + (P.entry.cut ? '' : ' fr') + '"><img src="' + esc(P.src) + '" alt=""></span>';
+  if(P.kind === "model"){ var sw = P.color && P.src !== P.base && TRK_SWEEP.ro === ro.id && Date.now() - TRK_SWEEP.at < 1600;   /* 17.3: a new colour sweeps across, once */
+    return '<span class="trk-th' + (P.entry.cut ? '' : ' fr') + (sw ? ' trk-swp' : '') + '">' + (sw ? '<img class="trk-swp0" src="' + esc(P.base) + '" alt="">' : '') + '<img src="' + esc(P.src) + '" alt=""></span>'; }
   if(P.kind === "photo") return '<span class="trk-th ph"><img' + (P.src ? ' src="' + esc(P.src) + '"' : '') + ' data-trk-f="' + esc(P.file.id) + '" data-trk-ro="' + esc(ro.id) + '" alt=""></span>';
   return '<span class="trk-th no">' + TRK_SIL + '</span>';
 }

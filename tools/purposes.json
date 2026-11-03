@@ -144,6 +144,7 @@
   "import/screenshot-reader.js": "The screenshot reader built into Parsec (no download): PSR renders the browser's own fonts as templates and reads text off a screenshot line by line (binarize → lines → glyphs → words).\nFlow: ocrImages(files) → text → the same parse the paste uses.",
   "import/contact-reading.js": "The contact on New RO (16.3 C): contact name, phone (normalized), email, driver and driver's phone read from labels; the last contact used for the same customer / unit as a suggestion.",
   "trucks/picture-data.js": "The truck pictures: TRK_START (the data URLs — assets/trucks/*.webp, put in by the build), TRK_SEED (the four plain bodies), VT_P (the 52-truck catalog: model, years, cab, trims) and its indexes.",
+  "trucks/paint.js": "The truck's colour (17.3): pick it in the Vehicle section; the catalog picture is repainted — the cab and hood only — on every page, from above too; kept with the truck by its VIN; never on a photo.",
   "trucks/matching.js": "Which picture an RO shows: trkPick — the RO's own picture, else the catalog body that matches its model and year (trkModelFor / trkMatch), else the check-in photo (trkPhotoOf); the library of pictures (trkLib) and their sources.",
   "trucks/peek.js": "The peek card on an RO link (16.3 B): after half a second on an RO number, the picture, customer, truck, status, tech and contact; click opens the RO.",
   "trucks/ask-once.js": "When an RO's first check-in photo arrives: ask once, model picture or this photo (ro.trkUse); plus trkHead / trkGi, the picture in a page header or list row.",

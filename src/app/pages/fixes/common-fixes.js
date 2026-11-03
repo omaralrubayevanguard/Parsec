@@ -36,7 +36,7 @@ function fixAll(){
   });
   return out;
 }
-/* 18 — which past fix is the one: a hierarchy, strongest first.
+/* 17.3 — which past fix is the one: a hierarchy, strongest first.
    An operation with only a complaint matches by its complaint. Once it has fault codes or documents, the same complaint
    can hide different causes, so the fix shown is the one with the same codes and documents:
      exact   — same complaint, and every code and document the operation has

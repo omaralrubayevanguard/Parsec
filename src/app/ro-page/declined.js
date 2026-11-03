@@ -147,7 +147,7 @@ function ropRail() {
   ropBand();   /* builds the buttons (ROP_FOOT) */
   /* 17.1 — the one RO panel: the right column shows the RO list's side panel (ro/ro-panel.js rpPanelHtml), slotted in as
      light DOM; the band is still built for its buttons (ROP_FOOT), which stay at the bottom, always in reach */
-  /* 18 — the panel's top (name, status, stages) in slot rp; then the contact and the buttons; then the rest of the panel in slot rp2 */
+  /* 17.3 — the panel's top (name, status, stages) in slot rp; then the contact and the buttons; then the rest of the panel in slot rp2 */
   var ct = null; try { ct = ropContactCard(); } catch (e) { console.error(e); }
   return el('aside', { class: 'px-ro__rail rop-rail rop-rail-rp' }, [el('slot', { name: 'rp' }), ct].concat(ROP_FOOT ? [ROP_FOOT] : []).concat([el('slot', { name: 'rp2' })]).filter(Boolean));
 }

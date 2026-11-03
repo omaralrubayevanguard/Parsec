@@ -109,7 +109,7 @@ function rpAnyOpen(){ return RP_KEYS.some(function(k){ return !rpFold(k); }); }
 function rpMountRo(){
   var pane = document.querySelector(".ro-detail-pane[data-jc]"), host = pane && pane.querySelector(":scope > .jc-host"), ro = pane && getRO(pane.getAttribute("data-jc"));
   if(!host || !ro) return;
-  /* 18: two pieces — the top (name, status, stages) above the contact and the buttons, the rest below them */
+  /* 17.3: two pieces — the top (name, status, stages) above the contact and the buttons, the rest below them */
   var mk = function(slot, cls){ var b = host.querySelector(':scope > .rp-host[slot="' + slot + '"]'); if(!b){ b = document.createElement("div"); b.className = "rp-host tg rq" + cls; b.setAttribute("data-pg", "rolist"); b.setAttribute("slot", slot); host.appendChild(b); } return b; };
   var box = mk("rp", ""), box2 = mk("rp2", " rp-host2");
   var a = document.activeElement, typing = a && (box.contains(a) || box2.contains(a)) && /^(INPUT|SELECT|TEXTAREA)$/.test(a.tagName);

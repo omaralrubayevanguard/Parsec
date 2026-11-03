@@ -142,7 +142,8 @@ function trkPhotoOf(ro){
 function trkPick(ro){
   var o = trkOwnOf(ro), m = trkModelFor(ro), p = trkPhotoOf(ro);
   if(o && o.src) return { kind: "model", entry: o, src: trkSrc(o), photo: p, own: 1, model: m };
-  if(m && !(ro.trkUse === "photo" && p)) return { kind: "model", entry: m, src: trkSrc(m), photo: p };
+  if(m && !(ro.trkUse === "photo" && p)){ var base = trkSrc(m), col = null; try{ col = trkColorOf(ro); }catch(e){}   /* 17.3: the truck's colour */
+    return { kind: "model", entry: m, src: col ? trkPaintSrc(base, col.hex, false) : base, base: base, color: col, photo: p }; }
   if(p) return { kind: "photo", file: p, src: TRK_PH[p.id] || "", model: m };
   return { kind: "none" };
 }
@@ -158,7 +159,8 @@ function trkSrc(e, f){
 function trkTopOf(ro){   /* Parsec 16.3 (B): the top view that belongs to the picture trkPick shows — own, or the model's; none for a photo */
   var P = null; try{ P = trkPick(ro); }catch(e){}
   if(!P || P.kind !== "model" || !P.entry || !P.entry.top) return null;
-  return { entry: P.entry, src: trkSrc(P.entry, "top"), up: !!P.entry.up }; }
+  var ts = trkSrc(P.entry, "top"); if(P.color && !P.own) ts = trkPaintSrc(ts, P.color.hex, true);   /* 17.3: the colour from above too */
+  return { entry: P.entry, src: ts, up: !!P.entry.up }; }
 /* the bay tile keeps its look; the truck sits small at its right — from above, cab up, when there's that view; else its picture */
 function trkBayTop(ro){ var T = null, P = null; try{ T = trkTopOf(ro); P = T ? null : trkPick(ro); }catch(e){}
   if(T && T.src) return '<span class="fm-ti top' + (T.up ? ' up' : '') + '" title="' + esc(trkLabel(ro)) + '"><img src="' + esc(T.src) + '" alt="" draggable="false"></span>';

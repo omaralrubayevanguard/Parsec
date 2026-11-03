@@ -59,7 +59,7 @@
 @keyframes rpFade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes rpRise { from { opacity: 0; transform: translateY(10px) scale(.985); } to { opacity: 1; transform: none; } }
 
-/* 18 — the buttons under the stages, the contact above them, the rest of the panel below */
+/* 17.3 — the buttons under the stages, the contact above them, the rest of the panel below */
 .rop-rail-rp > slot[name=rp2] { display: block; flex: none; min-width: 0; max-width: 100%; }
 .rop-rail-rp .rop-foot { position: static; margin: 2px 0 6px; padding: 6px 0 10px; box-shadow: 0 1px 0 var(--hairline); }
 .rop-ct { display: flex; flex-direction: column; gap: 2px; margin: 10px 0 2px; padding: 10px 12px; border-radius: 10px; background: var(--raised); box-shadow: inset 0 0 0 1px var(--hairline); }

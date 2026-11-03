@@ -11,7 +11,7 @@
      way); anything Parsec isn't sure of is marked and counted, and Check walks through them one at a time. The chip in the
      header says where it all goes. No coloured rows: plain paper, thin lines, a small amber mark only where it needs you. */
   var TICKET = [
-    ["Truck", ["year", "make", "model", "vin", "unitNumber", "chassis", "engineType", "engineSerial", "mileage", "engineHours", "buildDate", "warrantyStart"]],
+    ["Truck", ["year", "make", "model", "color", "vin", "unitNumber", "chassis", "engineType", "engineSerial", "mileage", "engineHours", "buildDate", "warrantyStart"]],
     ["Dates", ["dateOpened", "promisedAt", "followUpAt"]],
     ["Shop", ["caseNumber", "custNo", "createdBy", "poNumber", "authNumber", "techSupportCase", "shopSupplies", "keyTag", "location", "department"]],
     ["Contact", ["contactName", "contactPhone", "contactEmail", "driverName", "driverPhone"]],

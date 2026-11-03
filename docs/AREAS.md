@@ -455,6 +455,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `catalog-window.js` | The 52-truck catalog window: every body by year, pick one for the RO. | 6 | 3 | 1 |
 | `matching.js` | Which picture an RO shows: trkPick — the RO's own picture, else the catalog body that matches its model and year (trkModelFor / trkMatch), else the check-in photo (trkPhotoOf); the library of pictures (trkLib) and their sources. | 17 | 30 | 11 |
 | `notes-on-truck.js` | Notes on the truck (Parsec 9.9): put a note where the issue is on the RO's truck picture; TI holds the open inspector. | 11 | 10 | 2 |
+| `paint.js` | The truck's colour (17.3): pick it in the Vehicle section; the catalog picture is repainted — the cab and hood only — on every page, from above too; kept with the truck by its VIN; never on a photo. | 10 | 10 | 4 |
 | `peek.js` | The peek card on an RO link (16.3 B): after half a second on an RO number, the picture, customer, truck, status, tech and contact; click opens the RO. | 4 | 5 | 0 |
 | `picture-data.js` | The truck pictures: TRK_START (the data URLs — assets/trucks/*.webp, put in by the build), TRK_SEED (the four plain bodies), VT_P (the 52-truck catalog: model, years, cab, trims) and its indexes. | 13 | 0 | 5 |
 | `truck-and-photos.js` | Truck & photos: one window per RO from the camera button — the model list, the body picked, photos and receipts (TD). | 15 | 8 | 2 |

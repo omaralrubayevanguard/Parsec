@@ -53,7 +53,7 @@
   function fixOf(op){
     if(!navAllowed('fixes') || !op.complaint) return null;
     const k = fixKeyOf(op.complaint); if(!k) return null;
-    const m = fixMatchFor(op); if(!m.items.length || m.tier === 'other') return null; const items = m.items;   /* 18: the closest fixes — same codes and documents first */
+    const m = fixMatchFor(op); if(!m.items.length || m.tier === 'other') return null; const items = m.items;   /* 17.3: the closest fixes — same codes and documents first */
     const top = fixTop(items, 'correction'), cause = fixTop(items, 'cause');
     const src = items.filter(x => String(x.correction || '').trim().toLowerCase() === String(top.v || '').trim().toLowerCase())[0] || items[0];
     const hrs = items.map(x => +x.hours || 0).filter(x => x > 0), avg = hrs.length ? sum(hrs, x => x) / hrs.length : 0;

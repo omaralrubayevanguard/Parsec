@@ -64,7 +64,7 @@
 .dbs-tip{background:var(--ptip-bg,#1D1C1A) !important;color:var(--ptip-fg,#F7F5F0) !important;border-radius:8px !important;box-shadow:var(--ptip-sh) !important;}
 
 /* Parsec 15 (A): one switch — Collapse all while any section is open, Expand all once they're all folded */
-.rop-fallw { display: flex; justify-content: flex-end; margin: -10px 2px -14px; }   /* 18: tighter above the Messages box */
+.rop-fallw { display: flex; justify-content: flex-end; margin: -10px 2px -14px; }   /* 17.3: tighter above the Messages box */
 .rop-fallw[hidden] { display: none; }
 .rop-fallw-rail { margin: 2px 2px 0; }
 .rop-fall { display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 9px; border: 0; border-radius: 7px; background: none; color: var(--ink-3); font: 500 12px/1 var(--font-sans); cursor: pointer; }
