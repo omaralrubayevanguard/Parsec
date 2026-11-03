@@ -19,6 +19,7 @@ import/new-ro/matching.js
 import/new-ro/fields.js
 import/new-ro/create.js
 import/new-ro/dialog.js
+import/new-ro/dialog-layout.js
 import/new-ro/open.js
 import/new-ro/_close.js
 import/extract-operations.js

@@ -94,7 +94,8 @@ async def main():
             m = await pg.evaluate("(() => { const D = __tg.IMPX.state(); return [D.new, D.foundBy, __tg.IMPX.counts().changes]; })()"); print(tag, "ocr text finds the RO:", m)
             ok(m[0] is False and m[1] == "its RO #", tag + " found by RO #")
             await pg.keyboard.press("Escape"); await pg.wait_for_timeout(200)
-            ok(not await pg.evaluate("!!document.getElementById('imp-dlg')"), tag + " Esc closes")
+            if await pg.evaluate("!!document.querySelector('#imp-dlg [data-ix=askyes]')"): await pg.click('#imp-dlg [data-ix=askyes]'); await pg.wait_for_timeout(200)   # 17.3: with something read, Esc asks first
+            ok(not await pg.evaluate("!!document.getElementById('imp-dlg')"), tag + " Esc closes (after asking, when something was read)")
             # split screenshots-as-text into one new RO
             await pg.evaluate("__tg.IMPX.open({})"); await pg.wait_for_timeout(300)
             for f in ["shot_op1.txt", "shot_parts.txt", "shot_notes.txt"]:

@@ -8,7 +8,7 @@
 "kit/px-kit.js \u00b7 var PXI",
 "kit/px-kit.js \u00b7 var PX_LOGO",
 "kit/px-kit.js \u00b7 var PX_STATUS",
-"import/new-ro/_open.js \u00b7 var IMPX \u00b7 on document paste (capture), on document keydown (capture)",
+"import/new-ro/_open.js \u00b7 var IMPX \u00b7 on document dragover, on document drop, on document paste, on document paste (capture), on document keydown (capture)",
 "kit/status-look.js \u00b7 var PGST_IC",
 "kit/status-look.js \u00b7 var PGST_RO",
 "kit/status-look.js \u00b7 var PGST_PART",

@@ -38,7 +38,7 @@ async def main():
                 await pg.wait_for_timeout(300)
                 pc = await pg.evaluate("__tg.IMPX.state().pieces.length"); print(tag, "pieces from the paste box:", pc)
                 if not has or pc != 1: fails.append(tag + " phone paste box")
-                await pg.evaluate("document.querySelector('#imp-dlg .ix-b').scrollTop = 99999"); await pg.wait_for_timeout(150)
+                await pg.evaluate("document.querySelector('#imp-dlg .ix-fs').scrollTop = 99999"); await pg.wait_for_timeout(150)
                 await pg.screenshot(path=os.path.join(OUT, tag + "_7footer.png"))
                 ft = await pg.evaluate("(() => { const f = document.querySelector('#imp-dlg .ix-df').getBoundingClientRect(); return [Math.round(f.top), Math.round(f.bottom), innerHeight]; })()"); print(tag, "footer box:", ft)
             # the old New RO paths all land here

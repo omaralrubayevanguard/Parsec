@@ -194,7 +194,7 @@ document.addEventListener("click", function(e){
       break;
     }
     
-    case "inv-extract": UI.modal = { type: "inv-extract", text: "", pick: {} }; render(); setTimeout(function(){ var ta = document.getElementById("inv-x-text"); if(ta) ta.focus(); }, 30); break;
+    case "inv-extract": IMPX.open({ target: "inv" }); break;   /* 17.3: the one extraction window, aimed at Inventory */
     case "inv-x-add": invXCommit(); render(); break;
     case "ops-x-add": opsXCommit(); render(); break;
     case "ops-x-clear": if(UI.modal && UI.modal.type === "extract-ops"){ UI.modal.rows = []; opsXSetText(""); var ot = document.getElementById("ops-x-text"); if(ot) ot.focus(); } break;

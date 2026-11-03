@@ -1,8 +1,8 @@
 /* Parsec · import/new-ro · dialog.js
    The import dialog: the field rows, operation cards, totals, notes, the last-contact suggestion (16.3), what is hidden until needed.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   ic bd hideable fieldInput frow frow0 vtxt cellBd costLine opCard totals notesHtml … (20 functions, 3 constants)
-   uses       import/ kit/ pages/triage/ ro/ trucks/
+   declares   ic bd hideable fieldInput frow frow0 vtxt cellBd costLine opCard totals notesHtml … (23 functions, 3 constants)
+   uses       import/ kit/ library/ pages/triage/ ro/ trucks/
 */
   /* ---------------------------------------------------------------- the dialog */
   var ICX = { image: '<rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.7"/><path d="M4 17l4.5-4 3.5 3 3-2.5 5 4"/>',
@@ -106,39 +106,66 @@
   function pieceHtml(p, i){ return '<div class="ix-pc' + (p.nw ? ' nw' : '') + '"><span class="ix-th">' + ic(p.kind === "text" ? "doc" : p.kind === "pdf" ? "doc" : "image") + '</span><span><b>' + esc(p.name) + '</b><small>' + esc(p.what) + '</small></span><button class="ix-x0" data-ix="rmpc" data-i="' + i + '" title="Take this piece out" aria-label="Take out ' + esc(p.name) + '">' + ic("x", 12) + '</button></div>'; }
   function draw(){
     var w = document.getElementById("imp-dlg"); if(!w || !D) return;
-    var Pl = plan(), C = counts(Pl), ro = D.ro, upd = !D.new, phone = document.documentElement.getAttribute("data-device") === "phone" || window.innerWidth < 760;
-    var sc = w.querySelector(".ix-fs"), keep = sc ? sc.scrollTop : 0, sb = w.querySelector(".ix-b"), keepB = sb ? sb.scrollTop : 0;
-    var title = upd ? 'Update RO ' + esc(tgNum(ro)) + (ro.customerName ? ' · ' + esc(ro.customerName) : '') : 'New repair order';
-    var sub = upd ? (D.foundBy ? 'Found by ' + esc(D.foundBy) : 'Import from ASIST') + (ro.imp && ro.imp.at ? ' — imported ' + (ro.imp.n > 1 ? ro.imp.n + ' times, last ' : 'once already, ') + esc(whenTxt(ro.imp.at)) : ' — first import on this RO') : 'Paste or drop everything about the case — it fills in as it reads';
-    D.rowsNow = Pl.rows; var nChk = chkCount(Pl.rows, Pl.ops);   /* 17.3: what to check */
-    var groups = {}; Pl.rows.forEach(function(r){ (groups[r.s[2]] = groups[r.s[2]] || []).push(r); });
+    var Pl = plan(), C = counts(Pl), ro = D.ro, upd = !D.new && D.target === "ro", phone = document.documentElement.getAttribute("data-device") === "phone" || window.innerWidth < 760;
+    var sc = w.querySelector(".ix-fs"), keep = sc ? sc.scrollTop : 0;
+    D.rowsNow = Pl.rows;
+    var L = lyChecks(Pl); if(D.checking != null && !L.length) D.checking = null;
     D.v163f = {}; Pl.rows.forEach(function(r){ D.v163f[r.k] = r.fin; });   /* Parsec 16.3: for the last-contact suggestion */
+    var get = function(k){ return Pl.rows.filter(function(r){ return r.k === k; })[0] || {}; };
+    var rn = get("roNumber").fin, cu = get("customerName").fin;
+    var title = D.target === "inv" ? "Parts to Inventory" : D.target === "lib" ? "Documents to the Library" : upd ? 'Update RO ' + esc(tgNum(ro)) : rn ? 'RO ' + esc(roShortNo(rn)) : 'New RO';
+    var sub = [upd ? ro.customerName || cu : cu, get("unitNumber").fin, [get("year").fin, get("model").fin].filter(Boolean).join(" ")].filter(Boolean).map(esc).join(" · ")
+      || (upd ? (D.foundBy ? 'Found by ' + esc(D.foundBy) : 'Import from ASIST') : 'Paste or drop the case, screenshots, PDFs, quotes or photos');
+    if(upd && D.foundBy && sub.indexOf("Found by") < 0) sub += ' · found by ' + esc(D.foundBy);
+    var empty = !D.pieces.length && !D.manual && D.new && D.target === "ro" && !Object.keys(D.edits).length;
     var LZ = D.loose || { auto: [], rest: [] }, lpTxt = (LZ.auto.length ? LZ.auto.map(function(x){ return esc(x.p.desc || x.p.pn) + ' → Op ' + (D.acc.ops[x.i].no || x.i + 1) + ' (' + esc(x.by) + ')'; }).join(", ") + (LZ.rest.length ? '; ' : '') : '') + (LZ.rest.length ? LZ.rest.length + ' part' + (LZ.rest.length === 1 ? '' : 's') + ' with no operation named go on' : '');
     var lpSel = D.acc.parts.length && D.acc.ops.length ? '<div class="ix-lp">' + ic("parts", 13) + '<span>' + (LZ.rest.length ? '' : 'Parts listed apart from their operations: ') + lpTxt + '</span>' + (LZ.rest.length ? '<select data-ix="lp" class="ix-in">' + D.acc.ops.map(function(o, i){ return '<option value="' + i + '"' + (i === D.lpTo && !D.lpOff ? ' selected' : '') + '>Op ' + (o.no || i + 1) + ' · ' + esc(o.name) + '</option>'; }).join("") + '<option value="-1"' + (D.lpOff ? ' selected' : '') + '>Leave them out</option></select>' : '') + '</div>' : '';
     var ppl = Pl.people.length ? '<div class="ix-ppl">' + ic("user", 13) + '<span><b>' + Pl.people.length + (Pl.people.length === 1 ? ' person joins' : ' people join') + ' the Team</b> — no pages, no sign-in: ' + Pl.people.map(function(p){ return esc(p.n) + ' (' + esc(p.why) + ')'; }).join(", ") + '</span></div>' : '';
     var reading = D.busy ? '<div class="imp-status busy" id="imp-status" role="status">' + esc(D.busy) + '</div>' : '<div class="imp-status" id="imp-status" role="status" aria-live="polite">' + esc(D.msg || "") + '</div>';
-    var chips = [["chk", nChk, "to check"], ["new", C.new, "new"], ["upd", C.upd, "updated"], ["kept", C.kept, "kept yours"], ["edit", C.edit, "typed"], ["same", C.same, "same"]].filter(function(x){ return x[1]; }).map(function(x){ return '<span class="' + x[0] + '"><b>' + x[1] + '</b>' + x[2] + '</span>'; }).join("");
-    var prim = D.new ? 'Create RO' + (Pl.rows[1].fin ? ' ' + esc(roShortNo(Pl.rows[1].fin)) : '') : (C.changes || Pl.people.length ? 'Apply ' + C.changes + ' change' + (C.changes === 1 ? '' : 's') : 'Nothing to change');
-    var foot = D.err ? '<span class="ix-err">' + ic("warn", 13) + esc(D.err) + '</span>' : '<span class="ix-mu">' + (D.new ? (D.pieces.length ? 'Check what came in — nothing is saved until Create RO' : 'Paste the case to fill this in, or type it') : 'Nothing changes until you press Apply') + '</span>';
-    w.innerHTML = '<div class="ix" role="dialog" aria-modal="true" aria-label="' + (upd ? 'Update RO ' + esc(tgNum(ro)) : 'New repair order') + '">'
-      + '<div class="ix-h"><div class="ix-ht"><h2>' + title + '</h2><div class="ix-sub">' + sub + '</div></div>' + (upd ? '<span class="ix-bd upd ix-tag">' + ic("swap", 12) + 'Existing RO</span>' + (D.fixed || D.foundBy === 'its RO #' ? '' : '<button class="ix-lk" data-ix="newinstead" title="Same truck, a new visit">Make a new RO instead</button>') : '<span class="ix-bd new ix-tag">' + ic("plus", 12) + 'New RO</span>') + '<button class="ix-x" data-ix="close" aria-label="Close (Esc)" title="Close (Esc)">' + ic("x", 18) + '</button></div>'
-      + '<div class="ix-b"><div class="ix-imp">'
-      +   '<div class="ix-drop" tabindex="0" data-ix="drop" aria-label="Paste or drop the case here">' + ic("clip", 22) + (phone ? '<b>Paste the case, or add screenshots</b><textarea class="ix-paste" data-ix-paste rows="2" placeholder="Long-press here and Paste the case text"></textarea>' : '<b>Paste (Ctrl V) or drop here</b>') + '<small>Case page text, screenshots, the PDF — as many as you like, any order</small><div class="ix-row"><button class="ix-btn" data-ix="shots">' + ic("image", 14) + 'Screenshots</button><button class="ix-btn" data-ix="pdf">' + ic("doc", 14) + 'PDF</button></div></div>'
-      +   '<input type="file" id="ix-shots" accept="image/*" multiple hidden><input type="file" id="ix-pdf" accept=".pdf,application/pdf" hidden>'
-      +   reading
-      +   (D.pieces.length ? '<div class="ix-pcs"><span>READ SO FAR</span>' + D.pieces.map(pieceHtml).join("") + '</div>' : '<div class="ix-pcs"><span>READ SO FAR</span><div class="ix-mu">Nothing yet. Copy the case page in ASIST (Ctrl A, Ctrl C) and press Ctrl V here — or drop screenshots.</div></div>')
-      +   '<div class="ix-prv">' + ic("lock", 13) + '<span>Read on this computer — screenshots by the reader inside Parsec. Nothing is sent anywhere.</span></div>'
-      +   (chips ? '<div class="ix-sum">' + chips + '</div>' : '')
-      + '</div><div class="ix-frm"><div class="ix-fbar"><div class="ix-seg" role="group" aria-label="Show"><button data-ix="only" data-v="0" aria-pressed="' + !D.only + '">Everything</button><button data-ix="only" data-v="1" aria-pressed="' + D.only + '">Changes only</button></div><span class="ix-mu">' + (upd ? (C.kept ? C.kept + ' changed here and in ASIST — yours stay' : C.changes ? 'What ASIST changed since the last import' : 'ASIST and this RO agree') : (D.pieces.length ? 'All of it is new — nothing on this RO yet' : 'Every field can be typed')) + '</span></div><div class="ix-fs">'
-      +   [G_CASE, G_TRUCK, G_CCC].map(function(g){ return '<div class="ix-grp"><h4>' + g + '</h4>' + groups[g].map(frow).join("") + '</div>'; }).join("")
-      +   '<div class="ix-grp"><h4>Operations <em>hours × rate = labor, parts, shop supplies, sublet, the op total, ASIST’s approval (shown only) — parts under each</em></h4>' + lpSel + (Pl.ops.length ? '<div class="ix-ops">' + Pl.ops.map(opCard).join("") + '</div>' : '<div class="ix-mu" style="padding:4px 8px">No operations read yet.</div>') + '</div>'
-      +   '<div class="ix-grp"><h4>Notes <em>user and system notes, with who and when — into Activity</em></h4>' + ppl + notesHtml(Pl) + '</div>'
-      +   '<div class="ix-grp"><h4>Totals <em>checked against what Parsec adds up</em></h4>' + totals(Pl) + '</div>'
-      + '</div><div class="ix-df">' + foot + '<button class="ix-btn" data-ix="close">Cancel</button><button class="ix-btn pri" data-ix="apply"' + (!D.new && !C.changes && !Pl.people.length ? ' disabled' : '') + '>' + prim + '</button></div></div></div></div>';
-    var sc2 = w.querySelector(".ix-fs"); if(sc2) sc2.scrollTop = keep; var sb2 = w.querySelector(".ix-b"); if(sb2) sb2.scrollTop = keepB;
+    var C2 = [["new", C.new, "new"], ["upd", C.upd, "updated"], ["kept", C.kept, "kept yours"], ["edit", C.edit, "typed"], ["same", C.same, "same"]].filter(function(x){ return x[1]; });
+    var chips = upd && C2.length ? '<div class="ix-sum">' + C2.map(function(x){ return '<span class="' + x[0] + '"><b>' + x[1] + '</b>' + x[2] + '</span>'; }).join("") + '</div>' : '<div class="ix-sum" hidden></div>';
+    var body;
+    if(empty) body = lyEmpty(phone);
+    else {
+      var byK = {}; Pl.rows.forEach(function(r){ byK[r.k] = r; });
+      var cell = function(r){ return r ? frow(r).replace('<div class="ix-fr ', '<div class="ix-fr' + (lyEmptyRow(r) && !D.allf ? ' emp' : '') + ' ') : ""; };
+      var nEmp = Pl.rows.filter(function(r){ return lyEmptyRow(r); }).length;
+      var ticket = '<section class="ix-sec" id="ix-s-ro" data-for="ro"><div class="ix-sh"><h4>Repair order</h4><em>' + (upd ? 'what ASIST changed since the last import' : '→ ' + (D.target === "ro" ? 'a new RO' : 'not used here')) + '</em></div>'
+        + '<div class="ix-top">' + TICKET_TOP.map(function(k){ return cell(byK[k]); }).join("") + '</div>'
+        + TICKET.map(function(g){ var rs = g[1].map(function(k){ return byK[k]; }).filter(Boolean); if(!rs.length) return "";
+            var all = rs.every(function(r){ return lyEmptyRow(r); }) && !D.allf; return '<div class="ix-tr' + (all ? ' emp' : '') + (g[0] === "Story" ? ' story' : '') + '"><span class="ix-trh">' + g[0] + '</span><div class="ix-trc">' + rs.map(cell).join("") + '</div></div>'; }).join("")
+        + (nEmp ? '<button class="ix-lk ix-allf" data-ix="allf">' + (D.allf ? 'Hide the empty fields' : '+ ' + nEmp + ' empty field' + (nEmp === 1 ? '' : 's') + ' — show to type one') + '</button>' : '')
+        + '</section>';
+      body = (D.checking != null ? '' : lyNote(L))
+        + ticket
+        + '<section class="ix-sec" id="ix-s-ops" data-for="ro inv"><div class="ix-sh"><h4>Operations</h4><span>' + Pl.ops.length + '</span><em>→ on the RO · parts on each</em></div>' + lpSel + (Pl.ops.length ? '<div class="ix-ops">' + Pl.ops.map(opCard).join("") + '</div>' : '<div class="ix-mu ix-none">No operations read yet.</div>') + '</section>'
+        + lyExtras()
+        + '<section class="ix-sec" id="ix-s-notes" data-for="ro"><div class="ix-sh"><h4>Notes</h4><span>' + Pl.notes.length + '</span><em>→ Activity, with who and when</em></div>' + ppl + notesHtml(Pl) + '</section>'
+        + '<section class="ix-sec" id="ix-s-tot" data-for="ro"><div class="ix-sh"><h4>Totals</h4><em>checked against what Parsec adds up</em></div>' + totals(Pl) + '</section>';
+    }
+    w.innerHTML = '<div class="ix" role="dialog" aria-modal="true" aria-label="' + (upd ? 'Update RO ' + esc(tgNum(ro)) : 'New repair order') + '" data-target="' + D.target + '" data-new="' + (D.new ? 1 : 0) + '">'
+      + '<div class="ix-h"><div class="ix-ht"><h2>' + title + '</h2><div class="ix-sub">' + sub + '</div></div>'
+      + (upd && !D.fixed && D.foundBy !== 'its RO #' ? '<button class="ix-lk" data-ix="newinstead" title="Same truck, a new visit">Make a new RO instead</button>' : '')
+      + '<div class="ix-tgw"><button class="ix-tgt" data-ix="target" data-k="' + (D.target === "ro" ? (D.new ? "new" : "ro") : D.target) + '" aria-haspopup="menu" aria-expanded="' + !!D.menu + '" title="Where everything goes">' + esc(lyTargetLabel()) + '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 10l5 5 5-5"/></svg></button>' + (D.menu ? lyTargetMenu() : '') + '</div>'
+      + '<button class="ix-x" data-ix="close" aria-label="Close (Esc)" title="Close (Esc)">' + ic("x", 18) + '</button></div>'
+      + (empty ? '' : lyStrip(phone) + lyFound(Pl, upd, C)) + reading + chips
+      + '<input type="file" id="ix-shots" accept="image/*" multiple hidden><input type="file" id="ix-pdf" accept=".pdf,application/pdf" multiple hidden>'
+      + '<div class="ix-bw"><div class="ix-fs">' + body + '</div>' + (D.checking != null && L.length ? lyCheckView(L) : '') + '</div>'
+      + lyFoot(Pl, C, L, upd) + '</div>';
+    var sc2 = w.querySelector(".ix-fs"); if(sc2) sc2.scrollTop = keep;
   }
 
   /* ---------------------------------------------------------------- reading pieces */
+  /* 17.3: a picture with almost no words is a photo; a PDF that isn't the case is a document (a bulletin, a procedure) */
+  function isPhotoText(t){ if(!t) return true; var P = parse(t); if(describe(P) !== "nothing recognisable") return false; return (String(t).match(/\b[A-Za-z]*[aeiouAEIOU][A-Za-z]*\b/g) || []).filter(function(w){ return w.length >= 3; }).length < 8; }
+  function isDocText(t){ var P = parse(t || ""); if(P.found.indexOf("case") > -1 || P.found.indexOf("asset") > -1 || P.ops.length) return false; return true; }
+  function addExtra(role, f, text){
+    D.pieces.forEach(function(p){ p.nw = 0; });
+    var pc = { kind: role === "photo" ? "image" : "pdf", role: role, name: f.name || (role === "photo" ? "Photo" : "Document"), file: f, nw: 1, what: role === "photo" ? "a photo — goes to Files" : "a document — goes to the Library" };
+    if(role === "photo") try{ pc.url = URL.createObjectURL(f); }catch(e){}
+    if(role === "doc" && text && typeof libDocRead === "function") try{ var g = libDocRead(text, f.name); if(g && g.num){ pc.num = g.num; pc.title = g.title || ""; pc.what = g.num + (g.title ? " · " + g.title : "") + " — goes to the Library"; } }catch(e){}
+    D.pieces.push(pc); D.msg = ""; rebuild();
+  }
   function match(){
     if(!D || D.fixed) return;
     var m = D.forceNew ? null : findRo(D.acc.f);
@@ -146,7 +173,10 @@
   }
   /* Parsec 14: what the Totals show for shop supplies, fees and sublet beyond what the operations carry — it goes on the RO */
   function suppliesOf(acc){ var T = acc.totals; delete acc.f.supplies; if(!T || T.misc == null) return; var per = acc.ops.reduce(function(a, o){ return a + (o.misc || 0) + (o.sublet || 0); }, 0), v = cents(T.misc - per); if(v > .004) acc.f.supplies = String(v); }
-  function rebuild(){ D.acc = blankAcc(); D.pieces.forEach(function(p){ mergeInto(D.acc, p.P); }); suppliesOf(D.acc); if(D.lpTo >= D.acc.ops.length) D.lpTo = 0; match(); D.err = ""; draw(); }
+  function rebuild(){ D.acc = blankAcc(); D.pieces.forEach(function(p){ if(p.P && !p.off) mergeInto(D.acc, p.P); }); suppliesOf(D.acc);
+    /* 17.3: opened from an operation (Extract parts) — a quote's parts go on that operation */
+    var tOp = D.opId && D.ro ? (D.ro.operations || []).filter(function(o){ return o.id === D.opId; })[0] : null;
+    if(tOp && !D.acc.ops.length && D.acc.parts.length){ var bo = blankOp((D.ro.operations || []).indexOf(tOp) + 1, tOp.complaint || "Operation"); D.acc.ops.push(bo); D.lpTo = 0; D.lpSet = true; } if(D.lpTo >= D.acc.ops.length) D.lpTo = 0; match(); D.err = ""; draw(); }
   var SECN = { case: "Case header", asset: "Truck", complaint: "Complaint" };
   function pieceName(kind, P, n){
     var main = P.ops.length ? "Operations" : (P.parts.length ? "Parts" : P.notes.length ? "Notes" : P.totals ? "Totals" : SECN[P.found[0]] || "Text");
@@ -154,12 +184,14 @@
     if(kind === "pdf") return n;
     return P.found.indexOf("case") > -1 && P.ops.length ? "Case page · pasted text" : "Pasted text · " + main;
   }
-  function addText(text, kind, name){
+  function addText(text, kind, name, file){
     if(!D || !String(text || "").trim()) return;
     var P = parse(text);
     D.pieces.forEach(function(p){ p.nw = 0; });
     var nImg = D.pieces.filter(function(p){ return p.kind === "image"; }).length + 1;
-    D.pieces.push({ kind: kind || "text", name: kind === "pdf" ? name : pieceName(kind || "text", P, nImg), what: describe(P), P: P, nw: 1 });
+    var pc = { kind: kind || "text", role: "case", name: kind === "pdf" ? name : pieceName(kind || "text", P, nImg), what: describe(P), P: P, nw: 1 };
+    if(file && kind === "image") try{ pc.url = URL.createObjectURL(file); pc.file = file; }catch(e){}
+    D.pieces.push(pc);
     D.msg = describe(P) === "nothing recognisable" ? "Nothing in that looked like the case — is it the ASIST case page?" : "";
     rebuild();
   }
@@ -167,9 +199,9 @@
     var files = Array.prototype.slice.call(list || []), imgs = files.filter(function(f){ return /^image\//.test(f.type || "") || /\.(png|jpe?g|webp|bmp|gif)$/i.test(f.name || ""); }), pdfs = files.filter(function(f){ return /pdf/i.test(f.type || "") || /\.pdf$/i.test(f.name || ""); });
     var q = Promise.resolve();
     pdfs.forEach(function(f){ q = q.then(function(){ if(!D) return; D.busy = "Reading " + (f.name || "the PDF") + "…"; draw();
-      return pdfToText(f).then(function(t){ if(!D) return; D.busy = ""; addText(t, "pdf", f.name || "PDF"); }, function(e){ if(!D) return; D.busy = ""; D.msg = e && e.message === "offline" ? "Couldn’t load the PDF reader — it needs the internet the first time. Paste the case text instead." : "Couldn’t read that PDF — paste the case text instead."; draw(); }); }); });
-    imgs.forEach(function(f, i){ q = q.then(function(){ if(!D) return; NOW = [i + 1, imgs.length]; D.busy = "Reading screenshot " + (i + 1) + " of " + imgs.length + "…"; draw();
-      return (OCRF || ocrImages)([f], 6).then(function(t){ if(!D) return; D.busy = ""; t = cleanOcrText(t).trim(); if(!t){ D.msg = "No text found in that screenshot."; draw(); return; } addText(t, "image"); },
-        function(e){ if(!D) return; D.busy = ""; D.msg = e && e.message === "offline" ? "Couldn’t start the screenshot reader. Paste the case text instead." : "Couldn’t read that screenshot — try a sharper one, or paste the text."; draw(); }); }); });
+      return pdfToText(f).then(function(t){ if(!D) return; D.busy = ""; if(isDocText(t)) addExtra("doc", f, t); else addText(t, "pdf", f.name || "PDF"); }, function(e){ if(!D) return; D.busy = ""; addExtra("doc", f, ""); D.msg = "Couldn’t read the text in " + (f.name || "that PDF") + " — it goes in as a document; paste the case text if it was the case."; draw(); }); }); });
+    imgs.forEach(function(f, i){ q = q.then(function(){ if(!D) return; NOW = [i + 1, imgs.length]; D.busy = "Reading " + (imgs.length > 1 ? "picture " + (i + 1) + " of " + imgs.length : "the picture") + "…"; draw();
+      return (OCRF || ocrImages)([f], 6).then(function(t){ if(!D) return; D.busy = ""; t = cleanOcrText(t).trim(); if(isPhotoText(t)){ addExtra("photo", f); return; } addText(t, "image", null, f); },
+        function(e){ if(!D) return; D.busy = ""; addExtra("photo", f); }); }); });
     return q;
   }

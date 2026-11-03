@@ -1,8 +1,8 @@
 /* Parsec · import/new-ro · create.js
    Create RO / Apply: setF writes each accepted field through the RO details table; operations and parts are added or updated.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   setF apply D OCRF NOW (2 functions, 3 constants)
-   uses       access/ automations/ data/ kit/ pages/ pages/inventory/ pages/triage/ pages/warranty/ phone/ ro/ ro-page/ shell/ state/ trucks/
+   declares   setF extrasOf attachExtras applyInv applyLib apply D OCRF NOW (6 functions, 3 constants)
+   uses       access/ automations/ data/ kit/ library/ pages/ pages/inventory/ pages/triage/ pages/warranty/ phone/ ro/ ro-page/ shell/ state/ trucks/
 */
   /* ---------------------------------------------------------------- Create RO / Apply */
   var D = null, OCRF = null, NOW = null;   /* NOW: which screenshot of how many is being read */   /* OCRF: a stand-in reader for the tests */
@@ -20,15 +20,37 @@
       if(o1 && !opStory(o1, kind)){ if(!Array.isArray(o1.log)) o1.log = []; o1.log.push({ id: uid("lg"), at: nowIso(), kind: kind, text: String(v) }); } return; }
     ro[k] = String(v);
   }
+  /* 17.3: the photos and documents read with the case — they go with the RO, not into its fields */
+  function extrasOf(){ var x = { ph: [], docs: [] }; (D.pieces || []).forEach(function(p){ if(p.off || !p.file) return; if(p.role === "photo") x.ph.push(p.file); else if(p.role === "doc") x.docs.push(p.file); }); return x; }
+  function attachExtras(ro, x){
+    if(!ro || (!x.ph.length && !x.docs.length)) return;
+    setTimeout(function(){
+      try{ if(x.ph.length && typeof JC !== "undefined" && JC.addFilesTo) JC.addFilesTo(ro, "pics", x.ph); }catch(e){ console.error(e); }
+      if(x.docs.length && typeof libIntake === "function") libIntake(x.docs, { ro: ro }, function(res){ try{ if(res && res.plain.length && JC.addFilesTo) JC.addFilesTo(ro, "report", res.plain); }catch(e){ console.error(e); } });
+    }, 250);
+  }
+  /* 17.3: aimed at Inventory — every part read goes on the Parts list; at the Library — the documents are filed, asked first */
+  function applyInv(){
+    var L = lyParts(); if(!L.length) return;
+    pushUndo("parts to inventory");
+    L.slice().reverse().forEach(function(p){ var it = invBlank(false); it.desc = p.desc || p.pn || "Part"; it.pn = p.pn || ""; it.qty = String(p.qty || "1"); if(p.price != null) it.price = p.price; if(p.core) it.core = p.core; if(p.list != null) it.list = p.list; invList().unshift(it); });
+    scheduleSave(true); close(); try{ render(); }catch(e){}
+    pushToast(L.length + " part" + (L.length === 1 ? "" : "s") + " added to the inventory", true);
+  }
+  function applyLib(){ var x = extrasOf(); if(!x.docs.length) return; close(); libIntake(x.docs, {}, function(){ try{ render(); }catch(e){} }); }
   function apply(){
     if(!D) return;
+    if(D.target === "inv"){ applyInv(); return; }
+    if(D.target === "lib"){ applyLib(); return; }
+    var XS = extrasOf();
     var Pl = plan(), C = counts(Pl), get = function(k){ return Pl.rows.filter(function(r){ return r.k === k; })[0]; };
     if(D.new){
       var rn = String(get("roNumber").fin || "").trim(), cn = String(get("customerName").fin || "").trim(), miss = [];
       if(!rn) miss.push("RO #"); if(!cn) miss.push("Customer");
       if(miss.length){ D.err = "Still needed: " + miss.join(", ") + "."; draw(); var q = document.querySelector('#imp-dlg [data-ixf="' + (rn ? "customerName" : "roNumber") + '"]'); if(q) q.focus(); return; }
       if(realRos().some(function(r){ return nzRo(r.roNumber) === nzRo(rn); })){ D.err = "RO " + rn + " already exists."; draw(); return; }
-    } else if(!C.changes && !Pl.people.length){ close(); pushToast("Nothing to change — RO " + tgNum(D.ro) + " already has what ASIST shows."); return; }
+    } else if(!C.changes && !Pl.people.length && (XS.ph.length || XS.docs.length)){ var ro0 = D.ro; close(); attachExtras(ro0, XS); return; }
+    else if(!C.changes && !Pl.people.length){ close(); pushToast("Nothing to change — RO " + tgNum(D.ro) + " already has what ASIST shows."); return; }
     pushUndo(D.new ? "new RO from ASIST" : "import from ASIST");
     var ro = D.new ? addRO({ roNumber: get("roNumber").fin, customerName: get("customerName").fin, caseNumber: get("caseNumber").fin || "", dateOpened: get("dateOpened").fin || nowIso() }) : D.ro;
     var me = punchByName() || (typeof pxMeName === "function" ? pxMeName() : "") || "Admin";
@@ -88,7 +110,7 @@
     try{ autoHist(ro, { at: Date.now(), k: "import", t: v14typed ? "Created" : D.new ? "Created from ASIST" : "Imported from ASIST", o: "", n: v14typed ? "typed by hand" : sum, op: "", by: me }); }catch(e){}
     try{ audit(v14typed ? "ro" : "import", roLabel(ro) + ": " + (v14typed ? "created by hand" : (D.new ? "created from ASIST" : "imported from ASIST") + " — " + sum), ro); }catch(e){}
     scheduleSave(true);
-    var wasNew = D.new, id = ro.id; close();
+    var wasNew = D.new, id = ro.id; close(); attachExtras(ro, XS);
     if(wasNew){ UI.view = "ros"; UI.selectedRo = id; UI.roFilter = ""; UI.modal = null; setTimeout(function(){ try{ v141Comeback(getRO(id)); }catch(e){ console.error(e); } }, 150); }
     render(); try{ if(typeof JC !== "undefined" && JC.rerender) JC.rerender(); }catch(e){}
     pushToast(v14typed ? "Created RO " + tgNum(ro) + "." : (wasNew ? "Created RO " + tgNum(ro) + " from ASIST" : "Imported from ASIST — RO " + tgNum(ro)) + " · " + sum + (Pl.people.length ? " · " + Pl.people.length + " joined the Team" : "") + ".", true);

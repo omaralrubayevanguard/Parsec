@@ -135,6 +135,7 @@
   "import/new-ro/matching.js": "Matching what was read to what the shop already has: the same RO (number, unit + customer), the same operation; merging a second paste into the first.",
   "import/new-ro/fields.js": "The RO's fields as rows of the dialog (SPEC: label, group, source), the operations' rows, what changed vs the existing RO.",
   "import/new-ro/create.js": "Create RO / Apply: setF writes each accepted field through the RO details table; operations and parts are added or updated.",
+  "import/new-ro/dialog-layout.js": "The one extraction window's parts (17.3): the slim strip of files read, the Found line, the RO as a ticket, the list of things to check and the Check view, where everything goes (New RO, an open RO, Inventory, the Library), documents and photos, the footer.",
   "import/new-ro/dialog.js": "The import dialog: the field rows, operation cards, totals, notes, the last-contact suggestion (16.3), what is hidden until needed.",
   "import/new-ro/open.js": "Open and close the dialog, its input and key handling, the drag-and-drop of screenshots.",
   "import/new-ro/_close.js": "Closes the New RO import closure.",

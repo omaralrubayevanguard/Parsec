@@ -97,6 +97,7 @@ function oxSetSt(j, st) {
 }
 function openExtractOps() {
   if (!RO) return;
+  if (typeof IMPX !== 'undefined') { IMPX.open({ ro: RO.id }); return; }   /* 17.3: the one extraction window; the old dialog below stays as a fallback */
   var rows = [], text = '';
   var ta = el('textarea', { class: 'px-input ox-ta', rows: '6', placeholder: 'Paste the case page or the operations here — or paste / drop a screenshot.\ne.g.  1  Alternator not charging   Approved   1.80   Waiting – Parts' });
   var fileIn = el('input', { type: 'file', accept: 'image/*,.pdf,application/pdf', multiple: 'multiple', style: 'display:none' });
@@ -183,6 +184,7 @@ function openExtractOps() {
 }
 
 function openExtractParts(job) {
+  if (RO && typeof IMPX !== 'undefined') { IMPX.open({ ro: RO.id, opId: job && job.id }); return; }   /* 17.3: a quote's parts go on this operation */
   var found = [], picked = {};
   var ta = el('textarea', { class: 'xpText', rows: '7', placeholder: 'Paste a parts list, quote or invoice — one part per line.\ne.g.  4988201   Brake chamber 30/30   2\n      Loom tape, roll  x3  LOOM-01' });
   var status = el('div', { class: 'xpStatus' });

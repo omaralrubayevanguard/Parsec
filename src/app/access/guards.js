@@ -24,7 +24,7 @@
 (function(o){ tyOpSet = function(ro, op, nm){ if(!/^Complete/.test(nm || "") && !permReopenOk(ro)) return; return o.apply(this, arguments); }; })(tyOpSet);
 (function(o){ tgRelease = function(){ if(!permOk("ro.release")) return; return o.apply(this, arguments); }; })(tgRelease);
 (function(o){ money = function(){ return permCost() ? o.apply(this, arguments) : "\u2014"; }; })(money);
-try{ if(typeof IMPX !== "undefined" && IMPX && IMPX.open){ (function(io){ IMPX.open = function(x){ if(!(x && x.ro) && !permOk("ro.new")) return; return io.apply(this, arguments); }; })(IMPX.open); } }catch(e){}
+try{ if(typeof IMPX !== "undefined" && IMPX && IMPX.open){ (function(io){ IMPX.open = function(x){ if(!(x && (x.ro || x.target)) && !permOk("ro.new")) return; return io.apply(this, arguments); }; })(IMPX.open); } }catch(e){}
 /* ---------- the clicks: a guarded button says why and does nothing (before any page sees the click) ---------- */
 var PERM_CLICK = [
   ["ro.del", '[data-pg="rolist"] [data-a="pop"][data-p="bdel"], [data-pg="rolist"] [data-a="bdelgo"], [data-action="rl-opt"][data-k="delete"]'],

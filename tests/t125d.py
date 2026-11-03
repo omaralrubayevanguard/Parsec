@@ -147,9 +147,9 @@ async def desktop(p):
     # the import opens the app's parts-list reader
     await pg.click(Q + '[data-a="pop"][data-p="more"]'); await pg.wait_for_timeout(250)
     await pg.click(Q + '.tg-pop [data-action="inv-extract"]'); await pg.wait_for_timeout(400)
-    ok(await pg.evaluate("!!document.getElementById('inv-x-text')"), "Import a parts list opens the reader (paste, screenshot, PDF)")
-    await pg.evaluate("(()=>{ const t=document.getElementById('inv-x-text'); t.value='TEST-7777 Wiper blade x2 $19.90'; t.dispatchEvent(new Event('input',{bubbles:true})); })()"); await pg.wait_for_timeout(300)
-    b2 = await pg.query_selector("#inv-x-go");
+    ok(await pg.evaluate("__tg.IMPX.isOpen() && __tg.IMPX.state().target === 'inv'"), "Import a parts list opens the one extraction window, aimed at Inventory (paste, screenshot, PDF)")
+    await pg.evaluate("t => __tg.IMPX.addText(t)", "TEST-7777 Wiper blade x2 $19.90"); await pg.wait_for_timeout(300)
+    b2 = await pg.query_selector('#imp-dlg [data-ix="apply"]');
     if b2: await b2.click(); await pg.wait_for_timeout(300)
     ok(await pg.evaluate("__tg.STATE().inventory.some(x=>x.pn==='TEST-7777')"), "…and its parts land on the list")
     # Parts → Catalog links here

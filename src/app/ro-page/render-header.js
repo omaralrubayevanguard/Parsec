@@ -3,7 +3,7 @@
    ── facts (generated; run tools/headers.py to refresh) ──
    declares   confirmDeleteRO applyCompact setDetails renderHeader bandCompact detailsOpen (4 functions, 2 constants)
    state      punches ros
-   uses       access/ data/ kit/ pages/ pages/warranty/ ro/ shell/ state/
+   uses       access/ data/ import/new-ro/ kit/ pages/ pages/warranty/ ro/ shell/ state/
    at load    on window resize · on document keydown
 */
 /* ============================ render: header ============================ */
@@ -214,8 +214,7 @@ function renderHeader() {
   /* Add operation: sits just left of the rail button in the RO pane header */
   pendingAddOpBtn = el('button', { class: 'addOpBtn', type: 'button', title: 'Extract operations \u2014 paste text, or read screenshots / a PDF', 'aria-label': 'Extract operations from text or screenshots',
     html: I3H('addJob', 19, 19),
-    onClick: function (e) { e.stopPropagation(); closeMenus(); UI.modal = { type: 'extract-ops', roId: RO.id, rows: [], text: '', status: '' }; tecRender();
-      setTimeout(function () { var ta = document.getElementById('ops-x-text'); if (ta) ta.focus(); }, 30); } });
+    onClick: function (e) { e.stopPropagation(); closeMenus(); IMPX.open({ ro: RO.id });   /* 17.3: the one extraction window, aimed at this RO */ } });
   pendingRoBlock = raBlock;
   /* the customer now sits under the RO number inside the RO block */
   var main = el('div', { class: 'headMain' }, [
@@ -250,8 +249,7 @@ function renderHeader() {
         pushUndo('add operation');
         var nj = blankJob(); S.jobs.push(nj); S.ui.card = nj.id; UI.jcFocusNew = nj.id; save(true); render();
       } },
-    { icon: MENU_ICONS.addJob, label: 'Extract operations\u2026', run: function () { UI.modal = { type: 'extract-ops', roId: RO.id, rows: [], text: '', status: '' }; tecRender();
-        setTimeout(function () { var ta = document.getElementById('ops-x-text'); if (ta) ta.focus(); }, 30); } },
+    { icon: MENU_ICONS.addJob, label: 'Extract operations\u2026', run: function () { IMPX.open({ ro: RO.id });   /* 17.3: the one extraction window, aimed at this RO */ } },
     { icon: MENU_ICONS.addJob, label: 'Add standard operation\u2026', run: function () { UI.modal = { type: 'add-std-op', roId: RO.id }; tecRender(); } },
     { icon: MENU_ICONS.eye, label: RO.warranty ? 'Not a warranty RO' : 'Mark as warranty RO', run: function () {
         pushUndo('warranty flag'); RO.warranty = !RO.warranty; save(true); render();

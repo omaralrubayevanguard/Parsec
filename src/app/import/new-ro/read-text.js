@@ -185,7 +185,7 @@
     return o;
   }
   function isPartsHead(l){ var k = colsOf(l).filter(Boolean); return k.length >= 3 && (k.indexOf("pn") > -1 || k.indexOf("qty") > -1) && !/labou?r/i.test(l); }
-  function isPn(t){ return /\d/.test(t) && /^[A-Z0-9][A-Z0-9\-\/.]{3,}$/i.test(t) && !/^\$?[\d,]+\.\d{2}$/.test(t) && !/^\d{1,2}[\/-]\d{1,2}[\/-]\d{2,4}$/.test(t) && !/^\d{1,3}$/.test(t) && !/^\d{3}-\d{3}-\d{3}$/.test(t); }
+  function isPn(t){ return /\d/.test(t) && /^[A-Z0-9][A-Z0-9\-\/.]{3,}$/i.test(t) && !/^\$?[\d,]+\.\d{2}$/.test(t) && !/^\d{1,3}\.\d$/.test(t) && !/^\d{1,2}[\/-]\d{1,2}[\/-]\d{2,4}$/.test(t) && !/^\d{1,3}$/.test(t) && !/^\d{3}-\d{3}-\d{3}$/.test(t); }
   /* one part line: the amounts go to the header's money columns in order when the count matches; otherwise to the arrangement
      where the sums work out — Ext = Qty × (Unit + Core), Net = List less the discount */
   var MKEYS = ["list", "disc", "unit", "core", "ext"];

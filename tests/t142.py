@@ -57,9 +57,10 @@ async def main():
         await pg.keyboard.press("Escape"); await pg.wait_for_timeout(300)
         await pg.evaluate("(()=>{ const w=" + SRJ + ".getElementById('modalWrap'); if(w) w.remove(); })()")
         await pg.evaluate("(()=>{ const b=[..." + SRJ + ".querySelectorAll('.rop-tacts button')].find(b=>/Extract/.test(b.title||b.getAttribute('aria-label')||'')); if(b) b.click(); })()"); await pg.wait_for_timeout(400)
-        await pg.evaluate("(()=>{ const t=" + SRJ + ".querySelector('#modalWrap .xpText'); if(t){ t.value='21899123  Release bearing  2  96.00\\n20518417  Pilot bearing  1  38.50'; t.dispatchEvent(new Event('input', { bubbles: true })); } })()"); await pg.wait_for_timeout(400)
-        fx = await pg.evaluate("[" + SRJ + ".querySelectorAll('#modalWrap .xpRow').length, (" + SRJ + ".querySelector('#modalWrap .mbtn.primary')||{}).textContent||'']")
-        await pg.evaluate("(()=>{ const b=" + SRJ + ".querySelector('#modalWrap .mbtn.primary'); if(b) b.click(); })()"); await pg.wait_for_timeout(500)
+        # 17.3: Extract opens the one extraction window, aimed at this operation
+        await pg.evaluate("t => __tg.IMPX.addText(t)", "21899123  Release bearing  2  96.00\n20518417  Pilot bearing  1  38.50"); await pg.wait_for_timeout(400)
+        fx = await pg.evaluate("[__tg.IMPX.isOpen() ? __tg.IMPX.state().acc.parts.length : -1, (document.querySelector('#imp-dlg [data-ix=apply]')||{}).textContent||'']")
+        await pg.evaluate("(()=>{ const b=document.querySelector('#imp-dlg [data-ix=apply]'); if(b) b.click(); })()"); await pg.wait_for_timeout(500)
         n3 = await pg.evaluate(f"__tg.getRO('{q0[0]}').operations.find(o=>o.id==='{q0[1]}').parts.length")
         ok(fx[0] == 2 and n3 == n2 + 2, f"Extract: two lines read and added ({fx}, {n2}→{n3})")
         # 4 · RO list: the pane's card and an operation's quote; the Time column

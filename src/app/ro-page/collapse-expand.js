@@ -3,7 +3,7 @@
    ── facts (generated; run tools/headers.py to refresh) ──
    declares   ropFallMain ropFallRailL ropFallOpen ropFallSet ropFallList ropFallSync ropFallBtn ropFallAdd pxProp pxField2 pxGroup pxFitRail … (20 functions)
    state      punches ros
-   uses       access/ clock/ data/ kit/ pages/ ro/ shell/ state/
+   uses       access/ clock/ data/ import/new-ro/ kit/ pages/ ro/ shell/ state/
    at load    on window keydown
 */
 /* ---------- Parsec 15 — one switch: Collapse all while any is open, Expand all once they're all folded ----------
@@ -208,7 +208,7 @@ function jcRunOpt(k) {
   else if (k === 'print') doPdf();
   else if (k === 'addop') { pushUndo('add operation'); var nj = blankJob(); S.jobs.push(nj); S.ui.card = nj.id; UI.jcFocusNew = nj.id; save(true); render(); }
   else if (k === 'stdop') { UI.modal = { type: 'add-std-op', roId: RO.id }; tecRender(); }
-  else if (k === 'extract') { UI.modal = { type: 'extract-ops', roId: RO.id, rows: [], text: '', status: '' }; tecRender(); setTimeout(function () { var ta = document.getElementById('ops-x-text'); if (ta) ta.focus(); }, 30); }
+  else if (k === 'extract') { IMPX.open({ ro: RO.id });   /* 17.3: the one extraction window, aimed at this RO */ }
   else if (k === 'delete') confirmDeleteRO();
 }
 /* Called after every TEC redraw. The console only rebuilds when its RO changed, or when
