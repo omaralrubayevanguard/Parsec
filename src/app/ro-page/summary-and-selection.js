@@ -102,7 +102,7 @@ function tcBuild(job) {
   if (sims.length) out.push('Similar history: ' + sims.map(function (s) {
     return tcRo(s.ro.roNumber) + ' \u2014 ' + (s.op.complaint || 'operation') + (s.shared.length ? ' (' + s.shared.join(', ') + ')' : '');
   }).join('; ') + '.');
-  return { text: out.join(' '), codes: codes, sims: sims, causeFrom: causeFrom, fixFrom: fixFrom, own: mineS.length };
+  return { cause: cause, fix: fix, text: out.join(' '), codes: codes, sims: sims, causeFrom: causeFrom, fixFrom: fixFrom, own: mineS.length };
 }
 function openTechSummary(job, work) {
   var g = tcBuild(job);

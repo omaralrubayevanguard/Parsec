@@ -76,6 +76,7 @@
   "ro/assist.js": "The RO assist strip: the next step, burnt vs quoted, the story so far (raNext / raStory) — shown on the Triage and Technician panes.",
   "ro/route.js": "The RO's route between departments: who holds it now (writer, tech, parts, foreman…), the next step for a role (rtNext / rtStepFor).",
   "ro/transfers.js": "Transfers: a hand-off the other side has to accept (rtSend / rtAccept / rtReturn), hold goals per holder (rtCfg), the log and how long each hold took.",
+  "ro/cause-correction.js": "Cause and Correction from the tech notes (17.3): the notes split into sentences, the first half the Cause and the rest the Correction, a sentence moved by hand, saved on the operation for Warranty and Fixes.",
   "ro/ordering.js": "How ROs sort: last touched, finished, days open; sortedROs(); pillHtml for the fast-punch pill.",
   "ro/task-bulletins.js": "The hours on an RO: quoted, burnt, remaining, efficiency (roQuotedHours…), the engine's daily calc with shifts and holes, and the bulletin kinds an RO's log can hold (WF_TASKS).",
   "ro/warnings.js": "Warnings and reminders computed from the data (computeWarningsAll / computeRemindersAll) and the dismissals remembered against what each notice is about.",
@@ -287,5 +288,6 @@
   "library/models.js": "The Library’s Models tab: the truck pictures moved out of Settings, one row per model (Make, Model, Years, Body, Open ROs) with the view from above, Replace and Remove; the catalog and Add a picture.",
   "pages/manager/fleets-page.js": "The Fleets page (its own page since 17.1, on the Manager’s engine): every fleet in a list, a pane with Overview, Trucks and ROs, the period, printing for an account review.",
   "ro-page/steady-redraw.js": "The RO page redraws without flicker (17.1): an opening plays only for what is new, a picture already showing stays, a scrolled box keeps its scroll.",
+  "ro-page/cause-correction.js": "The Time tab's Cause and Correction (17.3): the two lines beside the notes, the notes underlined amber or green, click a sentence to move it, ask after a hand edit, ✦ suggests, copy the story.",
   "ro-page/messages-chat.js": "Messages | Customer above the operations (17.2): one box with a segmented pill, the RO's messages as a chat (bubbles or lines, To and @ for anyone in the shop, files and the operation, a seen dot, quick lines by role) and the Customer fields.\nFlow: ropBuild puts ropMC() above Operations; the pill switches the pane in place (slides toward the tab), sending goes through IB.send and redraws."
 }

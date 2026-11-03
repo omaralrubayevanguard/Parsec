@@ -266,6 +266,7 @@ ro/ro-panel.js
 ro/assist.js
 ro/route.js
 ro/transfers.js
+ro/cause-correction.js
 
 shell/device-mode.js
 
@@ -349,6 +350,7 @@ ro-page/messages-chat.js
 ro-page/build-and-fold.js
 ro-page/collapse-expand.js
 ro-page/steady-redraw.js
+ro-page/cause-correction.js
 ro-page/_close.js
 
 shell/header-shrink.js

@@ -538,6 +538,8 @@
 "ro/transfers.js \u00b7 var RT_AUTO_AT",
 "ro/transfers.js \u00b7 set RT_COL \u00b7 wrap RT_COL",
 "ro/transfers.js \u00b7 IfStatement \u00b7 on window.matchMedia(\"(pref change",
+"ro/cause-correction.js \u00b7 var CC_LBL_C,CC_LBL_X",
+"ro/cause-correction.js \u00b7 var CC_F,CC_K",
 "shell/device-mode.js \u00b7 var DEVICE_MODES",
 "shell/device-mode.js \u00b7 var DEVICE_SETTING",
 "kit/icons-3d.js \u00b7 var I3",

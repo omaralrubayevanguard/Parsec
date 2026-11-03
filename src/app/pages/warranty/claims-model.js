@@ -30,6 +30,9 @@ function truckYM0(ro){
 }
 /* cause / correction as written on the RO: the typed field, then every log line of that kind */
 function opStory(op, kind){
+  try{ if(typeof ccSync === 'function') ccSync(op); }catch(e){}   /* 17.3: Cause and Correction fill from the tech notes */
+  var cc = (op.log || []).filter(function(l){ return l && l.cc && l.kind === kind && String(l.text || '').trim(); })[0];
+  if(cc) return String(cc.text).trim();   /* 17.3: the line the notes filled (or the tech wrote) is the whole story */
   var out = [], f = String(op[kind === 'fix' ? 'correction' : 'cause'] || '').trim();
   if(f) out.push(f);
   (op.log || []).forEach(function(l){ if(l.kind === kind && String(l.text || '').trim()) out.push(String(l.text).trim()); });

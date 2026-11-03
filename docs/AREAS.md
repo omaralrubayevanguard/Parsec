@@ -324,6 +324,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 |---|---|---:|---:|---:|
 | `actions.js` | The actions that change an RO or a clock: doStartPunch / doStopPunch, status flips, pushToast (with Undo while it is still the last change), migrateRO for old records, Parsec 14.8's Declined start. | 15 | 24 | 1 |
 | `assist.js` | The RO assist strip: the next step, burnt vs quoted, the story so far (raNext / raStory) — shown on the Triage and Technician panes. | 12 | 8 | 2 |
+| `cause-correction.js` | Cause and Correction from the tech notes (17.3): the notes split into sentences, the first half the Cause and the rest the Correction, a sentence moved by hand, saved on the operation for Warranty and Fixes. | 6 | 13 | 4 |
 | `derived-calcs.js` | Numbers derived from an operation: opCalc (quoted, burnt, left, efficiency), part locks (a repair that waits on a part), what is missing to complete (opCompleteGaps), the operation's status from its fields (opStatus / opStatusRaw). | 10 | 18 | 3 |
 | `details-table.js` | The RO's details as one table (ROFLD): every field with its label, how it shows, how it is set, who may edit; roFldSet is the one setter (Undo, the value, an Activity line, save). The truck card, the RO list pane and the import all draw from it. | 13 | 15 | 1 |
 | `flow-gates.js` | The RO flow's soft gates (Parsec 14.1): Done asks instead of refusing (gaps), starting an unapproved operation asks, a truck back within days asks “a comeback?”, the RO waits on parts only when every open operation does, one release list; pgAsk is the shared question dialog. | 15 | 24 | 1 |
@@ -352,6 +353,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `build-and-fold.js` | ropBuild draws the RO page's sections in order; every section folds (Parsec 14.4) and remembers it. | 6 | 5 | 1 |
 | `builders.js` | Small builders: fields, dropdowns, the pop-over pinning (a pop-over stays put while the page redraws), live updaters for totals. | 19 | 17 | 3 |
 | `bulletins.js` | Files on the RO: saving to the folder (or IndexedDB until there is one), shrinking images, thumbnails, the bulletin log entries that carry files. | 17 | 26 | 12 |
+| `cause-correction.js` | The Time tab's Cause and Correction (17.3): the two lines beside the notes, the notes underlined amber or green, click a sentence to move it, ask after a hand edit, ✦ suggests, copy the story. | 8 | 5 | 0 |
 | `clock-card-actions.js` | What you do on the clock card: hold to stop with a reason, lap / split, fix the start, notes, reopen; ockAuto for lunch and the end of the day (reminders only since Parsec 15). | 25 | 23 | 8 |
 | `clock-card-draw.js` | The clock card's pieces, markup and ticker: the big time, the ring, segments and facts; focus mode (the big shop-floor view); ockTick updates every card in place each second; the time bar's initials and note pins, and the note added where you click (17.1). | 52 | 83 | 1 |
 | `clock-card-model.js` | The operation clock card (Parsec 12.4 / 12.5), the model: the numbers each page counts (ockModel), the shop day, similar jobs and the tech's usual pace, parts on the job, the punches' notes (and each note's time, p.noteAt) and splits. | 18 | 41 | 22 |
@@ -386,7 +388,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `summary-and-selection.js` | The work performed as one paragraph for warranty / triage (complaint, cause, correction), and the selection toolbar for marking text as a pill. | 22 | 23 | 11 |
 | `tab-actions.js` | Each tab's actions at the right of the tabs: attach, paste a screenshot, the notes paragraph to copy (Time), add a part (Parts). | 6 | 6 | 0 |
 | `task-bar.js` | Clock-string parsing for the time fields and the punch story builder. | 2 | 6 | 4 |
-| `time-tab.js` | An open operation's Time tab: every punch from its start to its stop, typed times, stops, the day bar; Parsec 15's notes that are not on a punch. | 25 | 25 | 1 |
+| `time-tab.js` | An open operation's Time tab: every punch from its start to its stop, typed times, stops, the day bar; Parsec 15's notes that are not on a punch. | 25 | 26 | 2 |
 | `toolbar.js` | The RO toolbar: tabs, the job stepper and job dots, files on the RO (allFiles / addFilesToRO), late parts. | 14 | 13 | 5 |
 | `totals.js` | The RO totals row and the day strip under it. | 7 | 4 | 1 |
 

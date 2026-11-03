@@ -1,7 +1,7 @@
 /* Parsec · ro-page · time-tab.js
    An open operation's Time tab: every punch from its start to its stop, typed times, stops, the day bar; Parsec 15's notes that are not on a punch.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   ropStops ropRc ropHM ropYMD ropAt ropShortDay ropIb ropDayBar ropTm ropSetTime ropNowTm ropStopAsk … (25 functions, 1 constant)
+   declares   ropStops ropRc ropHM ropYMD ropAt ropShortDay ropIb ropDayBar ropTm ropSetTime ropNowTm ropStopAsk … (26 functions, 2 constants)
    uses       access/ automations/ clock/ data/ kit/ pages/ pages/timelog/ pages/warranty/ ro/ shell/ state/
 */
 /* ---------- an open operation: the Time tab (Parsec 12.3) ----------
@@ -9,6 +9,7 @@
    stop reason's (one color per reason, everywhere — b9/v123.css). A slim day bar sits on top. Everything is edited right here: click a time
    or a reason to change it, trash on hover deletes (Undo in the toast), a + between punches or the tab's clock icon adds a time entry. */
 var ROPT = { ed: null, add: null, note: null, padd: null, why: null };
+var ROPCC = { sug: null, live: null, t: 0 };   /* 17.3: Cause and Correction — a ✦ suggestion, the note being typed (ro-page/cause-correction.js) */
 function ropStops() { var L = []; try { L = STOP_REASONS_BREAK.concat(STOP_REASONS_EXPLICIT); } catch (e) {} return L.concat(['Switched job', 'Pulled to another truck', 'Declined']); }
 function ropRc(r) { try { return r ? reasonVar(r) : 'var(--ink-4)'; } catch (e) { return 'var(--ink-4)'; } }
 function ropHM(ms) { var d = new Date(ms); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
@@ -155,7 +156,7 @@ function ropPunch(job, p, box) {
   var ns = noteEntries(p.notes);
   ns.forEach(function (n, i) {
     var at = st, m = /^(\d+):(\d{2})$/.exec(n.ran || ''); if (m) at = st + (+m[1] * 60 + +m[2]) * 60000;
-    blk.appendChild(el('div', { class: 'rop-tn' }, [el('small', { text: ropClk(at) }), el('span', { text: n.text }), ropIb('x', 'Delete this note', function () {
+    blk.appendChild(el('div', { class: 'rop-tn' }, [el('small', { text: ropClk(at) }), el('span', {}, ropCcMark(job, n.text)), ropIb('x', 'Delete this note', function () {
       var lines = ropNoteLines(p); if (!lines[i]) return; pushUndo('delete punch note'); lines.splice(i, 1); p.notes = lines.join('\n'); save(true); render(); ropUndo('Note deleted.'); }, 'rop-tnx is-dng')]));
   });
   if (ROPT.note === p.id) {
@@ -231,7 +232,8 @@ function ropSoloNote(job, it) {
     return row;
   }
   var ed = ref && ref.editedAt ? ' <i class="rop-tned" data-tip="' + esc('Changed' + (ref.editedBy ? ' by ' + ropFirst(ref.editedBy) : '') + ' · ' + ropClk(+new Date(ref.editedAt))) + '">edited</i>' : '';
-  row.appendChild(el('span', { html: '<em>' + esc(it.n.lb) + '</em>' + esc(it.n.text) + ed }));
+  var nsp = el('span', { html: '<em>' + esc(it.n.lb) + '</em>' }); ropCcMark(job, it.n.text).forEach(function (x) { nsp.appendChild(x); }); if (ed) nsp.insertAdjacentHTML('beforeend', ed);   /* 17.3 */
+  row.appendChild(nsp);
   if (ref) {
     var tools = el('span', { class: 'rop-ntools' });
     var pen = ropIb('pencil', 'Change the note', function () { if (!P.ok) { toast(P.why); return; } ROPT.nedit = ref; ROPT.nmenu = null; render(); });
@@ -255,11 +257,16 @@ function ropHoleRow(job, h) {
   return el('div', { class: 'rop-tn is-solo is-hole', html: '<small>' + esc(ropClk(s)) + '</small><span><em>Deleted</em>' + esc(ropClk(s) + '–' + ropClk(e) + ' · ' + hmText(e - s) + ' · it counts as air now' + (h.delBy ? ' · by ' + ropFirst(h.delBy) : '')) + '</span>' });
 }
 
+/* 17.3: the notes on the left, Cause and Correction beside them */
 function ropTimeline(job, pane) {
+  var g = el('div', { class: 'rop-ccg' }), left = el('div', { class: 'rop-ccleft' });
+  ropTimelineNotes(job, left); g.appendChild(left); g.appendChild(ropCcPanel(job)); pane.appendChild(g);
+}
+function ropTimelineNotes(job, pane) {
   if (ROPT.add && ROPT.add.op !== job.id) ROPT.add = null;
   var ps = punchesOf(job).slice().sort(function (a, b) { return new Date(a.start) - new Date(b.start); }), items = [];
   ps.forEach(function (p) { items.push({ at: +new Date(p.start), p: p }); });
-  (job.log || []).forEach(function (l) { if (l && l.text && (l.kind === 'cause' || l.kind === 'fix')) items.push({ at: +new Date(l.at), n: { lb: l.kind === 'fix' ? 'Correction' : 'Cause', text: l.text }, ref: l, src: 'log' }); });
+  (job.log || []).forEach(function (l) { if (l && l.text && !l.cc && (l.kind === 'cause' || l.kind === 'fix')) items.push({ at: +new Date(l.at), n: { lb: l.kind === 'fix' ? 'Correction' : 'Cause', text: l.text }, ref: l, src: 'log' }); });
   (Array.isArray(job.offNotes) ? job.offNotes : []).forEach(function (n) { items.push({ at: +new Date(n.at), n: { lb: n.by ? ropFirst(n.by) : 'Note', text: n.text }, ref: n, src: 'off' }); });
   v150HolesOf(job).forEach(function (h) { items.push({ at: +new Date(h.start), h: h }); });   /* Parsec 15: where a deleted entry was */
   items.sort(function (a, b) { return a.at - b.at; });
@@ -284,10 +291,10 @@ function ropTimeline(job, pane) {
   var rp = ropRun(job);
   var ta = el('textarea', { class: 'px-input px-input--full rop-ta', rows: '2', placeholder: rp ? 'What you found, what you did — it goes in this punch (Enter saves)' : 'What you found, what you did — no clock needed (Enter saves)' });
   if (OFF_DRAFTS[job.id]) ta.value = OFF_DRAFTS[job.id];
-  ta.addEventListener('input', function () { if (ta.value.trim()) OFF_DRAFTS[job.id] = ta.value; else delete OFF_DRAFTS[job.id]; });
+  ta.addEventListener('input', function () { if (ta.value.trim()) OFF_DRAFTS[job.id] = ta.value; else delete OFF_DRAFTS[job.id]; ropCcType(job, ta.value); });   /* 17.3: the lines fill as you type */
   function saveNote() {
     var txt = autoPunct(String(ta.value || '').replace(/\s*\n\s*/g, ' ').trim()); if (!txt) return;
-    pushUndo('note'); delete OFF_DRAFTS[job.id];
+    pushUndo('note'); delete OFF_DRAFTS[job.id]; ROPCC.live = null; clearTimeout(ROPCC.t);
     var p2 = ropRun(job);
     if (p2) { var line = txt; p2.notes = String(p2.notes || '').trim() ? String(p2.notes).replace(/\s+$/, '') + '\n' + line : line; ockNoteTime(p2, line); }
     else job.offNotes = (Array.isArray(job.offNotes) ? job.offNotes : []).concat([{ id: 'on' + Date.now().toString(36), at: new Date().toISOString(), text: txt, by: punchByName() || ropMe() }]);
