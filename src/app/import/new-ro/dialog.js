@@ -34,9 +34,13 @@
     if(s[0] === "roNumber" && r.fin) sm = (sm ? sm + ' · ' : '') + 'shows as ' + esc(roShortNo(r.fin)) + ' everywhere but the open RO';
     if(s[0] === "status" && D.acc.f.status) sm = (sm ? sm + ' · ' : '') + 'ASIST: ' + esc(D.acc.f.status);
     if(s[0] === "vin" && r.fin) sm = (sm ? sm + ' · ' : '') + (vinValid(r.fin) ? 'check digit ✓' : '<span class="ix-bad">check digit doesn’t match — check it</span>');
+    var ck = chkField(s[0], D.rowsNow);   /* 17.3: values that have to agree */
+    var mtx = mtNote(s[0], r);   /* 17.3: what Parsec already knows */
+    if(mtx) sm = (sm ? sm + ' · ' : '') + mtx;
+    if(ck) sm = (sm ? sm + ' · ' : '') + '<span class="ix-bad">' + esc(ck) + '</span>';
     if(s[0] === "createdBy" && r.fin) sm = (sm ? sm + ' · ' : '') + (onTeam(r.fin) ? 'on the Team' : 'joins the Team');
     if(s[0] === "model" && r.fin){ try{ var M = trkMatch(Object.assign({}, D.ro || {}, { model: r.fin, year: +(D.edits.year || (D.acc.f.year) || (D.ro && D.ro.year) || 0) || undefined, trkBody: undefined })); if(M && M.entry) sm = (sm ? sm + ' · ' : '') + 'picture: ' + esc(M.entry.vt && VT_BY[M.entry.vt] ? VT_BY[M.entry.vt].label : M.entry.model); }catch(e){} }
-    return '<div class="ix-fr ' + (r.bd || "none") + (D.only && hideable(r.bd) ? ' hide' : '') + '"><span class="ix-fl">' + esc(s[1]) + '</span><span class="ix-fv">' + fieldInput(r) + (sm ? '<small>' + sm + '</small>' : '') + '</span>' + bd(r.bd === "same0" ? "" : r.bd) + '</div>';
+    return '<div class="ix-fr ' + (r.bd || "none") + (ck ? ' chk' : '') + (D.only && hideable(r.bd) ? ' hide' : '') + '"><span class="ix-fl">' + esc(s[1]) + '</span><span class="ix-fv">' + fieldInput(r) + (sm ? '<small>' + sm + '</small>' : '') + '</span>' + bd(r.bd === "same0" ? "" : r.bd) + '</div>';
   }
   function vtxt(r, t){ if(!r) return ""; var v = r.fin; if(t === "money") return v === "" || v == null ? "—" : usd(v); return v == null || v === "" ? "—" : esc(String(v)); }
   function cellBd(r){ return r && (r.bd === "upd" || r.bd === "kept") ? ' class="' + r.bd + '" title="' + (r.bd === "upd" ? "was " + esc(String(r.was)) : "ASIST says " + esc(String(r.asist))) + '"' : ''; }
@@ -71,7 +75,11 @@
         + '<td class="r m"' + cellBd(q.f.price) + '>' + vtxt(q.f.price, "money") + '</td><td class="r m c-core"' + cellBd(q.f.core) + '>' + (q.f.core && +q.f.core.fin ? usd(q.f.core.fin) : '—') + '</td><td class="r m">' + (p.ext != null ? usd(p.ext) : usd(qn * ((+(q.f.price.fin) || 0) + (+(q.f.core.fin) || 0)))) + '</td><td class="c-sales">' + vtxt(q.f.salesman) + '</td><td>' + (P.isNew ? '' : bd(q.bd)) + '</td></tr>'; }).join("");
     var parts = P.parts.length ? '<div class="ix-ptw"><table class="ix-pt"><thead><tr><th>Part #</th><th>Part</th><th class="r">Qty</th>' + (hasL ? '<th class="r c-list">List</th>' : '') + (hasD ? '<th class="r c-disc">Disc</th>' : '') + '<th class="r">' + (hasL ? 'Net' : 'Unit') + '</th><th class="r c-core">Core</th><th class="r">Ext</th><th class="c-sales">Salesman</th><th></th></tr></thead><tbody>' + rows + '</tbody></table><div class="ix-mu">' + ic("parts", 12) + 'Prices also go to the Parts list</div></div>' : '';
     var st = P.story ? '<div class="ix-st"><b>Technician story</b>' + (o.storyBy ? ' · ' + esc(o.storyBy) : '') + ' ' + (P.isNew ? '' : bd(P.story.bd)) + '<p>' + esc(P.story.bd === "kept" ? P.story.asist : P.story.fin) + '</p>' + (P.story.bd === "kept" ? '<small>Work performed was changed here — it stays; ASIST’s story is above</small>' : '') + '</div>' : '';
-    return '<div class="ix-op' + (P.on ? '' : ' off') + (D.only && P.bd === "same" ? ' hide' : '') + '">' + head + (P.on ? costLine(P) + parts + st : '') + '</div>';
+    var hck = chkOpHours(hrs, pr, o.rate), pck = P.parts.map(function(q){ var m = chkPart(q.f.qty.fin, q.f.price.fin, q.f.core && q.f.core.fin, q.p.ext), k = mtPart(q.p.pn);
+      return m ? esc(q.p.pn || q.p.desc || "A part") + ': ' + esc(m) : k ? esc(q.p.pn) + ': the shop has used ' + esc(k) + ' — one character off, check it' : ""; }).filter(Boolean);   /* 17.3 */
+    var cds = mtCodes(o), cdl = cds.length ? '<div class="ix-codes">' + cds.map(function(c){ return '<span><b class="mono">' + esc(c.code) + '</b> ' + esc(c.meaning) + '</span>'; }).join('') + '</div>' : '';
+    var chk = hck || pck.length ? '<div class="ix-chk">' + ic("warn", 13) + '<span>' + [hck ? esc(hck) : ""].concat(pck).filter(Boolean).join('<br>') + '</span></div>' : '';
+    return '<div class="ix-op' + (P.on ? '' : ' off') + (D.only && P.bd === "same" ? ' hide' : '') + '">' + head + (P.on ? chk + cdl + costLine(P) + parts + st : '') + '</div>';
   }
   /* the totals ASIST shows, against what Parsec adds up — Parts with or without the core, tax shown but not added by Parsec */
   function totals(Pl){
@@ -102,13 +110,14 @@
     var sc = w.querySelector(".ix-fs"), keep = sc ? sc.scrollTop : 0, sb = w.querySelector(".ix-b"), keepB = sb ? sb.scrollTop : 0;
     var title = upd ? 'Update RO ' + esc(tgNum(ro)) + (ro.customerName ? ' · ' + esc(ro.customerName) : '') : 'New repair order';
     var sub = upd ? (D.foundBy ? 'Found by ' + esc(D.foundBy) : 'Import from ASIST') + (ro.imp && ro.imp.at ? ' — imported ' + (ro.imp.n > 1 ? ro.imp.n + ' times, last ' : 'once already, ') + esc(whenTxt(ro.imp.at)) : ' — first import on this RO') : 'Paste or drop everything about the case — it fills in as it reads';
+    D.rowsNow = Pl.rows; var nChk = chkCount(Pl.rows, Pl.ops);   /* 17.3: what to check */
     var groups = {}; Pl.rows.forEach(function(r){ (groups[r.s[2]] = groups[r.s[2]] || []).push(r); });
     D.v163f = {}; Pl.rows.forEach(function(r){ D.v163f[r.k] = r.fin; });   /* Parsec 16.3: for the last-contact suggestion */
     var LZ = D.loose || { auto: [], rest: [] }, lpTxt = (LZ.auto.length ? LZ.auto.map(function(x){ return esc(x.p.desc || x.p.pn) + ' → Op ' + (D.acc.ops[x.i].no || x.i + 1) + ' (' + esc(x.by) + ')'; }).join(", ") + (LZ.rest.length ? '; ' : '') : '') + (LZ.rest.length ? LZ.rest.length + ' part' + (LZ.rest.length === 1 ? '' : 's') + ' with no operation named go on' : '');
     var lpSel = D.acc.parts.length && D.acc.ops.length ? '<div class="ix-lp">' + ic("parts", 13) + '<span>' + (LZ.rest.length ? '' : 'Parts listed apart from their operations: ') + lpTxt + '</span>' + (LZ.rest.length ? '<select data-ix="lp" class="ix-in">' + D.acc.ops.map(function(o, i){ return '<option value="' + i + '"' + (i === D.lpTo && !D.lpOff ? ' selected' : '') + '>Op ' + (o.no || i + 1) + ' · ' + esc(o.name) + '</option>'; }).join("") + '<option value="-1"' + (D.lpOff ? ' selected' : '') + '>Leave them out</option></select>' : '') + '</div>' : '';
     var ppl = Pl.people.length ? '<div class="ix-ppl">' + ic("user", 13) + '<span><b>' + Pl.people.length + (Pl.people.length === 1 ? ' person joins' : ' people join') + ' the Team</b> — no pages, no sign-in: ' + Pl.people.map(function(p){ return esc(p.n) + ' (' + esc(p.why) + ')'; }).join(", ") + '</span></div>' : '';
     var reading = D.busy ? '<div class="imp-status busy" id="imp-status" role="status">' + esc(D.busy) + '</div>' : '<div class="imp-status" id="imp-status" role="status" aria-live="polite">' + esc(D.msg || "") + '</div>';
-    var chips = [["new", C.new, "new"], ["upd", C.upd, "updated"], ["kept", C.kept, "kept yours"], ["edit", C.edit, "typed"], ["same", C.same, "same"]].filter(function(x){ return x[1]; }).map(function(x){ return '<span class="' + x[0] + '"><b>' + x[1] + '</b>' + x[2] + '</span>'; }).join("");
+    var chips = [["chk", nChk, "to check"], ["new", C.new, "new"], ["upd", C.upd, "updated"], ["kept", C.kept, "kept yours"], ["edit", C.edit, "typed"], ["same", C.same, "same"]].filter(function(x){ return x[1]; }).map(function(x){ return '<span class="' + x[0] + '"><b>' + x[1] + '</b>' + x[2] + '</span>'; }).join("");
     var prim = D.new ? 'Create RO' + (Pl.rows[1].fin ? ' ' + esc(roShortNo(Pl.rows[1].fin)) : '') : (C.changes || Pl.people.length ? 'Apply ' + C.changes + ' change' + (C.changes === 1 ? '' : 's') : 'Nothing to change');
     var foot = D.err ? '<span class="ix-err">' + ic("warn", 13) + esc(D.err) + '</span>' : '<span class="ix-mu">' + (D.new ? (D.pieces.length ? 'Check what came in — nothing is saved until Create RO' : 'Paste the case to fill this in, or type it') : 'Nothing changes until you press Apply') + '</span>';
     w.innerHTML = '<div class="ix" role="dialog" aria-modal="true" aria-label="' + (upd ? 'Update RO ' + esc(tgNum(ro)) : 'New repair order') + '">'

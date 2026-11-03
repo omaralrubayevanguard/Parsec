@@ -12,6 +12,9 @@ kit/px-kit.js
 
 import/new-ro/_open.js
 import/new-ro/read-text.js
+import/new-ro/field-rules.js
+import/new-ro/read-checks.js
+import/new-ro/read-match.js
 import/new-ro/matching.js
 import/new-ro/fields.js
 import/new-ro/create.js

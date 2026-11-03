@@ -1,0 +1,1063 @@
+{
+ "about": "The reading scorecard (t173a): what each sample should read as. Invented data only. floor = the lowest overall score allowed (percent).",
+ "floor": 97,
+ "cases": [
+  {
+   "name": "case page, pasted",
+   "kind": "paste",
+   "file": "imptest/case1.txt",
+   "f": {
+    "caseNo": "4988201",
+    "roNumber": "RA0001238877",
+    "customer": "Summit Freightways",
+    "custNo": "20417",
+    "status": "Checked In",
+    "etr": "2026-10-29 15:00",
+    "followUp": "2026-10-27 09:00",
+    "checkedIn": "2026-10-26 07:42",
+    "createdBy": "Jenna Cho",
+    "po": "PO-55120",
+    "make": "Volvo",
+    "model": "VNL64T760",
+    "year": "2020",
+    "vin": "4V4NC9EH7LN758560",
+    "unit": "T-807",
+    "engine": "Volvo D13 455 HP",
+    "engineSerial": "23116577",
+    "miles": "412880",
+    "engHours": "15206",
+    "tag": "68",
+    "location": "Lot D1"
+   },
+   "ops": [
+    {
+     "no": 1,
+     "hours": 8,
+     "price": 1680,
+     "approval": "Approved",
+     "opCode": "CL-210"
+    },
+    {
+     "no": 2,
+     "hours": 1.5,
+     "price": 315,
+     "approval": "Pending",
+     "opCode": "DG-100"
+    }
+   ],
+   "parts": [
+    {
+     "pn": "VOL-85013702",
+     "qty": 1,
+     "price": 1240,
+     "core": 150
+    },
+    {
+     "pn": "VOL-20518417",
+     "qty": 1,
+     "price": 38.5
+    }
+   ],
+   "tot": {
+    "labor": 1995,
+    "parts": 1278.5,
+    "total": 3468.5
+   }
+  },
+  {
+   "name": "case page, later copy",
+   "kind": "paste",
+   "file": "imptest/case2.txt",
+   "f": {
+    "status": "Waiting on Parts",
+    "auth": "A-77310",
+    "miles": "413104",
+    "engHours": "15219",
+    "location": "UpTime 2",
+    "etr": "2026-10-30 11:00"
+   },
+   "ops": [
+    {
+     "no": 1,
+     "hours": 8,
+     "price": 1680,
+     "approval": "Approved",
+     "opCode": "CL-210"
+    },
+    {
+     "no": 2,
+     "hours": 1.5,
+     "price": 315,
+     "approval": "Approved",
+     "opCode": "DG-100"
+    },
+    {
+     "no": 3,
+     "hours": 2,
+     "price": 420,
+     "approval": "Pending",
+     "opCode": "PM-A"
+    }
+   ],
+   "parts": [
+    {
+     "pn": "VOL-21899123",
+     "qty": 1,
+     "price": 96
+    },
+    {
+     "pn": "VOL-22827993",
+     "qty": 1,
+     "price": 412
+    }
+   ],
+   "tot": {
+    "labor": 2415,
+    "parts": 1786.5,
+    "total": 4396.5
+   }
+  },
+  {
+   "name": "case page with rates, pasted",
+   "kind": "paste",
+   "file": "x132/s1_case.txt",
+   "f": {
+    "caseNo": "5102334",
+    "roNumber": "RA0001241190",
+    "customer": "Pinecrest Logistics",
+    "status": "Waiting on Parts",
+    "vin": "4V4NC9EH5MN290121",
+    "unit": "P-114",
+    "engine": "Volvo D13TC 455 HP",
+    "engineSerial": "21987654",
+    "miles": "288412",
+    "engHours": "9870",
+    "tag": "112",
+    "location": "Lot E3",
+    "po": "PO-61007",
+    "auth": "A-88120"
+   },
+   "ops": [
+    {
+     "no": 1,
+     "hours": 6.2,
+     "price": 1302,
+     "approval": "Approved"
+    },
+    {
+     "no": 2,
+     "hours": 1.3,
+     "price": 214.5,
+     "approval": "Approved"
+    },
+    {
+     "no": 3,
+     "hours": 0.5,
+     "price": 105,
+     "approval": "Pending"
+    }
+   ],
+   "parts": [
+    {
+     "pn": "VOL-23125678",
+     "qty": 1,
+     "price": 1782,
+     "core": 250
+    },
+    {
+     "pn": "VOL-21412345",
+     "qty": 2,
+     "price": 34.2
+    },
+    {
+     "pn": "VOL-22827993",
+     "qty": 1,
+     "price": 548
+    }
+   ],
+   "tot": {
+    "labor": 1621.5,
+    "parts": 2398.4,
+    "total": 4598.82
+   }
+  },
+  {
+   "name": "case page, screenshot text",
+   "kind": "ocr text",
+   "file": "imptest/case1_ocr.txt",
+   "f": {
+    "caseNo": "4988201",
+    "roNumber": "RA0001238877",
+    "customer": "Summit Freightways",
+    "vin": "4V4NC9EH7LN758560",
+    "unit": "T-807",
+    "miles": "412880",
+    "engHours": "15206",
+    "engineSerial": "23116577",
+    "po": "PO-55120"
+   },
+   "ops": [
+    {
+     "no": 1,
+     "hours": 8,
+     "price": 1680,
+     "approval": "Approved",
+     "opCode": "CL-210"
+    },
+    {
+     "no": 2,
+     "hours": 1.5,
+     "price": 315,
+     "approval": "Pending"
+    }
+   ],
+   "parts": [
+    {
+     "pn": "VOL-85013702",
+     "qty": 1,
+     "price": 1240,
+     "core": 150
+    },
+    {
+     "pn": "VOL-20518417",
+     "qty": 1,
+     "price": 38.5
+    }
+   ]
+  },
+  {
+   "name": "case header and parts, screenshot text",
+   "kind": "ocr text",
+   "file": "imptest/case4_ocr_dejavu.txt",
+   "f": {
+    "caseNo": "4988201",
+    "roNumber": "RA0001238877",
+    "customer": "Summit Freightways",
+    "status": "Waiting on Parts",
+    "createdBy": "Jenna Cho",
+    "po": "PO-55120",
+    "etr": "2026-10-30 11:00"
+   },
+   "parts": [
+    {
+     "pn": "VOL-85013702",
+     "qty": 1,
+     "price": 1240
+    },
+    {
+     "pn": "VOL-20518417",
+     "qty": 1,
+     "price": 38.5
+    },
+    {
+     "pn": "VOL-21899123",
+     "qty": 2,
+     "price": 96
+    }
+   ]
+  },
+  {
+   "name": "case with rates, screenshot text",
+   "kind": "ocr text",
+   "file": "x132/t_ocr_dv.txt",
+   "f": {
+    "caseNo": "5102334",
+    "roNumber": "RA0001241190",
+    "customer": "Pinecrest Logistics",
+    "vin": "4V4NC9EH5MN290121",
+    "unit": "P-114",
+    "engineSerial": "21987654",
+    "engHours": "9870",
+    "year": "2021"
+   },
+   "ops": [
+    {
+     "no": 1,
+     "hours": 6.2,
+     "price": 1302,
+     "approval": "Approved"
+    },
+    {
+     "no": 2,
+     "hours": 1.3,
+     "price": 214.5,
+     "approval": "Approved"
+    },
+    {
+     "no": 3,
+     "hours": 0.5,
+     "price": 105,
+     "approval": "Pending"
+    }
+   ],
+   "parts": [
+    {
+     "pn": "VOL-23125678",
+     "qty": 1,
+     "price": 1782,
+     "core": 250
+    }
+   ],
+   "tot": {
+    "labor": 1621.5,
+    "parts": 2398.4,
+    "total": 4598.82
+   }
+  },
+  {
+   "name": "parts quote, pasted",
+   "kind": "paste",
+   "file": "x132/s4_quote.txt",
+   "parts": [
+    {
+     "pn": "21707134",
+     "qty": 6,
+     "price": 36.38
+    },
+    {
+     "pn": "85013702",
+     "qty": 1,
+     "price": 1485,
+     "core": 250
+    },
+    {
+     "pn": "23125678",
+     "qty": 1,
+     "price": 1782
+    },
+    {
+     "desc": "Shop rags",
+     "qty": 2,
+     "price": 9
+    }
+   ]
+  },
+  {
+   "name": "truck details with misread letters",
+   "kind": "ocr text",
+   "text": "Case # 4988201\nSummit Freightways - Cust# 20417\nRO Number: RA0001238877    Status: Checked In\nETR: 1O/29/2026 3:OO PM    Follow-up: 10/27/2026 9:00 AM\nMake: Volvo    Model: VNL64T760    Year: 2O20\nVIN: 4V4NC9EH7LN7S8S6O    Unit #: T-807\nEngine: Volvo D13 455 HP    Engine Serial #: 231l6577\nOdometer: 412,88O mi    Engine Hours: l5,2O6\nTag #: 68    On-site Asset Location: Lot D1\n",
+   "f": {
+    "caseNo": "4988201",
+    "roNumber": "RA0001238877",
+    "etr": "2026-10-29 15:00",
+    "year": "2020",
+    "vin": "4V4NC9EH7LN758560",
+    "engineSerial": "23116577",
+    "miles": "412880",
+    "engHours": "15206",
+    "unit": "T-807"
+   }
+  },
+  {
+   "name": "operations with misread letters",
+   "kind": "ocr text",
+   "text": "OPERATIONS\nOp #  Operation  Labor Hours  Labor  Approval Status\n1  Clutch slipping - replace clutch  B.0  $1,68O.00  Approved\nOp Code: CL-21O  Skill: B\nPart #  Description  Qty  Unit  Core  Ext\nVOL-8S013702  Clutch kit 15.5\"  l  $1,24O.00  $15O.00  $1,39O.00\nVOL-2O518417  Pilot bearing  1  $38.5O  $0.00  $38.50\n2  Check engine light - NOx sensor fault SPN 3226  l.5  $3l5.00  Pending\nTotals Summary\nLabor  $1,995.OO\nParts  $1,278.5O\nTotal  $3,468.5O\n",
+   "ops": [
+    {
+     "no": 1,
+     "hours": 8,
+     "price": 1680,
+     "approval": "Approved",
+     "opCode": "CL-210"
+    },
+    {
+     "no": 2,
+     "hours": 1.5,
+     "price": 315,
+     "approval": "Pending"
+    }
+   ],
+   "parts": [
+    {
+     "pn": "VOL-85013702",
+     "qty": 1,
+     "price": 1240,
+     "core": 150
+    },
+    {
+     "pn": "VOL-20518417",
+     "qty": 1,
+     "price": 38.5
+    }
+   ],
+   "tot": {
+    "labor": 1995,
+    "parts": 1278.5,
+    "total": 3468.5
+   }
+  },
+  {
+   "name": "parts quote with misread letters",
+   "kind": "ocr text",
+   "text": "Part Number  Description  Qty  Net Price  Core  Ext\n2l7O7134  Oil filter  6  36.38  0.00  218.28\n85Ol37O2  Clutch kit 15.5\"  1  1,485.0O  250.00  1,735.00\n   Shop rags (box)  2  9.00  0.00  18.00\n",
+   "parts": [
+    {
+     "pn": "21707134",
+     "qty": 6,
+     "price": 36.38
+    },
+    {
+     "pn": "85013702",
+     "qty": 1,
+     "price": 1485,
+     "core": 250
+    },
+    {
+     "desc": "Shop rags",
+     "qty": 2,
+     "price": 9
+    }
+   ]
+  },
+  {
+   "name": "case header screenshot, 13 px",
+   "kind": "screenshot",
+   "shot": {
+    "lines": [
+     [
+      "Case",
+      "4988201"
+     ],
+     [
+      "Summit Freightways - Cust# 20417"
+     ],
+     [
+      "RO Number:",
+      "RA0001238877",
+      "Status:",
+      "Checked In"
+     ],
+     [
+      "ETR:",
+      "10/29/2026 3:00 PM",
+      "Follow-up:",
+      "10/27/2026 9:00 AM"
+     ],
+     [
+      "Created By:",
+      "CHO, JENNA",
+      "Asset Checked In:",
+      "10/26/2026 7:42 AM"
+     ],
+     [
+      "PO #:",
+      "PO-55120"
+     ],
+     [
+      "Make:",
+      "Volvo",
+      "Model:",
+      "VNL64T760",
+      "Year:",
+      "2020"
+     ],
+     [
+      "VIN:",
+      "4V4NC9EH7LN758560",
+      "Unit #:",
+      "T-807"
+     ],
+     [
+      "Engine:",
+      "Volvo D13 455 HP",
+      "Engine Serial #:",
+      "23116577"
+     ],
+     [
+      "Odometer:",
+      "412,880 mi",
+      "Engine Hours:",
+      "15,206"
+     ],
+     [
+      "Tag #:",
+      "68",
+      "On-site Asset Location:",
+      "Lot D1"
+     ]
+    ],
+    "font": "13px Arial, 'Liberation Sans', sans-serif"
+   },
+   "f": {
+    "caseNo": "4988201",
+    "roNumber": "RA0001238877",
+    "customer": "Summit Freightways",
+    "status": "Checked In",
+    "etr": "2026-10-29 15:00",
+    "followUp": "2026-10-27 09:00",
+    "checkedIn": "2026-10-26 07:42",
+    "createdBy": "Jenna Cho",
+    "po": "PO-55120",
+    "make": "Volvo",
+    "model": "VNL64T760",
+    "year": "2020",
+    "vin": "4V4NC9EH7LN758560",
+    "unit": "T-807",
+    "engine": "Volvo D13 455 HP",
+    "engineSerial": "23116577",
+    "miles": "412880",
+    "engHours": "15206",
+    "tag": "68",
+    "location": "Lot D1"
+   }
+  },
+  {
+   "name": "case header screenshot, 11 px (zoomed out)",
+   "kind": "screenshot",
+   "shot": {
+    "lines": [
+     [
+      "Case",
+      "4988201"
+     ],
+     [
+      "Summit Freightways - Cust# 20417"
+     ],
+     [
+      "RO Number:",
+      "RA0001238877",
+      "Status:",
+      "Checked In"
+     ],
+     [
+      "ETR:",
+      "10/29/2026 3:00 PM",
+      "Follow-up:",
+      "10/27/2026 9:00 AM"
+     ],
+     [
+      "Created By:",
+      "CHO, JENNA",
+      "Asset Checked In:",
+      "10/26/2026 7:42 AM"
+     ],
+     [
+      "PO #:",
+      "PO-55120"
+     ],
+     [
+      "Make:",
+      "Volvo",
+      "Model:",
+      "VNL64T760",
+      "Year:",
+      "2020"
+     ],
+     [
+      "VIN:",
+      "4V4NC9EH7LN758560",
+      "Unit #:",
+      "T-807"
+     ],
+     [
+      "Engine:",
+      "Volvo D13 455 HP",
+      "Engine Serial #:",
+      "23116577"
+     ],
+     [
+      "Odometer:",
+      "412,880 mi",
+      "Engine Hours:",
+      "15,206"
+     ],
+     [
+      "Tag #:",
+      "68",
+      "On-site Asset Location:",
+      "Lot D1"
+     ]
+    ],
+    "font": "11px 'Segoe UI', 'DejaVu Sans', sans-serif"
+   },
+   "f": {
+    "caseNo": "4988201",
+    "roNumber": "RA0001238877",
+    "customer": "Summit Freightways",
+    "status": "Checked In",
+    "etr": "2026-10-29 15:00",
+    "followUp": "2026-10-27 09:00",
+    "checkedIn": "2026-10-26 07:42",
+    "createdBy": "Jenna Cho",
+    "po": "PO-55120",
+    "make": "Volvo",
+    "model": "VNL64T760",
+    "year": "2020",
+    "vin": "4V4NC9EH7LN758560",
+    "unit": "T-807",
+    "engine": "Volvo D13 455 HP",
+    "engineSerial": "23116577",
+    "miles": "412880",
+    "engHours": "15206",
+    "tag": "68",
+    "location": "Lot D1"
+   }
+  },
+  {
+   "name": "operations screenshot, 13 px",
+   "kind": "screenshot",
+   "shot": {
+    "lines": [
+     [
+      "OPERATIONS"
+     ],
+     [
+      "Op #",
+      "Operation",
+      "Labor Hours",
+      "Labor",
+      "Approval Status"
+     ],
+     [
+      "1",
+      "Clutch slipping - replace clutch",
+      "8.0",
+      "$1,680.00",
+      "Approved"
+     ],
+     [
+      "Op Code: CL-210",
+      "Skill: B"
+     ],
+     [
+      "Part #",
+      "Description",
+      "Qty",
+      "Unit",
+      "Core",
+      "Ext"
+     ],
+     [
+      "VOL-85013702",
+      "Clutch kit 15.5\"",
+      "1",
+      "$1,240.00",
+      "$150.00",
+      "$1,390.00"
+     ],
+     [
+      "VOL-20518417",
+      "Pilot bearing",
+      "1",
+      "$38.50",
+      "$0.00",
+      "$38.50"
+     ],
+     [
+      "2",
+      "Check engine light - NOx sensor fault SPN 3226",
+      "1.5",
+      "$315.00",
+      "Pending"
+     ],
+     [
+      "Op Code: DG-100",
+      "Skill: A"
+     ]
+    ],
+    "font": "13px Arial, 'Liberation Sans', sans-serif"
+   },
+   "ops": [
+    {
+     "no": 1,
+     "hours": 8,
+     "price": 1680,
+     "approval": "Approved",
+     "opCode": "CL-210"
+    },
+    {
+     "no": 2,
+     "hours": 1.5,
+     "price": 315,
+     "approval": "Pending",
+     "opCode": "DG-100"
+    }
+   ],
+   "parts": [
+    {
+     "pn": "VOL-85013702",
+     "qty": 1,
+     "price": 1240,
+     "core": 150
+    },
+    {
+     "pn": "VOL-20518417",
+     "qty": 1,
+     "price": 38.5
+    }
+   ]
+  },
+  {
+   "name": "operations screenshot, 12 px",
+   "kind": "screenshot",
+   "shot": {
+    "lines": [
+     [
+      "OPERATIONS"
+     ],
+     [
+      "Op #",
+      "Operation",
+      "Labor Hours",
+      "Labor",
+      "Approval Status"
+     ],
+     [
+      "1",
+      "Clutch slipping - replace clutch",
+      "8.0",
+      "$1,680.00",
+      "Approved"
+     ],
+     [
+      "Op Code: CL-210",
+      "Skill: B"
+     ],
+     [
+      "Part #",
+      "Description",
+      "Qty",
+      "Unit",
+      "Core",
+      "Ext"
+     ],
+     [
+      "VOL-85013702",
+      "Clutch kit 15.5\"",
+      "1",
+      "$1,240.00",
+      "$150.00",
+      "$1,390.00"
+     ],
+     [
+      "VOL-20518417",
+      "Pilot bearing",
+      "1",
+      "$38.50",
+      "$0.00",
+      "$38.50"
+     ],
+     [
+      "2",
+      "Check engine light - NOx sensor fault SPN 3226",
+      "1.5",
+      "$315.00",
+      "Pending"
+     ],
+     [
+      "Op Code: DG-100",
+      "Skill: A"
+     ]
+    ],
+    "font": "12px 'Segoe UI', 'DejaVu Sans', sans-serif"
+   },
+   "ops": [
+    {
+     "no": 1,
+     "hours": 8,
+     "price": 1680,
+     "approval": "Approved",
+     "opCode": "CL-210"
+    },
+    {
+     "no": 2,
+     "hours": 1.5,
+     "price": 315,
+     "approval": "Pending",
+     "opCode": "DG-100"
+    }
+   ],
+   "parts": [
+    {
+     "pn": "VOL-85013702",
+     "qty": 1,
+     "price": 1240,
+     "core": 150
+    },
+    {
+     "pn": "VOL-20518417",
+     "qty": 1,
+     "price": 38.5
+    }
+   ]
+  },
+  {
+   "name": "case header screenshot, 10 px (far out)",
+   "kind": "screenshot",
+   "shot": {
+    "lines": [
+     [
+      "Case",
+      "4988201"
+     ],
+     [
+      "Summit Freightways - Cust# 20417"
+     ],
+     [
+      "RO Number:",
+      "RA0001238877",
+      "Status:",
+      "Checked In"
+     ],
+     [
+      "ETR:",
+      "10/29/2026 3:00 PM",
+      "Follow-up:",
+      "10/27/2026 9:00 AM"
+     ],
+     [
+      "Created By:",
+      "CHO, JENNA",
+      "Asset Checked In:",
+      "10/26/2026 7:42 AM"
+     ],
+     [
+      "PO #:",
+      "PO-55120"
+     ],
+     [
+      "Make:",
+      "Volvo",
+      "Model:",
+      "VNL64T760",
+      "Year:",
+      "2020"
+     ],
+     [
+      "VIN:",
+      "4V4NC9EH7LN758560",
+      "Unit #:",
+      "T-807"
+     ],
+     [
+      "Engine:",
+      "Volvo D13 455 HP",
+      "Engine Serial #:",
+      "23116577"
+     ],
+     [
+      "Odometer:",
+      "412,880 mi",
+      "Engine Hours:",
+      "15,206"
+     ],
+     [
+      "Tag #:",
+      "68",
+      "On-site Asset Location:",
+      "Lot D1"
+     ]
+    ],
+    "font": "10px Arial, 'Liberation Sans', sans-serif"
+   },
+   "f": {
+    "caseNo": "4988201",
+    "roNumber": "RA0001238877",
+    "customer": "Summit Freightways",
+    "status": "Checked In",
+    "etr": "2026-10-29 15:00",
+    "followUp": "2026-10-27 09:00",
+    "checkedIn": "2026-10-26 07:42",
+    "createdBy": "Jenna Cho",
+    "po": "PO-55120",
+    "make": "Volvo",
+    "model": "VNL64T760",
+    "year": "2020",
+    "vin": "4V4NC9EH7LN758560",
+    "unit": "T-807",
+    "engine": "Volvo D13 455 HP",
+    "engineSerial": "23116577",
+    "miles": "412880",
+    "engHours": "15206",
+    "tag": "68",
+    "location": "Lot D1"
+   }
+  },
+  {
+   "name": "operations screenshot, 11 px",
+   "kind": "screenshot",
+   "shot": {
+    "lines": [
+     [
+      "OPERATIONS"
+     ],
+     [
+      "Op #",
+      "Operation",
+      "Labor Hours",
+      "Labor",
+      "Approval Status"
+     ],
+     [
+      "1",
+      "Clutch slipping - replace clutch",
+      "8.0",
+      "$1,680.00",
+      "Approved"
+     ],
+     [
+      "Op Code: CL-210",
+      "Skill: B"
+     ],
+     [
+      "Part #",
+      "Description",
+      "Qty",
+      "Unit",
+      "Core",
+      "Ext"
+     ],
+     [
+      "VOL-85013702",
+      "Clutch kit 15.5\"",
+      "1",
+      "$1,240.00",
+      "$150.00",
+      "$1,390.00"
+     ],
+     [
+      "VOL-20518417",
+      "Pilot bearing",
+      "1",
+      "$38.50",
+      "$0.00",
+      "$38.50"
+     ],
+     [
+      "2",
+      "Check engine light - NOx sensor fault SPN 3226",
+      "1.5",
+      "$315.00",
+      "Pending"
+     ],
+     [
+      "Op Code: DG-100",
+      "Skill: A"
+     ]
+    ],
+    "font": "11px Arial, 'Liberation Sans', sans-serif"
+   },
+   "ops": [
+    {
+     "no": 1,
+     "hours": 8,
+     "price": 1680,
+     "approval": "Approved",
+     "opCode": "CL-210"
+    },
+    {
+     "no": 2,
+     "hours": 1.5,
+     "price": 315,
+     "approval": "Pending",
+     "opCode": "DG-100"
+    }
+   ],
+   "parts": [
+    {
+     "pn": "VOL-85013702",
+     "qty": 1,
+     "price": 1240,
+     "core": 150
+    },
+    {
+     "pn": "VOL-20518417",
+     "qty": 1,
+     "price": 38.5
+    }
+   ]
+  },
+  {
+   "name": "case header screenshot, bold 13 px",
+   "kind": "screenshot",
+   "shot": {
+    "lines": [
+     [
+      "Case",
+      "4988201"
+     ],
+     [
+      "Summit Freightways - Cust# 20417"
+     ],
+     [
+      "RO Number:",
+      "RA0001238877",
+      "Status:",
+      "Checked In"
+     ],
+     [
+      "ETR:",
+      "10/29/2026 3:00 PM",
+      "Follow-up:",
+      "10/27/2026 9:00 AM"
+     ],
+     [
+      "Created By:",
+      "CHO, JENNA",
+      "Asset Checked In:",
+      "10/26/2026 7:42 AM"
+     ],
+     [
+      "PO #:",
+      "PO-55120"
+     ],
+     [
+      "Make:",
+      "Volvo",
+      "Model:",
+      "VNL64T760",
+      "Year:",
+      "2020"
+     ],
+     [
+      "VIN:",
+      "4V4NC9EH7LN758560",
+      "Unit #:",
+      "T-807"
+     ],
+     [
+      "Engine:",
+      "Volvo D13 455 HP",
+      "Engine Serial #:",
+      "23116577"
+     ],
+     [
+      "Odometer:",
+      "412,880 mi",
+      "Engine Hours:",
+      "15,206"
+     ],
+     [
+      "Tag #:",
+      "68",
+      "On-site Asset Location:",
+      "Lot D1"
+     ]
+    ],
+    "font": "600 13px 'Segoe UI', 'DejaVu Sans', sans-serif"
+   },
+   "f": {
+    "caseNo": "4988201",
+    "roNumber": "RA0001238877",
+    "customer": "Summit Freightways",
+    "status": "Checked In",
+    "etr": "2026-10-29 15:00",
+    "followUp": "2026-10-27 09:00",
+    "checkedIn": "2026-10-26 07:42",
+    "createdBy": "Jenna Cho",
+    "po": "PO-55120",
+    "make": "Volvo",
+    "model": "VNL64T760",
+    "year": "2020",
+    "vin": "4V4NC9EH7LN758560",
+    "unit": "T-807",
+    "engine": "Volvo D13 455 HP",
+    "engineSerial": "23116577",
+    "miles": "412880",
+    "engHours": "15206",
+    "tag": "68",
+    "location": "Lot D1"
+   }
+  }
+ ]
+}

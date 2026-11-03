@@ -92,11 +92,11 @@
       case "createdBy": return nameCase(v);
       case "po": case "auth": case "ts": case "unit": case "tag": case "chassis": case "engineSerial":
         m = /^([A-Z0-9][A-Z0-9\-\/.]*)/i.exec(v); return m && m[1].length <= 24 && (k !== "ts" || /\d/.test(m[1])) && !/^(#|no)$/i.test(m[1]) ? m[1].toUpperCase() : "";
-      case "make": m = /^([A-Za-z][A-Za-z\-]{1,20})/.exec(v); return m ? m[1].charAt(0).toUpperCase() + m[1].slice(1).toLowerCase() : "";
+      case "make": v = brandFix(v); m = /^([A-Za-z][A-Za-z\-]{1,20})/.exec(v); return m ? m[1].charAt(0).toUpperCase() + m[1].slice(1).toLowerCase() : "";
       case "model": v = v.replace(/\s{2,}.*$/, "").replace(/\b(?:year|vin|unit|serial|engine)\b.*$/i, "").trim(); return v.length <= 28 && !/^\d{4}$/.test(v) && /[A-Za-z]/.test(v) ? v : "";
       case "year": m = /\b(19[89]\d|20\d{2})\b/.exec(v); return m ? m[1] : "";
       case "vin": return vinFrom(v);
-      case "engine": v = v.replace(/\b(?:serial|s\/n|engine\s*hours)\b.*$/i, "").replace(/\bD[Il|](\d)(?=\b|[A-Z])/g, "D1$1").trim();   /* Parsec 14: the reader's "DI3" is the D13 */ return v.length <= 40 && /[A-Za-z0-9]/.test(v) && !/^(volvo|mack|cummins|detroit)$/i.test(v) ? v : (/^(volvo|mack|cummins|detroit)$/i.test(v) ? v : "");
+      case "engine": v = brandFix(v).replace(/\b(?:serial|s\/n|engine\s*hours)\b.*$/i, "").replace(/\bD[Il|](\d)(?=\b|[A-Z])/g, "D1$1").trim();   /* Parsec 14: the reader's "DI3" is the D13 */ return v.length <= 40 && /[A-Za-z0-9]/.test(v) && !/^(volvo|mack|cummins|detroit)$/i.test(v) ? v : (/^(volvo|mack|cummins|detroit)$/i.test(v) ? v : "");
       case "miles": case "engHours": m = /^([\d,]{1,11})(?:\.\d+)?/.exec(v.replace(/\s/g, "")); if(!m) return ""; var n0 = m[1].replace(/,/g, ""); return n0 && +n0 <= (k === "miles" ? 9999999 : 999999) ? n0 : "";
       case "location": case "dept": return v.replace(/\s{2,}.*$/, "").slice(0, 30);
       case "built": case "warrStart": return mdyOf(v);   /* Parsec 14.7: kept MM-DD-YYYY, like the RO keeps them */
@@ -118,6 +118,7 @@
     var c = t.match(/[A-Z0-9]{17}/g) || [];
     var fix = function(x){ return x.replace(/O/g, "0").replace(/[IL](?=\d|$)/g, "1").replace(/Q/g, "0"); };
     for(var i = 0; i < c.length; i++){ if(vinValid(c[i])) return c[i]; if(vinValid(fix(c[i]))) return fix(c[i]); }
+    for(i = 0; i < c.length; i++){ var r = vinRepair(c[i]); if(vinValid(r)) return r; }   /* 17.3: S for 5, B for 8 — the check digit decides */
     return c[0] ? fix(c[0]) : "";
   }
   /* the RO's own fields, by label */
@@ -127,7 +128,8 @@
       if(isPartsHead(L[i]) || /\bop\s*#|\boperation\b.*\b(?:labor|approval)\b/i.test(L[i])) continue;   /* a table's header row isn't label: value */
       var C = cellsOf(L[i]);
       for(var ci = 0; ci < C.length; ci++){
-        var lb = labelOf(C[ci]); if(!lb || f[lb.k]) continue;
+        var lb = labelOf(C[ci]); if(!lb && /:/.test(C[ci])){ C[ci] = labelFix(C[ci]); lb = labelOf(C[ci]); }   /* 17.3: a garbled label */
+        if(!lb || f[lb.k]) continue;
         var k = lb.k, rest = C[ci].slice(lb.m[0].length).replace(/^[\s:#.\-–]+/, "").trim();
         if(LONG[k]){
           var txt = rest, j = i + 1;
@@ -248,7 +250,7 @@
   }
   /* Parsec 14 — every part table in a piece of text (a header row, then its lines): the Parts list import reads quotes with these too */
   function partsTable(raw){
-    var L = fixMoney(cleanOcrText(String(raw || ""))).replace(/\r/g, "").split("\n"), cols = null, out = [];
+    var L = fixMoney(fixDigits(cleanOcrText(String(raw || "")))).replace(/\r/g, "").split("\n"), cols = null, out = [];
     L.forEach(function(l){ var t = l.trim(); if(!t) return; if(isPartsHead(fixLabels(t))){ cols = colsOf(fixLabels(t)); return; } if(!cols) return; var p = partLine(t, cols, true); if(p) addPart(out, p); });
     return out;
   }
@@ -323,7 +325,7 @@
     for(var i = 0; i < L.length; i++){
       var l = L[i], t = l.trim();
       if(opsHead(t)){ inOps = true; continue; }
-      if(/^(?:user\s*notes?|system\s*notes?|case\s*notes?|notes|comments|totals?(?:\s*summary)?|case\s*level\s*actions|print\/pdf)\b/i.test(t)){ if(cur){ ops.push(cur); cur = null; } inOps = false; story = null; endAt = i; continue; }
+      if(/^(?:user\s*notes?|system\s*notes?|case\s*notes?|notes|comments|totals?(?:\s*summary)?|case\s*level\s*actions|print\/pdf)\b/i.test(t)){ if(cur){ ops.push(cur); cur = null; } inOps = false; story = null; endAt = i; cols = null; continue; }   /* 17.3: a parts header doesn't reach into the totals or the notes */
       var c0 = splitCells(t);   /* Parsec 14: a "Parts" heading (alone, or the first cell of a line) ends the operations */
       if(/^parts?\s*:?$/i.test(c0[0] || "") && !/\$|\d\.\d{2}/.test(t) && !isPartsHead(t)){ if(cur){ ops.push(cur); cur = null; } inOps = false; story = null; continue; }
       var oc = opCols(fixLabels(t)); if(oc){ ocols = oc; inOps = true; if(/label/i.test(t)) lblCol = true; continue; }   /* Parsec 14: the operations table's header — which amount is which */
@@ -363,7 +365,7 @@
         }
         continue;
       }
-      var pl2 = partLine(t, cols); if(pl2) addPart(loose, pl2);
+      var pl2 = partLine(t, cols, !!cols); if(pl2 && (pl2.pn || !TOTP.test(pl2.desc))) addPart(loose, pl2);   /* 17.3: under a parts header, a line with no part number is still a part (shop rags) */
     }
     if(cur) ops.push(cur);
     /* nothing numbered: the reader every case import already uses (approval words anchor each job) */
@@ -453,7 +455,7 @@
       .replace(/(\d{1,3})\.(\d{3})(?=[.,]\d{2}(?!\d))/g, "$1,$2");
   }
   function parse(raw){
-    var text = fixMoney(fixLabels(cleanOcrText(String(raw || "")).replace(/\r/g, "").replace(/\u00a0/g, " ")));
+    var text = fixMoney(fixDigits(fixLabels(cleanOcrText(String(raw || "")).replace(/\r/g, "").replace(/\u00a0/g, " "))));   /* 17.3: letters read for digits (field-rules.js) */
     var L = text.split("\n").map(function(l){ return l.replace(/[ \t]+$/, ""); }).filter(function(l){ return l.trim(); });
     var f = readLoose(text, L, readFields(L));
     try{ if(typeof v163ReadContact === "function") v163ReadContact(text, L, f); }catch(e){ console.error(e); }   /* Parsec 16.3: the contact and the driver */

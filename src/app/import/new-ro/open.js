@@ -30,6 +30,7 @@
       else if(a === "pdf") document.getElementById("ix-pdf").click();
       else if(a === "apply") apply();
       else if(a === "v163use"){ var lc = typeof v163LastFill === "function" ? v163LastFill(t.getAttribute("data-ro")) : null; if(lc){ Object.keys(lc).forEach(function(k){ D.edits[k] = lc[k]; }); D.err = ""; draw(); } }   /* Parsec 16.3: the last contact */
+      else if(a === "usev"){ D.edits[t.getAttribute("data-k")] = t.getAttribute("data-v"); draw(); }   /* 17.3: a value Parsec already knows */
       else if(a === "use"){ var k = t.getAttribute("data-k"), s = SPEC.filter(function(x){ return x[0] === k; })[0]; if(s){ D.edits[k] = srcF(D.acc, s); draw(); } }
       else if(a === "rmpc"){ D.pieces.splice(+t.getAttribute("data-i"), 1); rebuild(); }
       else if(a === "newinstead"){ D.forceNew = true; match(); draw(); }

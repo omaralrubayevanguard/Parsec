@@ -48,6 +48,8 @@ Prefixes are how this codebase finds its way; keep them:
 
 **A new test.** `tests/t<version><letter>.py`, copied from a recent one: load `t12.html` (the runner passes it), `__tg.loadSample25()`, sign in a role, drive the UI, print `ok …` / `FAIL …`, exit non-zero on a failure. Run it with `python3 tests/run.py t<name>`.
 
+**Reading better.** Any change to how New RO reads a case runs the reading scorecard first and after: `python tests/run.py t173a`. A misread that comes up in the shop becomes a new case in `tests/fixtures/reading/corpus.json` (invented values, the same shape), and when the score goes up, raise `floor` to just under it so it can't slip back.
+
 **Telling a person something.** `IB.send({ to: name, t: title, b: body, k: kind, ro, op })` — never a bare toast for something they must act on.
 
 **A question before an action.** `pgAsk({ head, sub, list, buttons }, cb)` (`ro/flow-gates.js`); it keeps the house wording and keyboard (Enter = the primary button, Esc = cancel).

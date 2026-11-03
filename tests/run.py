@@ -51,7 +51,7 @@ for hf in os.listdir(os.path.join(H, "fixtures", "helpers")): shutil.copy(os.pat
 with gzip.open(os.path.join(H, "fixtures", "parsec15-test-build.html.gz"), "rb") as f: open(os.path.join(run, "t12_old.html"), "wb").write(f.read())   # the Parsec 15 build t160b compares against
 for f in os.listdir(H):   # every test, not just the chosen ones: a few read a helper out of a sibling test (t127p.py, t11d.py)
     if re.fullmatch(r"t\w+\.py", f): shutil.copy(os.path.join(H, f), run)
-for fx in ("imptest", "x132"):   # text fixtures a few import tests read beside themselves
+for fx in ("imptest", "x132", "reading"):   # text fixtures a few import tests read beside themselves
     if os.path.isdir(os.path.join(H, "fixtures", fx)): shutil.copytree(os.path.join(H, "fixtures", fx), os.path.join(run, fx))
 env = dict(os.environ, TZ=tz, PYTHONDONTWRITEBYTECODE="1", PARSEC_ROOT=ROOT)
 print("page: %s\nrun folder: %s\ntime zone: %s · %d tests · %d at once" % (page, run, tz, len(tests), jobs))
