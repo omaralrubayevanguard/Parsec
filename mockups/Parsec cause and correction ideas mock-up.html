@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="en" data-th="ivory">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parsec · Cause and Correction</title>
+<style>
+/* ---------- tokens: four themes · Ivory / Graphite (warm) · Mist / Obsidian (cool). Keep the names. ---------- */
+:root,[data-th="ivory"]{--canvas:#F2F0EA;--panel:#FBFAF7;--raised:#fff;--fill:#F0EDE6;--hair:#E6E2D8;--border:#D6D0C3;--ink:#1D1C1A;--ink2:#57534B;--ink3:#67625A;--acc:#86643A;--acct:#F4EDE1;--accl:#D9C5A3;--primary:#1D1C1A;--onprimary:#FBFAF7;--good:#3A8C60;--goodt:#E8F5EE;--warn:#AD7210;--bad:#C0503F;--shadow:0 0 0 1px rgba(29,28,26,.06),0 1px 3px rgba(29,28,26,.04);--raise:0 0 0 1px rgba(29,28,26,.08),0 18px 44px -14px rgba(29,28,26,.28);color-scheme:light}
+[data-th="graphite"]{--canvas:#0E0E0D;--panel:#151514;--raised:#1D1D1B;--fill:#222220;--hair:#262624;--border:#363532;--ink:#EDEBE6;--ink2:#B0ACA3;--ink3:#9A968D;--acc:#D1B184;--acct:#2A241B;--accl:#6B5A40;--primary:#EDEBE6;--onprimary:#151514;--good:#5BBE8B;--goodt:#1A2E24;--warn:#E2A84C;--bad:#EC7F6C;--shadow:0 0 0 1px rgba(255,255,255,.06);--raise:0 0 0 1px rgba(255,255,255,.08),0 20px 50px -14px rgba(0,0,0,.7);color-scheme:dark}
+[data-th="mist"]{--canvas:#EEF1F4;--panel:#F7F9FB;--raised:#fff;--fill:#E8EDF2;--hair:#DEE3E9;--border:#C9D1DA;--ink:#171A1F;--ink2:#4E5661;--ink3:#626B77;--acc:#3F6A8A;--acct:#E4EDF4;--accl:#A9C4D8;--primary:#1F2A36;--onprimary:#F7F9FB;--good:#2F8A5E;--goodt:#E2F1E9;--warn:#A86F0E;--bad:#BF4F3F;--shadow:0 0 0 1px rgba(23,26,31,.06),0 1px 3px rgba(23,26,31,.05);--raise:0 0 0 1px rgba(23,26,31,.08),0 18px 44px -14px rgba(23,26,31,.3);color-scheme:light}
+[data-th="obsidian"]{--canvas:#0C0E11;--panel:#13161A;--raised:#1A1E24;--fill:#1F242B;--hair:#242930;--border:#343B45;--ink:#E8ECF1;--ink2:#A9B2BD;--ink3:#8E98A4;--acc:#8FB6D4;--acct:#1B2733;--accl:#3E5B73;--primary:#E8ECF1;--onprimary:#13161A;--good:#5BBE8B;--goodt:#182B22;--warn:#E2A84C;--bad:#EC7F6C;--shadow:0 0 0 1px rgba(255,255,255,.06);--raise:0 0 0 1px rgba(255,255,255,.08),0 20px 50px -14px rgba(0,0,0,.75);color-scheme:dark}
+:root{--sans:"Inter","Segoe UI",system-ui,sans-serif;--serif:"Iowan Old Style",Georgia,serif;--mono:"Cascadia Mono",Consolas,monospace}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{margin:0;background:var(--canvas);color:var(--ink);font:400 14px/1.45 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button,input,textarea,select{font:inherit;color:inherit}
+/* ---------- the frame (prefix ip- so the drawn visuals' classes can't collide) ---------- */
+.ip-bar{position:sticky;top:0;z-index:60;background:var(--canvas);box-shadow:inset 0 -1px 0 var(--hair)}
+.ip-r1,.ip-r2{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 16px}
+.ip-r2{padding-top:0;padding-bottom:8px}
+.ip-bar h1{margin:0 auto 0 0;display:flex;align-items:baseline;gap:10px;font:500 19px/24px var(--serif)}
+.ip-bar h1 small{font:500 11px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.ip-jump{display:flex;gap:2px;flex-wrap:wrap}.ip-jump a{padding:4px 9px;border-radius:7px;font-size:12.5px;color:var(--ink2);text-decoration:none}.ip-jump a:hover{background:var(--fill)}
+.ip-seg{display:inline-flex;gap:2px;padding:2px;border-radius:9px;background:var(--fill)}
+.ip-seg button{all:unset;cursor:pointer;height:26px;padding:0 10px;border-radius:7px;font-size:12.5px;font-weight:500;color:var(--ink2);white-space:nowrap}.ip-seg button[aria-pressed="true"]{background:var(--raised);color:var(--ink);box-shadow:var(--shadow)}
+.ip-btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 11px;border-radius:8px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--border);font:500 12.5px/1 var(--sans);white-space:nowrap}
+.ip-btn.pri{background:var(--primary);color:var(--onprimary);box-shadow:none}.ip-btn em{font-style:normal;opacity:.7;font-size:11px}
+.ip-btn:focus-visible,.ip-opt:focus-visible,.ip-seg button:focus-visible,.ip-chip:focus-visible,.ip-dots i:focus-visible,.ip-sel:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.ip-prog{display:flex;align-items:center;gap:10px;flex:1 1 220px;min-width:160px}
+.ip-prog-bar{flex:1;height:6px;border-radius:999px;background:var(--fill);overflow:hidden}
+.ip-prog-bar i{display:block;height:100%;width:0;background:var(--acc);border-radius:999px;transition:width .35s}
+.ip-prog span{font-size:12px;color:var(--ink3);white-space:nowrap}
+.ip-tabs{display:inline-flex;gap:2px;padding:2px;border-radius:9px;background:var(--fill);flex-wrap:wrap}
+.ip-chip{all:unset;cursor:pointer;height:26px;padding:0 10px;border-radius:7px;font-size:12px;font-weight:500;color:var(--ink2);white-space:nowrap}
+.ip-chip[aria-pressed="true"]{background:var(--raised);color:var(--ink);box-shadow:var(--shadow)}
+.ip-warn{display:none;align-items:center;height:26px;padding:0 10px;border-radius:7px;background:var(--warn);color:#fff;font-size:12px;font-weight:600;cursor:pointer}
+.ip-wrap{max-width:1500px;margin:0 auto;padding:18px 16px 120px}
+.ip-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.ip-layout.has-prev{grid-template-columns:minmax(0,1fr) min(360px,34vw)}
+@media (max-width:1100px){.ip-layout.has-prev{grid-template-columns:1fr}}
+#ip-preview{position:sticky;top:96px;align-self:start;max-height:calc(100vh - 110px);overflow:auto;padding:12px;border-radius:14px;background:var(--panel);box-shadow:var(--shadow)}
+#ip-preview[hidden]{display:none}
+#ip-preview h2{margin:0 0 8px;font:500 14px/1 var(--serif)}
+#ip-preview h2 small{font:400 11px var(--sans);color:var(--ink3);margin-left:6px}
+.ip-prev-root{position:relative;min-height:80px;padding:12px;border-radius:10px;background:var(--canvas);box-shadow:inset 0 0 0 1px var(--hair);font-size:12.5px;overflow:hidden}
+.ip-now{margin:0 0 16px;padding:14px 16px;border-radius:14px;background:var(--panel);box-shadow:var(--shadow)}.ip-now h2{margin:0 0 8px;font:500 15px/1 var(--serif)}
+.ip-now-row{display:flex;gap:10px;flex-wrap:wrap}.ip-now-row>div{flex:1 1 220px;padding:8px 10px;border-radius:9px;background:var(--canvas);box-shadow:inset 0 0 0 1px var(--hair);font-size:12.5px;color:var(--ink2)}.ip-now-row b{color:var(--ink)}
+.ip-lead{margin:0 2px 14px;color:var(--ink2)}
+.ip-keys{margin:0 2px 14px;font-size:11.5px;color:var(--ink3)} .ip-keys kbd{display:inline-block;min-width:18px;padding:0 5px;border-radius:4px;background:var(--raised);box-shadow:inset 0 -1.5px 0 var(--border),inset 0 0 0 1px var(--border);font:600 10.5px/17px var(--mono);text-align:center;color:var(--ink2)}
+.ip-sec{margin:0 0 26px;scroll-margin-top:100px}.ip-sec h2{display:flex;align-items:baseline;gap:10px;margin:0 2px 10px;font:500 22px/28px var(--serif)}.ip-sec h2 small{font:400 12.5px var(--sans);color:var(--ink3)}
+.ip-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(440px,1fr));gap:14px}@media (max-width:980px){.ip-grid{grid-template-columns:1fr}}
+.ip-idea{min-width:0;display:flex;flex-direction:column;gap:10px;padding:14px 14px 10px;border-radius:14px;background:var(--panel);box-shadow:var(--shadow);scroll-margin-top:104px;transition:box-shadow .2s}
+.ip-idea.picked{box-shadow:0 0 0 1.5px var(--accl),var(--shadow)}
+.ip-idea.ip-cur{box-shadow:0 0 0 2px var(--acc),var(--shadow)}
+.ip-idea[hidden]{display:none}
+.ip-idea.ip-locked .ip-vis,.ip-idea.ip-locked .ip-ol,.ip-idea.ip-locked .ip-card-tools{opacity:.5}
+.ip-idea h3{margin:0;font:600 15px/20px var(--sans);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ip-idea header p{margin:3px 0 0;font-size:12.5px;line-height:17px;color:var(--ink3)}
+.ip-tags{display:inline-flex;gap:4px}
+.ip-tag{display:inline-flex;align-items:center;height:18px;padding:0 6px;border-radius:5px;font:600 10px/1 var(--sans);background:var(--fill);color:var(--ink2)}
+.ip-tag.hi{background:var(--goodt);color:var(--good)}
+.ip-tag.lo{background:var(--acct);color:var(--acc)}
+.ip-need{display:inline-flex;align-items:center;gap:4px;height:18px;padding:0 7px;border-radius:5px;font:600 10px/1 var(--sans);background:var(--acct);color:var(--acc);letter-spacing:.02em}
+.ip-idea:not(.ip-locked) .ip-need{background:var(--goodt);color:var(--good)}
+.ip-rec{position:relative;display:inline-flex;align-items:center;height:16px;padding:0 6px;border-radius:4px;font:600 9px/1 var(--sans);letter-spacing:.04em;text-transform:uppercase;background:var(--acct);color:var(--acc);cursor:help}
+.ip-rec[data-tip]::after{content:attr(data-tip);position:absolute;left:0;top:calc(100% + 6px);z-index:7;min-width:180px;max-width:260px;padding:6px 9px;border-radius:7px;background:var(--primary);color:var(--onprimary);font:400 11.5px/1.4 var(--sans);text-transform:none;letter-spacing:0;white-space:normal;opacity:0;transform:translateY(-3px);pointer-events:none;transition:opacity .15s,transform .15s}
+.ip-rec[data-tip]:hover::after,.ip-rec[data-tip]:focus::after,.ip-opt:focus-visible .ip-rec[data-tip]::after{opacity:1;transform:none}
+.ip-vis{position:relative;min-height:96px;padding:12px;border-radius:11px;background:var(--canvas);box-shadow:inset 0 0 0 1px var(--hair);font-size:12.5px;overflow:hidden}
+.ip-hint{position:absolute;left:8px;bottom:8px;z-index:5;padding:3px 8px;border-radius:7px;background:var(--raised);box-shadow:var(--shadow);font-size:11px;color:var(--ink3);pointer-events:none}
+.ip-vis.ip-has .ip-hint,.ip-vis.ip-skip .ip-hint,.ip-vis.ip-peeking .ip-hint,.ip-vis:not(.ip-has) .ip-replay,.ip-vis:not(.ip-has) .ip-dots{display:none}
+.ip-vis.ip-skip>*:not(.ip-replay):not(.ip-cmp){opacity:.45}
+.ip-replay{all:unset;cursor:pointer;position:absolute;right:8px;bottom:8px;z-index:5;width:24px;height:24px;border-radius:7px;display:grid;place-items:center;background:var(--raised);box-shadow:var(--shadow);color:var(--ink3);font-size:11px}
+.ip-dots{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:5;display:flex;gap:6px;padding:4px 7px;border-radius:999px;background:var(--raised);box-shadow:var(--shadow)}
+.ip-dots i{all:unset;cursor:pointer;width:9px;height:9px;border-radius:50%;background:var(--fill);box-shadow:inset 0 0 0 1.5px var(--border);transition:background .2s,box-shadow .2s}
+.ip-dots i.f{background:var(--acc);box-shadow:none}
+.ip-vis.ip-peeking{box-shadow:inset 0 0 0 1.5px var(--acc)}
+.ip-peek-lbl{display:none;position:absolute;left:8px;bottom:8px;z-index:5;padding:3px 8px;border-radius:7px;background:var(--acc);color:var(--onprimary);font-size:11px;font-weight:600;pointer-events:none}
+.ip-vis.ip-peeking .ip-peek-lbl{display:block}
+.ip-vis.ip-peeking .ip-dots,.ip-vis.ip-peeking .ip-replay{display:none}
+.ip-cmp{display:none;position:absolute;inset:0;z-index:3;background:var(--canvas)}
+.ip-vis.ip-comparing .ip-cmp{display:block}
+.ip-vis.ip-comparing{min-height:150px}
+.ip-cmp-a .v-cur,.ip-cmp-b .v-cur{display:none}
+.ip-vis.ip-comparing>.ip-body,.ip-vis.ip-comparing>.ip-hint,.ip-vis.ip-comparing>.ip-dots,.ip-vis.ip-comparing>.ip-replay{visibility:hidden}
+.ip-cmp-a,.ip-cmp-b{position:absolute;top:34px;bottom:0;width:50%;padding:12px;overflow:hidden}
+.ip-cmp-a{left:0;box-shadow:inset -1px 0 0 var(--hair)}.ip-cmp-b{left:50%}
+.ip-cmp-top{position:absolute;left:0;right:0;top:0;height:34px;display:flex;align-items:center;gap:6px;padding:0 8px;font-size:11px;color:var(--ink3);background:var(--panel);box-shadow:inset 0 -1px 0 var(--hair);z-index:5}
+.ip-cmp-top b{flex:1;text-align:center;font-weight:500;color:var(--ink2)}
+.ip-sel{all:unset;box-sizing:border-box;cursor:pointer;height:22px;padding:0 20px 0 7px;border-radius:6px;background:var(--raised) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23888'/%3E%3C/svg%3E") no-repeat right 7px center;box-shadow:inset 0 0 0 1px var(--border);font:500 11px/22px var(--sans);color:var(--ink);max-width:150px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;-webkit-appearance:none;appearance:none}
+.ip-ol{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:2px}
+.ip-opt{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:14px minmax(0,1fr);gap:8px;padding:6px 8px;border-radius:9px;font-size:12.5px;line-height:16px;color:var(--ink2)}
+.ip-opt:hover{background:var(--fill)}.ip-opt i{width:14px;height:14px;margin-top:1px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--border)}
+.ip-opt b{display:block;font-weight:500;color:var(--ink)}.ip-opt small{display:block;font-size:11.5px;color:var(--ink3)}
+.ip-opt[aria-pressed="true"]{background:var(--acct)}.ip-opt[aria-pressed="true"] i{box-shadow:inset 0 0 0 4.5px var(--acc)}
+.ip-opt .ip-rec{margin-left:4px;vertical-align:middle}
+.ip-opt kbd{float:right;margin-left:6px;min-width:16px;padding:0 4px;border-radius:4px;background:var(--raised);box-shadow:inset 0 -1.5px 0 var(--border),inset 0 0 0 1px var(--border);font:600 9.5px/15px var(--mono);text-align:center;color:var(--ink3)}
+.ip-idea-note{width:100%;min-height:34px;padding:7px 10px;border:0;border-radius:9px;background:var(--fill);font-size:12.5px;resize:vertical;outline:none}
+.ip-idea-note:focus{box-shadow:inset 0 0 0 1.5px var(--accl)}
+.ip-card-tools{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.ip-card-tools .ip-seg{display:none}.ip-idea.picked .ip-card-tools .ip-seg{display:inline-flex}
+.ip-card-tools .ip-seg button{height:22px;font-size:11.5px}
+#ip-picks{position:fixed;z-index:85;right:16px;top:96px;width:470px;max-width:calc(100vw - 32px);max-height:calc(100vh - 112px);overflow:auto;padding:12px 14px 14px;border-radius:16px;background:var(--raised);box-shadow:var(--raise);display:flex;flex-direction:column;gap:10px}
+#ip-picks[hidden]{display:none}
+#ip-picks pre{margin:0;padding:10px 12px;border-radius:10px;background:var(--fill);font:400 12px/1.55 var(--mono);white-space:pre-wrap}
+#ip-picks textarea{min-height:60px;padding:8px 10px;border:0;border-radius:9px;background:var(--fill);font-size:13px;resize:vertical;outline:none}
+#ip-picks label.ip-ck{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink2)}
+.ip-ph{display:flex;align-items:center;font:500 18px/1 var(--serif)}.ip-ph b{flex:1;font-weight:500}.ip-ph button{all:unset;cursor:pointer;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;color:var(--ink3)}
+.ip-actions{display:flex;flex-wrap:wrap;gap:6px}
+.ip-toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:99;display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;background:var(--primary);color:var(--onprimary);font-size:13px;box-shadow:var(--raise);max-width:calc(100vw - 32px)}
+.ip-toast button{all:unset;cursor:pointer;font-weight:600;color:var(--accl);padding:2px 4px;border-radius:4px}
+.ip-file{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+@media (max-width:640px){ .ip-grid{grid-template-columns:1fr} #ip-picks{left:16px;right:16px;width:auto} .ip-bar h1 small{display:none} .ip-layout.has-prev{grid-template-columns:1fr} .ip-r2 [data-sort]{display:none} .ip-keys{display:none} #ip-preview{position:static;max-height:none} }
+@media print{
+  body{background:#fff;color:#000}
+  .ip-bar .ip-seg,.ip-bar #ip-open,.ip-bar #ip-accept,.ip-r2,.ip-ol,.ip-replay,.ip-hint,.ip-dots,.ip-card-tools,.ip-idea-note,#ip-preview,.ip-cmp,.ip-keys,.ip-actions,.ip-ck{display:none!important}
+  #ip-picks{position:static!important;display:flex!important;width:100%!important;max-width:none;max-height:none;box-shadow:none;border:1px solid #ccc;page-break-before:avoid}
+  .ip-vis{break-inside:avoid}
+  .ip-idea[hidden]{display:flex!important}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.ip-prog-bar i{transition:none}}
+
+/* ---------- the drawn visuals: prefix v- · animate with [data-step], .ip-s-<step> and [data-opt] on .ip-vis ---------- */
+.v-btn{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:7px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--border);font:500 12px/1 var(--sans);white-space:nowrap;transition:background .2s,color .2s}
+.v-tip{position:absolute;left:12px;top:48px;padding:6px 9px;border-radius:7px;background:var(--primary);color:var(--onprimary);font-size:12px;font-weight:500;white-space:nowrap;opacity:0;transform:translateY(-4px);transition:opacity .18s,transform .18s}
+.v-cur{position:absolute;left:250px;top:40px;width:14px;height:14px;z-index:6;pointer-events:none;transition:left .6s cubic-bezier(.2,.75,.25,1),top .6s cubic-bezier(.2,.75,.25,1),opacity .25s .35s}
+.ip-s-done .v-cur{opacity:0}                                                            /* the pointer steps aside once the result shows, so it never covers it */
+.v-cur::before{content:"";position:absolute;inset:0;clip-path:polygon(0 0,0 100%,30% 72%,52% 100%,64% 94%,44% 66%,80% 66%);background:var(--ink)}
+.v-cur::after{content:"";position:absolute;left:-8px;top:-8px;width:30px;height:30px;border-radius:50%;background:var(--acc);opacity:0;transform:scale(.3)}
+@keyframes v-ripple{0%{opacity:.35;transform:scale(.3)}100%{opacity:0;transform:scale(1.4)}}
+[data-step="click"] .v-cur::after{animation:v-ripple .45s ease-out}
+@media (prefers-reduced-motion:reduce){.v-cur,.v-tip,.v-btn,.v-delay i{transition:none!important}.v-cur::after{animation:none!important}}
+
+
+/* ---------- the operation card, drawn ---------- */
+.v-cd{position:relative;width:380px;max-width:100%;padding:10px 12px 12px;border-radius:11px;background:var(--raised);box-shadow:var(--shadow);font-size:12px;line-height:17px}
+.v-hd{position:relative;display:flex;align-items:center;gap:7px;height:24px;margin:-2px 0 8px;font-size:12.5px}
+.v-hd .v-no{font:500 11px/1 var(--mono);color:var(--ink3)}
+.v-hd b{font-weight:500;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v-st{display:inline-flex;align-items:center;gap:5px;height:20px;padding:0 8px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--border);font-size:11px;font-weight:500;color:var(--ink2);white-space:nowrap;transition:color .3s,box-shadow .3s}
+.v-st::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--warn);transition:background .3s}
+.v-lb{display:flex;align-items:center;gap:6px;font:600 9.5px/1 var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--ink3)}
+.v-lb .v-sp{margin-left:auto;width:20px;height:20px;border-radius:6px;display:grid;place-items:center;box-shadow:inset 0 0 0 1px var(--border);font-size:11px;letter-spacing:0;color:var(--acc);position:relative}
+.v-n{position:relative;margin-top:5px;padding:6px 8px;border-radius:7px;background:var(--canvas);box-shadow:inset 0 0 0 1px var(--hair);min-height:52px;color:var(--ink);transition:box-shadow .3s}
+.v-n i{font-style:normal;border-radius:3px;transition:opacity .3s,background .3s,color .3s,box-shadow .3s}
+.v-n .v-ph{color:var(--ink3);transition:opacity .2s}
+.v-cc{margin-top:8px;display:grid;gap:4px;transition:opacity .35s,max-height .45s}
+.v-r{position:relative;display:grid;grid-template-columns:76px minmax(0,1fr);gap:8px;padding:5px 8px;border-radius:7px;box-shadow:inset 0 0 0 1px var(--hair);transition:background .3s,box-shadow .3s}
+.v-r>b{font-weight:600;font-size:11px;color:var(--ink2)}
+.v-r>span:not([class]){position:relative;min-height:17px}
+.v-r>span>u{text-decoration:none;opacity:0;transition:opacity .4s}
+.v-r>span>em{position:absolute;left:0;top:0;font-style:normal;color:var(--ink3);transition:opacity .25s}
+.ip-s-fill .v-r>span>u{opacity:1}
+.ip-s-fill .v-r>span>em{opacity:0}
+.v-cap{display:block;margin-top:8px;margin-bottom:22px;font-size:11px;color:var(--ink3);min-height:15px}
+.ip-body>.v-cd,.ip-body>.v-mini,.ip-body>.v-kp{margin-bottom:24px}
+.ip-body>.v-kp+.v-cap,.ip-body>.v-mini+.v-cap{margin-top:-16px}
+.v-cap>s{text-decoration:none;display:none}
+.v-tg{position:relative}
+.v-cur[class*="v-k-"]{display:none}
+.v-tg>.v-cur{left:150px;top:30px}
+.ip-s-point .v-tg>.v-cur{left:22px;top:4px}
+.v-badge{display:inline-flex;align-items:center;height:16px;padding:0 6px;border-radius:5px;font:600 9.5px/1 var(--sans);background:var(--acct);color:var(--acc);opacity:0;transition:opacity .3s}
+.v-pop{position:absolute;z-index:4;padding:7px 9px;border-radius:8px;background:var(--raised);box-shadow:var(--raise);font-size:11.5px;line-height:16px;opacity:0;transform:translateY(-3px);transition:opacity .2s,transform .2s;pointer-events:none}
+.v-pop b{font-weight:600;color:var(--ink2)}
+.v-toast{position:absolute;right:8px;top:8px;z-index:4;padding:5px 10px;border-radius:7px;background:var(--primary);color:var(--onprimary);font-size:11px;opacity:0;transition:opacity .25s}
+@media (prefers-reduced-motion:reduce){.v-n i,.v-cc,.v-r,.v-r>span>u,.v-r>span>em,.v-badge,.v-pop,.v-toast,.v-st,.v-st::before{transition:none!important}}
+
+/* 1 where: under · beside · tab · in the header */
+.v-tabs,.v-chips{display:none}
+.v-bd{display:block}
+[data-opt="beside"] .v-bd,.ip-prev-root[data-p-where="beside"] .v-bd{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:start}
+[data-opt="beside"] .v-bd .v-cc,.ip-prev-root[data-p-where="beside"] .v-bd .v-cc{margin-top:16px}
+[data-opt="beside"] .v-r,.ip-prev-root[data-p-where="beside"] .v-r{grid-template-columns:1fr;gap:1px}
+[data-opt="tab"] .v-tabs,.ip-prev-root[data-p-where="tab"] .v-tabs{display:inline-flex;gap:2px;padding:2px;margin:0 0 6px;border-radius:8px;background:var(--fill)}
+.v-tabs span{position:relative;height:20px;padding:0 9px;border-radius:6px;font-size:11px;font-weight:500;line-height:20px;color:var(--ink2);transition:background .2s,box-shadow .2s}
+.v-tabs .v-t1{background:var(--raised);box-shadow:var(--shadow);color:var(--ink)}
+[data-opt="tab"] .v-cc,.ip-prev-root[data-p-where="tab"] .v-cc{display:none}
+[data-opt="tab"].ip-s-done .v-cc{display:grid}
+[data-opt="tab"].ip-s-done .v-nb{display:none}
+[data-opt="tab"].ip-s-done .v-tabs .v-t1{background:none;box-shadow:none;color:var(--ink2)}
+[data-opt="tab"].ip-s-done .v-tabs .v-t2{background:var(--raised);box-shadow:var(--shadow);color:var(--ink)}
+[data-opt="head"] .v-chips,.ip-prev-root[data-p-where="head"] .v-chips{display:inline-flex;gap:4px}
+.v-chips span{position:relative;height:18px;padding:0 7px;border-radius:999px;font-size:10.5px;font-weight:500;line-height:18px;background:var(--fill);color:var(--ink3);transition:background .3s,color .3s}
+[data-opt="head"].ip-s-fill .v-chips span,.ip-prev-root[data-p-where="head"] .v-chips span{background:var(--goodt);color:var(--good)}
+[data-opt="head"] .v-cc,.ip-prev-root[data-p-where="head"] .v-cc{display:none}
+[data-opt="head"] .v-pop{right:0;top:26px;width:250px}
+[data-opt="head"].ip-s-done .v-pop{opacity:1;transform:none}
+[data-opt="head"] .ip-body{min-height:178px}
+[data-opt="under"] .v-k-under,[data-opt="beside"] .v-k-under,[data-opt="tab"] .v-k-tab,[data-opt="head"] .v-k-head{display:block}
+.ip-s-done[data-opt="under"] .v-rx,.ip-s-done[data-opt="beside"] .v-rx{background:var(--goodt);box-shadow:inset 0 0 0 1px var(--good)}
+.ip-s-done[data-opt="under"] .v-n .v-c,.ip-s-done[data-opt="under"] .v-n .v-d,.ip-s-done[data-opt="beside"] .v-n .v-c,.ip-s-done[data-opt="beside"] .v-n .v-d{background:var(--goodt)}
+[data-step="click"][data-opt="tab"] .v-t2{background:var(--acct)}
+[data-step="click"][data-opt="head"] .v-chips span{background:var(--acct)}
+[data-step="click"][data-opt="under"] .v-rx,[data-step="click"][data-opt="beside"] .v-rx{background:var(--acct)}
+
+/* 2 look: labeled lines · two tinted cards · marks in the notes */
+[data-opt="lines"] .v-r,.ip-prev-root[data-p-look="lines"] .v-r{box-shadow:none;border-radius:0;padding:4px 0;border-bottom:1px solid var(--hair)}
+[data-opt="lines"].ip-s-done .v-r>b::after{content:" ✓";color:var(--good)}
+[data-opt="cards"] .v-rc,.ip-prev-root[data-p-look="cards"] .v-rc{background:var(--acct);box-shadow:inset 3px 0 0 var(--warn)}
+[data-opt="cards"] .v-rx,.ip-prev-root[data-p-look="cards"] .v-rx{background:var(--goodt);box-shadow:inset 3px 0 0 var(--good)}
+[data-opt="cards"].ip-s-done .v-r>b{color:var(--ink)}
+[data-opt="marks"] .v-cc,.ip-prev-root[data-p-look="marks"] .v-cc{display:none}
+[data-opt="marks"].ip-s-fill .v-n .v-b,.ip-prev-root[data-p-look="marks"] .v-n .v-b{box-shadow:inset 0 -2px 0 var(--warn)}
+[data-opt="marks"].ip-s-fill .v-n .v-c,[data-opt="marks"].ip-s-fill .v-n .v-d,.ip-prev-root[data-p-look="marks"] .v-n .v-c,.ip-prev-root[data-p-look="marks"] .v-n .v-d{box-shadow:inset 0 -2px 0 var(--good)}
+.v-mk{display:none;margin-left:2px;padding:0 4px;border-radius:4px;font:700 9px/14px var(--sans);vertical-align:1px}
+.v-mk.v-mc{background:var(--acct);color:var(--warn)}.v-mk.v-mx{background:var(--goodt);color:var(--good)}
+[data-opt="marks"].ip-s-done .v-mk,.ip-prev-root[data-p-look="marks"] .v-mk{display:inline-block}
+.v-look-cap::after{content:""}
+[data-opt="marks"].ip-s-done .v-look-cap::after{content:"Cause underlined amber, Correction green — no extra box"}
+[data-opt="lines"].ip-s-done .v-look-cap::after{content:"Two quiet lines, like the RO details table"}
+[data-opt="cards"].ip-s-done .v-look-cap::after{content:"Two tinted cards — amber Cause, green Correction"}
+
+/* 3 before there are notes */
+.v-e .v-n .v-txt{opacity:0}
+.ip-s-type .v-e .v-n .v-txt{opacity:1}
+.ip-s-type .v-e .v-n .v-ph{opacity:0}
+.v-e .v-n .v-ph{position:absolute;left:8px;top:6px}
+[data-opt="hint"] .v-r>span>em::after{content:"fills from your notes as you write"}
+[data-opt="dash"] .v-r>span>em::after{content:"—"}
+[data-opt="hide"] .v-e .v-cc{max-height:0;opacity:0;overflow:hidden;margin-top:0}
+[data-opt="hide"].ip-s-fill .v-e .v-cc{max-height:120px;opacity:1;margin-top:8px}
+[data-opt="hint"] .v-r>span>em{font-style:italic}
+
+/* 4 the closed card */
+.v-mini{display:flex;align-items:center;gap:8px;height:34px;padding:0 10px;border-radius:9px;background:var(--fill);font-size:12.5px;width:380px;max-width:100%}
+.v-mini b{flex:1;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v-dots{display:none;gap:3px}
+.v-dots span{height:17px;padding:0 6px;border-radius:5px;font:600 9.5px/17px var(--sans);background:var(--raised);color:var(--ink3);box-shadow:inset 0 0 0 1px var(--hair);transition:background .3s,color .3s}
+[data-opt="dots"] .v-dots{display:inline-flex}
+[data-opt="dots"].ip-s-fill .v-dots span{background:var(--goodt);color:var(--good);box-shadow:none}
+[data-opt="dots"].ip-s-done .v-mini{box-shadow:inset 0 0 0 1px var(--accl)}
+[data-opt="none"].ip-s-done .v-mini-cap::after{content:"Nothing extra on the closed row"}
+[data-opt="dots"].ip-s-done .v-mini-cap::after{content:"C ✓ X ✓ — the story is there, before you open it"}
+.v-mini-cap::after{content:""}
+
+/* 5 how it picks */
+.v-o{display:none}
+[data-opt="words"] .v-o-words,[data-opt="labels"] .v-o-labels,[data-opt="order"] .v-o-order{display:inline}
+[data-opt="words"].ip-s-scan .v-n .v-b{background:var(--acct)}
+[data-opt="words"].ip-s-scan .v-n .v-c,[data-opt="words"].ip-s-scan .v-n .v-d{background:var(--goodt)}
+[data-opt="words"].ip-s-scan .v-n .v-a{color:var(--ink3)}
+[data-opt="order"].ip-s-scan .v-n .v-a,[data-opt="order"].ip-s-scan .v-n .v-b{background:var(--acct)}
+[data-opt="order"].ip-s-scan .v-n .v-c,[data-opt="order"].ip-s-scan .v-n .v-d{background:var(--goodt)}
+[data-opt="labels"].ip-s-scan .v-n{box-shadow:inset 0 0 0 1.5px var(--accl)}
+[data-opt="labels"].ip-s-fill .v-r>span>em{opacity:1}
+[data-opt="labels"] .v-r>span>em::after{content:"write “Cause:” or “Fix:” to fill it"}
+.v-how .v-cap::after{content:""}
+[data-opt="words"].ip-s-fill .v-how .v-cap::after{content:"“found, failed, leaking…” → Cause · “replaced, set, OK…” → Correction · the complaint is left out"}
+[data-opt="labels"].ip-s-fill .v-how .v-cap::after{content:"Only lines that start with Cause: or Fix: — nothing here has one"}
+[data-opt="order"].ip-s-fill .v-how .v-cap::after{content:"First half → Cause, last half → Correction — the complaint slips into Cause"}
+
+/* 6 when it fills */
+.v-w .v-n i{opacity:0}
+.ip-s-t1 .v-w .v-n .v-a,.ip-s-t1 .v-w .v-n .v-b{opacity:1}
+.ip-s-t2 .v-w .v-n .v-c{opacity:1}
+.ip-s-t3 .v-w .v-n .v-d{opacity:1}
+.ip-s-t1 .v-w .v-n{box-shadow:inset 0 0 0 1.5px var(--acc)}
+.ip-s-away .v-w .v-n{box-shadow:inset 0 0 0 1px var(--hair)}
+.v-w .v-r>span>u{opacity:0}
+.v-w .v-r>span>em{opacity:1}
+.v-w .v-r>span>em::after{content:"—"}
+[data-opt="live"].ip-s-t1 .v-w .v-rc>span>u,[data-opt="live"].ip-s-t3 .v-w .v-rx>span>u{opacity:1}
+[data-opt="live"].ip-s-t1 .v-w .v-rc>span>em,[data-opt="live"].ip-s-t3 .v-w .v-rx>span>em{opacity:0}
+[data-opt="leave"].ip-s-away .v-w .v-r>span>u{opacity:1}
+[data-opt="leave"].ip-s-away .v-w .v-r>span>em{opacity:0}
+[data-opt="done"].ip-s-away .v-w .v-st{color:var(--good);box-shadow:inset 0 0 0 1px var(--good)}
+[data-opt="done"].ip-s-away .v-w .v-st::before{background:var(--good)}
+[data-opt="done"].ip-s-fill .v-w .v-r>span>u{opacity:1}
+[data-opt="done"].ip-s-fill .v-w .v-r>span>em{opacity:0}
+.v-w .v-st .v-s2{display:none}
+[data-opt="done"].ip-s-away .v-w .v-st .v-s1{display:none}
+[data-opt="done"].ip-s-away .v-w .v-st .v-s2{display:inline}
+.ip-s-fill .v-w .v-r{box-shadow:inset 0 0 0 1px var(--accl)}
+.v-w .v-cap::after{content:""}
+[data-opt="live"].ip-s-fill .v-w .v-cap::after{content:"Each line filled half a second after you stopped typing"}
+[data-opt="leave"].ip-s-fill .v-w .v-cap::after{content:"Filled when you clicked out of the notes"}
+[data-opt="done"].ip-s-fill .v-w .v-cap::after{content:"Filled when the operation went Complete"}
+
+/* 7 where a line came from */
+.v-src .v-r>span>u{opacity:1}.v-src .v-r>span>em{opacity:0}
+.v-src .v-badge{position:absolute;right:6px;top:5px}
+[data-opt="tag"].ip-s-show .v-src .v-badge{opacity:1}
+[data-opt="hover"] .v-k-hover{display:block}
+[data-opt="hover"].ip-s-show .v-src .v-n .v-c,[data-opt="hover"].ip-s-show .v-src .v-n .v-d{background:var(--goodt);box-shadow:0 0 0 1px var(--good)}
+[data-opt="hover"].ip-s-show .v-src .v-rx{background:var(--goodt)}
+.v-src .v-cap::after{content:""}
+[data-opt="hover"].ip-s-show .v-src .v-cap::after{content:"Point at Correction — its two sentences light up in the notes"}
+[data-opt="tag"].ip-s-show .v-src .v-cap::after{content:"A small “from notes” tag on each line"}
+[data-opt="none"].ip-s-show .v-src .v-cap::after{content:"No link shown"}
+[data-opt="none"].ip-s-point .v-src .v-r{box-shadow:inset 0 0 0 1px var(--hair)}
+
+/* 8 when it guesses wrong */
+.v-fx .v-rc .v-x{transition:opacity .35s,max-width .45s;display:inline-block;max-width:300px;vertical-align:top;overflow:hidden;white-space:nowrap;background:var(--acct);border-radius:3px}
+.v-fx .v-r>span>u{opacity:1}
+.v-fx .v-r>span>em{opacity:0}
+[data-opt="menu"] .v-k-menu,[data-opt="drag"] .v-k-drag,[data-opt="type"] .v-k-type{display:block}
+.v-fx .v-mn{left:0;top:20px;width:150px;display:grid;gap:1px;padding:4px}
+.v-fx .v-mn span{padding:3px 7px;border-radius:5px}
+[data-opt="menu"].ip-s-click .v-fx .v-mn{opacity:1;transform:none}
+[data-opt="menu"].ip-s-pick .v-fx .v-mn .v-m3{background:var(--acct);color:var(--ink)}
+[data-opt="menu"].ip-s-done .v-fx .v-mn{opacity:0}
+[data-opt="menu"].ip-s-done .v-fx .v-n .v-a{color:var(--ink3);text-decoration:line-through}
+.ip-s-done .v-fx .v-rc .v-x{opacity:0;max-width:0}
+[data-opt="drag"].ip-s-pick .v-fx .v-rc .v-x{transform:translate(40px,22px);box-shadow:var(--raise);transition:transform .6s}
+[data-opt="type"].ip-s-click .v-fx .v-rc{box-shadow:inset 0 0 0 1.5px var(--acc)}
+[data-opt="type"].ip-s-pick .v-fx .v-rc .v-x{background:var(--acc);color:var(--onprimary)}
+[data-opt="type"].ip-s-done .v-fx .v-rc .v-badge{opacity:1}
+.v-fx .v-rc .v-badge{position:absolute;right:6px;top:5px}
+.v-fx .v-cap::after{content:""}
+[data-opt="menu"].ip-s-done .v-fx .v-cap::after{content:"Click a sentence → Cause · Correction · Neither"}
+[data-opt="drag"].ip-s-done .v-fx .v-cap::after{content:"Drag it out of Cause, or across to Correction"}
+[data-opt="type"].ip-s-done .v-fx .v-cap::after{content:"Edit the line — it’s yours now and stops filling"}
+
+/* 9 after a hand change */
+.v-hn .v-r>span>u{opacity:1}.v-hn .v-r>span>em{opacity:0}
+.v-hn .v-rc .v-badge{opacity:1;position:absolute;right:6px;top:5px}
+.v-hn .v-rc>span:not([class]){padding-right:40px}
+.v-hn .v-n .v-new{opacity:0}
+.ip-s-note .v-hn .v-n .v-new{opacity:1;background:var(--acct)}
+.v-hn .v-rf{display:none;margin-left:6px;font-size:11px;color:var(--acc);text-decoration:underline}
+[data-opt="keep"].ip-s-after .v-hn .v-rf{display:inline}
+.v-hn .v-alt{display:none}
+[data-opt="notes"].ip-s-after .v-hn .v-rc .v-mine{display:none}
+[data-opt="notes"].ip-s-after .v-hn .v-rc .v-alt{display:inline}
+[data-opt="notes"].ip-s-after .v-hn .v-rc .v-badge{opacity:0}
+[data-opt="notes"].ip-s-after .v-hn .v-rc{background:var(--acct)}
+.v-hn .v-ask{left:90px;top:6px;width:220px}
+[data-opt="ask"].ip-s-after .v-hn .v-ask{opacity:1;transform:none}
+.v-hn .v-ask i{font-style:normal;display:inline-block;margin:5px 4px 0 0;padding:1px 8px;border-radius:5px;box-shadow:inset 0 0 0 1px var(--border)}
+.v-hn .v-ask i:first-of-type{background:var(--primary);color:var(--onprimary);box-shadow:none}
+
+/* 10 parts in the Correction */
+.v-pt .v-r>span>u{opacity:1}.v-pt .v-r>span>em{opacity:0}
+.v-pt .v-add{display:block;max-height:0;opacity:0;overflow:hidden;color:var(--ink2);transition:max-height .45s,opacity .4s}
+[data-opt="parts"].ip-s-fill .v-pt .v-add-p,[data-opt="codes"].ip-s-fill .v-pt .v-add-p,[data-opt="codes"].ip-s-fill .v-pt .v-add-c{max-height:40px;opacity:1}
+.ip-s-done[data-opt="parts"] .v-pt .v-add,.ip-s-done[data-opt="codes"] .v-pt .v-add{color:var(--ink)}
+[data-opt="none"].ip-s-done .v-pt .v-cap::after{content:"Only what the notes say"}
+.v-pt .v-cap::after{content:""}
+[data-opt="parts"].ip-s-done .v-pt .v-cap::after{content:"The installed parts, from the Parts list"}
+[data-opt="codes"].ip-s-done .v-pt .v-cap::after{content:"The installed parts, and the fault codes on the operation"}
+
+/* 11 copy */
+.v-cp .v-r>span>u{opacity:1}.v-cp .v-r>span>em{opacity:0}
+.v-cpb{display:none;position:absolute;right:5px;top:4px;width:20px;height:18px;border-radius:5px;place-items:center;font-size:10px;box-shadow:inset 0 0 0 1px var(--border);background:var(--raised);color:var(--ink3)}
+[data-opt="each"] .v-cp .v-r .v-cpb{display:grid}
+.v-cpa{display:none;margin-top:6px;height:22px;padding:0 9px;border-radius:6px;align-items:center;gap:5px;font-size:11px;font-weight:500;box-shadow:inset 0 0 0 1px var(--border);background:var(--raised);width:max-content}
+[data-opt="three"] .v-cp .v-cpa{display:inline-flex}
+[data-opt="each"] .v-k-each,[data-opt="three"] .v-k-three{display:block}
+[data-step="click"][data-opt="each"] .v-cp .v-rx .v-cpb,[data-step="click"][data-opt="three"] .v-cp .v-cpa{background:var(--acct)}
+.ip-s-done[data-opt="each"] .v-cp .v-toast,.ip-s-done[data-opt="three"] .v-cp .v-toast{opacity:1}
+.v-cp .v-toast::after{content:""}
+[data-opt="each"] .v-cp .v-toast::after{content:"Correction copied"}
+[data-opt="three"] .v-cp .v-toast::after{content:"Complaint · Cause · Correction copied — ready for ASIST"}
+[data-opt="none"].ip-s-done .v-cp .v-cap::after{content:"No copy buttons — select the text"}
+.v-cp .v-cap::after{content:""}
+
+/* 12 nothing found */
+.v-ms .v-n{min-height:36px}
+.v-ms .v-rx>span>em{opacity:1}
+.ip-s-fill .v-ms .v-rx>span>em{opacity:1}
+[data-opt="warn"] .v-ms .v-rx>span>em::after{content:"—"}
+[data-opt="warn"].ip-s-fill .v-ms .v-rx>span>em::after{content:"No correction yet — write what you replaced or fixed"}
+[data-opt="warn"].ip-s-fill .v-ms .v-rx>span>em{color:var(--warn);font-style:normal}
+[data-opt="warn"].ip-s-done .v-ms .v-rx{box-shadow:inset 0 0 0 1px var(--warn)}
+[data-opt="quiet"] .v-ms .v-rx>span>em::after{content:"—"}
+[data-opt="quiet"].ip-s-done .v-ms .v-rx{background:var(--fill)}
+
+/* 13 the ✦ button */
+.v-gn .v-r>span>em::after{content:"—"}
+[data-opt="fill"] .v-k-fill,[data-opt="keep"] .v-k-fill{display:block}
+[data-step="click"] .v-gn .v-sp{background:var(--acct)}
+[data-opt="fill"].ip-s-done .v-gn .v-r>span>u{opacity:1}
+[data-opt="fill"].ip-s-done .v-gn .v-r>span>em{opacity:0}
+[data-opt="fill"].ip-s-done .v-gn .v-r{box-shadow:inset 0 0 0 1px var(--acc);background:var(--acct)}
+.v-gn .v-ok{display:none;margin-top:6px;gap:5px}
+.v-gn .v-ok i{font-style:normal;height:20px;padding:0 8px;border-radius:6px;font-size:11px;font-weight:500;line-height:20px;box-shadow:inset 0 0 0 1px var(--border)}
+.v-gn .v-ok i:first-child{background:var(--primary);color:var(--onprimary);box-shadow:none}
+[data-opt="fill"].ip-s-done .v-gn .v-ok{display:flex}
+.v-gn .v-par{display:none;color:var(--acc)}
+[data-opt="keep"].ip-s-done .v-gn .v-par{display:inline}
+[data-opt="drop"] .v-gn .v-sp{opacity:.25}
+[data-opt="drop"].ip-s-done .v-gn .v-cap::after{content:"No ✦ — the lines fill from the notes anyway"}
+.v-gn .v-cap::after{content:""}
+[data-opt="fill"].ip-s-done .v-gn .v-cap::after{content:"A suggestion from your notes and past fixes — Accept or Dismiss"}
+[data-opt="keep"].ip-s-done .v-gn .v-cap::after{content:"As now: a paragraph added to the notes"}
+
+/* 14 where they're kept */
+.v-kp{display:flex;align-items:center;gap:8px;width:380px;max-width:100%}
+.v-kp .v-cd{width:auto;flex:1;padding:8px 9px}
+.v-kp .v-ar{width:34px;height:2px;border-radius:1px;background:var(--border);position:relative;overflow:hidden}
+.v-kp .v-ar i{position:absolute;left:-40%;top:0;width:40%;height:100%;background:var(--acc);transition:left .9s linear}
+.ip-s-flow .v-kp .v-ar i{left:100%}
+.v-kp .v-r{grid-template-columns:1fr;gap:0;padding:3px 6px;font-size:11px;line-height:15px}
+.v-kp .v-wc .v-r>span>u{opacity:0}
+.v-kp .v-wc .v-r>span>em{opacity:1}
+.v-kp .v-wc .v-r>span>em::after{content:"—"}
+.ip-s-done .v-kp .v-wc .v-r>span>u{opacity:1}
+.ip-s-done .v-kp .v-wc .v-r>span>em{opacity:0}
+.v-kp .v-oc .v-r>span>u{opacity:1}.v-kp .v-oc .v-r>span>em{opacity:0}
+.v-kp .v-sv{display:block;margin-top:5px;font-size:10px;color:var(--ink3)}
+.v-kp .v-sv::after{content:""}
+[data-opt="save"].ip-s-flow .v-kp .v-sv::after{content:"saved on the operation"}
+[data-opt="live"].ip-s-flow .v-kp .v-sv::after{content:"not saved — worked out"}
+[data-opt="save"].ip-s-done .v-kp .v-wc{box-shadow:0 0 0 1px var(--good),var(--shadow)}
+[data-opt="live"].ip-s-done .v-kp .v-wc{box-shadow:0 0 0 1px var(--accl),var(--shadow)}
+.v-kp-cap::after{content:""}
+[data-opt="save"].ip-s-done .v-kp-cap::after{content:"Warranty, Fixes and exports read the saved Cause and Correction, as they do now"}
+[data-opt="live"].ip-s-done .v-kp-cap::after{content:"Each page works them out from the notes when it opens"}
+
+/* the live preview */
+.ip-prev-root .v-r>span>u{opacity:1}
+.ip-prev-root .v-r>span>em{opacity:0}
+.ip-prev-root .v-cd{width:100%}
+.ip-prev-root .v-add{display:none;color:var(--ink2)}
+.ip-prev-root[data-p-parts="parts"] .v-add-p,.ip-prev-root[data-p-parts="codes"] .v-add-p,.ip-prev-root[data-p-parts="codes"] .v-add-c{display:block}
+.ip-prev-root .v-cpb{display:none}
+.ip-prev-root[data-p-copy="each"] .v-cpb{display:grid}
+.ip-prev-root[data-p-copy="three"] .v-cpa{display:inline-flex}
+.ip-prev-root[data-p-mini="dots"] .v-dots{display:inline-flex}
+.ip-prev-root[data-p-mini="dots"] .v-dots span{background:var(--goodt);color:var(--good);box-shadow:none}
+.ip-prev-root .v-mini{width:100%;margin-bottom:8px}
+
+</style>
+</head>
+<body>
+<header class="ip-bar">
+<div class="ip-r1"><h1>Parsec <small>Cause and Correction · operation card</small></h1><nav class="ip-jump" id="ip-jump"></nav>
+<div class="ip-seg" role="group" aria-label="Theme"><button type="button" data-th="ivory" aria-pressed="true">Ivory</button><button type="button" data-th="graphite" aria-pressed="false">Graphite</button><button type="button" data-th="mist" aria-pressed="false">Mist</button><button type="button" data-th="obsidian" aria-pressed="false">Obsidian</button></div>
+<span class="ip-warn" id="ip-warn" title="Open the console for the list"></span>
+<button type="button" class="ip-btn" id="ip-accept">Accept all recommended</button>
+<button type="button" class="ip-btn pri" id="ip-open">Your picks <em id="ip-n"></em></button></div>
+<div class="ip-r2">
+<div class="ip-prog" id="ip-prog"><div class="ip-prog-bar"><i></i></div><span id="ip-prog-lab">0 of 0 decided</span></div>
+<div class="ip-tabs" role="group" aria-label="Filter"><button type="button" class="ip-chip" data-f="all" data-label="All" aria-pressed="true">All</button><button type="button" class="ip-chip" data-f="unpicked" data-label="Unpicked" aria-pressed="false">Unpicked</button><button type="button" class="ip-chip" data-f="picked" data-label="Picked" aria-pressed="false">Picked</button><button type="button" class="ip-chip" data-f="skipped" data-label="Skipped" aria-pressed="false">Skipped</button></div>
+<div class="ip-tabs" role="group" aria-label="Sort"><button type="button" class="ip-chip" data-sort="author" aria-pressed="true">Author order</button><button type="button" class="ip-chip" data-sort="impact" aria-pressed="false">By impact</button><button type="button" class="ip-chip" data-sort="effort" aria-pressed="false">By effort</button></div>
+</div>
+</header>
+<main class="ip-wrap">
+<section class="ip-now"><h2>Already there — staying as it is</h2><div class="ip-now-row"><div><b>Work performed</b> — one running notes box per operation, written on the card</div><div><b>Warranty and Fixes</b> keep their own Cause and Correction (they read the operation’s)</div><div><b>✦</b> on the notes writes a complaint · cause · correction paragraph today</div></div></section>
+<p class="ip-lead" id="ip-lead"></p>
+<p class="ip-keys"><kbd>J</kbd> <kbd>K</kbd> next / previous card · <kbd>1</kbd>–<kbd>4</kbd> pick an option · <kbd>S</kbd> skip · <kbd>Z</kbd> undo · hover an option to peek at its result</p>
+<div class="ip-layout" id="ip-layout">
+  <div id="ip-secs"></div>
+  <aside id="ip-preview" hidden></aside>
+</div>
+</main>
+<div id="ip-picks" hidden></div>
+<script>
+/* ---------- the content: groups → ideas → options (Skip is added to each) ---------- */
+var APP = 'Parsec', TOPIC = 'Cause and Correction', KEY = 'ip-parsec-cause-correction';   /* KEY: unique per mock-up */
+var AUTOSCROLL = true;
+/* the drawn pieces: one operation, its running notes, and the two lines that fill from them */
+var S_A = 'Air leak at the rear brake chamber.', S_B = 'Found the diaphragm ruptured, leak test failed.', S_C = 'Replaced both rear brake chambers, set the slack adjusters.', S_D = 'Leak test OK.';
+var CAUSE = 'Diaphragm ruptured, leak test failed.', CORR = 'Replaced both rear brake chambers, set the slack adjusters. Leak test OK.';
+function HD(st, extra) { return '<div class="v-hd"><span class="v-no">1</span><b>Replace rear brake chamber</b>' + (extra || '') + '<span class="v-st">' + (st || 'Working') + '</span></div>'; }
+function NB(inner, marks, sp) { return '<div class="v-lb">Work performed' + (sp ? '<span class="v-sp v-tg">✦' + sp + '</span>' : '') + '</div><div class="v-n">' + (inner || ('<i class="v-a">' + S_A + '</i> <i class="v-b">' + S_B + '</i>' + (marks ? '<span class="v-mk v-mc">C</span>' : '') + ' <i class="v-c">' + S_C + '</i> <i class="v-d">' + S_D + '</i>' + (marks ? '<span class="v-mk v-mx">X</span>' : ''))) + '</div>'; }
+function ROW(cls, lab, txt, extra, em) { return '<div class="v-r ' + cls + '"><b>' + lab + '</b><span><u>' + txt + '</u><em>' + (em || '') + '</em></span>' + (extra || '') + '</div>'; }
+function CC(c, x, ec, ex) { return '<div class="v-cc">' + ROW('v-rc', 'Cause', c == null ? CAUSE : c, ec) + ROW('v-rx', 'Correction', x == null ? CORR : x, ex) + '</div>'; }
+var IDEAS = [
+  { group: 'Where they sit', items: [
+    { k: 'where', t: 'Where Cause and Correction go on the card', why: 'Today the card has only Work performed; Warranty and Fixes read a Cause and Correction the card never shows.',
+      pri: 'H', effort: 'M', rec: 'Right under Work performed: you see the notes and what they turned into together, and it needs no extra click.',
+      vis: '<div class="v-cd">' + HD('Working', '<span class="v-chips"><span class="v-tg">Cause<span class="v-cur v-k-head"></span></span><span>Correction</span></span>') + '<div class="v-pop"><b>Cause</b> ' + CAUSE + '<br><b>Correction</b> ' + CORR + '</div>' +
+        '<div class="v-tabs"><span class="v-t1">Notes</span><span class="v-t2 v-tg">Cause &amp; correction<span class="v-cur v-k-tab"></span></span></div>' +
+        '<div class="v-bd"><div class="v-nb">' + NB() + '</div>' + CC(null, null, '', '<span class="v-cur v-k-under"></span>').replace('v-r v-rx', 'v-r v-rx v-tg') + '</div></div>',
+      steps: [['idle', 800], ['fill', 1200], ['point', 800], ['click', 500], ['done', 1500]],
+      opts: [['under', 'A · Under Work performed', 'two lines below the notes'], ['beside', 'B · Beside the notes', 'notes left, the two lines right'], ['tab', 'C · A tab', 'Notes | Cause & correction'], ['head', 'D · In the header', 'two chips; click one to read them']] },
+    { k: 'look', t: 'How the two lines look', why: 'They should read as part of the card, not a second form to fill in.',
+      pri: 'M', effort: 'S', rec: 'Quiet labeled lines match the RO details table and keep the card calm; colour is saved for what needs attention.',
+      vis: '<div class="v-cd">' + HD('Working') + NB(null, true) + CC() + '<span class="v-cap v-look-cap"></span></div>',
+      steps: [['idle', 800], ['fill', 1300], ['done', 1300]],
+      opts: [['lines', 'A · Labeled lines', 'quiet, like the RO details'], ['cards', 'B · Two tinted cards', 'amber Cause, green Correction'], ['marks', 'C · Marks in the notes', 'underlines in the notes, no box']] },
+    { k: 'empty', t: 'Before there are notes', why: 'A new operation has no notes yet, so both lines are empty.',
+      pri: 'L', effort: 'S', rec: 'A faint hint says where the lines come from, so nobody tries to type into them first.',
+      vis: '<div class="v-cd v-e">' + HD('Hold tech') + NB('<span class="v-ph">What you did.</span><span class="v-txt">' + S_B + ' ' + S_C + '</span>') + CC() + '</div>',
+      steps: [['idle', 900], ['type', 1100], ['fill', 1400]],
+      opts: [['hint', 'A · A hint', '“fills from your notes as you write”'], ['hide', 'B · Hidden until filled', 'the lines appear with the first cause or fix'], ['dash', 'C · Dashes', 'empty lines with —']] },
+    { k: 'mini', t: 'On the closed operation row', why: 'Closed rows show the number, the complaint and the status.',
+      pri: 'L', effort: 'S', rec: 'Two tiny marks tell a foreman or a writer the story is in, without opening every operation.',
+      vis: '<div class="v-mini"><span class="v-no" style="font:500 11px var(--mono);color:var(--ink3)">1</span><b>Replace rear brake chamber</b><span class="v-dots"><span>C</span><span>X</span></span><span class="v-st">Complete</span></div><span class="v-cap v-mini-cap"></span>',
+      steps: [['idle', 900], ['fill', 1200], ['done', 1100]],
+      opts: [['dots', 'A · C ✓ X ✓ marks', 'grey until filled, green after'], ['none', 'B · Nothing', 'the row stays as it is']] }
+  ]},
+  { group: 'Filling from the notes', items: [
+    { k: 'how', t: 'How it tells a cause from a correction', why: 'The notes run on: complaint, what was found, what was done, the test.',
+      pri: 'H', effort: 'M', rec: 'Shop words decide it (found, failed, leaking → Cause; replaced, set, tested OK → Correction), and a “Cause:” or “Fix:” label always wins.',
+      vis: '<div class="v-cd v-how">' + HD('Working') + NB() + CC('<span class="v-o v-o-words">' + CAUSE + '</span><span class="v-o v-o-order">' + S_A + ' ' + S_B + '</span>', '<span class="v-o v-o-words">' + CORR + '</span><span class="v-o v-o-order">' + S_C + ' ' + S_D + '</span>') + '<span class="v-cap"></span></div>',
+      steps: [['idle', 800], ['scan', 1300], ['fill', 1500]],
+      opts: [['words', 'A · By the words', 'labels win when there are any'], ['labels', 'B · Only labeled lines', '“Cause:” / “Fix:” at the start'], ['order', 'C · By order', 'first half Cause, last half Correction']] },
+    { k: 'when', t: 'When the lines fill', why: 'Notes are written a bit at a time, through the job.',
+      pri: 'M', effort: 'S', rec: 'Filling as you type (after a short pause) shows right away what the notes say, so a missing correction is obvious before Complete.',
+      vis: '<div class="v-cd v-w">' + HD('<span class="v-s1">Working</span><span class="v-s2">Complete</span>') + NB() + CC() + '<span class="v-cap"></span></div>',
+      steps: [['idle', 600], ['t1', 800], ['t2', 800], ['t3', 900], ['away', 800], ['fill', 1300]],
+      opts: [['live', 'A · As you type', 'half a second after you stop'], ['leave', 'B · When you click away', 'from the notes'], ['done', 'C · At Complete', 'only when the operation is done']] },
+    { k: 'source', t: 'Show where a line came from', why: 'When a line reads wrong, the tech needs to see which sentence it came from.',
+      pri: 'M', effort: 'S', rec: 'Pointing at a line lights its sentences in the notes — no extra marks on the card the rest of the time.',
+      vis: '<div class="v-cd v-src">' + HD('Working') + NB() + CC(null, null, '<span class="v-badge">from notes</span>', '<span class="v-badge">from notes</span><span class="v-cur v-k-hover"></span>').replace('v-r v-rx', 'v-r v-rx v-tg') + '<span class="v-cap"></span></div>',
+      steps: [['idle', 800], ['point', 900], ['show', 1500]],
+      opts: [['hover', 'A · Point at it', 'its sentences light up'], ['tag', 'B · A “from notes” tag', 'on every line'], ['none', 'C · Nothing', '']] },
+    { k: 'fix', t: 'When it guesses wrong', why: 'Here the complaint slipped into Cause. The tech needs a quick way to set it right.',
+      pri: 'H', effort: 'M', rec: 'Click the sentence in the notes and say what it is — the notes stay the one place you write, and the lines follow.',
+      vis: '<div class="v-cd v-fx">' + HD('Working') + NB('<i class="v-a v-tg">' + S_A + '<span class="v-cur v-k-menu"></span><span class="v-pop v-mn"><span>Cause</span><span>Correction</span><span class="v-m3">Neither — the complaint</span></span></i> <i class="v-b">' + S_B + '</i> <i class="v-c">' + S_C + '</i> <i class="v-d">' + S_D + '</i>') +
+        CC('<span class="v-x v-tg">' + S_A + '<span class="v-cur v-k-drag"></span><span class="v-cur v-k-type"></span></span> ' + CAUSE, null, '<span class="v-badge">yours</span>') + '<span class="v-cap"></span></div>',
+      steps: [['idle', 700], ['point', 700], ['click', 500], ['pick', 900], ['done', 1400]],
+      opts: [['menu', 'A · Click the sentence', 'Cause · Correction · Neither'], ['drag', 'B · Drag it', 'between the lines, or out'], ['type', 'C · Edit the line', 'it becomes yours']] },
+    { k: 'hand', t: 'After a line is changed by hand', why: 'Someone edits Cause, then the tech adds more notes.',
+      pri: 'M', effort: 'S', rec: 'A line changed by hand stays as it is, with a “Refill from notes” link — nobody loses what they wrote.',
+      vis: '<div class="v-cd v-hn">' + HD('Working') + NB('<i class="v-b">' + S_B + '</i> <i class="v-c">' + S_C + '</i> <i class="v-new">Found the hose chafed too.</i>') +
+        '<div class="v-cc">' + ROW('v-rc', 'Cause', '<span class="v-mine">Diaphragm ruptured (checked by Frank).</span><span class="v-alt">' + CAUSE + ' Found the hose chafed too.</span><span class="v-rf">Refill from notes</span>', '<span class="v-badge">yours</span><span class="v-pop v-ask">Notes changed — refill Cause?<br><i>Refill</i><i>Keep mine</i></span>') + ROW('v-rx', 'Correction', S_C) + '</div></div>',
+      steps: [['idle', 800], ['note', 1100], ['after', 1600]],
+      opts: [['keep', 'A · Keep it, offer a refill', '“Refill from notes” link'], ['notes', 'B · The notes win', 'it refills on the next change'], ['ask', 'C · Ask', '“Notes changed — refill?”']] }
+  ]},
+  { group: 'Using them', items: [
+    { k: 'parts', t: 'Parts in the Correction', why: 'Warranty claims want what was installed; the notes rarely list it.',
+      pri: 'M', effort: 'S', rec: 'Adding the installed parts from the Parts list makes the Correction claim-ready with no typing.',
+      vis: '<div class="v-cd v-pt">' + HD('Complete') + CC(null, CORR + '<span class="v-add v-add-p">Installed: Brake chamber 30/30 ×2, Hose clamp ×4.</span><span class="v-add v-add-c">Codes: SPN 3226 FMI 2.</span>') + '<span class="v-cap"></span></div>',
+      steps: [['idle', 800], ['fill', 1300], ['done', 1100]],
+      opts: [['parts', 'A · Add the installed parts', 'from the Parts list'], ['codes', 'B · Parts and fault codes', ''], ['none', 'C · Only the notes', '']] },
+    { k: 'copy', t: 'Copy for ASIST', why: 'The story is retyped into ASIST today.',
+      pri: 'M', effort: 'S', rec: 'One button copies Complaint · Cause · Correction in ASIST’s order — one paste instead of three.',
+      vis: '<div class="v-cd v-cp">' + HD('Complete') + CC(null, null, '<span class="v-cpb">⧉</span>', '<span class="v-cpb v-tg">⧉<span class="v-cur v-k-each"></span></span>') + '<span class="v-cpa v-tg">⧉ Copy the story<span class="v-cur v-k-three"></span></span><span class="v-toast"></span><span class="v-cap"></span></div>',
+      steps: [['idle', 700], ['point', 700], ['click', 500], ['done', 1400]],
+      opts: [['three', 'A · Copy the whole story', 'Complaint · Cause · Correction'], ['each', 'B · Copy each line', 'a small button on each'], ['none', 'C · No copy buttons', '']] },
+    { k: 'missing', t: 'When a line finds nothing', why: 'Notes with a cause but no fix yet.',
+      pri: 'M', effort: 'S', rec: 'A plain amber line tells the tech what is missing before Complete — no blocking, just a nudge.',
+      vis: '<div class="v-cd v-ms">' + HD('Working') + NB('<i class="v-b">' + S_B + '</i>') + '<div class="v-cc">' + ROW('v-rc', 'Cause', CAUSE) + ROW('v-rx', 'Correction', '', '', '') + '</div></div>',
+      steps: [['idle', 800], ['fill', 1300], ['done', 1100]],
+      opts: [['warn', 'A · Say what’s missing', 'amber: “No correction yet — …”'], ['quiet', 'B · A quiet dash', '']] },
+    { k: 'spark', t: 'The ✦ summary button', why: 'Today ✦ writes a complaint · cause · correction paragraph into the notes.',
+      pri: 'M', effort: 'M', rec: 'Let ✦ fill the two lines as a suggestion to accept — it stops adding a paragraph to the notes.',
+      vis: '<div class="v-cd v-gn">' + HD('Working') + NB('<i class="v-b">' + S_B + '</i> <i class="v-c">' + S_C + '</i> <span class="v-par">Complaint: air leak. Cause: ruptured diaphragm. Correction: replaced both chambers.</span>', false, '<span class="v-cur v-k-fill"></span>') + '<div class="v-cc">' + ROW('v-rc', 'Cause', CAUSE) + ROW('v-rx', 'Correction', CORR) + '</div><div class="v-ok"><i>Accept</i><i>Dismiss</i></div><span class="v-cap"></span></div>',
+      steps: [['idle', 700], ['point', 700], ['click', 500], ['done', 1600]],
+      opts: [['fill', 'A · ✦ fills the two lines', 'a suggestion to accept'], ['keep', 'B · As it is', 'a paragraph in the notes'], ['drop', 'C · Remove ✦', 'the lines fill anyway']] },
+    { k: 'kept', t: 'Where the two lines are kept', why: 'Warranty and Fixes already read the operation’s Cause and Correction.',
+      pri: 'H', effort: 'S', rec: 'Saving them on the operation means Warranty, Fixes and exports keep working exactly as they do now.',
+      vis: '<div class="v-kp"><div class="v-cd v-oc"><div class="v-lb">Operation</div>' + CC('Ruptured diaphragm.', 'Replaced both chambers.') + '<span class="v-sv"></span></div><span class="v-ar"><i></i></span><div class="v-cd v-wc"><div class="v-lb">Warranty claim</div>' + CC('Ruptured diaphragm.', 'Replaced both chambers.') + '</div></div><span class="v-cap v-kp-cap"></span>',
+      steps: [['idle', 800], ['flow', 1100], ['done', 1400]],
+      opts: [['save', 'A · Saved on the operation', 'as Cause and Correction'], ['live', 'B · Worked out each time', 'never saved']] }
+  ]}
+];
+/* the live preview: the operation card with the picks applied */
+var COMPONENT = '<div class="v-mini"><span style="font:500 11px var(--mono);color:var(--ink3)">1</span><b>Replace rear brake chamber</b><span class="v-dots"><span>C</span><span>X</span></span><span class="v-st">Complete</span></div>' +
+  '<div class="v-cd">' + HD('Complete', '<span class="v-chips"><span>Cause</span><span>Correction</span></span>') + '<div class="v-tabs"><span class="v-t1">Notes</span><span class="v-t2">Cause &amp; correction</span></div><div class="v-bd"><div class="v-nb">' + NB(null, true) + '</div>' +
+  CC(null, CORR + '<span class="v-add v-add-p">Installed: Brake chamber 30/30 ×2, Hose clamp ×4.</span><span class="v-add v-add-c">Codes: SPN 3226 FMI 2.</span>', '<span class="v-cpb">⧉</span>', '<span class="v-cpb">⧉</span>') + '</div><span class="v-cpa">⧉ Copy the story</span></div>';
+var PREVIEW = null;
+
+/* ---------- the page (v3 shell) ---------- */
+var D = document, $ = function (s, r) { return (r || D).querySelector(s); }, $$ = function (s, r) { return [].slice.call((r || D).querySelectorAll(s)); };
+function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]; }); }
+function flat() { var a = []; IDEAS.forEach(function (g) { g.items.forEach(function (it) { a.push(it); }); }); return a; }
+function find(k) { var r = null; flat().forEach(function (it) { if (it.k === k) r = it; }); return r; }
+var THEMES = ['ivory', 'graphite', 'mist', 'obsidian'], THMAP = { light: 'ivory', dark: 'graphite' };
+var V = { th: 'ivory', open: false, v: {}, conf: {}, notes: {}, note: '', filter: 'all', sort: 'author', cmp: null, auto: AUTOSCROLL };
+function load(d) { if (!d || typeof d !== 'object') return; if (d.v) V.v = d.v; if (d.conf) V.conf = d.conf; if (d.notes) V.notes = d.notes; if (typeof d.note === 'string') V.note = d.note; if (d.th) V.th = THMAP[d.th] || d.th; if (d.filter) V.filter = d.filter; if (d.sort) V.sort = d.sort; if (typeof d.auto === 'boolean') V.auto = d.auto; }
+try { load(JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
+try { var hm = (location.hash || '').match(/[#&]p=([^&]+)/); if (hm) load(JSON.parse(decodeURIComponent(hm[1]))); } catch (e) {}
+if (THEMES.indexOf(V.th) < 0) V.th = 'ivory';
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify({ v: V.v, conf: V.conf, notes: V.notes, note: V.note, th: V.th, filter: V.filter, sort: V.sort, auto: V.auto })); } catch (e) {}
+  try { var next = '#p=' + encodeURIComponent(JSON.stringify({ v: V.v, conf: V.conf, notes: V.notes, note: V.note, th: V.th })); if (location.hash !== next) history.replaceState(null, '', location.pathname + location.search + next); } catch (e) {}
+}
+var total = flat().length;
+$('#ip-lead').textContent = total + ' idea' + (total === 1 ? '' : 's') + ' for the ' + TOPIC.replace(/^The\s+/i, '').toLowerCase() + ' — pick an option to see it play, or Skip, then copy Your picks into the chat.';
+$('#ip-jump').innerHTML = IDEAS.map(function (g, i) { return '<a href="#ip-s' + i + '">' + esc(g.group) + '</a>'; }).join('');
+/* ---------- cards ---------- */
+function priRank(p) { return { H: 0, M: 1, L: 2 }[p] != null ? { H: 0, M: 1, L: 2 }[p] : 9; }
+function effRank(e) { return { S: 0, M: 1, L: 2 }[e] != null ? { S: 0, M: 1, L: 2 }[e] : 9; }
+function isPicked(k) { var v = V.v[k]; return !!v && v !== 'skip'; }
+function locked(it) { return !!it.needs && !isPicked(it.needs); }
+function tagHtml(it) {
+  var b = [];
+  if (it.pri) b.push('<span class="ip-tag' + (it.pri === 'H' ? ' hi' : it.pri === 'L' ? ' lo' : '') + '" title="Impact: ' + ({ H: 'high', M: 'medium', L: 'low' })[it.pri] + '">' + esc(it.pri) + '</span>');
+  if (it.effort) b.push('<span class="ip-tag" title="Effort: ' + ({ S: 'small', M: 'medium', L: 'large' })[it.effort] + '">' + esc(it.effort) + '</span>');
+  if (it.needs) { var p = find(it.needs); b.push('<span class="ip-need" data-need="' + esc(it.needs) + '">needs: ' + esc(p ? p.t : it.needs) + '</span>'); }
+  return b.length ? '<span class="ip-tags">' + b.join('') + '</span>' : '';
+}
+function buildSecs() {
+  var order = flat().slice();
+  if (V.sort === 'impact') order.sort(function (a, b) { return priRank(a.pri) - priRank(b.pri) || effRank(a.effort) - effRank(b.effort); });
+  else if (V.sort === 'effort') order.sort(function (a, b) { return effRank(a.effort) - effRank(b.effort) || priRank(a.pri) - priRank(b.pri); });
+  $('#ip-secs').innerHTML = IDEAS.map(function (g, i) {
+    var list = order.filter(function (it) { return g.items.indexOf(it) >= 0; });
+    return '<section class="ip-sec" id="ip-s' + i + '"><h2>' + esc(g.group) + ' <small>' + list.length + ' idea' + (list.length !== 1 ? 's' : '') + '</small></h2><div class="ip-grid">' + list.map(function (it) {
+      var o = it.opts.concat([['skip', 'Skip', '']]);
+      return '<article class="ip-idea" data-k="' + it.k + '" tabindex="-1"><header><h3>' + esc(it.t) + ' ' + tagHtml(it) + '</h3><p>' + esc(it.why) + '</p></header>' +
+        '<div class="ip-vis" data-step="' + (it.steps ? it.steps[0][0] : '') + '"><div class="ip-body">' + it.vis + '</div>' +
+        (it.steps ? '<span class="ip-hint">Pick an option to see it play</span><span class="ip-peek-lbl"></span><span class="ip-dots" role="group" aria-label="Steps">' + it.steps.map(function (s, j) { return '<i tabindex="0" role="button" data-n="' + j + '" title="' + esc(s[0]) + '" aria-label="Jump to step ' + esc(s[0]) + '"></i>'; }).join('') + '</span><button type="button" class="ip-replay" aria-label="Play it again" title="Play it again">↻</button>' : '') +
+        '<div class="ip-cmp" aria-hidden="true"><div class="ip-cmp-top"><select class="ip-sel" data-side="a" aria-label="Left side"></select><b>vs</b><select class="ip-sel" data-side="b" aria-label="Right side"></select></div><div class="ip-cmp-a"></div><div class="ip-cmp-b"></div></div></div>' +
+        '<div class="ip-ol">' + o.map(function (x, xi) {
+          var rec = (xi === 0 && x[0] !== 'skip') ? ' <span class="ip-rec" tabindex="0"' + (it.rec ? ' data-tip="' + esc(it.rec) + '" title="' + esc(it.rec) + '"' : '') + '>Recommended</span>' : '';
+          var key = x[0] === 'skip' ? 'S' : (xi < 4 ? String(xi + 1) : '');
+          return '<button type="button" class="ip-opt" data-k="' + it.k + '" data-v="' + x[0] + '" aria-pressed="false"><i></i><span><b>' + (key ? '<kbd>' + key + '</kbd>' : '') + esc(x[1]) + rec + '</b>' + (x[2] ? '<small>' + esc(x[2]) + '</small>' : '') + '</span></button>';
+        }).join('') + '</div>' +
+        '<div class="ip-card-tools"><button type="button" class="ip-btn" data-cmp="' + it.k + '">Compare</button><div class="ip-seg" role="group" aria-label="How sure"><button type="button" data-conf="sure" data-k="' + it.k + '" aria-pressed="true">Sure</button><button type="button" data-conf="leaning" data-k="' + it.k + '" aria-pressed="false">Leaning</button></div></div>' +
+        '<textarea class="ip-idea-note" data-nk="' + it.k + '" placeholder="Note for this idea (optional)">' + esc(V.notes[it.k] || '') + '</textarea></article>';
+    }).join('') + '</div></section>';
+  }).join('');
+}
+/* ---------- the animations: still until you pick — then that option plays once and holds (↻ replays, dots jump to a step) ---------- */
+var RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+function mark(vis, it, n) { if (!it.steps) return; vis._n = n; it.steps.forEach(function (s, j) { vis.classList.toggle('ip-s-' + s[0], j <= n); }); vis.dataset.step = it.steps[n][0]; $$('.ip-dots i', vis).forEach(function (d, j) { d.classList.toggle('f', j <= n); }); }
+function rest(vis, it, end) { clearTimeout(vis._t); vis._playing = false; if (it.steps) mark(vis, it, end ? it.steps.length - 1 : 0); }
+function play(vis, it) {
+  clearTimeout(vis._t); if (!it.steps) return;
+  if (RM) { rest(vis, it, 1); return; }
+  vis._playing = true; var i = 0;
+  (function next() { var s = it.steps[i]; mark(vis, it, i); i++; if (i < it.steps.length) vis._t = setTimeout(next, s[1]); else vis._playing = false; })();
+}
+function setOpt(vis, v) { if (v && v !== 'skip') vis.dataset.opt = v; else delete vis.dataset.opt; vis.classList.toggle('ip-has', !!v && v !== 'skip'); vis.classList.toggle('ip-skip', v === 'skip'); }
+function visOf(k) { return $('.ip-idea[data-k="' + k + '"] .ip-vis'); }
+function restoreVis(k) { var vis = visOf(k), it = find(k), v = V.v[k]; if (!vis) return; vis.classList.remove('ip-peeking'); setOpt(vis, v); rest(vis, it, isPicked(k)); }
+function restoreAll() { flat().forEach(function (it) { restoreVis(it.k); }); }
+/* peek: hover an option for a moment and its end state shows as a ghost; leave and the real state returns */
+var HOVER = window.matchMedia && matchMedia('(hover: hover)').matches, peekT = null;
+function peek(k, v) {
+  var vis = visOf(k), it = find(k); if (!vis || !it.steps || vis._playing || vis.classList.contains('ip-comparing') || V.v[k] === v) return;
+  vis.classList.add('ip-peeking'); setOpt(vis, v); mark(vis, it, it.steps.length - 1);
+  var o = it.opts.filter(function (x) { return x[0] === v; })[0]; $('.ip-peek-lbl', vis).textContent = 'peek · ' + (o ? o[1] : v);
+}
+/* ---------- the picks text ---------- */
+function optLabel(it, v) { if (v === 'skip') return 'skip'; var o = it.opts.filter(function (x) { return x[0] === v; })[0]; return o ? o[1] : v; }
+function sizeLine() {
+  var c = { S: 0, M: 0, L: 0 }, un = 0;
+  flat().forEach(function (it) { if (!isPicked(it.k)) return; if (c[it.effort] != null) c[it.effort]++; else un++; });
+  if (!c.S && !c.M && !c.L) return '';
+  var verdict = (c.L >= 1 || c.M >= 3) ? 'a bigger build' : (c.M >= 1 ? 'a medium build' : 'a small build');
+  return 'Build size: ' + c.S + ' S · ' + c.M + ' M · ' + c.L + ' L → ' + verdict + (un ? ' (' + un + ' untagged)' : '');
+}
+function checklist() { var L = []; flat().forEach(function (it) { if (isPicked(it.k)) L.push((L.length + 1) + '. ' + it.t + ' → ' + optLabel(it, V.v[it.k])); }); return L; }
+function pkText() {
+  var L = [APP + ' · ' + TOPIC + ' — my picks'];
+  IDEAS.forEach(function (g) {
+    var rows = [];
+    g.items.forEach(function (it) {
+      var v = V.v[it.k]; if (!v) return;
+      var extra = [];
+      if (v !== 'skip' && V.conf[it.k] === 'leaning') extra.push('leaning');
+      if (v !== 'skip' && locked(it)) { var p = find(it.needs); extra.push('needs ' + (p ? p.t : it.needs) + ' — not picked'); }
+      rows.push('· ' + it.t + ': ' + optLabel(it, v) + (extra.length ? ' (' + extra.join('; ') + ')' : ''));
+      var n = (V.notes[it.k] || '').trim(); if (n) rows.push('  note: ' + n);
+    });
+    if (rows.length) { L.push(g.group + ':'); L = L.concat(rows); }
+  });
+  var left = total - Object.keys(V.v).length; if (left) L.push('(not picked yet: ' + left + ')');
+  if (V.note.trim()) L.push('Notes: ' + V.note.trim());
+  var sz = sizeLine(); if (sz) L.push(sz);
+  var cl = checklist(); if (cl.length) { L.push(''); L.push('Build checklist:'); L = L.concat(cl); }
+  return L.join('\n');
+}
+/* ---------- state → screen ---------- */
+function counts() { var u = 0, p = 0, s = 0; flat().forEach(function (it) { var v = V.v[it.k]; if (!v) u++; else if (v === 'skip') s++; else p++; }); return { u: u, p: p, s: s, n: p + s }; }
+function visible(it) { var v = V.v[it.k]; return V.filter === 'all' || (V.filter === 'unpicked' && !v) || (V.filter === 'picked' && isPicked(it.k)) || (V.filter === 'skipped' && v === 'skip'); }
+function renderPreview() {
+  var m = $('#ip-preview'), has = (typeof COMPONENT === 'string' && COMPONENT) || typeof PREVIEW === 'function';
+  m.hidden = !has; $('.ip-layout').classList.toggle('has-prev', has); if (!has) return;
+  var root = $('.ip-prev-root', m);
+  if (!root) { m.innerHTML = '<h2>Live preview<small>updates with every pick</small></h2><div class="ip-prev-root">' + (typeof COMPONENT === 'string' ? COMPONENT : '') + '</div>'; root = $('.ip-prev-root', m); }
+  flat().forEach(function (it) { var v = V.v[it.k]; if (isPicked(it.k)) root.setAttribute('data-p-' + it.k, v); else root.removeAttribute('data-p-' + it.k); });
+  if (typeof PREVIEW === 'function') { try { PREVIEW({ v: V.v, conf: V.conf, notes: V.notes, note: V.note, th: V.th, root: root, mount: m, ideas: IDEAS, app: APP, topic: TOPIC }); } catch (e) { root.innerHTML = '<p style="margin:0;color:var(--ink3);font-size:12px">Preview unavailable: ' + esc(e.message) + '</p>'; } }
+}
+function sync() {
+  D.documentElement.setAttribute('data-th', V.th);
+  $$('.ip-bar .ip-seg button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.th === V.th)); });
+  $$('.ip-opt').forEach(function (b) { b.setAttribute('aria-pressed', String(V.v[b.dataset.k] === b.dataset.v)); });
+  $$('[data-conf]').forEach(function (b) { b.setAttribute('aria-pressed', String((V.conf[b.dataset.k] || 'sure') === b.dataset.conf)); });
+  $$('.ip-idea').forEach(function (a) { var it = find(a.dataset.k); a.classList.toggle('picked', isPicked(a.dataset.k)); a.classList.toggle('ip-locked', locked(it)); a.hidden = !visible(it); });
+  var c = counts(); $('#ip-n').textContent = c.n ? c.n + '/' + total : '';
+  $('.ip-prog-bar i').style.width = Math.round((c.n / total) * 100) + '%'; $('#ip-prog-lab').textContent = c.n + ' of ' + total + ' decided';
+  $$('[data-f]').forEach(function (b) { var f = b.dataset.f; b.textContent = b.dataset.label + ' ' + (f === 'all' ? total : f === 'unpicked' ? c.u : f === 'picked' ? c.p : c.s); b.setAttribute('aria-pressed', String(V.filter === f)); });
+  $$('[data-sort]').forEach(function (b) { b.setAttribute('aria-pressed', String(V.sort === b.dataset.sort)); });
+  renderPreview();
+}
+/* ---------- the current card (keyboard) and auto-scroll ---------- */
+var curK = null;
+function setCur(k, scroll) { curK = k; $$('.ip-idea').forEach(function (a) { a.classList.toggle('ip-cur', a.dataset.k === k); }); if (scroll && k) { var a = $('.ip-idea[data-k="' + k + '"]'); if (a) a.scrollIntoView({ block: 'nearest', behavior: RM ? 'auto' : 'smooth' }); } }
+function shown() { return $$('.ip-idea').filter(function (a) { return !a.hidden; }).map(function (a) { return a.dataset.k; }); }
+function move(d) { var ks = shown(); if (!ks.length) return; var i = ks.indexOf(curK); i = i < 0 ? (d > 0 ? 0 : ks.length - 1) : Math.max(0, Math.min(ks.length - 1, i + d)); setCur(ks[i], true); }
+function nextUnpicked(fromK) { var ks = shown(), i = ks.indexOf(fromK); for (var j = i + 1; j < ks.length; j++) if (!V.v[ks[j]]) return ks[j]; return null; }
+/* ---------- undo ---------- */
+var HIST = [];
+function snap() { HIST.push(JSON.stringify({ v: V.v, conf: V.conf })); if (HIST.length > 60) HIST.shift(); }
+function undo() { if (!HIST.length) { toast('Nothing to undo'); return; } var s = JSON.parse(HIST.pop()); V.v = s.v; V.conf = s.conf; save(); restoreAll(); sync(); draw(); toast('Undone'); }
+/* ---------- compare: any two options, side by side at their end state ---------- */
+function openCmp(k, a, b) {
+  var it = find(k), vis = visOf(k); if (!it || it.opts.length < 2 || !vis) return;
+  $$('.ip-vis.ip-comparing').forEach(function (x) { if (x !== vis) x.classList.remove('ip-comparing'); });
+  a = a || it.opts[0][0]; b = b || it.opts[1][0];
+  $$('.ip-sel', vis).forEach(function (s) { s.innerHTML = it.opts.map(function (x) { return '<option value="' + x[0] + '">' + esc(x[1]) + '</option>'; }).join(''); s.value = s.dataset.side === 'a' ? a : b; });
+  var A = $('.ip-cmp-a', vis), B = $('.ip-cmp-b', vis), body = $('.ip-body', vis).innerHTML;
+  [[A, a], [B, b]].forEach(function (p) { p[0].innerHTML = body; p[0].dataset.opt = p[1]; p[0].className = p[0].className.replace(/\bip-s-\S+/g, '').trim(); if (it.steps) { it.steps.forEach(function (s) { p[0].classList.add('ip-s-' + s[0]); }); p[0].dataset.step = it.steps[it.steps.length - 1][0]; } });
+  V.cmp = { k: k, a: a, b: b }; vis.classList.add('ip-comparing');
+}
+/* ---------- Your picks panel ---------- */
+function draw() {
+  var w = $('#ip-picks'); w.hidden = !V.open; if (!V.open) return;
+  var ta = $('#ip-note'); if (ta && D.activeElement === ta) { $('#ip-picks pre').textContent = pkText(); return; }
+  w.innerHTML = '<div class="ip-ph"><b>Your picks</b><button type="button" data-pk="x" aria-label="Close">✕</button></div><pre>' + esc(pkText()) + '</pre>' +
+    '<label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:var(--ink2)">Anything else<textarea id="ip-note" placeholder="Anything to add or change">' + esc(V.note) + '</textarea></label>' +
+    '<label class="ip-ck"><input type="checkbox" id="ip-auto"' + (V.auto ? ' checked' : '') + '> Scroll to the next unpicked card after each pick</label>' +
+    '<div class="ip-actions"><button type="button" class="ip-btn pri" data-pk="copy" style="justify-content:center;height:34px;flex:1 1 100%">Copy for the chat</button>' +
+    '<button type="button" class="ip-btn" data-pk="dl">Download .json</button><button type="button" class="ip-btn" data-pk="up">Import .json</button><button type="button" class="ip-btn" data-pk="pdf">PDF / Print</button><button type="button" class="ip-btn" data-pk="reset" style="margin-left:auto;color:var(--bad)">Reset all</button></div>' +
+    '<input type="file" class="ip-file" id="ip-file" accept="application/json,.json">';
+}
+function toast(m, act) { var t = $('.ip-toast'); if (t) t.remove(); t = D.createElement('div'); t.className = 'ip-toast'; t.innerHTML = '<span>' + esc(m) + '</span>' + (act ? '<button type="button">' + esc(act.label) + '</button>' : ''); if (act) $('button', t).onclick = function () { t.remove(); act.fn(); }; D.body.appendChild(t); clearTimeout(toast.h); toast.h = setTimeout(function () { t.remove(); }, act ? 5000 : 2600); }
+function copy(tx) {
+  var fb = function () { var ta = D.createElement('textarea'); ta.value = tx; D.body.appendChild(ta); ta.select(); try { D.execCommand('copy'); toast('Copied — paste it in the chat.'); } catch (e) { toast('Select the text and copy it.'); } ta.remove(); };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(tx).then(function () { toast('Copied — paste it in the chat.'); }, fb); else fb();
+}
+function downloadJson() { var blob = new Blob([JSON.stringify({ app: APP, topic: TOPIC, key: KEY, v: V.v, conf: V.conf, notes: V.notes, note: V.note, th: V.th }, null, 2)], { type: 'application/json' }); var a = D.createElement('a'); a.href = URL.createObjectURL(blob); a.download = KEY + '.json'; D.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 500); toast('Downloaded ' + KEY + '.json'); }
+function importJson(file) { var r = new FileReader(); r.onload = function () { try { snap(); load(JSON.parse(String(r.result || '{}'))); save(); restoreAll(); sync(); draw(); toast('Imported picks', { label: 'Undo', fn: undo }); } catch (e) { toast('Could not read that .json'); } }; r.readAsText(file); }
+/* ---------- changes ---------- */
+function setPick(k, v) {
+  var it = find(k), vis = visOf(k), was = V.v[k]; snap();
+  if (was === v) { delete V.v[k]; delete V.conf[k]; } else V.v[k] = v;
+  save(); sync(); draw(); setCur(k, false);
+  vis.classList.remove('ip-comparing'); vis.classList.remove('ip-peeking'); setOpt(vis, V.v[k]);
+  if (isPicked(k)) play(vis, it); else rest(vis, it, 0);
+  flat().forEach(function (x) { if (x.needs === k) restoreVis(x.k); });
+  if (V.v[k]) { var lbl = optLabel(it, V.v[k]); toast((V.v[k] === 'skip' ? 'Skipped ' : 'Picked ') + it.t.replace(/^(.{34}).+/, '$1…') + (V.v[k] === 'skip' ? '' : ' → ' + lbl), { label: 'Undo', fn: undo }); }
+  if (V.v[k] && V.auto) { var n = nextUnpicked(k); if (n) setTimeout(function () { setCur(n, true); }, 350); }
+}
+function acceptAll() { snap(); var n = 0; flat().forEach(function (it) { if (!V.v[it.k] && it.opts.length) { V.v[it.k] = it.opts[0][0]; n++; } }); save(); restoreAll(); sync(); draw(); toast(n ? 'Accepted ' + n + ' recommended' : 'Nothing left to fill', n ? { label: 'Undo', fn: undo } : null); }
+function resetAll() { var n = Object.keys(V.v).length; if (!n) { toast('Nothing to reset'); return; } snap(); V.v = {}; V.conf = {}; save(); restoreAll(); sync(); draw(); toast('Cleared ' + n + ' pick' + (n === 1 ? '' : 's'), { label: 'Undo', fn: undo }); }
+D.addEventListener('click', function (ev) {
+  var t = ev.target, b;
+  if ((b = t.closest('.ip-bar .ip-seg button'))) { V.th = b.dataset.th; save(); sync(); return; }
+  if (t.closest('#ip-open')) { V.open = !V.open; draw(); return; }
+  if (t.closest('#ip-accept')) { acceptAll(); return; }
+  if (t.closest('#ip-warn')) { toast(t.closest('#ip-warn').dataset.msg || ''); return; }
+  if ((b = t.closest('[data-f]'))) { V.filter = b.dataset.f; save(); sync(); return; }
+  if ((b = t.closest('[data-sort]'))) { V.sort = b.dataset.sort; save(); var c = V.cmp; buildSecs(); restoreAll(); sync(); if (c) openCmp(c.k, c.a, c.b); setCur(curK, false); return; }
+  if ((b = t.closest('[data-cmp]'))) { var vis = visOf(b.dataset.cmp); if (vis.classList.contains('ip-comparing')) { vis.classList.remove('ip-comparing'); V.cmp = null; } else openCmp(b.dataset.cmp); return; }
+  if ((b = t.closest('[data-conf]'))) { snap(); V.conf[b.dataset.k] = b.dataset.conf; save(); sync(); draw(); return; }
+  if ((b = t.closest('[data-pk]'))) { var a = b.dataset.pk; if (a === 'x') { V.open = false; draw(); } else if (a === 'copy') copy(pkText()); else if (a === 'dl') downloadJson(); else if (a === 'up') $('#ip-file').click(); else if (a === 'pdf') setTimeout(function () { window.print(); }, 50); else if (a === 'reset') resetAll(); return; }
+  if ((b = t.closest('.ip-replay'))) { var vs = b.closest('.ip-vis'); play(vs, find(vs.closest('.ip-idea').dataset.k)); return; }
+  if ((b = t.closest('.ip-dots i'))) { var vz = b.closest('.ip-vis'); clearTimeout(vz._t); vz._playing = false; mark(vz, find(vz.closest('.ip-idea').dataset.k), +b.dataset.n); return; }
+  if ((b = t.closest('.ip-opt'))) { setPick(b.dataset.k, b.dataset.v); return; }
+  if ((b = t.closest('.ip-idea'))) setCur(b.dataset.k, false);
+});
+D.addEventListener('change', function (ev) {
+  var t = ev.target;
+  if (t.id === 'ip-file' && t.files && t.files[0]) { importJson(t.files[0]); t.value = ''; }
+  if (t.id === 'ip-auto') { V.auto = t.checked; save(); }
+  if (t.classList.contains('ip-sel')) { var vis = t.closest('.ip-vis'), k = vis.closest('.ip-idea').dataset.k, a = $('.ip-sel[data-side="a"]', vis).value, b = $('.ip-sel[data-side="b"]', vis).value; openCmp(k, a, b); }
+});
+D.addEventListener('input', function (ev) {
+  var t = ev.target;
+  if (t.id === 'ip-note') { V.note = t.value; save(); $('#ip-picks pre').textContent = pkText(); renderPreview(); }
+  if (t.classList.contains('ip-idea-note')) { V.notes[t.dataset.nk] = t.value; save(); renderPreview(); if (V.open) $('#ip-picks pre').textContent = pkText(); }
+});
+if (HOVER) {
+  D.addEventListener('mouseover', function (ev) { var b = ev.target.closest('.ip-opt'); if (!b || b.dataset.v === 'skip') return; clearTimeout(peekT); peekT = setTimeout(function () { peek(b.dataset.k, b.dataset.v); }, 450); });
+  D.addEventListener('mouseout', function (ev) { var b = ev.target.closest('.ip-opt'); if (!b || (ev.relatedTarget && ev.relatedTarget.closest && ev.relatedTarget.closest('.ip-opt') === b)) return; clearTimeout(peekT); var vis = visOf(b.dataset.k); if (vis && vis.classList.contains('ip-peeking')) restoreVis(b.dataset.k); });
+}
+D.addEventListener('keydown', function (ev) {
+  if (ev.key === 'Escape') { if (V.open) { V.open = false; draw(); } return; }
+  var tag = (ev.target.tagName || '').toLowerCase(); if (tag === 'input' || tag === 'textarea' || tag === 'select' || ev.metaKey || ev.ctrlKey || ev.altKey) return;
+  var key = ev.key.toLowerCase();
+  if (key === 'j' || key === 'arrowdown') { move(1); ev.preventDefault(); return; }
+  if (key === 'k' || key === 'arrowup') { move(-1); ev.preventDefault(); return; }
+  if (key === 'z') { undo(); return; }
+  if (!curK) { if (/^[1-4s]$/.test(key)) { move(1); } else return; }
+  var it = find(curK); if (!it) return;
+  if (key === 's') { setPick(curK, 'skip'); ev.preventDefault(); return; }
+  if (/^[1-4]$/.test(key)) { var o = it.opts[+key - 1]; if (o) setPick(curK, o[0]); ev.preventDefault(); }
+});
+/* ---------- the accuracy check: every option and step named in IDEAS should have a CSS rule ---------- */
+function ipCheck() {
+  var css = ''; try { $$('style').forEach(function (s) { css += s.textContent; }); } catch (e) {}
+  var out = [];
+  flat().forEach(function (it) {
+    it.opts.forEach(function (o) { if (css.indexOf('[data-opt="' + o[0] + '"]') < 0) out.push(it.k + ': option "' + o[0] + '" has no [data-opt="' + o[0] + '"] rule (it will look like the others)'); });
+    (it.steps || []).forEach(function (s, j) { if (j && css.indexOf('.ip-s-' + s[0]) < 0 && css.indexOf('[data-step="' + s[0] + '"]') < 0) out.push(it.k + ': step "' + s[0] + '" has no .ip-s-' + s[0] + ' or [data-step="' + s[0] + '"] rule (nothing will change)'); });
+    if (it.steps) { var ms = it.steps.reduce(function (a, s) { return a + s[1]; }, 0); if (ms < 2500 || ms > 7000) out.push(it.k + ': sequence runs ' + ms + ' ms (aim for 3–6 s)'); }
+    if (it.needs && !find(it.needs)) out.push(it.k + ': needs "' + it.needs + '" which is not an idea');
+    (it.vis.match(/class="[^"]*"/g) || []).forEach(function (c) { c.slice(7, -1).split(/\s+/).forEach(function (n) { if (n && !/^(v-|ip-)/.test(n)) out.push(it.k + ': class "' + n + '" in the visual is not prefixed v-'); }); });
+  });
+  var w = $('#ip-warn'); if (out.length && /check/.test(location.search)) { w.style.display = 'inline-flex'; w.textContent = out.length + ' to fix'; w.dataset.msg = out[0]; }
+  if (out.length) console.warn('Idea picker check:\n' + out.join('\n')); else console.info('Idea picker check: every option and step has a rule.');
+  return out;
+}
+/* ---------- go ---------- */
+buildSecs(); restoreAll(); sync(); ipCheck();
+</script>
+</body>
+</html>
