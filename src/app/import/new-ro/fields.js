@@ -78,7 +78,8 @@
     o.other = o.misc != null || o.sublet != null ? cents((o.misc || 0) + (o.sublet || 0)) : "";
     var glued = hit && nn(hit.complaint) === nn(o.name) + " parts";
     var isNew = !hit, mf = M && M.f || {}, P = { glued: glued, o: o, i: i, op: hit, isNew: isNew, on: D.skip[opKey(o)] !== true, f: {}, parts: [], story: null, codes: "", bd: isNew ? "new" : "same" };
-    OPF.forEach(function(x){ var cur = hit ? hit[x[0]] : "", r = rule(x[2], cur == null ? "" : cur, o[x[1]], mf[x[0]], isNew); P.f[x[0]] = r; if(!isNew && (r.bd === "upd" || r.bd === "new")) P.bd = "upd"; if(!isNew && r.bd === "kept" && P.bd === "same") P.bd = "kept"; });
+    OPF.forEach(function(x){ var cur = hit ? hit[x[0]] : "", r = rule(x[2], cur == null ? "" : cur, o[x[1]], mf[x[0]], isNew);
+      if(x[0] === "quoted" && r.bd === "kept") r = { bd: "upd", fin: r.asist, was: cur };   /* 17.3: the paperwork's hours win over hours typed here */ P.f[x[0]] = r; if(!isNew && (r.bd === "upd" || r.bd === "new")) P.bd = "upd"; if(!isNew && r.bd === "kept" && P.bd === "same") P.bd = "kept"; });
     if(o.story){ var w = hit ? txtOf(hit.work) : "", r2 = rule("", w, o.story, M ? M.story : undefined, isNew); P.story = r2; if(!isNew && (r2.bd === "new" || r2.bd === "upd")) P.bd = "upd"; }
     P.pa = paPlan(o, hit); P.st = stPlan(o, hit, M);
     if(!isNew && P.st.act === "upd") P.bd = "upd"; else if(!isNew && P.st.act === "kept" && P.bd === "same") P.bd = "kept";

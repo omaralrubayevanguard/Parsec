@@ -57,7 +57,7 @@ async def main():
         await pg.evaluate("__tg.IMPX.apply()"); await pg.wait_for_timeout(500)
         O = await pg.evaluate(OPS + f"('{rid}')")
         ok(len(O) == n0 + 2, f"2 operations added ({len(O)})")
-        ok(O[0][1] == 1 and O[0][2] == "Waiting – Parts" and O[0][3] == "ok", f"Op 1 updated: Waiting – Parts, approved; its quoted 1.0 h was set here, so it stays ({O[0]})")
+        ok(O[0][1] == 1.8 and O[0][2] == "Waiting – Parts" and O[0][3] == "ok", f"Op 1 updated: the paperwork's 1.8 h wins, Waiting – Parts, approved ({O[0]})")
         ok(O[-2][0] == "Replace air dryer cartridge" and O[-2][1] == 0.9 and O[-2][2] == "Hold Tech" and not O[-2][3], f"new op: the air dryer, 0.9 h, Hold tech, not approved yet ({O[-2]})")
         ok(O[-1][0] == "DPF cleaning" and O[-1][2] == "Waiting – Sublet" and O[-1][3] == "ok", f"new op: DPF cleaning, Waiting – Sublet, approved ({O[-1]})")
         # ---- a status changed here stays; one not touched follows the paperwork

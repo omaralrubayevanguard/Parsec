@@ -44,6 +44,17 @@ async def main():
         ok(d[0] == "codes" and set(d[1]) == {X["A"], X["D"]}, "worded differently, same code and bulletin: found anyway (%s)" % d[0])
         o = await r("op.complaint = 'Check engine light - NOx sensor fault'; op.faults = [{ spn: 1569, fmi: 31 }]; op.docs = []")
         ok(o[0] == "other", "same complaint, other codes: never shown as the fix (%s)" % o[0])
+        k = await r("op.complaint = 'Truck derates on the highway'; op.faults = [{ spn: 4364, fmi: 18 }]; op.docs = []")
+        ok(k[0] == "code" and k[1] == [X["C"]], "a fault code alone, worded any way: the fix with that code (%s)" % k[0])
+        # a tie: the same truck model comes first, then the same engine
+        await pg.evaluate("""x => { const S = __tg.S(), ro = id => S.ros.find(r => r.operations[0].id === id); ro(x.A).model = 'VNR 640'; ro(x.B).model = 'VNL 860'; ro(x.A).engineType = 'Volvo D13'; ro(x.B).engineType = 'Volvo D11';
+          const o = __tg.getRO(x.ro); o.model = 'VNL 860'; o.engineType = 'Volvo D13'; }""", X); await pg.wait_for_timeout(3200)
+        t = await r("op.complaint = 'Check engine light - NOx sensor fault'; op.faults = [{ spn: 3226, fmi: 0 }]; op.docs = [{ id: 'd_tsb9' }]")
+        ok(t[0] == "exact" and t[1][:2] == [X["B"], X["A"]], "a tie: the same model first (%s)" % t[1][:2])
+        await pg.evaluate("x => { const S = __tg.S(); S.ros.find(r => r.operations[0].id === x.B).model = 'VNR 640'; }", X); await pg.wait_for_timeout(3200)
+        t2 = await r("op.complaint = 'Check engine light - NOx sensor fault'; op.faults = [{ spn: 3226, fmi: 0 }]; op.docs = [{ id: 'd_tsb9' }]")
+        ok(t2[1][:2] == [X["A"], X["B"]], "no model match: the same engine first (%s)" % t2[1][:2])
+        await pg.evaluate("x => { const o = __tg.getRO(x); delete o.model; delete o.engineType; }", X["ro"])
         # the chip on the RO page
         await pg.evaluate("x => { const op = __tg.getRO(x).operations[0]; op.faults = [{ spn: 3226, fmi: 2 }]; op.docs = [{ id: 'd_tsb1' }]; const U = __tg.UI(); U.view = 'ros'; U.selectedRo = x; __tg.render(); }", X["ro"]); await pg.wait_for_timeout(1500)
         chip = await pg.evaluate("(() => { const R = document.querySelector('.jc-host:not(.jc-band-host)').shadowRoot; const b = R.querySelector('.fxl'); return b ? [b.textContent, b.className] : null; })()")

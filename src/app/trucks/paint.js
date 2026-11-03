@@ -57,9 +57,23 @@ function trkPaintNow(src, hex, top){
       var hb = 0; for(var hx = 1; hx < 12; hx++) if(HB[hx] > HB[hb]) hb = hx;
       var hueN = HB[hb] + HB[(hb + 11) % 12] * .5 + HB[(hb + 1) % 12] * .5, kind = B.white >= hueN && B.white >= B.gray * .8 ? "white" : hueN >= B.gray ? "hue" : "gray";
       var h0 = 0, hs = 0, hw = 0; if(kind === "hue"){ for(var q0 = 0; q0 < n; q0++){ if(ss[q0] > .25 && vv[q0] > .14 && Math.floor(hh[q0] / 30) % 12 === hb){ hs += hh[q0]; hw++; } } h0 = hw ? hs / hw : hb * 30 + 15; }
+      /* 17.3: a white, silver or grey body's own range of light, from the middle of its upper half — a silver door's darker sweep is still paint */
+      var lv = []; for(var m0 = 0; m0 < n; m0 += 2){ if(p[m0 * 4 + 3] < 10 || (m0 / W | 0) > H * (top ? .5 : .6) || ss[m0] >= .16 || vv[m0] < .2) continue; lv.push(vv[m0]); }
+      lv.sort(function(x, y){ return x - y; }); var vm = lv.length ? lv[lv.length >> 1] : .7, wLo = Math.min(.46, vm - .4), gLo = Math.max(.14, Math.min(.24, vm - .3)), gHi = Math.max(.66, Math.min(.85, vm + .3));
       var hd = function(x){ var dd = Math.abs(x - h0) % 360; return dd > 180 ? 360 - dd : dd; };
       for(var c0 = 0; c0 < n; c0++){ if(!vv[c0] && !p[c0 * 4 + 3]) continue; if(p[c0 * 4 + 3] < 10) continue;
-        if(kind === "white" ? ss[c0] < .16 && vv[c0] > .46 : kind === "gray" ? ss[c0] < .18 && vv[c0] > .24 && vv[c0] < .66 : ss[c0] > .18 && vv[c0] > .1 && hd(hh[c0]) < 26) cand[c0] = 1; }
+        var low = (c0 / W | 0) > H * (top ? .5 : .6);   /* down low (bumper, tanks, tyres) the range stays strict */
+        if(kind === "white" ? ss[c0] < .16 && vv[c0] > (low ? .46 : wLo) : kind === "gray" ? ss[c0] < .18 && vv[c0] > (low ? .24 : gLo) && vv[c0] < (low ? .66 : gHi) : ss[c0] > .18 && vv[c0] > .1 && hd(hh[c0]) < 26) cand[c0] = 1; }
+      /* 17.3: glass and chrome aren't paint. A light pixel with mostly dark around it is a reflection on the windshield; one in
+         a busy stripe of light and dark is chrome (a stack, a bumper). Box sums give each pixel's neighbourhood in one pass. */
+      var R = Math.max(2, Math.round(W / 160)), W1 = W + 1, SD = new Float32Array(W1 * (H + 1)), SO = new Float32Array(W1 * (H + 1)), SV = new Float32Array(W1 * (H + 1)), SV2 = new Float32Array(W1 * (H + 1)), cand0 = cand.slice();
+      for(var yy = 0; yy < H; yy++){ var rd = 0, ro = 0, rv = 0, rv2 = 0; for(var xx = 0; xx < W; xx++){ var ii = yy * W + xx, op = p[ii * 4 + 3] >= 10 ? 1 : 0;
+        rd += op && !cand[ii] && vv[ii] < .3 ? 1 : 0; ro += op; rv += op ? vv[ii] : 0; rv2 += op ? vv[ii] * vv[ii] : 0; var o2 = (yy + 1) * W1 + xx + 1;
+        SD[o2] = SD[o2 - W1] + rd; SO[o2] = SO[o2 - W1] + ro; SV[o2] = SV[o2 - W1] + rv; SV2[o2] = SV2[o2 - W1] + rv2; } }
+      var box = function(S, x0, y0, x1, y1){ return S[y1 * W1 + x1] - S[y0 * W1 + x1] - S[y1 * W1 + x0] + S[y0 * W1 + x0]; };
+      for(var f0 = 0; f0 < n; f0++){ if(!cand[f0]) continue; var fy = (f0 / W) | 0, fx = f0 - fy * W, xa = Math.max(0, fx - R), ya = Math.max(0, fy - R), xb = Math.min(W, fx + R + 1), yb = Math.min(H, fy + R + 1);
+        var on = box(SO, xa, ya, xb, yb); if(on < 4) continue; var df = box(SD, xa, ya, xb, yb) / on, mv = box(SV, xa, ya, xb, yb) / on, sd = Math.sqrt(Math.max(0, box(SV2, xa, ya, xb, yb) / on - mv * mv));
+        if(df > .55 || (sd > .2 && df > .12)) cand[f0] = 0; }
       /* join the light parts into pieces (4-neighbour), and keep the pieces that make the cab and the hood */
       var keep = [], stack = new Int32Array(n), L = 0;
       for(var j = 0; j < n; j++){ if(!cand[j] || lab[j]) continue; L++; var sp = 0, size = 0, sy = 0, minY = H; stack[sp++] = j; lab[j] = L;
@@ -70,6 +84,24 @@ function trkPaintNow(src, hex, top){
           if(y < H - 1 && cand[q + W] && !lab[q + W]){ lab[q + W] = L; stack[sp++] = q + W; } }
         var cy = sy / size / H, big = size / Math.max(1, opaque);
         keep[L] = top ? (cy < .46 && big > .002) : (cy < .62 && minY / H < .56 && big > .0012); }
+      /* 17.3: a small piece ringed by dark is a reflection in the glass, not a panel */
+      var rim = new Float32Array(L + 1), rimD = new Float32Array(L + 1), sz = new Float32Array(L + 1), big0 = 0;
+      for(var e0 = 0; e0 < n; e0++){ var le = lab[e0]; if(!le) continue; sz[le]++; var ey = (e0 / W) | 0, ex = e0 - ey * W;
+        [ex > 0 ? e0 - 1 : -1, ex < W - 1 ? e0 + 1 : -1, ey > 0 ? e0 - W : -1, ey < H - 1 ? e0 + W : -1].forEach(function(nb){ if(nb < 0 || lab[nb] === le || p[nb * 4 + 3] < 10) return; rim[le]++; if(vv[nb] < .3 && !cand0[nb]) rimD[le]++; }); }
+      for(var l1 = 1; l1 <= L; l1++) if(sz[l1] > big0) big0 = sz[l1];
+      for(var l2 = 1; l2 <= L; l2++) if(keep[l2] && sz[l2] < big0 * .25 && rim[l2] && rimD[l2] / rim[l2] > .6) keep[l2] = 0;
+      /* the edges the checks above trimmed grow back into the paint they belong to; holes in a panel (a darker patch of silver) fill */
+      var ok1 = function(t1){ return lab[t1] && keep[lab[t1]]; };
+      for(var it = 0; it < R; it++){ var grow = [];
+        for(var g0 = 0; g0 < n; g0++){ if(!cand0[g0] || ok1(g0)) continue; var gy = (g0 / W) | 0, gx = g0 - gy * W, nl = gx > 0 && ok1(g0 - 1) ? lab[g0 - 1] : gx < W - 1 && ok1(g0 + 1) ? lab[g0 + 1] : gy > 0 && ok1(g0 - W) ? lab[g0 - W] : gy < H - 1 && ok1(g0 + W) ? lab[g0 + W] : 0;
+          if(nl) grow.push(g0, nl); }
+        if(!grow.length) break; for(var g1 = 0; g1 < grow.length; g1 += 2) lab[grow[g1]] = grow[g1 + 1]; }
+      if(kind !== "hue"){ var seen2 = new Uint8Array(n), hs2 = new Int32Array(n);
+        for(var h1 = 0; h1 < n; h1++){ if(seen2[h1] || ok1(h1) || p[h1 * 4 + 3] < 10) continue; var hp = 0, hn = 0, edge = false, nbL = 0, sv2 = 0, ssum = 0, dk = 0; hs2[hp++] = h1; seen2[h1] = 1;
+          while(hp){ var hq = hs2[--hp], hy = (hq / W) | 0, hx2 = hq - hy * W; stack[hn++] = hq; sv2 += vv[hq]; ssum += ss[hq]; if(vv[hq] < .3) dk++;
+            if(hx2 === 0 || hx2 === W - 1 || hy === 0 || hy === H - 1){ edge = true; }
+            [hx2 > 0 ? hq - 1 : -1, hx2 < W - 1 ? hq + 1 : -1, hy > 0 ? hq - W : -1, hy < H - 1 ? hq + W : -1].forEach(function(nb){ if(nb < 0) return; if(p[nb * 4 + 3] < 10){ edge = true; return; } if(ok1(nb)){ nbL = lab[nb]; return; } if(!seen2[nb]){ seen2[nb] = 1; hs2[hp++] = nb; } }); }
+          if(!edge && nbL && hn < opaque * .004 && sv2 / hn > .34 && ssum / hn < .2 && dk / hn < .15) for(var h2 = 0; h2 < hn; h2++) lab[stack[h2]] = nbL; } }
       var rgb = [parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5, 7), 16)], dark = (rgb[0] + rgb[1] + rgb[2]) / 3 < 70;
       /* the paint's own lightness: its bright end is "full colour", darker parts keep their shading */
       var vs = []; for(var u = 0; u < n; u += 3) if(lab[u] && keep[lab[u]]) vs.push(vv[u]); vs.sort(function(x, y){ return x - y; }); var vref = vs.length ? vs[Math.floor(vs.length * .9)] : .93; if(vref < .2) vref = .2;
