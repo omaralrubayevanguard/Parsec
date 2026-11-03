@@ -1,7 +1,7 @@
 /* Parsec · access · people-and-demo-team.js
    People: staffList() and lookups by name / role (staffForTech, techNorm), initials and avatars (avatarSvg), the audit log (audit / auditLog), and the demo team used by the sample data.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   profileInitials avatarSvg techNorm techSame staffForTech punchByName punchWho punchAvHtml auditLog audit auditCsv qrMul … (37 functions, 9 constants)
+   declares   profileInitials avatarSvg techNorm techSame staffForTech punchByName punchWho punchAvHtml auditLog audit auditCsv qrMul … (38 functions, 9 constants)
    state      audit punches ros techName
    uses       data/ kit/ pages/ pages/rolist/ pages/technician/ ro/ ro-page/ shell/ state/
    at load    3× on window resize · 2× on window scroll
@@ -296,7 +296,8 @@ function warrReady(ro){
 /* ---- release checklist: the Release button stays locked until every line is ticked ---- */
 var RELEASE_CHECK = [["road","Final road test done"],["keys","Keys back on the key board"],["clean","Truck clean, no tools or parts left in it"],["invoice","Invoice closed out"],["notify","Customer told it's ready"]];
 function releaseState(ro){ if(!ro.release || typeof ro.release !== "object") ro.release = {}; return ro.release; }
-function releaseReady(ro){ var r = releaseState(ro); return RELEASE_CHECK.every(function(x){ return !!r[x[0]]; }); }
+function relChecksFor(ro){ return RELEASE_CHECK.filter(function(x){ return x[0] !== "road" || typeof rtNeeded !== "function" || rtNeeded(ro); }); }   /* 17.3: no road test — no road-test line */
+function releaseReady(ro){ var r = releaseState(ro); return relChecksFor(ro).every(function(x){ return !!r[x[0]]; }); }
 /* how long since a status was set, and when it goes stale */
 function ageSince(iso){ if(!iso) return null; return Math.max(0, Date.now() - new Date(iso).getTime()); }
 function ageText(ms){ if(ms == null) return "—"; var h = ms / 3600000; return h < 1 ? Math.round(ms / 60000) + "m" : (h < 48 ? Math.floor(h) + "h" : Math.floor(h / 24) + "d"); }

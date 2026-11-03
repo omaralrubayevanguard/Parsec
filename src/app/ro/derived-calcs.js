@@ -57,7 +57,7 @@ function opNoteGaps(op){
   var g = [], ps = STATE.punches.filter(function(x){ return x.opId === op.id && x.stop; });
   var noNote = ps.filter(function(x){ return !String(x.notes || "").trim(); });
   var anyNote = ps.some(function(x){ return String(x.notes || "").trim(); }) || fcHasCause(op) || fcHasFix(op) || String(op.work || "").replace(/<[^>]*>/g, "").trim();
-  if(noNote.length) g.push({ k: "notes", t: noNote.length + " punch" + (noNote.length === 1 ? "" : "es") + " without a note" });
+  if(noNote.length && !opNotesTxt(op)) g.push({ k: "notes", t: noNote.length + " punch" + (noNote.length === 1 ? "" : "es") + " without a note" });
   else if(!anyNote) g.push({ k: "notes", t: "no tech notes yet" });
   return g;
 }

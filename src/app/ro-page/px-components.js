@@ -129,6 +129,7 @@ function pxStatusMenu(anchor) {
   var items = [], sub = null;
   function pick(name, s) {
     pxClosePop();
+    if (name === 'Complete – Released' && typeof rtNeeded === 'function' && !rtNeeded(RO) && typeof ropBypassAsk === 'function' && ropBypassOk()) { ropBypassAsk(); return; }   /* 17.3: no road test — the release question, not the checks */
     if (setRoStatus(RO.id, name, s || null) === false) { setTimeout(tecRender, 0); return; }
     save(true); render(); tecRender();
     toast('Status set to ' + roStShown(RO) + (s ? ' · ' + s.charAt(0) + s.slice(1).toLowerCase() : ''), { label: 'UNDO', run: function () { restoreSnapshot(); } });
@@ -146,7 +147,7 @@ function pxStatusMenu(anchor) {
     if (i === 1 || i === 6 || i === 8) pop.appendChild(pxSep());
     var meta = pxStMeta(st.name), on = cur && cur.status === st.name;
     var b = el('button', { class: 'px-menu__item' + (on ? ' is-on' : ''), type: 'button', role: 'menuitemradio', 'aria-checked': on ? 'true' : 'false',
-      html: pxSi(st.name) + '<span>' + esc(pxCase(st.name)) + '</span><span class="px-kbd">' + (i + 1) + '</span>' + (meta.subs.length ? pxI('chevR', 12).replace('class="px-ico"', 'class="px-ico px-smenu__more"') : '<span style="width:16px"></span>'),
+      html: pxSi(st.name) + '<span>' + esc(st.name === 'Complete – Road test' && typeof rtNeeded === 'function' && !rtNeeded(RO) ? 'Complete' : pxCase(st.name)) + '</span><span class="px-kbd">' + (i + 1) + '</span>' + (meta.subs.length ? pxI('chevR', 12).replace('class="px-ico"', 'class="px-ico px-smenu__more"') : '<span style="width:16px"></span>'),
       onClick: function (e) { e.stopPropagation(); pushUndo('status'); pick(st.name, null); },
       onMouseenter: function () { items.forEach(function (x) { x.btn.classList.remove('is-hover'); }); b.classList.add('is-hover'); showSub(it); } });
     var it = { name: st.name, btn: b, i: i }; items.push(it); pop.appendChild(b);

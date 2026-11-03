@@ -88,7 +88,7 @@ function rpPanelHtml(ro, o){
   var mayS = typeof can !== "function" || can("ro.status"), tech = ro.assignedTech || "";
   var veh = ""; try{ var tm = truckYM(ro); veh = (tm && tm.line) || [ro.year, ro.make, ro.model].filter(Boolean).join(" "); }catch(e){}
   var spot = ""; try{ var sp = spotOf(ro.location); spot = sp ? tgSpotLbl(sp) : (ro.location || ""); }catch(e){ spot = ro.location || ""; }
-  var pill = pgSt("ro", s.status, { of: ro, ofKind: "ro", menu: mayS ? 1 : 0, sub: sub, attrs: mayS ? (o.page === "ro" ? 'data-rp-st="1"' : 'data-a="status" data-id="' + rpE(ro.id) + '"') + ' title="Set status (S)"' : "" });   /* on the RO page: its own status menu */
+  var pill = pgSt("ro", typeof roStFor === "function" ? roStFor(ro) : s.status, { of: ro, ofKind: "ro", menu: mayS ? 1 : 0, sub: sub, attrs: mayS ? (o.page === "ro" ? 'data-rp-st="1"' : 'data-a="status" data-id="' + rpE(ro.id) + '"') + ' title="Set status (S)"' : "" });   /* on the RO page: its own status menu */
   var av = tech ? '<span class="tg-av" title="' + rpE(tech) + '"' + (typeof v149eAvAttr === "function" ? v149eAvAttr(tech) : "") + ">" + rpE(PG.ini(tech)) + "</span>" : "";
   var det = ""; try{ det = roDetailsHtml(ro); }catch(e){}
   var anim = Date.now() - RP_ANIM.at < 700 ? RP_ANIM.k : null;

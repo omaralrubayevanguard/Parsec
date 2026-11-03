@@ -1,7 +1,7 @@
 /* Parsec · ro · forecast.js
    When will this RO be ready: roForecast asks the RO engine (window.RoMath, src/engine/ro-engine.js) with the shop calendar, each tech's pace and parts' ETAs.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   wallStr wallDate fcPay fcHasCause fcHasFix fcPartIn fcOpComplete techPace roForecast fcWhen RM SHOP_CAL … (10 functions, 4 constants)
+   declares   wallStr wallDate fcPay opNotesTxt fcHasCause fcHasFix fcPartIn fcOpComplete techPace roForecast fcWhen RM … (11 functions, 4 constants)
    state      punches ros
    uses       clock/ kit/ state/
 */
@@ -27,8 +27,10 @@ function fcPay(ro, op){
   if(ro.warranty && (t === "DIAG" || t === "OP") && !(ro.operations || []).some(function(o){ var k = opJobType(o); return k === "WARR" || k === "RECALL"; })) return "warranty";
   return "customer";
 }
-function fcHasCause(op){ return !!String(op.cause || "").trim() || (op.log || []).some(function(l){ return l.kind === "cause" && String(l.text || "").trim(); }); }
-function fcHasFix(op){ return !!String(op.correction || "").trim() || (op.log || []).some(function(l){ return l.kind === "fix" && String(l.text || "").trim(); }); }
+/* 17.3: the operation's tech notes — one running text (op.work) since the operation card's redesign; they count as the story */
+function opNotesTxt(op){ return String(op && op.work || "").replace(/<br\s*\/?>/gi, " ").replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim(); }
+function fcHasCause(op){ return !!opNotesTxt(op) || !!String(op.cause || "").trim() || (op.log || []).some(function(l){ return l.kind === "cause" && String(l.text || "").trim(); }); }
+function fcHasFix(op){ return !!opNotesTxt(op) || !!String(op.correction || "").trim() || (op.log || []).some(function(l){ return l.kind === "fix" && String(l.text || "").trim(); }); }
 function fcPartIn(p){ return pxPartIn(p); }
 function fcOpComplete(op){
   var st = opStatus(op); st = typeof st === "string" ? st : st.status;

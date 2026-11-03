@@ -260,10 +260,10 @@ function fmOpSt(ro, op){ if(op.fmRec) return ["rec", "recommended"]; if(op.decli
 /* ---------- QC ---------- */
 function fmQcApplies(ro){ var q = fmCfg().qc; if(q === "none") return false; if(q === "some") return !!(ro.fmCb || warrIs(ro) || raLive(ro).some(function(op){ return opJobType(op) === "COMEBACK"; })); return true; }
 function fmQcAuto(ro){
-  var live = raLive(ro), open = live.filter(function(op){ return !opDoneNow(op); }), ns = live.filter(function(op){ return !opStory(op, "cause") || !opStory(op, "fix"); }), I = roInfo(ro), toRet = 0, used = 0, all = 0, rt = ro.roadTest;
+  var live = raLive(ro), open = live.filter(function(op){ return !opDoneNow(op); }), ns = live.filter(function(op){ return !fcHasCause(op) || !fcHasFix(op); }), I = roInfo(ro), toRet = 0, used = 0, all = 0, rt = ro.roadTest;
   live.forEach(function(op){ opRealParts(op).forEach(function(p){ all++; if(p.status === "Installed") used++; else if(pxPartIn(p)) toRet++; }); });
   return [{ k: "ops", ok: live.length > 0 && !open.length, t: open.length ? "Op " + raN(ro, open[0]) + " still open · " + (live.length - open.length) + " of " + live.length + " closed" : "All ops closed · " + live.length + " of " + live.length },
-    { k: "story", ok: !ns.length, t: ns.length ? "No " + (!opStory(ns[0], "cause") ? "cause" : "correction") + " on op " + raN(ro, ns[0]) + (ns[0].complaint ? " · " + ns[0].complaint : "") : "Story on every op — complaint, cause, correction" },
+    { k: "story", ok: !ns.length, t: ns.length ? "No " + (!fcHasCause(ns[0]) ? "cause" : "correction") + " on op " + raN(ro, ns[0]) + (ns[0].complaint ? " · " + ns[0].complaint : "") : "Story on every op — complaint, cause, correction" },
     { k: "hrs", ok: !I.q || I.b <= I.q * 1.1, t: fmHh(I.b) + " of " + fmHh(I.q) + " quoted" + (I.q && I.b > I.q * 1.1 ? " · over" : "") },
     { k: "rt", ok: !!rt && rt.result !== "Fail", t: rt ? "Road test " + String(rt.result || "logged").toLowerCase() + (rt.miles ? " · " + rt.miles + " mi" : "") + (rt.at ? " · " + fmHM(fmH(new Date(rt.at).getTime())) : "") : "No road test logged" },
     { k: "parts", ok: !toRet && used + toRet === all, t: all ? "Parts · " + used + " of " + all + " installed" + (toRet ? " · " + toRet + " to return to Parts" : " · nothing to return") : "No parts on the RO" }]; }

@@ -283,7 +283,7 @@ function modalHtml(){
     else {
       var rcs = releaseState(rcro);
       body = '<p class="gate-lead">'+esc(rcro.customerName || '')+(rcro.unitNumber ? ' · unit '+esc(rcro.unitNumber) : '')+' — tick each one off before the truck goes.</p>'
-        + '<div class="rel-list">' + RELEASE_CHECK.map(function(x){ var on = !!rcs[x[0]];
+        + '<div class="rel-list">' + relChecksFor(rcro).map(function(x){ var on = !!rcs[x[0]];
             return '<button class="rel-it'+(on ? ' on' : '')+'" data-action="rel-tick" data-ro="'+rcro.id+'" data-k="'+x[0]+'" role="checkbox" aria-checked="'+on+'"><span class="rel-box">'+(on ? '\u2713' : '')+'</span>'+esc(x[1])+'</button>'; }).join('') + '</div>'
         + (warrIs(rcro) ? (function(){ var ww = warrReady(rcro); return '<p class="rel-warr"><button class="yc wr '+ww.tier+'" data-action="open-warr" data-ro="'+rcro.id+'">W '+ww.pct+'%</button> Warranty paperwork'+(ww.miss.length ? ' \u2014 '+ww.miss.length+' item'+(ww.miss.length === 1 ? '' : 's')+' missing' : ' complete')+'</p>'; })() : '');
       var rok = releaseReady(rcro);

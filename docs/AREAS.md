@@ -12,7 +12,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `idle-and-end-of-day.js` | The clock on the login page, the idle check (nobody touching it → lock) and the end of the shop day. | 2 | 4 | 0 |
 | `lock-screen.js` | Stepping away: the lock screen (lgLockNow / lgUnlock), switching person from the lock, and the quick switcher off your name (lgMeMenu). | 5 | 6 | 0 |
 | `login-page.js` | The login page: one tile per person, the running clocks, the shop name. | 3 | 3 | 0 |
-| `people-and-demo-team.js` | People: staffList() and lookups by name / role (staffForTech, techNorm), initials and avatars (avatarSvg), the audit log (audit / auditLog), and the demo team used by the sample data. | 35 | 37 | 9 |
+| `people-and-demo-team.js` | People: staffList() and lookups by name / role (staffForTech, techNorm), initials and avatars (avatarSvg), the audit log (audit / auditLog), and the demo team used by the sample data. | 36 | 38 | 9 |
 | `permissions.js` | Who can do what: roles, each person's pages and actions, can(action) / canPage(page), the Admin's changes per person (permSet) and the sync of pages when a role changes. | 3 | 15 | 0 |
 | `pin-pad.js` | The PIN pad: open for a person, draw, keys and clicks, the first-time PIN, and sign in when it matches (lgSignIn). | 7 | 10 | 0 |
 | `pins.js` | PINs: salted SHA-256, never kept as typed (pinHash / pinValid), temporary PINs shown once, the Admin PIN. | 11 | 33 | 2 |
@@ -327,7 +327,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `derived-calcs.js` | Numbers derived from an operation: opCalc (quoted, burnt, left, efficiency), part locks (a repair that waits on a part), what is missing to complete (opCompleteGaps), the operation's status from its fields (opStatus / opStatusRaw). | 10 | 18 | 3 |
 | `details-table.js` | The RO's details as one table (ROFLD): every field with its label, how it shows, how it is set, who may edit; roFldSet is the one setter (Undo, the value, an Activity line, save). The truck card, the RO list pane and the import all draw from it. | 13 | 15 | 1 |
 | `flow-gates.js` | The RO flow's soft gates (Parsec 14.1): Done asks instead of refusing (gaps), starting an unapproved operation asks, a truck back within days asks “a comeback?”, the RO waits on parts only when every open operation does, one release list; pgAsk is the shared question dialog. | 15 | 24 | 1 |
-| `forecast.js` | When will this RO be ready: roForecast asks the RO engine (window.RoMath, src/engine/ro-engine.js) with the shop calendar, each tech's pace and parts' ETAs. | 13 | 10 | 4 |
+| `forecast.js` | When will this RO be ready: roForecast asks the RO engine (window.RoMath, src/engine/ro-engine.js) with the shop calendar, each tech's pace and parts' ETAs. | 14 | 11 | 4 |
 | `lookups.js` | Finding things: getRO(id), the Shop RO (shop time), prices and money per part / operation / RO. | 4 | 16 | 2 |
 | `ordering.js` | How ROs sort: last touched, finished, days open; sortedROs(); pillHtml for the fast-punch pill. | 3 | 8 | 0 |
 | `reopen-question.js` | The question when a completed RO is set back to open: reopen its operations too, or just the RO. | 5 | 13 | 1 |
@@ -378,7 +378,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `page-helpers.js` | Helpers the RO page's renderers share: operation state chips, parts arrived checks, dropping files on a job, visit words, similar jobs. | 38 | 25 | 13 |
 | `picking.js` | Picking several operations or parts at once on the RO page: the selection, the bulk actions, the pick toolbar. | 25 | 23 | 1 |
 | `px-components.js` | The RO page's components from the Parsec design system: pop-overs (one at a time, fixed to the viewport), the modal with scrim, StatusMenu, PartStatus dropdown, the Transfer / Add operation / Delete dialogs. | 29 | 31 | 3 |
-| `release-bypass.js` | Release without checks: the truck card's way past the truck checks, with a reason and an Activity line. | 4 | 7 | 1 |
+| `release-bypass.js` | Release without checks: the truck card's way past the truck checks, with a reason and an Activity line. | 5 | 7 | 1 |
 | `render-header.js` | The RO header band: compact or open, Details, delete RO. | 17 | 4 | 2 |
 | `render.js` | The RO page's render: openState (which card is open), renderNow draws every part into the shadow root, flipCards animates, and the scroll / pin bookkeeping. | 20 | 16 | 2 |
 | `state.js` | The RO page's state: R (shadow root), HOST, RO, S (per-RO UI state: open card, tabs, selection), mounting into the app's page, and the small date conversions. | 10 | 30 | 16 |

@@ -14,7 +14,7 @@ function raOps(ro){ return (ro.operations || []).filter(function(o){ return o &&
 function raLive(ro){ return raOps(ro).filter(function(o){ return !o.declined; }); }
 function raN(ro, op){ return raOps(ro).indexOf(op) + 1; }
 function raCcc(op){
-  return { c: !!String(op.complaint || "").trim(), ca: !!opStory(op, "cause"), co: !!opStory(op, "fix") };
+  return { c: !!String(op.complaint || "").trim(), ca: fcHasCause(op), co: fcHasFix(op) };   /* 17.3: the tech notes count */
 }
 function raNext(ro){
   var st = roStatus(ro).status, live = raLive(ro), f = null; try{ f = roForecast(ro); }catch(e){}

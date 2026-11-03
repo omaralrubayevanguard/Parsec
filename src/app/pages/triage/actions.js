@@ -361,7 +361,7 @@ function tyCloseChecks(ro){
   var live = raLive(ro), open = live.filter(function(op){ return !opDoneNow(op); }), parts = [], noNote = [];
   live.forEach(function(op){
     opRealParts(op).forEach(function(p){ if(p.status !== "Installed") parts.push({ op: op, p: p }); });
-    STATE.punches.forEach(function(p){ if(p.roId === ro.id && p.opId === op.id && p.stop && !noteEntries(p.notes).length) noNote.push({ op: op, p: p }); });
+    STATE.punches.forEach(function(p){ if(p.roId === ro.id && p.opId === op.id && p.stop && !noteEntries(p.notes).length && !opNotesTxt(op)) noNote.push({ op: op, p: p }); });
   });
   var rt = ro.roadTest;
   return [

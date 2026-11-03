@@ -205,7 +205,7 @@ function trxWhere(n){ var sf = null; try{ sf = staffForTech(n); }catch(e){} var 
 /* ---------- the truck checks ---------- */
 function trxAuto(ro){
   var L = trxLive(ro), done = L.filter(function(op){ return opDoneNow(op); }).length, pts = [], noStory = 0, q = 0, b = 0;
-  L.forEach(function(op){ opRealParts(op).forEach(function(p){ pts.push(p); }); var c = opStory(op, "cause"), f = opStory(op, "fix"); if(!(c && c.length && f && f.length)) noStory++; q += +op.quoted || 0; try{ b += opCalc(op).burntHrs || 0; }catch(e){} });
+  L.forEach(function(op){ opRealParts(op).forEach(function(p){ pts.push(p); }); if(!(fcHasCause(op) && fcHasFix(op))) noStory++; q += +op.quoted || 0; try{ b += opCalc(op).burntHrs || 0; }catch(e){} });
   var inn = pts.filter(function(p){ return p.status === "Installed"; }).length, rt = ro.roadTest;
   return [
     { t: "All operations closed", ok: L.length > 0 && done === L.length, d: done + " of " + L.length },
