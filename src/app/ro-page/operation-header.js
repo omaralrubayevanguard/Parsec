@@ -58,7 +58,6 @@ function ropStatus(j) {
 function ropOpMenu(j) {
   return ropIb('more', 'More for Op ' + ropN(j), function (e, b) {
     var pop = el('div', { class: 'px-pop rop-pop rop-opmenu', role: 'menu' }, [
-      pxMenuItem('plus', 'Add part', { run: function () { S.ui.card = j.id; UI.ivTab = UI.ivTab || {}; UI.ivTab[j.id] = 'parts'; ROPT.padd = j.id; render(); } }),
       pxMenuItem('print', 'Print Op', { run: function () { printOp(j); } }),
       pxMenuItem('swap', 'Move to another RO…', { run: function () { moveOpDialog(j); } }),
       pxSep(),

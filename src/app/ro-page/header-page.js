@@ -1,14 +1,14 @@
 /* Parsec · ro-page · header-page.js
    The RO page header (pxHeader): breadcrumb with the RO number (click copies it), the pager, the customer and contact with its menu (16.3 B), the counters (hours, parts, files), the options menu.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   v163bIc v163bPh v163bCopyId v163bIdOn v163bId v163bTitle v163bCanEd v163bContact v163bMenu v163bEdit pxHeader pxTitle … (22 functions, 2 constants)
+   declares   v163bIc v163bPh v163bCopyId v163bIdOn v163bId v163bTitle v163bCanEd v163bContact v163bMenu v163bEdit ropContactCard pxHeader … (23 functions, 2 constants)
    uses       access/ automations/ clock/ data/ import/new-ro/ kit/ pages/rolist/ pages/triage/ ro/ shell/ state/ trucks/
 */
 /* ---------- the page ---------- */
 /* ===== Parsec 16.3 (B) — inside the RO page (JC): its RO number copies on click (the header and the truck card), and the
    contact in the header — name and phone; a click gives Copy the number · Edit the contact · Copy a text (the Triage templates) ===== */
 function v163bIc(k, sz) {
-  var P = { phone: '<path d="M5.5 3.5h3l1.5 4-2 1.3a10.5 10.5 0 005.2 5.2l1.3-2 4 1.5v3a2 2 0 01-2.1 2A16 16 0 013.5 5.6a2 2 0 012-2.1z"/>' };
+  var P = { mail: '<rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="M4 7l8 6 8-6"/>', phone: '<path d="M5.5 3.5h3l1.5 4-2 1.3a10.5 10.5 0 005.2 5.2l1.3-2 4 1.5v3a2 2 0 01-2.1 2A16 16 0 013.5 5.6a2 2 0 012-2.1z"/>' };
   return P[k] ? '<svg class="px-ico" width="' + (sz || 14) + '" height="' + (sz || 14) + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + P[k] + '</svg>' : pxI(k, sz || 14);
 }
 function v163bPh(p) { var s = String(p || '').trim(), d = s.replace(/\D/g, ''); if (d.length === 11 && d.charAt(0) === '1') d = d.slice(1); return d.length === 10 ? '(' + d.slice(0, 3) + ') ' + d.slice(3, 6) + '-' + d.slice(6) : s; }
@@ -66,27 +66,46 @@ function v163bMenu(b) {
 /* Edit: the two fields in a small pop-over, through the RO details table (ROFLD) — Undo, the Activity line, saved */
 function v163bEdit(anchor) {
   if (!v163bCanEd()) return;
-  var f1 = roFldEdit(RO, 'contactName'), f2 = roFldEdit(RO, 'contactPhone');
+  var f1 = roFldEdit(RO, 'contactName'), f2 = roFldEdit(RO, 'contactPhone'), f3 = roFldEdit(RO, 'contactEmail');
   var i1 = el('input', { class: 'px-input', type: 'text', value: RO.contactName || '', placeholder: 'Who to call', 'aria-label': 'Contact', autocomplete: 'off', 'data-no-draft': '' });
   var i2 = el('input', { class: 'px-input', type: 'tel', value: RO.contactPhone || '', placeholder: '(336) 555-0142', 'aria-label': 'Phone', autocomplete: 'off', 'data-no-draft': '' });
+  var i3 = el('input', { class: 'px-input', type: 'email', value: RO.contactEmail || '', placeholder: 'name@company.com', 'aria-label': 'Email', autocomplete: 'off', 'data-no-draft': '' });
   function done(keep) {
-    var a = i1.value.trim(), p = i2.value.trim();
-    if (keep && (a !== String(RO.contactName || '') || p !== String(RO.contactPhone || ''))) {
+    var a = i1.value.trim(), p = i2.value.trim(), m = i3.value.trim();
+    if (keep && (a !== String(RO.contactName || '') || p !== String(RO.contactPhone || '') || m !== String(RO.contactEmail || ''))) {
       pushUndo('contact');
       if (a !== String(RO.contactName || '')) { if (f1) f1.set(a); else if (a) RO.contactName = a; else delete RO.contactName; }
       if (p !== String(RO.contactPhone || '')) { if (f2) f2.set(p); else if (p) RO.contactPhone = p; else delete RO.contactPhone; }
+      if (m !== String(RO.contactEmail || '')) { if (f3) f3.set(m); else if (m) RO.contactEmail = m; else delete RO.contactEmail; }
       save(true); toast('Contact saved');
     }
     pxClosePop(); render(); tecRender();
   }
-  [i1, i2].forEach(function (i) { i.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Enter') { e.preventDefault(); done(true); } else if (e.key === 'Escape') { e.preventDefault(); done(false); } }); });
+  [i1, i2, i3].forEach(function (i) { i.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Enter') { e.preventDefault(); done(true); } else if (e.key === 'Escape') { e.preventDefault(); done(false); } }); });
   var pop = el('div', { class: 'px-pop v163b-ed', role: 'dialog', 'aria-label': 'Contact' }, [
     el('h4', { text: 'Contact' }),
     el('label', {}, [el('span', { text: 'Contact' }), i1]),
     el('label', {}, [el('span', { text: 'Phone' }), i2]),
+    el('label', {}, [el('span', { text: 'Email' }), i3]),
     el('div', { class: 'v163b-eda' }, [el('button', { class: 'px-btn px-btn--sm', type: 'button', text: 'Cancel', onClick: function (e) { e.stopPropagation(); done(false); } }),
       el('button', { class: 'px-btn px-btn--sm px-btn--primary', type: 'button', text: 'Save', onClick: function (e) { e.stopPropagation(); done(true); } })])]);
   if (pxPop(anchor, pop, { force: true })) setTimeout(function () { try { (RO.contactName ? i2 : i1).focus(); } catch (e) {} }, 0);
+}
+
+/* 18 — the contact in the right column, above the buttons: who to call, their number, their email */
+function ropContactCard() {
+  if (!RO || RO.shop || RO.id === SHOP_RO_ID) return null;
+  var nm = String(RO.contactName || '').trim(), ph = String(RO.contactPhone || '').trim(), em = String(RO.contactEmail || '').trim(), ed = v163bCanEd();
+  if (!nm && !ph && !em && !ed) return null;
+  var box = el('section', { class: 'rop-ct', 'aria-label': 'Contact' });
+  var head = el('div', { class: 'rop-ct__h' }, [el('span', { text: 'Contact' })]);
+  if (ed) { var eb = el('button', { class: 'rop-ct__ed', type: 'button', title: 'Edit the contact', text: nm || ph || em ? 'Edit' : 'Add' }); eb.addEventListener('click', function (e) { e.stopPropagation(); v163bEdit(eb); }); head.appendChild(eb); }
+  box.appendChild(head);
+  if (!nm && !ph && !em) { box.appendChild(el('div', { class: 'rop-ct__none', text: 'No one to call yet' })); return box; }
+  if (nm) box.appendChild(el('div', { class: 'rop-ct__r rop-ct__nm', html: pxI('user', 14) + '<span>' + esc(nm) + '</span>' }));
+  if (ph) { var pb = el('button', { class: 'rop-ct__r', type: 'button', 'aria-haspopup': 'menu', title: 'Copy the number, or copy a text', html: v163bIc('phone', 14) + '<span>' + esc(v163bPh(ph)) + '</span>' }); pb.addEventListener('click', function (e) { e.stopPropagation(); v163bMenu(pb); }); box.appendChild(pb); }
+  if (em) { var mb = el('button', { class: 'rop-ct__r', type: 'button', title: 'Copy the email', html: v163bIc('mail', 14) + '<span>' + esc(em) + '</span>' }); mb.addEventListener('click', function (e) { e.stopPropagation(); pxCopy(em, 'Copied ' + em); }); box.appendChild(mb); }
+  return box;
 }
 
 function pxHeader() {
@@ -95,14 +114,8 @@ function pxHeader() {
   head.appendChild(el('div', { class: 'px-crumb' }, [el('a', { text: TX ? TX.crumb : 'RO list', href: '#', onClick: function (e) { e.preventDefault(); if (TX) { TX.back(); return; } UI.view = 'rolist'; UI.modal = null; tecRender(); } }), el('span', { class: 'sl', text: '/' }), v163bId()]));
   var l = [], at = -1; try { l = TX ? TX.list.map(function (id) { return { id: id }; }) : rlList(); l.forEach(function (r, n) { if (r.id === RO.id) at = n; }); } catch (e) {}
   function go(t) { return function () { if (!t) return; if (TX) { TX.go(t.id); return; } UI.view = 'ros'; UI.selectedRo = t.id; UI.modal = null; tecRender(); }; }
-  if (at > -1) {
-    var pv = l[at - 1], nx = l[at + 1];
-    head.appendChild(el('div', { class: 'px-head__pager' }, [
-      el('button', { class: 'px-btn px-btn--ghost px-btn--icon px-btn--sm', type: 'button', title: 'Previous RO (K)', disabled: pv ? null : 'disabled', html: pxI('chevU'), onClick: go(pv) }),
-      el('button', { class: 'px-btn px-btn--ghost px-btn--icon px-btn--sm', type: 'button', title: 'Next RO (J)', disabled: nx ? null : 'disabled', html: pxI('chevD'), onClick: go(nx) }),
-      el('span', { text: (at + 1) + ' of ' + l.length })]));
-  }
-  try { var v163w = v163bContact(); if (v163w) head.appendChild(v163w); } catch (e) { console.error(e); }   /* Parsec 16.3 (B) */
+  /* 18 — no stepper arrows here: J / K still go to the next / previous RO */
+  try { if (RO.customerName && !RO.shop) head.appendChild(el('div', { class: 'v163b-who' }, [el('span', { class: 'v163b-cu', text: RO.customerName })])); } catch (e) { console.error(e); }   /* the contact moved to the right column (ropContactCard) */
   var T = totals(), nf = allFiles().length, run = S.jobs.some(function (j) { return runningPunchOf(j); });
   var tb = el('b', { text: pxNum(T.b) });
   var tTime = el('button', { class: 'px-total' + (run ? ' is-live' : ''), type: 'button', title: 'Time on this RO · click for the breakdown', 'aria-label': 'Time: ' + pxNum(T.b) + ' of ' + pxNum(T.q) + ' hours quoted. Open breakdown', onClick: function () { pxTotalsModal('time'); } });
@@ -115,8 +128,6 @@ function pxHeader() {
       el('button', { class: 'px-total', type: 'button', title: 'Files on this RO · click for the list', 'aria-label': 'Files: ' + nf + '. Open list', html: pxI('clip') + '<span><b>' + nf + '</b></span>', onClick: function () { pxTotalsModal('files'); } })]),
     el('span', { class: 'px-head__sep', 'aria-hidden': 'true' }),
     el('button', { class: 'px-btn px-btn--ghost px-btn--icon px-btn--sm', type: 'button', title: 'Import from ASIST — paste or drop the case, it shows what changes', 'aria-label': 'Import from ASIST', html: pxI('note'), onClick: function () { IMPX.open({ ro: RO }); } }),
-    el('button', { class: 'px-btn px-btn--ghost px-btn--icon px-btn--sm', type: 'button', title: 'Copy RO number', html: pxI('link'), onClick: function () { pxCopy((RO.roNumber || '') + (RO.customerName ? ' · ' + RO.customerName : ''), (RO.roNumber || 'RO') + ' copied'); } }),
-    el('button', { class: 'px-btn px-btn--ghost px-btn--icon px-btn--sm', type: 'button', title: 'Print (P)', html: pxI('print'), onClick: function () { doPdf(); } }),
     (function () {
       var b = el('button', { class: 'px-btn px-btn--ghost px-btn--icon px-btn--sm', type: 'button', title: 'Options', 'aria-haspopup': 'menu', html: pxI('more') });
       b.addEventListener('click', function (e) {
@@ -126,11 +137,9 @@ function pxHeader() {
           pxMenuItem('print', 'Print', { kbd: 'P', run: function () { doPdf(); } }),
           pxSep(),
           pxMenuItem('addJob', 'Add operation', { kbd: 'O', run: pxAddOp }),
-          pxMenuItem('note', 'Import from ASIST…', { run: function () { IMPX.open({ ro: RO }); } }),
           pxMenuItem('note', 'Extract operations…', { run: function () { jcRunOpt('extract'); } }),
           pxMenuItem('newRo', 'Add standard operation…', { run: function () { jcRunOpt('stdop'); } }),
           pxMenuItem('warranty', RO.warranty ? 'Not a warranty RO' : 'Mark as warranty RO', { run: function () { pushUndo('warranty RO'); RO.warranty = !RO.warranty; save(true); render(); tecRender(); } }),
-          pxMenuItem('history', 'History', { run: function () { PXA.f = 'changes'; pxActivityModal(); } }),
           ].concat(can('ro.del') ? [pxSep(), pxMenuItem('trash', 'Delete RO', { danger: true, run: pxDelete })] : [])), { alignRight: true });
       });
       return b;

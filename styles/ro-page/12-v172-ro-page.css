@@ -3,7 +3,7 @@
 
 /* ---------- Messages | Customer: one box, a segmented pill ---------- */
 .rop-mc { margin-bottom: 8px; }
-.rop-blk.rop-mc > .rop-sech.rop-mc__h { margin: 24px 0 8px; }
+.rop-blk.rop-mc > .rop-sech.rop-mc__h { margin: 4px 0 6px; }   /* 18: less room above the box */
 .rop-mc__pill { position: relative; display: inline-flex; gap: 2px; padding: 2px; border-radius: 10px; background: var(--fill); }
 .rop-mc__th { position: absolute; left: 2px; top: 2px; bottom: 2px; width: 0; border-radius: 8px; background: var(--raised); box-shadow: 0 0 0 1px var(--hairline), 0 1px 2px rgba(0,0,0,.06); transition: transform .2s var(--e-out), width .2s var(--e-out); }
 .rop-mc__t { all: unset; box-sizing: border-box; position: relative; z-index: 1; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 30px; padding: 0 14px; border-radius: 8px; font: 500 13px/1 var(--font-sans); color: var(--ink-3); transition: color .2s ease; }
@@ -15,7 +15,7 @@
 .rop-mc.is-shut .rop-mc__body { display: none; }
 
 /* ---------- the chat ---------- */
-.rop-chat { display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: var(--radius-lg); background: var(--panel); box-shadow: inset 0 0 0 1px var(--hairline); }
+.rop-chat { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px 12px; border-radius: var(--radius-lg); background: var(--raised); box-shadow: inset 0 0 0 1px var(--hairline); }
 .rop-chat__tools { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .rop-cfs, .rop-cvs { display: inline-flex; gap: 2px; padding: 2px; border-radius: 8px; background: var(--fill); }
 .rop-cf, .rop-cv { all: unset; box-sizing: border-box; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; height: 24px; padding: 0 10px; border-radius: 6px; font: 500 12px/1 var(--font-sans); color: var(--ink-3); transition: background-color .15s ease, color .15s ease; }

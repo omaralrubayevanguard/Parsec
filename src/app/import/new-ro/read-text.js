@@ -86,7 +86,8 @@
       case "caseNo": m = /\b([A-Z]?-?\d{4,10})\b/i.exec(v); return m ? m[1] : "";
       case "roNumber": v = v.replace(/[Oo](?=\d)/g, "0").replace(/\b(R[AO]\d{4,10}) (\d{1,6})\b/i, function(m, a, b){ return (a + b).length <= 14 ? a + b : m; });   /* the reader's "RA0001241 190" */
         m = /\b(R[AO][\s-]?\d{4,12}|\d{5,12})\b/i.exec(v); return m ? m[1].replace(/\s/g, "").toUpperCase() : "";
-      case "customer": return v.replace(/\s*[-–]?\s*cust(?:omer)?\s*#.*$/i, "").replace(/…|\.\.\.$/, "").trim().slice(0, 60);
+      case "customer": if(/^(?:contacts?|contact\s*info(?:rmation)?|customer\s*info(?:rmation)?|details|asset|info|notes?|operations?|vehicle|company|account)\b\s*:?$/i.test(v)) return "";   /* 18: a heading next to the label ("Contacts") isn't the customer */
+        return v.replace(/\s*[-–]?\s*cust(?:omer)?\s*#.*$/i, "").replace(/…|\.\.\.$/, "").trim().slice(0, 60);
       case "status": return /[A-Za-z]{3}/.test(v) ? v.replace(/\s{2,}.*$/, "").slice(0, 40) : "";
       case "etr": case "followUp": case "checkedIn": return parseWhen(v);
       case "createdBy": return nameCase(v);

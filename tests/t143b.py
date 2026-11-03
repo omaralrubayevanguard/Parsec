@@ -22,14 +22,14 @@ async def main():
         tl = await pg.evaluate(f"document.querySelector('{TP} .tch-list') && !!document.querySelector('{TP} .tch-list .tg-it.on')")
         ok(tl, "the Technician page's own list stays on the left")
         bar = await pg.evaluate(BAR)
-        ok(bar[0].startswith("My ROs") and bar[1] == f"1 of {x['n']}" or (bar[1].endswith(f"of {x['n']}")), f"the bar reads the tech's list ({bar})")
+        ok(bar[0].startswith("My ROs") and bar[1] == "", f"the crumb reads the tech's list; 18: no stepper arrows ({bar})")
         await pg.screenshot(path=os.path.join(OUT, "b1_tech.png"))
         # ⌃ ⌄ walk the tech's list; the left list follows
         at0 = x["list"].index(x["ro"])
-        await pg.evaluate(JT("const b=R.querySelectorAll('.px-head__pager button')[1]; if(b && !b.disabled) b.click(); return 1")); await pg.wait_for_timeout(900)
+        await pg.evaluate("(()=>{ const T=__tg.tcxGet(); const L=T.list||[]; const i=L.indexOf(T.ro); if(i>-1 && L[i+1] && T.go) T.go(L[i+1]); })()"); await pg.wait_for_timeout(900)   # 18: no arrows on the page; J or the list moves on
         y = await pg.evaluate(f"[__tg.tcxGet().ro, document.querySelector('{TP} .tch-jc').dataset.jc]")
         bar2 = await pg.evaluate(BAR)
-        ok(at0 + 1 < x["n"] and y[0] == x["list"][at0 + 1] and y[1] == y[0] and bar2[1].startswith(str(at0 + 2) + " of"), f"⌄ moves to the next of the tech's ROs, the mount follows ({y}, {bar2})")
+        ok(at0 + 1 < x["n"] and y[0] == x["list"][at0 + 1] and y[1] == y[0] and True, f"⌄ moves to the next of the tech's ROs, the mount follows ({y}, {bar2})")
         ok(await pg.evaluate(JT("return ((document.querySelector('.rp-host h2') || R.querySelector('.px-ro__title'))||{}).textContent")) == await pg.evaluate(f"__tg.getRO('{y[0]}').customerName"), "…and the RO page shows that RO")
         # start and stop the clock from the mounted clock card, as the tech
         Q = await pg.evaluate("""(()=>{ const T=__tg.tcxGet(); let r=null;

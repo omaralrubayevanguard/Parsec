@@ -331,7 +331,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `lookups.js` | Finding things: getRO(id), the Shop RO (shop time), prices and money per part / operation / RO. | 4 | 16 | 2 |
 | `ordering.js` | How ROs sort: last touched, finished, days open; sortedROs(); pillHtml for the fast-punch pill. | 3 | 8 | 0 |
 | `reopen-question.js` | The question when a completed RO is set back to open: reopen its operations too, or just the RO. | 5 | 13 | 1 |
-| `ro-panel.js` | The one RO side panel's shared pieces: the stage line, Time · Parts · Files on one line, the operations, the buttons by role, and the folds each person keeps. | 13 | 12 | 5 |
+| `ro-panel.js` | The one RO side panel's shared pieces: the stage line, Time · Parts · Files on one line, the operations, the buttons by role, and the folds each person keeps. | 14 | 12 | 5 |
 | `road-test-and-release.js` | Road test before release (a switch per RO), what “work done” means, the stage label shown for a status (roStageInfo / pgStRo). | 5 | 14 | 0 |
 | `route.js` | The RO's route between departments: who holds it now (writer, tech, parts, foreman…), the next step for a role (rtNext / rtStepFor). | 7 | 15 | 8 |
 | `stages.js` | The six RO stages (Check-in → Close-out), each with one “done when” rule; roStages(ro) says where an RO stands, stageToggle checks one off by hand. | 12 | 5 | 2 |
@@ -360,7 +360,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `declined.js` | Declined on the operation's status menu (14.8 A) and the complaint edited in place while the clock runs or not. | 15 | 13 | 1 |
 | `extract-operations.js` | Extract operations into this RO from pasted text or a screenshot (Parsec 14.8 B): complaint, status, quoted time and approval only; matched to existing operations before anything is added. | 20 | 15 | 2 |
 | `fault-codes.js` | Fault codes on each operation (SPN / FMI, P-codes): reading what was typed, what a code means, the chips on the tile and the card, and the note a chip starts; Add ▾ for a code, a document or the Library (17.1). | 8 | 10 | 1 |
-| `header-page.js` | The RO page header (pxHeader): breadcrumb with the RO number (click copies it), the pager, the customer and contact with its menu (16.3 B), the counters (hours, parts, files), the options menu. | 32 | 22 | 2 |
+| `header-page.js` | The RO page header (pxHeader): breadcrumb with the RO number (click copies it), the pager, the customer and contact with its menu (16.3 B), the counters (hours, parts, files), the options menu. | 34 | 23 | 2 |
 | `helpers.js` | DOM and format helpers local to the RO page (el, svg, hm, hms, uid…) and the attachment store in IndexedDB for files not yet in the folder. | 17 | 22 | 6 |
 | `icons.js` | The icon set the RO page uses (IC) and tecRender(), the RO page's way to ask the app to redraw. | 12 | 1 | 1 |
 | `ivory.js` | The Ivory / Graphite look on the RO page: ivOn, the operation side panel, clockCalm. | 6 | 4 | 0 |

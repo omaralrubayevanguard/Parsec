@@ -1058,6 +1058,16 @@
     "tag": "68",
     "location": "Lot D1"
    }
+  },
+  {
+   "name": "customer label followed by the Contacts tab",
+   "kind": "paste",
+   "text": "Case # 4988201\nCustomer\nContacts\nSummit Freightways - Cust# 20417\nRO Number: RA0001238877\tStatus: Checked In\nCompany:\tContacts\n",
+   "f": {
+    "customer": "Summit Freightways",
+    "custNo": "20417",
+    "roNumber": "RA0001238877"
+   }
   }
  ]
 }

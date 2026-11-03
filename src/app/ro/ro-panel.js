@@ -97,7 +97,7 @@ function rpPanelHtml(ro, o){
     + (o.close ? '<button class="btn btn-sm ib tg-gh" data-a="peekx" title="Close (Esc)">' + tgI("x", 15) + "</button>" : "") + "</div>"
     + '<div class="rp-nm">' + (typeof trkThumb === "function" ? trkThumb(ro) : "") + "<h2>" + rifHtml(ro, "customerName", ro.customerName || "", "Customer") + '</h2></div><div class="sub">' + rifVeh(ro, veh) + (spot && spot !== "—" ? " · " + rpE(spot) : "") + v149KeySeg(ro) + "</div>"
     + '<div class="rq-strow">' + pill + (tech ? '<span class="rq-with">with ' + av + " " + rpE(tech) + "</span>" : '<span class="rq-with">No tech yet</span>') + "</div>"
-    + rpStageHtml(ro) + rpOpsHtml(ro)
+    + rpStageHtml(ro) + (o.page === "ro" ? "<!--rp-split-->" : "") + rpOpsHtml(ro)
     + '<div class="rp-allw"><button type="button" class="rp-all" data-rp-all="1">' + (rpAnyOpen() ? RP_CHEV_U + "Collapse all" : RP_CHEV_D + "Expand all") + "</button></div>"
     + det
     + (o.foot === false ? "" : '<div class="rp-foot">' + rpActsHtml(ro, { open: o.page !== "ro" }) + "</div>") + "</aside>";
@@ -109,13 +109,16 @@ function rpAnyOpen(){ return RP_KEYS.some(function(k){ return !rpFold(k); }); }
 function rpMountRo(){
   var pane = document.querySelector(".ro-detail-pane[data-jc]"), host = pane && pane.querySelector(":scope > .jc-host"), ro = pane && getRO(pane.getAttribute("data-jc"));
   if(!host || !ro) return;
-  var box = host.querySelector(":scope > .rp-host");
-  if(!box){ box = document.createElement("div"); box.className = "rp-host tg rq"; box.setAttribute("data-pg", "rolist"); box.setAttribute("slot", "rp"); host.appendChild(box); }
-  var a = document.activeElement, typing = a && box.contains(a) && /^(INPUT|SELECT|TEXTAREA)$/.test(a.tagName);
-  var h = rpPanelHtml(ro, { page: "ro", foot: false });
-  if(!typing && box.__h !== h){   /* only what changed is touched: the picture, the folds and the hover stay put */
-    if(box.__h != null && typeof morphChildren === "function"){ var tmp = document.createElement("div"); tmp.innerHTML = h; morphChildren(box, tmp); } else box.innerHTML = h;
-    box.__h = h; }
+  /* 18: two pieces — the top (name, status, stages) above the contact and the buttons, the rest below them */
+  var mk = function(slot, cls){ var b = host.querySelector(':scope > .rp-host[slot="' + slot + '"]'); if(!b){ b = document.createElement("div"); b.className = "rp-host tg rq" + cls; b.setAttribute("data-pg", "rolist"); b.setAttribute("slot", slot); host.appendChild(b); } return b; };
+  var box = mk("rp", ""), box2 = mk("rp2", " rp-host2");
+  var a = document.activeElement, typing = a && (box.contains(a) || box2.contains(a)) && /^(INPUT|SELECT|TEXTAREA)$/.test(a.tagName);
+  var h = rpPanelHtml(ro, { page: "ro", foot: false }), cut = h.indexOf("<!--rp-split-->");
+  var h1 = cut > -1 ? h.slice(0, cut) + "</aside>" : h, h2 = cut > -1 ? '<aside class="rq-peek rp rp-ro rp-rest" data-rp-ro="' + rpE(ro.id) + '">' + h.slice(cut + 15) : "";
+  if(typing) return;
+  [[box, h1], [box2, h2]].forEach(function(x){ var b = x[0], hh = x[1]; if(b.__h === hh) return;   /* only what changed is touched: the picture, the folds and the hover stay put */
+    if(b.__h != null && typeof morphChildren === "function"){ var tmp = document.createElement("div"); tmp.innerHTML = hh; morphChildren(b, tmp); } else b.innerHTML = hh;
+    b.__h = hh; });
 }
 document.addEventListener("click", function(e){
   var t = e.composedPath ? e.composedPath()[0] : e.target; if(t && t.nodeType !== 1) t = t.parentElement; if(!t || !t.closest) return;
