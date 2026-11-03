@@ -71,7 +71,7 @@ The tests need Playwright for Python, set up once per computer with `pip install
 
 ## Mock-ups: the Idea picker
 
-The skill is in this repository: `.claude/skills/idea-picker/SKILL.md`, with `template.html`. Claude Code loads it as a project skill. In any other chat, read that file. It is the reference copy, even when the chat lists an `idea-picker` skill of its own.
+The skill is in this repository: `.claude/skills/idea-picker/SKILL.md`, with `template.html` and `samples/`. Claude Code loads it as a project skill. **Always use the latest version:** before building a mock-up, compare the version in the repository's SKILL.md with any `idea-picker` skill the chat lists (the user's account copy). If the account copy is newer, copy it into the repository first and commit it; if the repository's is newer, use it and say once that the account copy is behind.
 
 - **When:** the user asks for ideas, options or a mock-up, or before any UI change (see above).
 - **The user's mock-up rules** are all in the skill. Keep them:
