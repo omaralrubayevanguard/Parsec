@@ -1,8 +1,9 @@
 /* Parsec · import/new-ro · fields.js
    The RO's fields as rows of the dialog (SPEC: label, group, source), the operations' rows, what changed vs the existing RO.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   op1 getF srcF eq fmtF rowOf jobTypeOf opKey memOp txtOf eqv rule … (23 functions, 7 constants)
-   uses       access/ data/ kit/ pages/inventory/ ro/
+   declares   op1 getF srcF eq fmtF rowOf jobTypeOf opKey memOp txtOf eqv rule … (27 functions, 7 constants)
+   state      punches
+   uses       access/ data/ kit/ pages/inventory/ ro/ state/
 */
   /* ---------------------------------------------------------------- the RO's fields, as rows */
   var G_CASE = "Case & customer", G_TRUCK = "Truck", G_CCC = "Complaint · cause · correction";
@@ -79,7 +80,8 @@
     var isNew = !hit, mf = M && M.f || {}, P = { glued: glued, o: o, i: i, op: hit, isNew: isNew, on: D.skip[opKey(o)] !== true, f: {}, parts: [], story: null, codes: "", bd: isNew ? "new" : "same" };
     OPF.forEach(function(x){ var cur = hit ? hit[x[0]] : "", r = rule(x[2], cur == null ? "" : cur, o[x[1]], mf[x[0]], isNew); P.f[x[0]] = r; if(!isNew && (r.bd === "upd" || r.bd === "new")) P.bd = "upd"; if(!isNew && r.bd === "kept" && P.bd === "same") P.bd = "kept"; });
     if(o.story){ var w = hit ? txtOf(hit.work) : "", r2 = rule("", w, o.story, M ? M.story : undefined, isNew); P.story = r2; if(!isNew && (r2.bd === "new" || r2.bd === "upd")) P.bd = "upd"; }
-    P.pa = paPlan(o, hit);
+    P.pa = paPlan(o, hit); P.st = stPlan(o, hit, M);
+    if(!isNew && P.st.act === "upd") P.bd = "upd"; else if(!isNew && P.st.act === "kept" && P.bd === "same") P.bd = "kept";
     if(!isNew && (P.pa.act === "new" || P.pa.act === "upd" || glued)) P.bd = "upd"; else if(!isNew && P.pa.act === "kept" && P.bd === "same") P.bd = "kept";
     P.codes = [o.opCode && "Op code " + o.opCode, o.vmrs && "VMRS " + o.vmrs, o.priceCode && "Price code " + o.priceCode].filter(Boolean).join(" · ");
     P.codesNew = !!P.codes && (!M || M.codes !== P.codes);
@@ -121,6 +123,25 @@
     else r.act = cur ? "upd" : "new";
     return r;
   }
+  /* 17.3: the operation's status from the paperwork — set like a status picked on the job card; a running clock keeps it Working */
+  function stNow(op){ if(!op) return ""; var s = opStatus(op); return typeof s === "string" ? s : (s && s.status) || ""; }
+  function stPlan(o, hit, M){
+    var want = o.status || "", r = { want: want, cur: stNow(hit), act: "" };
+    if(!want || want === "Declined") return r;   /* declined goes through the approval */
+    if(r.cur === want) r.act = "same";
+    else if(hit && STATE.punches.some(function(p){ return p.opId === hit.id && !p.stop; })) r.act = "clock";
+    else if(hit && M && M.st && M.st !== r.cur && M.st !== r.cur) r.act = "kept";   /* changed here since the last read: it stays */
+    else r.act = hit ? "upd" : "new";
+    return r;
+  }
+  function stLbl(s){ return s === "Hold Tech" ? "Hold tech" : s === "Waiting – Tech Support" ? "Waiting – Tech support" : s; }
+  function stTxt(P){
+    var x = P.st; if(!x || !x.want || !P.on || x.act === "") return "";
+    if(x.act === "new" || x.act === "upd") return '<small class="ix-pa st">→ ' + esc(stLbl(x.want)) + (x.act === "upd" && x.cur ? ' (was ' + esc(stLbl(x.cur)) + ')' : '') + '</small>';
+    if(x.act === "same") return '<small class="ix-pa">' + esc(stLbl(x.cur)) + '</small>';
+    if(x.act === "clock") return '<small class="ix-pa kept">Stays Working — a clock is on it (paper says ' + esc(stLbl(x.want)) + ')</small>';
+    return '<small class="ix-pa kept">Kept yours — ' + esc(stLbl(x.cur)) + '</small>';
+  }
   function paTxt(P){
     var x = P.pa, W = { ok: "approved", part: "partly approved", no: "declined" }; if(!x || !P.on) return "";
     if(x.act === "new" || x.act === "upd") return '<small class="ix-pa ' + (x.want === "no" ? "no" : "ok") + '">→ ' + W[x.want] + ' in Parsec' + (x.act === "upd" ? ' (was ' + W[x.cur] + ')' : '') + '</small>';
@@ -157,6 +178,7 @@
       if(P.story){ if(P.story.bd === "upd") c.upd++; else if(P.story.bd === "new") c.new++; else if(P.story.bd === "kept") c.kept++; }
       var apF = P.f.asistApproval && (P.f.asistApproval.bd === "upd" || P.f.asistApproval.bd === "new");   /* Parsec 14: one change per op, not two */
       if(P.pa){ if((P.pa.act === "new" || P.pa.act === "upd") && !apF) c.upd++; else if(P.pa.act === "kept" && !apF) c.kept++; } if(P.glued) c.upd++;
+      if(P.st){ if(P.st.act === "upd") c.upd++; else if(P.st.act === "kept") c.kept++; }   /* 17.3 */
       P.parts.forEach(function(q){ if(q.isNew){ c.new++; return; } var u = 0, k = 0; Object.keys(q.f).forEach(function(x){ if(q.f[x].bd === "upd" || q.f[x].bd === "new") u = 1; else if(q.f[x].bd === "kept") k = 1; }); if(u) c.upd++; else if(k) c.kept++; else c.same++; });
       if(P.bd === "same") c.same++; });
     Pl.notes.forEach(function(x){ if(x.bd === "new") c.new++; else c.same++; });

@@ -95,12 +95,12 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `dialog-layout.js` | The one extraction window's parts (17.3): the slim strip of files read, the Found line, the RO as a ticket, the list of things to check and the Check view, where everything goes (New RO, an open RO, Inventory, the Library), documents and photos, the footer. | 13 | 15 | 2 |
 | `dialog.js` | The import dialog: the field rows, operation cards, totals, notes, the last-contact suggestion (16.3), what is hidden until needed. | 26 | 23 | 3 |
 | `field-rules.js` | What each kind of value can hold (17.3): a number, a date, an amount or a part number can't hold letters, so the screenshot reader's O, l, I, S and B are put back as 0, 1, 5 and 8; a VIN is repaired with its check digit. | 5 | 7 | 6 |
-| `fields.js` | The RO's fields as rows of the dialog (SPEC: label, group, source), the operations' rows, what changed vs the existing RO. | 15 | 23 | 7 |
+| `fields.js` | The RO's fields as rows of the dialog (SPEC: label, group, source), the operations' rows, what changed vs the existing RO. | 17 | 27 | 7 |
 | `matching.js` | Matching what was read to what the shop already has: the same RO (number, unit + customer), the same operation; merging a second paste into the first. | 4 | 10 | 0 |
 | `open.js` | Open and close the dialog, its input and key handling, the drag-and-drop of screenshots. | 12 | 7 | 0 |
 | `read-checks.js` | Checking what was read against itself (17.3): the VIN's model-year letter against the Year, dates in order, the RO number against the shop's others, hours against the labor price, a part's quantity and price against its line total. | 4 | 9 | 1 |
 | `read-match.js` | Matching what was read to what Parsec already knows (17.3): a customer spelled one letter off, the truck by its VIN or unit, a part number one character off a known one, what a fault code means. | 4 | 7 | 2 |
-| `read-text.js` | Reading the pasted text: labels and cells, dates, money, names, the case fields (RO #, customer, VIN, unit…), operations with complaint / cause / correction, parts and amounts. | 44 | 44 | 21 |
+| `read-text.js` | Reading the pasted text: labels and cells, dates, money, names, the case fields (RO #, customer, VIN, unit…), operations with complaint / cause / correction, parts and amounts. | 46 | 45 | 21 |
 
 ## kit/  — shared helpers every page uses: icons, formatters, the status look, tooltips, constants
 

@@ -150,3 +150,4 @@
 #imp-dlg .ix-oh{background:none;box-shadow:none}
 #imp-dlg .ix-ppl,#imp-dlg .ix-lp{background:none;box-shadow:inset 0 0 0 1px var(--px-hair);color:var(--px-ink2)}
 .ix[data-new="1"] .ix-op .ix-oh > .ix-bd,.ix[data-new="1"] .ix-note .ix-bd{display:none}
+.ix-on small.ix-pa.st{color:var(--px-accent,var(--px-ink));font-weight:500}   /* 17.3: the status the paperwork gives */

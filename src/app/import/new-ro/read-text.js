@@ -2,7 +2,7 @@
    Reading the pasted text: labels and cells, dates, money, names, the case fields (RO #, customer, VIN, unit…), operations with complaint / cause / correction, parts and amounts.
    Flow: parse(text) → a fields object; everything else in new-ro works on that.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   pad parseWhen whenTxt whenIn money usd nameCase splitCells cellsOf labelOf labelish clean … (44 functions, 21 constants)
+   declares   pad parseWhen whenTxt whenIn money usd nameCase splitCells cellsOf labelOf labelish clean … (45 functions, 21 constants)
    uses       import/ pages/inventory/ ro/ shell/ trucks/
 */
   /* ---------------------------------------------------------------- reading the text */
@@ -321,7 +321,7 @@
     Object.keys(got).forEach(function(k){ if(o[k] == null) o[k] = got[k]; });
     return true;
   }
-  function blankOp(no, name){ return { no: no, name: name, hours: null, price: null, rate: null, partsAmt: null, misc: null, sublet: null, total: null, approval: "", label: "", opCode: "", vmrs: "", skill: "", priceCode: "", story: "", storyBy: "", parts: [] }; }
+  function blankOp(no, name){ return { no: no, name: name, hours: null, price: null, rate: null, partsAmt: null, misc: null, sublet: null, total: null, approval: "", status: "", label: "", opCode: "", vmrs: "", skill: "", priceCode: "", story: "", storyBy: "", parts: [] }; }
   function readOps(L){
     var ops = [], cur = null, cols = null, inOps = false, story = null, loose = [], endAt = -1, lblCol = false, ocols = null;
     var opsHead = function(l){ return /^\s*operations?\b/i.test(l) && (/approval|labor|status|hours/i.test(l) || l.trim().length < 14); };
@@ -347,11 +347,14 @@
         cur.hours = fv.hours != null ? fv.hours : cjHours(after0.replace(AP, " ")); cur.price = fv.labor != null ? fv.labor : null;
         ["rate", "parts", "misc", "sublet", "total"].forEach(function(k){ if(fv[k] != null) cur[k === "parts" ? "partsAmt" : k] = fv[k]; });
         if(cur.price == null && !ocols && fv.total != null && cur.partsAmt == null && cur.misc == null && cur.sublet == null){ cur.price = fv.total; delete cur.total; cur.total = null; }
+        cur.status = stOf(after0.replace(AP, " ").replace(/\$?\s?\d[\d,]*(?:\.\d+)?\s*(?:h|hrs?|hours?)?\b/ig, " ").replace(lblCol && cur.label ? new RegExp(cur.label.replace(/[^\w ]/g, "."), "i") : /$^/, " "));   /* 17.3: the operation's own status (Waiting – Parts, Hold, Complete…) */
         grabCodes(cur, t); story = null; inOps = true; continue;
       }
       if(cur){
         /* a long name wraps onto the next line: letters only, no numbers, before anything else of the op */
         if(!cur.parts.length && !story && /^[a-z][a-z ,\-]{2,30}$/i.test(t) && t.split(/\s+/).length <= 4 && !labelOf(t) && !HEAD.test(t) && !AP.test(t) && !/story|code|skill|vmrs|label/i.test(t) && i > 0 && OPH.test(L[i - 1].trim())){ cur.name = cjClean(cur.name + " " + t); continue; }
+        var stm = !/approval|label\s*status/i.test(t) && /^(?:job\s*|op(?:eration)?\s*|repair\s*)?status\s*[:#\-–]\s*(.+)$/i.exec(t);
+        if(stm && stOf(stm[1])){ cur.status = stOf(stm[1]); continue; }   /* 17.3: "Status: Waiting on parts" under the operation */
         var sm = /^(?:technician|tech)\s*story\b\s*(.*)$/i.exec(t);
         if(sm){ story = cur; var st0 = sm[1] || "", bm = /^(?:by\s+)?([A-Za-z][A-Za-z'\-]+(?:,?\s+[A-Za-z][A-Za-z'\-]+){1,2})\s*[:\-–]\s*(.*)$/.exec(st0);
           if(bm && /^by\s/i.test(st0) || bm && nameCase(bm[1]) && bm[1].split(/\s+/).length <= 3 && /^[A-Z]/.test(bm[1])){ cur.storyBy = nameCase(bm[1]) || cur.storyBy; st0 = bm[2]; } else st0 = st0.replace(/^[:\-–]\s*/, "");
@@ -381,6 +384,20 @@
         if(a1 !== a2 && a1.length === a2.length && a1.split("").filter(function(ch, i){ return ch !== a2[i]; }).length === 1) o.total = sum; } });   /* Parsec 14: $782.50 read for $762.50 */
     var seen = {}; ops = ops.filter(function(o){ var k = o.no + "|" + o.name.toLowerCase(); if(!o.name || seen[k]) return false; seen[k] = 1; return true; });
     return { ops: ops, parts: loose };
+  }
+  /* 17.3: an operation's status in plain words → one of Parsec's (the same words the old Extract operations read) */
+  function stOf(t){
+    var s = String(t || "").toLowerCase().replace(/[–—]/g, "-"); if(!/[a-z]/.test(s)) return "";
+    if(/declin/.test(s)) return "Declined";
+    if(/sublet|sent\s*out|outside\s*vendor|\bvendor\b/.test(s)) return "Waiting – Sublet";
+    if(/tech(?:nical)?\s*support|\btsc\b|\bsupport\b/.test(s)) return "Waiting – Tech Support";
+    if(/foreman/.test(s)) return "Waiting – Foreman";
+    if(/customer|call\s*back/.test(s)) return "Waiting – Customer";
+    if(/(?:wait\w*|needs)\s*(?:-|on|for)?\s*(?:the\s*)?approval/.test(s)) return "Waiting – Approval";
+    if(/parts?\b[^.]{0,20}(?:wait|order|back|eta)|(?:wait\w*|order\w*|back\w*)\s*(?:-|on|for)?\s*(?:the\s*)?parts?\b|\bwp\b|backorder/.test(s)) return "Waiting – Parts";
+    if(/\b(?:complete[ds]?|completed|finished|done|closed|road\s*test(?:ed)?)\b/.test(s)) return "Complete";
+    if(/\bhold\b|not\s*started|\bopen\b|\bnew\b|assigned|dispatched|ready\s*to\s*start/.test(s)) return "Hold Tech";
+    return "";
   }
   function normAp(a){ a = String(a || "").toLowerCase(); return !a ? "" : /declin|not approved/.test(a) ? "Declined" : /pending|awaiting/.test(a) ? "Pending" : "Approved"; }
   function grabCodes(o, t){

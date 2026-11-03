@@ -50,7 +50,7 @@
       if(miss.length){ D.err = "Still needed: " + miss.join(", ") + "."; draw(); var q = document.querySelector('#imp-dlg [data-ixf="' + (rn ? "customerName" : "roNumber") + '"]'); if(q) q.focus(); return; }
       if(realRos().some(function(r){ return nzRo(r.roNumber) === nzRo(rn); })){ D.err = "RO " + rn + " already exists."; draw(); return; }
     } else if(!C.changes && !Pl.people.length && (XS.ph.length || XS.docs.length)){ var ro0 = D.ro; close(); attachExtras(ro0, XS); return; }
-    else if(!C.changes && !Pl.people.length){ close(); pushToast("Nothing to change — RO " + tgNum(D.ro) + " already has what ASIST shows."); return; }
+    else if(!C.changes && !Pl.people.length){ var nro = tgNum(D.ro); close(); pushToast("Nothing to change — RO " + nro + " already has what ASIST shows."); return; }
     pushUndo(D.new ? "new RO from ASIST" : "import from ASIST");
     var ro = D.new ? addRO({ roNumber: get("roNumber").fin, customerName: get("customerName").fin, caseNumber: get("caseNumber").fin || "", dateOpened: get("dateOpened").fin || nowIso() }) : D.ro;
     var me = punchByName() || (typeof pxMeName === "function" ? pxMeName() : "") || "Admin";
@@ -78,11 +78,14 @@
         op.appr = { s: P.pa.want, by: "ASIST", at: nowIso(), who: apw, role: "From ASIST", how: "ASIST", po: P.pa.want === "no" ? "" : String(ro.poNumber || ""), amt: 0, reason: P.pa.want === "no" ? "Declined in ASIST" : "" };
         op.declined = P.pa.want === "no"; apprN++;
         try{ audit("approval", roLabel(ro) + " Op " + raN(ro, op) + ": " + (P.pa.want === "no" ? "declined" : "approved") + " in ASIST — " + apw + " (ASIST)", ro); }catch(e){} }   /* Parsec 14: ASIST's own numbers for this operation, kept for the check */
+      if(P.st && (P.st.act === "new" || P.st.act === "upd")){   /* 17.3: the status the paperwork gives, as a status picked on the job card */
+        if(!/^Complete/.test(P.st.want) && typeof opReopenMark === "function") try{ opReopenMark(op, ro.id, P.st.want); }catch(e){}
+        op.jobStatus = { status: P.st.want, sub: null, setAt: nowIso(), hand: true }; }
       if(P.story && (P.story.bd === "new" || P.story.bd === "upd")) op.work = esc(P.story.fin);
       if(P.codes && P.codesNew){ op.offNotes = (Array.isArray(op.offNotes) ? op.offNotes : []).concat([{ id: "on" + uid("x"), at: nowIso(), text: "From ASIST — " + P.codes, by: "ASIST" }]); }
       var M = mem.ops[mk] = mem.ops[mk] || { parts: {} }; M.id = op.id; M.no = o.no; M.name = o.name; M.f = M.f || {}; M.parts = M.parts || {};
       OPF.forEach(function(x){ if(o[x[1]] !== "" && o[x[1]] != null) M.f[x[0]] = o[x[1]]; });
-      if(o.story) M.story = o.story; if(P.codes) M.codes = P.codes;
+      if(o.story) M.story = o.story; if(P.codes) M.codes = P.codes; if(o.status) M.st = o.status;
       P.parts.forEach(function(q){
         var p = q.p, part = q.part;
         if(!part){ part = { id: uid("pt"), description: p.desc || p.pn, partNumber: p.pn || "", qty: String(p.qty || "1"), status: "Not Ordered", eta: "", statusChangedAt: nowIso() }; if(!Array.isArray(op.parts)) op.parts = []; op.parts.push(part); }
