@@ -56,7 +56,7 @@ async def main():
         await pg.keyboard.press("Enter"); await pg.wait_for_timeout(1000)
         cr = await pg.evaluate(J("const a=R.querySelector('.px-crumb a'); const pgr=R.querySelector('.px-head__pager span'); return [a ? a.textContent : null, pgr ? pgr.textContent : null]"))
         ok(await pg.evaluate("__tg.UI().view") == "ros" and await pg.evaluate("__tg.UI().selectedRo") == cur and cr[0] == "Foreman", f"Enter opens the RO page; its crumb reads Foreman ({cr})")
-        ok(cr[1] is None, f"18: no stepper arrows beside the RO number ({cr[1]})")
+        ok(cr[1] is None, f"17.3: no stepper arrows beside the RO number ({cr[1]})")
         await pg.evaluate(J("R.querySelector('.px-crumb a').click()")); await pg.wait_for_timeout(800)
         bk = await pg.evaluate(f"[__tg.UI().view, __tg.UI().fmView, !!document.querySelector('{E}')]")
         ok(bk == ["foreman", "ros", True], f"the crumb goes back to Foreman, ROs tab still on ({bk})")

@@ -27,7 +27,7 @@ async def main():
         await pg.evaluate(f"(()=>{{ const U=__tg.UI(); U.view='ros'; U.selectedRo='{A['id']}'; __tg.render(); }})()"); await pg.wait_for_timeout(1000)
         # ---------- the contact in the header ----------
         hd = await pg.evaluate(J("const w=R.querySelector('.px-head .v163b-who'), c=R.querySelector('.rop-rail .rop-ct'); if(!w || !c) return null; return { cu: (w.querySelector('.v163b-cu')||{}).textContent, ct: c.textContent, inHead: !!R.querySelector('.px-head .v163b-ct') }"))
-        ok(hd and hd["cu"] == A["cu"] and "Dave Miller" in hd["ct"] and "(336) 555-0142" in hd["ct"] and not hd["inHead"], f"18: the header shows the customer; the contact and the phone, formatted, are in the right column ({hd})")
+        ok(hd and hd["cu"] == A["cu"] and "Dave Miller" in hd["ct"] and "(336) 555-0142" in hd["ct"] and not hd["inHead"], f"17.3: the header shows the customer; the contact and the phone, formatted, are in the right column ({hd})")
         await pg.screenshot(path=OUT + "/b1_header.png", clip={"x": 236, "y": 0, "width": 1204, "height": 60})
         # ---------- the RO number copies (header, truck card) ----------
         await jclick(pg, ".px-crumb .px-id")
@@ -81,7 +81,7 @@ async def main():
         await pg.keyboard.type("Tony Ruiz"); await pg.keyboard.press("Tab"); await pg.keyboard.type("336 555 0177"); await pg.keyboard.press("Tab"); await pg.keyboard.type("tony@ruiz.example"); await pg.keyboard.press("Enter"); await pg.wait_for_timeout(400)
         r2 = await pg.evaluate(f"(()=>{{ const r=__tg.getRO('{B['id']}'); return [r.contactName, r.contactPhone]; }})()"); em2 = await pg.evaluate(f"__tg.getRO('{B['id']}').contactEmail")
         ok(foc == "Contact" and r2 in (["Tony Ruiz", "336 555 0177"], ["Tony Ruiz", "(336) 555-0177"]), f"Add contact: the name first, then the phone, Enter saves ({foc}, {r2})")
-        ok(em2 == "tony@ruiz.example" and "tony@ruiz.example" in (await pg.evaluate(J("return (R.querySelector('.rop-ct')||{}).textContent || ''"))), f"18: the email saves and shows on the card ({em2!r})")
+        ok(em2 == "tony@ruiz.example" and "tony@ruiz.example" in (await pg.evaluate(J("return (R.querySelector('.rop-ct')||{}).textContent || ''"))), f"17.3: the email saves and shows on the card ({em2!r})")
         ok("(336) 555-0177" in (await pg.evaluate(J("return (R.querySelector('.rop-ct')||{}).textContent || ''"))), "…and the contact card shows them")
         # ---------- the peek ----------
         await pg.evaluate(f"""(()=>{{ document.body.insertAdjacentHTML('beforeend', '<span id="pkA" class="ro-lnk" data-rolnk="{A['id']}" style="position:fixed;left:520px;top:300px;padding:4px 6px;z-index:5000;background:#fff">{A['no']}</span>'); }})()""")
