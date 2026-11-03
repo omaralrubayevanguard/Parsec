@@ -168,7 +168,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `_close.js` | Closes the Fixes closure. | 0 | 0 | 0 |
 | `_open.js` | Opens the Fixes closure (FX): every finished operation is a fix, grouped by complaint. | 0 | 0 | 1 |
 | `actions.js` | Doing things on the Fixes page: Use fix, mark reviewed, copy; typing and keys. | 15 | 9 | 4 |
-| `common-fixes.js` | Common issues & fixes: fixes keyed by complaint across ROs (fixAll / fixTop); fixAutoFill does nothing since Parsec 9 (Use fix shows what changes). | 10 | 8 | 1 |
+| `common-fixes.js` | Common issues & fixes: fixes keyed by complaint across ROs (fixAll / fixTop); fixAutoFill does nothing since Parsec 9 (Use fix shows what changes). | 13 | 12 | 3 |
 | `draw.js` | The Fixes page's drawing: the library, one fix open (steps, parts, hours), Review. | 43 | 17 | 2 |
 | `model.js` | The Fixes page's model: the shop's standards, quotes and aliases, the fixes built from finished operations, Review items. | 12 | 10 | 43 |
 | `view.js` | viewFixes(): the page module's entry. | 0 | 1 | 0 |

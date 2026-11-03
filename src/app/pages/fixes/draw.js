@@ -7,7 +7,8 @@
   /* ---------- drawing ---------- */
   function view(){
     flush(); build(); const me0 = ME().name; if(U._me !== me0){ U._me = me0; U.view = 'lib'; U.pop = null; }
-    if(UI.fixKey){ const k = keyOf(UI.fixKey); if(build().E[k]){ U.sel = k; U.view = 'lib'; } UI.fixKey = null; }
+    if(UI.fixKey){ const k = keyOf(UI.fixKey); if(build().E[k]){ U.sel = k; U.view = 'lib'; } UI.fixKey = null; U.fixIds = UI.fixIds || null; UI.fixIds = null; } else if(U.sel && U.fixIds && U._fxSel && U._fxSel !== U.sel) U.fixIds = null;
+    U._fxSel = U.sel;
     if(role() === 'tech' && U.view === 'rev') U.view = 'lib';
     if(U.view === 'trend' && !['mg', 'fm'].includes(role())) U.view = 'lib';
     FILT = U.view === 'lib';

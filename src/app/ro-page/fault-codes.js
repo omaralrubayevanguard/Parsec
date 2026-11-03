@@ -92,9 +92,9 @@ function faultBar(job, o) {
       row.appendChild(el('button', { class: 'fltLink fxa', type: 'button', text: ftx, title: 'Filled in from an earlier fix of the same operation \u2014 open that RO',
         onClick: function (e) { e.stopPropagation(); var g = fq || fp; openRoAt(g.roId, g.opId); } }));
     }
-    var fxn = navAllowed('fixes') ? fixCountFor(job) : 0;
-    if (fxn) row.appendChild(el('button', { class: 'fltLink fxl', type: 'button', text: 'Fixed ' + fxn + '\u00d7 before', title: 'See the causes and fixes from earlier operations like this',
-      onClick: function (e) { e.stopPropagation(); UI.view = 'fixes'; UI.fixKey = fixKeyOf(job.complaint); UI.fixQuery = ''; UI.fixAdd = false; persistUI(); tecRender(); window.scrollTo(0, 0); } }));
+    var fxm = navAllowed('fixes') ? fixMatchFor(job) : null, fxt = fxm && fxm.tier && FX_TIER[fxm.tier];   /* 18: the closest fixes first — codes and documents before words */
+    if (fxt && fxm.items.length) row.appendChild(el('button', { class: 'fltLink fxl fxl-' + fxm.tier, type: 'button', text: fxt[0].replace('{n}', fxm.items.length), title: fxt[1] + ' — open them on the Fixes page',
+      onClick: function (e) { e.stopPropagation(); var f0 = fxm.items[0]; UI.view = 'fixes'; UI.fixKey = fixKeyOf(fxm.tier === 'codes' ? f0.complaint : job.complaint); UI.fixIds = fxm.items.map(function (x) { return x.id; }); UI.fixQuery = ''; UI.fixAdd = false; persistUI(); tecRender(); window.scrollTo(0, 0); } }));
   } catch (err) {}
   bar.appendChild(row);
   libOpBelow(job, bar);   /* what each code means, and what the Library has for them */

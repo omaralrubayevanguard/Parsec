@@ -594,6 +594,8 @@
 "pages/warranty/actions.js \u00b7 document.addEventListener() \u00b7 on document keydown (capture)",
 "pages/warranty/actions.js \u00b7 document.addEventListener() \u00b7 on document pointermove (capture)",
 "pages/warranty/actions.js \u00b7 var WA_LAST",
+"pages/fixes/common-fixes.js \u00b7 var FX_ALL",
+"pages/fixes/common-fixes.js \u00b7 var FX_TIER",
 "pages/fixes/common-fixes.js \u00b7 var TQ",
 "phone/phone-sync.js \u00b7 (iife) \u00b7 wrap mobApply",
 "phone/phone-sync.js \u00b7 var PSY",

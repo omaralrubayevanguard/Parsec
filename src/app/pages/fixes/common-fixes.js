@@ -1,9 +1,9 @@
 /* Parsec · pages/fixes · common-fixes.js
    Common issues & fixes: fixes keyed by complaint across ROs (fixAll / fixTop); fixAutoFill does nothing since Parsec 9 (Use fix shows what changes).
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   fixKeyOf fixManual fixDateOf fixAll fixCountFor fixTop fixSourceFor fixAutoFill TQ (8 functions, 1 constant)
+   declares   fixKeyOf fixManual fixDateOf fixAll fixCodeKeys fixDocKeys fixAllCached fixMatchFor fixCountFor fixTop fixSourceFor fixAutoFill … (12 functions, 3 constants)
    state      fixes ros
-   uses       access/ data/ pages/warranty/ ro/ state/ trucks/
+   uses       access/ data/ library/ pages/warranty/ ro/ state/ trucks/
    at load    builds TQ (a closure)
 */
 /* ---------------- Common issues & fixes ---------------- */
@@ -27,15 +27,46 @@ function fixAll(){
     var tm = truckYM(ro), techs = {}; opPunches(op.id).forEach(function(p){ var w = punchWho(p); if(w) techs[w] = 1; });
     out.push({ id: op.id, roId: ro.id, opId: op.id, ro: ro.roNumber, complaint: op.complaint.trim(), cause: opStory(op, 'cause'), correction: fix,
       truck: tm.line, vin: ro.vin || '', engine: ro.engineType || '', miles: ro.mileage || '', date: fixDateOf(ro, op),
-      tech: Object.keys(techs).join(', ') || ro.assignedTech || '', hours: +op.burnt || 0, cost: opMoney(op).total, parts: opRealParts(op), codes: opFaultCodes(op) });
+      tech: Object.keys(techs).join(', ') || ro.assignedTech || '', hours: +op.burnt || 0, cost: opMoney(op).total, parts: opRealParts(op), codes: opFaultCodes(op), ck: fixCodeKeys(op), dk: fixDocKeys(op) });
   }); });
   fixManual().forEach(function(m){
     out.push({ id: m.id, manual: true, complaint: m.complaint || '', cause: m.cause || '', correction: m.correction || '',
       truck: [String(m.year || '').trim(), String(m.model || '').trim()].filter(Boolean).join(' '), vin: m.vin || '', engine: m.engine || '', miles: m.miles || '',
-      date: m.date || m.at || '', tech: m.by || '', hours: +m.hours || 0, parts: [], codes: m.code ? [m.code] : [] });
+      date: m.date || m.at || '', tech: m.by || '', hours: +m.hours || 0, parts: [], codes: m.code ? [m.code] : [], ck: m.code ? fixCodeKeys({ faults: [libCodeParse(m.code)].filter(Boolean) }) : [], dk: m.doc ? [String(m.doc).toUpperCase().replace(/\s+/g, '')] : [] });
   });
   return out;
 }
+/* 18 — which past fix is the one: a hierarchy, strongest first.
+   An operation with only a complaint matches by its complaint. Once it has fault codes or documents, the same complaint
+   can hide different causes, so the fix shown is the one with the same codes and documents:
+     exact   — same complaint, and every code and document the operation has
+     close   — same complaint, sharing at least one code or document
+     codes   — a different wording, but the same code and the same document (a bulletin fix the writer named differently)
+     other   — same complaint, none of its codes or documents (shown as "same complaint, other codes", never as the fix)
+     words   — the operation has no codes or documents yet: the same complaint, as before
+   fixMatchFor(op) → { tier, items, n } — items are the best tier's fixes; n counts every same-complaint fix. */
+function fixCodeKeys(op){ return (op && op.faults || []).map(function(f){ try{ return libCodeKey(f); }catch(e){ return ''; } }).filter(Boolean).filter(function(x, i, a){ return a.indexOf(x) === i; }); }
+function fixDocKeys(op){ var L = []; try{ L = libOpDocs(op).map(function(d){ return String(d.num || '').toUpperCase().replace(/\s+/g, ''); }); }catch(e){} return L.filter(Boolean).filter(function(x, i, a){ return a.indexOf(x) === i; }); }
+var FX_ALL = { at: 0, L: null };
+function fixAllCached(){ if(!FX_ALL.L || Date.now() - FX_ALL.at > 3000){ FX_ALL.L = fixAll(); FX_ALL.at = Date.now(); } return FX_ALL.L; }   /* a chip row draws often; the list is the same for a moment */
+function fixMatchFor(op){
+  var k = fixKeyOf(op && op.complaint), oc = fixCodeKeys(op), od = fixDocKeys(op), all = fixAllCached().filter(function(e){ return e.opId !== (op && op.id); });
+  var same = k ? all.filter(function(e){ return fixKeyOf(e.complaint) === k; }) : [];
+  if(!oc.length && !od.length) return { tier: same.length ? 'words' : '', items: same, n: same.length };
+  var has = function(L, x){ return (L || []).indexOf(x) > -1; };
+  var hitC = function(e){ return oc.filter(function(c){ return has(e.ck, c); }).length; }, hitD = function(e){ return od.filter(function(d){ return has(e.dk, d); }).length; };
+  var exact = same.filter(function(e){ return hitC(e) === oc.length && hitD(e) === od.length; });
+  if(exact.length) return { tier: 'exact', items: exact, n: same.length };
+  var close = same.filter(function(e){ return hitC(e) + hitD(e) > 0; }).sort(function(a, b){ return (hitC(b) + hitD(b)) - (hitC(a) + hitD(a)); });
+  if(close.length) return { tier: 'close', items: close, n: same.length };
+  var codes = oc.length && od.length ? all.filter(function(e){ return fixKeyOf(e.complaint) !== k && hitC(e) > 0 && hitD(e) > 0; }) : [];
+  if(codes.length) return { tier: 'codes', items: codes, n: same.length };
+  return { tier: same.length ? 'other' : '', items: same, n: same.length };
+}
+/* the chip's words for each tier */
+var FX_TIER = { exact: ['Fixed {n}× before', 'Same complaint, same codes and documents'], close: ['Fixed {n}× · similar codes', 'Same complaint, sharing a code or a document'],
+  codes: ['Same codes & bulletin {n}×', 'Worded differently, but the same fault code and the same document'], other: ['Same complaint {n}× · other codes', 'Fixed before, but with different codes or documents — check before using'],
+  words: ['Fixed {n}× before', 'Same complaint — add the codes and documents to narrow it'] };
 function fixCountFor(op){
   var k = fixKeyOf(op && op.complaint); if(!k) return 0;
   return fixAll().filter(function(e){ return e.opId !== op.id && fixKeyOf(e.complaint) === k; }).length;
