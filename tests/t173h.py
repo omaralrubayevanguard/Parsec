@@ -1,5 +1,5 @@
-# Parsec 17.3 (H) — twelve more themes (src/app/themes/more-themes.js): listed under "More themes" on the Settings page, each one
-# recolours Ivory or Graphite through the --vv-* tokens, three draw a grid behind the page, switching back takes every colour off
+# Parsec 17.3 (H) — thirteen more themes (src/app/themes/more-themes.js): listed under "More themes" on the Settings page, each one
+# recolours Ivory or Graphite through the --vv-* tokens, four draw a grid behind the page, switching back takes every colour off
 # again, and a saved theme that no longer exists opens in Ivory or Graphite. No pinks, oranges, yellows, ambers, greens or reds as
 # the background or the accent. Invented data only.
 import asyncio, os, sys, colorsys
@@ -23,7 +23,7 @@ async def main():
         await pg.evaluate("() => { const U = __tg.UI(); U.view = 'profile'; U.pxSec = 'me'; __tg.render(); }"); await pg.wait_for_timeout(600)
         tiles = await pg.evaluate("() => [...document.querySelectorAll('.sg-themes .px-tp')].map(b => b.dataset.v)")
         xs = [t for t in tiles if t.startswith("x-")]
-        ok(len(tiles) == 16 and len(xs) == 12 and await pg.evaluate("!!document.querySelector('.sg-themes .sg-thh')"), "Settings lists the four themes and 12 more under More themes (%d, %d)" % (len(tiles), len(xs)))
+        ok(len(tiles) == 17 and len(xs) == 13 and await pg.evaluate("!!document.querySelector('.sg-themes .sg-thh')"), "Settings lists the four themes and 13 more under More themes (%d, %d)" % (len(tiles), len(xs)))
         info = await pg.evaluate("ids => ids.map(id => { const t = __tg.THEMES[id]; return [id, t.dark, t.vars.canvas, t.vars.panel, t.vars.acc, !!t.grid]; })", xs) if await pg.evaluate("!!__tg.THEMES") else None
         if info is None:
             info = []
@@ -32,7 +32,7 @@ async def main():
                 info.append(await pg.evaluate("id => { const s = document.documentElement.style; return [id, document.documentElement.getAttribute('data-theme') === 'ivd', s.getPropertyValue('--vv-canvas'), s.getPropertyValue('--vv-panel'), s.getPropertyValue('--vv-acc'), document.documentElement.hasAttribute('data-th-grid')]; }", t))
         bad = [i[0] for i in info if not (hue_ok(i[2]) and hue_ok(i[3]) and hue_ok(i[4]))]
         ok(not bad, "no pink, orange, yellow, amber, green or red background or accent (%s)" % bad)
-        ok(sum(1 for i in info if i[5]) == 3, "three themes draw a grid (%s)" % [i[0] for i in info if i[5]])
+        ok(sum(1 for i in info if i[5]) == 4, "four themes draw a grid (%s)" % [i[0] for i in info if i[5]])
         # pick one through its tile: Graphite underneath, the colours on <html>, the RO page follows
         await pg.click('.sg-themes [data-v="x-blueprint"]'); await pg.wait_for_timeout(400)
         st = await pg.evaluate("() => { const de = document.documentElement; return [de.getAttribute('data-theme'), de.getAttribute('data-pal'), de.style.getPropertyValue('--vv-canvas'), de.hasAttribute('data-th-grid'), getComputedStyle(document.body).backgroundImage.slice(0, 15), localStorage.getItem('tec_theme'), localStorage.getItem('tec_theme_dark')]; }")

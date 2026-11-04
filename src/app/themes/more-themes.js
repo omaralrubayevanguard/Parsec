@@ -1,5 +1,5 @@
 /* Parsec · themes · more-themes.js
-   Twelve more themes (17.3): cool blues, indigo, violet, steel, carbon and three grid backgrounds, each one line you can delete.
+   Thirteen more themes (17.3): cool blues, indigo, violet, steel, carbon and four grid backgrounds, each one line you can delete.
    ── facts (generated; run tools/headers.py to refresh) ──
    declares   themeMix themeAdd (2 functions)
    uses       data/
@@ -51,3 +51,5 @@ themeAdd({ id: "x-blueprint", name: "Blueprint", dark: true, canvas: "#0a1d33", 
   gridSize: "120px 120px,120px 120px,24px 24px,24px 24px" });
 themeAdd({ id: "x-dots",    name: "Dot grid",  dark: true, canvas: "#0c0d10", panel: "#121318", raised: "#1a1c22", ink: "#e8e9ee", acc: "#8c9bff",
   grid: "radial-gradient(rgba(232,233,238,.13) 1px,transparent 1.4px)", gridSize: "18px 18px" });
+themeAdd({ id: "x-dots-l",  name: "Dot grid light", canvas: "#eeeff2", panel: "#fafafb", raised: "#ffffff", ink: "#17181d", acc: "#4c5bd4",
+  grid: "radial-gradient(rgba(23,24,29,.16) 1px,transparent 1.4px)", gridSize: "18px 18px" });
