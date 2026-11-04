@@ -1,6 +1,17 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 17.2 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 17.3 is the newest.
 
+
+Parsec 17.3 — Cause and Correction on the operation card · status in the extraction window · truck colour · past fixes · release checks
+  For the shop floor:
+  · Time tab: Cause and Correction sit beside the tech notes and fill from them as you type; the notes are underlined amber (Cause) and green (Correction), click a sentence to move it; a line you type stays and asks before it is refilled; ✦ suggests both lines; Copy the story copies Complaint · Cause · Correction for ASIST
+  · Warranty and Fixes read the same lines as before; the notes on an operation stay one continuous log
+  · Completing an operation no longer asks for notes that are already written (the tech notes count as the cause and the fix)
+  · RO toggles: with the road test or checks off, the checks are skipped and the Release anyway question stays
+  · Extract operations (IMPX) brings in each operation's status (like Waiting – Parts); the paperwork hours win
+  · Truck colour: windshield reflections and chrome bumpers are left alone
+  · Past fixes: the same truck model or engine break a tie; a fault code alone is enough to match
+  For the developer: new ro/cause-correction.js and ro-page/cause-correction.js; the lines are saved as work-log entries marked cc; Idea picker in the repository is v4.
 
 Parsec 17.2 — the operation card redesigned (picked in seven mock-up rounds)
   For the shop floor:
