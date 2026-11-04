@@ -187,14 +187,13 @@
   function view(){
     if(U._me !== PG.me().name){ reset(); U._me = PG.me().name; }
     try{ if(typeof yardAutoPlace === 'function') yardAutoPlace(); }catch(e){}   /* Parsec 14: a new truck gets its spot here too, as Triage and Foreman place it */
-    if(!STATE.ros.filter(ro => ro.id !== SHOP_RO_ID && !ro.shop).length) return `<div class="tg rq" data-pg="rolist"><div class="tg-body"><div class="rq-main"><div class="rq-top"><div class="rq-titlerow"><div><h1 class="rq-title">Repair orders</h1><p class="rq-facts">No repair orders yet.</p></div><button class="btn btn-primary" data-action="open-add-ro">${ic('plus', 15)}New RO</button></div></div><div class="rq-none">Add the first RO, or load the samples from Settings to look around.</div></div></div></div>`;
+    if(!STATE.ros.filter(ro => ro.id !== SHOP_RO_ID && !ro.shop).length) return `<div class="tg rq" data-pg="rolist"><div class="tg-body"><div class="rq-main"><div class="rq-top"><div class="rq-titlerow"><h1 class="rq-title">Repair orders</h1><button class="btn btn-primary" data-action="open-add-ro">${ic('plus', 15)}New RO</button></div></div><div class="rq-none">Add the first RO, or load the samples from Settings to look around.</div></div></div></div>`;
     const c = counts(), g = UI.rlGroup || 'all', me = rlMe(), L = rows();
     Object.keys(U.sel).forEach(id => { if(!L.some(r => r.id === id)) delete U.sel[id]; });
     if(U.cur && !L.some(r => r.id === U.cur)) U.cur = null;
     const cur = U.peek && U.view === 'list' && U.cur ? L.find(r => r.id === U.cur) : null, nSel = Object.keys(U.sel).length;
-    const waiting = c.waiting;
     return `<div class="tg rq${cur ? ' is-peek' : ''}${nSel ? ' has-sel' : ''}" data-pg="rolist"><div class="tg-body"><div class="rq-main">
-      <div class="rq-top"><div class="rq-titlerow"><div><h1 class="rq-title">Repair orders</h1><p class="rq-facts"><span><b>${c.all}</b> open</span><span>·</span><span><b>${waiting}</b> waiting</span><span>·</span><span><b>${c.live}</b> on the clock</span>${c.late ? `<span>·</span><span class="warn"><b>${c.late}</b> open 7+ days</span>` : ''}</p></div>
+      <div class="rq-top"><div class="rq-titlerow"><h1 class="rq-title">Repair orders</h1>
         <button class="btn btn-primary" data-action="open-add-ro">${ic('plus', 15)}New RO${kbd('N')}</button></div>
         <div class="rq-tools"><div class="rq-seg" role="group" aria-label="Show">${RL_GROUPS.filter(x => x[0] !== 'mine' || me).map(x => `<button class="${g === x[0] ? 'on' : ''}" data-a="tab" data-g="${x[0]}" aria-pressed="${g === x[0]}">${x[1]}<span>${c[x[0]]}</span></button>`).join('')}</div>
           <span class="rq-findw">${typeof psmBtn === 'function' ? psmBtn('rolist', 'Search repair orders') : ''}</span>

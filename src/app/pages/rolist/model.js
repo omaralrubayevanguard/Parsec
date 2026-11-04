@@ -87,9 +87,9 @@
     CACHE = { key, L }; return L;
   }
   function counts(){
-    const me = rlMe(), c = { all: 0, mine: 0, working: 0, waiting: 0, hold: 0, done: 0, late: 0, live: 0 };
+    const me = rlMe(), c = { all: 0, mine: 0, working: 0, waiting: 0, hold: 0, done: 0, live: 0 };
     STATE.ros.forEach(ro => { if(ro.id === SHOP_RO_ID || ro.shop || !roMatchesFilter(ro, UI.roFilter)) return; const g = roGroupOf(ro); c[g]++;
-      if(g !== 'done'){ c.all++; if(me && techSame(ro.assignedTech, me)) c.mine++; const d = daysOpen(ro); if(d != null && d >= 7) c.late++; if(STATE.punches.some(p => !p.stop && p.roId === ro.id)) c.live++; } });
+      if(g !== 'done'){ c.all++; if(me && techSame(ro.assignedTech, me)) c.mine++; if(STATE.punches.some(p => !p.stop && p.roId === ro.id)) c.live++; } });
     return c;
   }
   /* ---------- drawing ---------- */
