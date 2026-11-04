@@ -68,7 +68,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `folder-gate.js` | The shop folder comes first: before sign-in, Parsec asks for the folder (fsGateHtml) and says in words what went wrong (fsWhy). FS_LOCAL lets the tests and a quick look run without one. | 6 | 8 | 3 |
 | `import-export.js` | Reading an export back: verify every checksum (refuse on a mismatch), import it, and the round-trip check that compares an export with the live state (pdxDiff). | 14 | 21 | 0 |
 | `photo-shrink.js` | Photos wider than 1600 px or over 2 MB become a 1600 px JPEG before they are saved (v160Shrink); PDFs and small images stay as they are. | 1 | 1 | 1 |
-| `store-api.js` | What the rest of the app asks the store for: pdRoDir / pdAttList for an RO's folder and attachments, pd16Info and the banner on Your data, writeFileToFolder, and the Parsec 15 writers kept for the migration. | 27 | 34 | 8 |
+| `store-api.js` | What the rest of the app asks the store for: pdRoDir / pdAttList for an RO's folder and attachments, pd16Info and the banner on Your data, writeFileToFolder, and the Parsec 15 writers kept for the migration. | 28 | 37 | 10 |
 | `store-helpers.js` | Small store helpers with no installs: gzip / gunzip through the browser's CompressionStream, SHA-256 checksums, folder lookups (pdDirAt / pdPut), timestamps. | 3 | 9 | 0 |
 | `store-merge.js` | Merging two states record by record (two computers saved the same shop): newer mark wins, deletions carry, and a clash on the same record asks Keep this / Keep that (pdClashAsk). | 17 | 13 | 0 |
 | `store-read-write.js` | Reading and writing layout 16: pd16Read walks Parsec Data/ into a state; pd16Write writes only what changed (ROs by folder, the shop by topic, big topics by month), compressing Closed years. | 15 | 12 | 0 |
@@ -447,6 +447,12 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `ro-page-file.js` | The readable Repair Order page written beside each RO's data (roPageHtml) and the shop page (shopPageHtml): HTML a person can open and print; Parsec also reads its data block back. | 11 | 4 | 1 |
 | `state.js` | The two roots: STATE (everything the shop keeps — ROs, punches, staff, settings; saved to the folder) and UI (what this screen is showing — view, selection, open pop-overs; saved per browser). Plus the save timer and sync status. | 0 | 0 | 6 |
 | `undo.js` | The Undo stack (UNDO, UNDO_MAX). pushUndo (ro/actions.js) snapshots STATE before a change; undoLast puts it back. | 0 | 0 | 2 |
+
+## themes/  — extra looks over Ivory and Graphite: one line per theme, deletable as a unit
+
+| file | what it is | KB | functions | constants |
+|---|---|---:|---:|---:|
+| `more-themes.js` | Twelve more themes (17.3): cool blues, indigo, violet, steel, carbon and three grid backgrounds, each one line you can delete. | 4 | 2 | 0 |
 
 ## trucks/  — the truck pictures: the catalog, matching an RO to a body, the banner, peek, notes on the truck
 

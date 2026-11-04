@@ -363,4 +363,5 @@ library/store.js
 library/intake.js
 library/viewer.js
 library/models.js
+themes/more-themes.js
 boot/init.js

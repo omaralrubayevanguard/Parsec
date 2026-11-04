@@ -9,8 +9,8 @@
 function sgCtl(e, ro){
   var v = sgVal(e), d = ro ? ' disabled' : '', idq = esc(e.id);
   if(e.render) return e.render(ro);
-  if(e.id === "me.theme") return '<span class="sg-themes">' + THEME_ORDER.map(function(m){ var t = THEMES[m], on = v === m;
-    return '<button class="px-tp' + (on ? ' on' : '') + '" data-action="px-sg-set" data-id="me.theme" data-v="' + m + '" aria-pressed="' + on + '"' + d + '><span class="pv" style="background:' + t.bg + '"><i style="background:' + t.card + '"></i><i class="l" style="background:' + (t.dark ? '#EDEBE6' : '#1D1C1A') + '"></i><i class="a" style="background:' + t.acc + '"></i></span>'
+  if(e.id === "me.theme") return '<span class="sg-themes">' + THEME_ORDER.concat(THEME_MORE.length ? ["-"] : [], THEME_MORE).map(function(m){ if(m === "-") return '<span class="sg-thh">More themes</span>'; var t = THEMES[m], on = v === m;
+    return '<button class="px-tp' + (on ? ' on' : '') + '" data-action="px-sg-set" data-id="me.theme" data-v="' + m + '" aria-pressed="' + on + '"' + d + '><span class="pv" style="background-color:' + t.bg + (t.grid ? ';background-image:' + t.grid + ';background-size:' + (t.gridSize || '24px 24px') : '') + '"><i style="background:' + t.card + '"></i><i class="l" style="background:' + (t.dark ? '#EDEBE6' : '#1D1C1A') + '"></i><i class="a" style="background:' + t.acc + '"></i></span>'
       + '<span class="nm">' + pxI(t.dark ? "moon" : "sun", 13) + esc(themeLabel(m)) + (on ? '<span class="ck">' + pxI("check", 13) + '</span>' : '') + '</span></button>'; }).join('') + '</span>';
   if(e.kind === "seg") return '<span class="px-seg sg-seg" role="group" aria-label="' + esc(e.label) + '">' + sgOpts(e).map(function(o){ var on = String(o[0]) === String(v);
     return '<button class="' + (on ? 'on' : '') + '" data-action="px-sg-set" data-id="' + idq + '" data-v="' + esc(String(o[0])) + '" aria-pressed="' + on + '"' + d + '>' + esc(o[1]) + '</button>'; }).join('') + '</span>';
@@ -130,7 +130,7 @@ function sgAfter(){
 (function(r0){ render = function(){ var x = r0.apply(this, arguments); try{ sgAfter(); }catch(e){} return x; }; })(render);
 
 /* ---------- the person pop-over: Size, Tooltips, Theme + All settings… ---------- */
-function sgThemeRow(){ return '<div class="pxp-set sg-qt"><span>Theme</span><span class="px-seg" role="group">' + THEME_ORDER.map(function(m){ var t = THEMES[m], on = THEME === m;
+function sgThemeRow(){ return '<div class="pxp-set sg-qt"><span>Theme</span><span class="px-seg" role="group">' + THEME_ORDER.concat(THEME_MORE.indexOf(THEME) >= 0 ? [THEME] : []).map(function(m){ var t = THEMES[m], on = THEME === m;
   return '<button class="' + (on ? 'on' : '') + '" data-action="px-sg-quick" data-id="me.theme" data-v="' + m + '" aria-pressed="' + on + '" aria-label="' + esc(themeLabel(m)) + '" data-tip="' + esc(themeLabel(m)) + '"><i class="sg-sw8" style="background:' + t.acc + ';box-shadow:inset 0 0 0 4px ' + t.bg + ',0 0 0 1px rgba(0,0,0,.2)"></i></button>'; }).join('') + '</span></div>'; }
 function sgSizeRow(){ return '<div class="pxp-set"><span>Size</span><span class="px-seg" role="group">' + [["normal", "Normal"], ["large", "Large"], ["floor", "Shop floor"]].map(function(o){ var on = sizeMode() === o[0];
   return '<button class="' + (on ? 'on' : '') + '" data-action="px-sg-quick" data-id="me.size" data-v="' + o[0] + '" data-size="' + o[0] + '" aria-pressed="' + on + '">' + o[1] + '</button>'; }).join('') + '</span></div>'; }

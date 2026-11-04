@@ -33,5 +33,6 @@
   "access/admin-page": "the Admin page closure",
   "import/new-ro": "the New RO import closure (IMPX)",
   "library": "the Library: reading fault codes and Volvo documents, filing them (always asked first), the files in Parsec Data/Library, documents on an RO, the viewer",
-  "pages/library": "the Library page: Fault codes, CBRs, TSBs, FSBs, Recalls (Procedures soon)"
+  "pages/library": "the Library page: Fault codes, CBRs, TSBs, FSBs, Recalls (Procedures soon)",
+  "themes": "extra looks over Ivory and Graphite: one line per theme, deletable as a unit"
 }

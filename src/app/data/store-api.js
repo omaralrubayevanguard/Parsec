@@ -1,7 +1,7 @@
 /* Parsec · data · store-api.js
    What the rest of the app asks the store for: pdRoDir / pdAttList for an RO's folder and attachments, pd16Info and the banner on Your data, writeFileToFolder, and the Parsec 15 writers kept for the migration.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   pdRoDir pdAttList pd16Info pd16BannerHtml writeFolderState15 migrateToRoFolders writeFileToFolder adoptFolderState15 connectFolder reconnectFolder restoreFolder resolvedTheme … (34 functions, 8 constants)
+   declares   pdRoDir pdAttList pd16Info pd16BannerHtml writeFolderState15 migrateToRoFolders writeFileToFolder adoptFolderState15 connectFolder reconnectFolder restoreFolder themeOwn … (37 functions, 10 constants)
    state      savedAt tombs
    uses       automations/ clock/ kit/ pages/fixes/ pages/technician/ ro/ ro-page/ shell/ state/
 */
@@ -176,18 +176,36 @@ var THEMES = {
 };
 /* Ivory and Graphite are the only looks now — an old saved one opens in the matching one */
 var THEME_OLD = { mist: "ivd", atd: "ivd", glacier: "ivl", atl: "ivl" };
+/* Extra themes (src/app/themes/) add themselves to THEMES with their own colours (vars: the --vv-* tokens, grid: a background)
+   and to THEME_MORE, which the theme pickers list after the four above. Without them both stay empty. */
+var THEME_MORE = [];
+function themeOwn(m){ var t = THEMES[m]; return !!(t && t.vars); }
 function resolvedTheme(){
+  if(themeOwn(THEME)) return THEMES[THEME].dark ? "ivd" : "ivl";
   return THEME === "ivd" || THEME === "vvd" ? "ivd" : "ivl";   /* White and Near black are Ivory and Graphite with their own colors */
 }
+/* White, Near black and the extra themes recolour Ivory / Graphite through the --vv-* tokens */
+function themeVv(){ return /^vv/.test(THEME) || themeOwn(THEME); }
+var THEME_SET = [];   /* the properties the last extra theme wrote on <html>, taken off again on the next change */
+function themePaint(de){
+  THEME_SET.forEach(function(k){ de.style.removeProperty(k); }); THEME_SET = [];
+  var t = themeOwn(THEME) ? THEMES[THEME] : null, put = function(k, v){ de.style.setProperty(k, v); THEME_SET.push(k); };
+  if(t) Object.keys(t.vars).forEach(function(k){ put("--vv-" + k, t.vars[k]); });
+  if(t && t.grid){ put("--th-grid", t.grid); put("--th-grid-size", t.gridSize || "24px 24px"); de.setAttribute("data-th-grid", ""); }
+  else de.removeAttribute("data-th-grid");
+}
 function applyTheme(mode){
-  mode = THEME_OLD[mode] || mode; THEME = mode === "ivd" || mode === "vvl" || mode === "vvd" ? mode : "ivl";
+  mode = THEME_OLD[mode] || mode;
+  var dk = false; try{ dk = localStorage.getItem("tec_theme_dark") === "1"; }catch(e){}
+  THEME = themeOwn(mode) || mode === "ivl" || mode === "ivd" || mode === "vvl" || mode === "vvd" ? mode : (dk ? "ivd" : "ivl");   /* a theme that is gone opens in Ivory or Graphite */
   var de = document.documentElement;
   de.setAttribute("data-theme", resolvedTheme());
-  if(/^vv/.test(THEME)) de.setAttribute("data-pal", "vv"); else de.removeAttribute("data-pal");
-  try{ var jh = document.querySelector(".jc-host"); if(jh) jh.classList.toggle("pal-vv", /^vv/.test(THEME)); }catch(e){}
+  if(themeVv()) de.setAttribute("data-pal", "vv"); else de.removeAttribute("data-pal");
+  themePaint(de);
+  try{ var jh = document.querySelector(".jc-host"); if(jh) jh.classList.toggle("pal-vv", themeVv()); }catch(e){}
   de.removeAttribute("data-feel"); de.removeAttribute("data-layout");
   if(typeof applyDevice === "function" && typeof DEVICE_SETTING !== "undefined") applyDevice();
-  try{ localStorage.setItem("tec_theme", THEME); }catch(e){}
+  try{ localStorage.setItem("tec_theme", THEME); localStorage.setItem("tec_theme_dark", resolvedTheme() === "ivd" ? "1" : "0"); }catch(e){}
 }
 function initTheme(){
   var saved = null;

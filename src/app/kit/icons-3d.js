@@ -151,7 +151,7 @@ function applyBigTouch(){
   document.documentElement.classList.toggle("big-touch", on);
   var sz = sizeMode();
   if(document.documentElement.getAttribute("data-size") !== sz) document.documentElement.setAttribute("data-size", sz);
-  var host = document.querySelector(".jc-host"); if(host){ host.classList.toggle("big-touch", on); host.classList.toggle("dark-ui", isDarkTheme()); host.classList.toggle("th-at", /^at[ld]$/.test(resolvedTheme())); host.classList.toggle("th-iv", /^iv[ld]$/.test(resolvedTheme())); host.classList.toggle("pal-vv", /^vv/.test(THEME)); host.classList.toggle("size-large", sz === "large"); host.classList.toggle("size-floor", sz === "floor"); }
+  var host = document.querySelector(".jc-host"); if(host){ host.classList.toggle("big-touch", on); host.classList.toggle("dark-ui", isDarkTheme()); host.classList.toggle("th-at", /^at[ld]$/.test(resolvedTheme())); host.classList.toggle("th-iv", /^iv[ld]$/.test(resolvedTheme())); host.classList.toggle("pal-vv", themeVv()); host.classList.toggle("size-large", sz === "large"); host.classList.toggle("size-floor", sz === "floor"); }
 }
 /* Theme: one button that cycles system -> light -> dark, wearing the mode it is in.
    It used to be two clicks deep in the options menu, which is a lot for something
@@ -162,7 +162,7 @@ var THEME_ICON_DARK = '<svg width="18" height="18" viewBox="0 0 24 24" fill="non
 var THEME_ICON = { ivl:THEME_ICON_LIGHT, ivd:THEME_ICON_DARK };
 var THEME_NAME = {};
 THEME_IDS.forEach(function(k){ THEME_NAME[k] = THEMES[k].name; });
-function themeLabel(m){ return THEME_NAME[m] || m; }
+function themeLabel(m){ return THEME_NAME[m] || (THEMES[m] && THEMES[m].name) || m; }
 /* ---- RO context in the header ----
    The RO band below keeps the controls — status dropdown, customer, options, the rail
    toggle. Its readouts live up here instead, in the space the header was wasting, so

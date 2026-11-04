@@ -1,0 +1,6 @@
+/* Parsec · styles/app · 62-more-themes.css
+   The grid backgrounds of the extra themes (src/app/themes/more-themes.js): drawn behind the page and the sidebar, fixed
+   to the window so every layer's lines meet. Delete this file together with more-themes.js. */
+:root[data-th-grid][data-theme] body,
+:root[data-th-grid][data-theme] body .main,
+:root[data-th-grid][data-theme] body .main > .tg { background-image: var(--th-grid) !important; background-size: var(--th-grid-size) !important; background-attachment: fixed !important; }

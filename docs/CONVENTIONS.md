@@ -46,6 +46,8 @@ Prefixes are how this codebase finds its way; keep them:
 
 **A new page.** A folder under `pages/` with `_open.js` (`var XX = (function(){`), `model.js`, `draw.js`, `actions.js`, `_close.js` (`return { view, after, … }; })();`) and `view.js`; register in `pages/frame.js` (`PG.reg`), add the nav entry (`shell/nav-rail.js` PX_GROUPS — the default order; people's own orders and the shop's (`shell/nav-arrange.js`) take a new page in after its neighbour — and `access/permissions.js` pages per role), a `styles/app/NN-<page>.css`, and a test.
 
+**A new theme.** One `themeAdd({ id: "x-…", name, dark, canvas, panel, raised, ink, acc })` line in `themes/more-themes.js` (optional `grid` + `gridSize` for a background, drawn by `styles/app/62-more-themes.css`); the rest of the colours are mixed from those five. It recolours Ivory or Graphite through the `--vv-*` tokens (`themePaint` in `data/store-api.js`) and the pickers list it under More themes. Deleting the line deletes the theme; a person who had it opens in Ivory or Graphite.
+
 **A new test.** `tests/t<version><letter>.py`, copied from a recent one: load `t12.html` (the runner passes it), `__tg.loadSample25()`, sign in a role, drive the UI, print `ok …` / `FAIL …`, exit non-zero on a failure. Run it with `python3 tests/run.py t<name>`.
 
 **Reading better.** Any change to how New RO reads a case runs the reading scorecard first and after: `python tests/run.py t173a`. A misread that comes up in the shop becomes a new case in `tests/fixtures/reading/corpus.json` (invented values, the same shape), and when the score goes up, raise `floor` to just under it so it can't slip back.
