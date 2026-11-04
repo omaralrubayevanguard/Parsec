@@ -124,11 +124,13 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | file | what it is | KB | functions | constants |
 |---|---|---:|---:|---:|
 | `codes.js` | Fault codes in every form (P105E, P1050 FTB 17, 3226/2, MID 128 PID 110 FMI 0): reading what was typed, the label and chip text, what a code means from the Library or the built-in J1939 list. | 7 | 11 | 3 |
-| `intake.js` | Filing a document, always asked first: libIntake reads each file, shows what was found to check or change, then files it in the Library and, from an RO, links it to the operation. | 13 | 6 | 1 |
+| `intake-list.js` | Filing a stack of files (17.3): a progress window while they read, then one list with each file's kind, number and whether it's ready, needs a check or is already in the Library; open a row to check it, or file the ready ones in one click. | 8 | 4 | 1 |
+| `intake.js` | Filing a document, always asked first: libIntake reads each file, shows what was found to check or change, then files it in the Library and, from an RO, links it to the operation. | 24 | 8 | 2 |
 | `models.js` | The Library’s Models tab: the truck pictures moved out of Settings, one row per model (Make, Model, Years, Body, Open ROs) with the view from above, Replace and Remove; the catalog and Add a picture. | 4 | 2 | 0 |
 | `read-docs.js` | Reading a document: its kind from its number (CBR, TSB, FSB, Recall, Procedure), number, release, date, title, function group, model, model years, the codes it mentions, a DTC bulletin’s code table with FTBs, and an Impact procedure’s steps, warnings, tools and torques; Volvo’s function groups. | 24 | 18 | 7 |
 | `read-files.js` | Reading a file for the Library: a PDF’s text and where each piece sits on the page (pdf.js), a screenshot through the built-in reader. | 3 | 3 | 0 |
-| `store.js` | The Library’s records and files: STATE.libDocs / libCodes / libRules, the files in Parsec Data/Library/<kind>/, adding without doubles, and documents on an RO’s operations (op.docs) with a copy in Attachments. | 10 | 25 | 3 |
+| `read-more.js` | More from a document (17.3): its part numbers, labor operations and hours, chassis ranges, symptoms and the repair in one line; the two likeliest kinds when the number doesn't say; the fields worth checking; and using them on an operation. | 11 | 18 | 3 |
+| `store.js` | The Library’s records and files: STATE.libDocs / libCodes / libRules, the files in Parsec Data/Library/<kind>/, adding without doubles, and documents on an RO’s operations (op.docs) with a copy in Attachments. | 10 | 26 | 3 |
 | `viewer.js` | A document open in a panel beside the page (libOpen): its facts, the PDF, Open in a tab; a procedure’s steps ticked from its operation; on Warranty, the documents per operation and the claim folder. | 12 | 6 | 1 |
 
 ## pages/  — the page modules and what they share
@@ -369,7 +371,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `job-cards.js` | The operation cards: the efficiency bar, the start / stop reason questions, the complete gate, the drag order, glide between renders. | 21 | 21 | 6 |
 | `job-road.js` | The job road: the small animated scene under an open job card (truck, road, sky by time of day) — RD_SCENES and the SVG builders; ROAD_CSS is appended to JC_CSS. | 23 | 10 | 18 |
 | `layout.js` | The RO page in your layout (Parsec 12): the one-panel page — operations in the middle, the truck card and the sections on the right (ROPS), who is on it, the right column's fit. | 10 | 21 | 3 |
-| `library-on-ro.js` | The Library on the RO page: each operation’s codes, function group and documents, what each code means, the documents that cover its codes (Attach / Not now), the documents strip above the operations, and PDFs offered to the Library before they attach. | 7 | 7 | 0 |
+| `library-on-ro.js` | The Library on the RO page: each operation’s codes, function group and documents, what each code means, the documents that cover its codes (Attach / Not now), the documents strip above the operations, and PDFs offered to the Library before they attach. | 9 | 8 | 0 |
 | `messages-chat.js` | Messages \| Customer above the operations (17.2): one box with a segmented pill, the RO's messages as a chat (bubbles or lines, To and @ for anyone in the shop, files and the operation, a seen dot, quick lines by role) and the Customer fields. | 18 | 16 | 3 |
 | `modal-export-print.js` | The RO page's modal, and export / import / print of one RO (sheetFromRO, importSheet). | 10 | 15 | 2 |
 | `one-ro-view.js` | One RO view (14.3 B): the Technician page's middle and right are the RO page itself; TCX says when the RO page is embedded there. | 1 | 3 | 2 |

@@ -290,5 +290,7 @@
   "ro-page/steady-redraw.js": "The RO page redraws without flicker (17.1): an opening plays only for what is new, a picture already showing stays, a scrolled box keeps its scroll.",
   "ro-page/cause-correction.js": "The Time tab's Cause and Correction (17.3): the two lines beside the notes, the notes underlined amber or green, click a sentence to move it, ask after a hand edit, ✦ suggests, copy the story.",
   "ro-page/messages-chat.js": "Messages | Customer above the operations (17.2): one box with a segmented pill, the RO's messages as a chat (bubbles or lines, To and @ for anyone in the shop, files and the operation, a seen dot, quick lines by role) and the Customer fields.\nFlow: ropBuild puts ropMC() above Operations; the pill switches the pane in place (slides toward the tab), sending goes through IB.send and redraws.",
-  "themes/more-themes.js": "Thirteen more themes (17.3): cool blues, indigo, violet, steel, carbon and four grid backgrounds, each one line you can delete."
+  "themes/more-themes.js": "Thirteen more themes (17.3): cool blues, indigo, violet, steel, carbon and four grid backgrounds, each one line you can delete.",
+  "library/read-more.js": "More from a document (17.3): its part numbers, labor operations and hours, chassis ranges, symptoms and the repair in one line; the two likeliest kinds when the number doesn't say; the fields worth checking; and using them on an operation.",
+  "library/intake-list.js": "Filing a stack of files (17.3): a progress window while they read, then one list with each file's kind, number and whether it's ready, needs a check or is already in the Library; open a row to check it, or file the ready ones in one click."
 }

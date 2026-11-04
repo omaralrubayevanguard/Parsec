@@ -106,39 +106,39 @@ function libSpaced(L){ var w = String(L).split(" "); return w.length >= 3 && w.f
 function libDocRead(text, fileName, pages){
   var raw = String(text || ""), T = libFlat(raw), lines = T.split("\n").map(function(l){ return l.trim(); }).filter(Boolean);
   var one = T.replace(/\n/g, " "), name = String(fileName || "").replace(/\.[a-z0-9]+$/i, "");
-  var r = { kind: "", num: "", rel: "", date: "", title: "", fgrp: "", model: "", opNo: "", codes: [], table: [], how: "" }, m;
+  var r = { kind: "", num: "", rel: "", date: "", title: "", fgrp: "", model: "", opNo: "", codes: [], table: [], how: "", src: {}, tHow: "" }, m, S = r.src;   /* src: the words each field was read from (17.3) */
 
   /* Impact printouts: Path 413/…, ID/Operation 4134-03-02-05, Publish date 5/14/2025, Model VN */
   if((m = /ID\/Operation[\s\S]{0,40}?\b(\d{4}-\d{2}-\d{2}-\d{2}|V-\d{3}-\d{3}[A-Z]?)/i.exec(one))){   /* the label and its value can sit on different lines */
-    r.num = m[1]; r.how = "Impact";
+    r.num = m[1]; r.how = "Impact"; S.num = m[0];
     if(/^\d{4}-/.test(m[1])) r.opNo = m[1];
-    var pth = /Path\s+(\d{2,4})\//i.exec(one); if(pth) r.fgrp = pth[1];
-    var pd = /Publish date[\s\S]{0,40}?(\d{1,2}\/\d{1,2}\/\d{4})/i.exec(one); if(pd) r.date = libDate(pd[1]);
+    var pth = /Path\s+(\d{2,4})\//i.exec(one); if(pth){ r.fgrp = pth[1]; S.fgrp = pth[0]; }
+    var pd = /Publish date[\s\S]{0,40}?(\d{1,2}\/\d{1,2}\/\d{4})/i.exec(one); if(pd){ r.date = libDate(pd[1]); S.date = pd[0]; }
     var pt = /Path\s+\d{2,4}\/[^\/\s]+\/([^\/\s]+)\//i.exec(one); if(pt) r.info = pt[1];   /* 413/Parts/Repair/Service → Repair */
     var tre = new RegExp(m[1].replace(/[-]/g, "\\-") + "[ \\t]*([A-Z][^\\n]{3,90})", "g"), tl;
-    while((tl = tre.exec(T))) if(!/^(Copyright|Path|Identity|Publish)/.test(tl[1])){ r.title = tl[1].trim(); break; }
+    while((tl = tre.exec(T))) if(!/^(Copyright|Path|Identity|Publish)/.test(tl[1])){ r.title = tl[1].trim(); S.title = tl[1]; r.tHow = "impact"; break; }
   }
   /* a safety recall's header row: 05.2026 RVXX2601 02 1(31) */
   if(!r.num && (m = /(\d{1,2}\.\d{4})\s+(?:Number\s+)?([A-Z]{1,4}\d{3,6}|\d{3,4})\s+(?:Release\s+)?(\d{2})\s+(?:Page\s+)?\d+\(\d+\)/.exec(one))){
-    r.date = libDate(m[1]); r.num = m[2]; r.rel = m[3]; r.how = "header";
+    r.date = libDate(m[1]); r.num = m[2]; r.rel = m[3]; r.how = "header"; S.num = S.date = S.rel = m[0];
   }
   /* a Service Bulletin's header row: 9.2012 430 13 01 1(50), with or without the words between */
   if(!r.num && (m = /(\d{1,2}\.\d{4})\s+(?:Group\s+)?(\d{3})\s+(\d{2})\s+(?:No\.\s+)?(?:Release\s+)?(\d{2})\s+(?:Page\s+)?\d+\(\d+\)/.exec(one))){
-    r.date = libDate(m[1]); r.num = m[2] + "-" + m[3]; r.rel = m[4]; r.fgrp = m[2]; r.how = "header";
+    r.date = libDate(m[1]); r.num = m[2] + "-" + m[3]; r.rel = m[4]; r.fgrp = m[2]; r.how = "header"; S.num = S.date = S.rel = S.fgrp = m[0];
   }
   /* a dealer bulletin or a recall alert: Bulletin: SNM23-002 · Date: August 23, 2023 · Subject: EGR Cooler */
-  if(!r.num && (m = /Bulletin\s*:\s*([A-Z0-9][A-Z0-9-]{2,20})/i.exec(one))){ r.num = m[1].toUpperCase(); r.how = "Bulletin:"; }
-  if(!r.date && (m = /\bDate\s*:\s*([A-Za-z]{3,9}\.? \d{1,2},? \d{4}|\d{1,2}\/\d{1,2}\/\d{4})/.exec(one))) r.date = libDate(m[1]);
-  if(!r.title && (m = /Subject\s*:\s*([^\n]{3,120})/i.exec(T))) r.title = m[1].trim();
+  if(!r.num && (m = /Bulletin\s*:\s*([A-Z0-9][A-Z0-9-]{2,20})/i.exec(one))){ r.num = m[1].toUpperCase(); r.how = "Bulletin:"; S.num = m[0]; }
+  if(!r.date && (m = /\bDate\s*:\s*([A-Za-z]{3,9}\.? \d{1,2},? \d{4}|\d{1,2}\/\d{1,2}\/\d{4})/.exec(one))) { r.date = libDate(m[1]); S.date = m[0]; }
+  if(!r.title && (m = /Subject\s*:\s*([^\n]{3,120})/i.exec(T))){ r.title = m[1].trim(); S.title = m[0]; r.tHow = "subject"; }
   /* a CBR, when it says so */
-  if(!r.num && (m = /\b(CBR-?\s?\d{2,})\b/i.exec(one))){ r.num = m[1].toUpperCase().replace(/\s/g, ""); r.how = "CBR"; }
+  if(!r.num && (m = /\b(CBR-?\s?\d{2,})\b/i.exec(one))){ r.num = m[1].toUpperCase().replace(/\s/g, ""); r.how = "CBR"; S.num = m[0]; }
   /* the file's own name: RVXX2601.pdf, SNM23-002 EGR Cooler.pdf */
   if(!r.num){
     var tok = name.toUpperCase().split(/[\s_,()]+/).filter(Boolean);
     for(var i = 0; i < tok.length; i++) if(libKindOf(tok[i])){ r.num = tok[i]; r.how = "file name"; break; }
     /* a number Parsec doesn't know the kind of yet (EC0033): taken anyway — the person picks its tab once */
     if(!r.num && tok[0] && /^[A-Z]{1,5}-?\d{3,}[A-Z0-9-]*$/.test(tok[0])){ r.num = tok[0]; r.how = "file name"; }
-    if(r.num && r.how === "file name" && !r.title){ var rest = name.replace(new RegExp("^\\s*" + r.num.replace(/[-]/g, "\\-") + "[\\s_,-]*", "i"), "").trim(); if(rest.length >= 4) r.title = rest; }
+    if(r.num && r.how === "file name" && !r.title){ var rest = name.replace(new RegExp("^\\s*" + r.num.replace(/[-]/g, "\\-") + "[\\s_,-]*", "i"), "").trim(); if(rest.length >= 4){ r.title = rest; r.tHow = "file"; } }
   }
   if(!r.rel && (m = /\brel(?:ease)?\.?\s*:?\s*(\d{1,2})\b/i.exec(name + " " + one))) r.rel = ("0" + m[1]).slice(-2);
   r.kind = libKindOf(r.num);
@@ -152,7 +152,7 @@ function libDocRead(text, fileName, pages){
       var L = lines[k].replace(/[“”"]/g, "");
       if(L.length < 6 || LIB_BOILER.test(L) || LIB_FURN.test(L) || libSpaced(L) || /^[\d\s.()\/-]+$/.test(L) || L === r.num || /\bpage \d+$/i.test(L) || /\d+\(\d+\)\s*$/.test(L)) continue;
       if(L.split(" ").length < 2 && !/[A-Z]{3}/.test(L)) continue;
-      r.title = L.replace(new RegExp("^" + (r.num || "@@").replace(/[-]/g, "\\-") + "[\\s,:-]*"), "").slice(0, 120); break;
+      r.title = L.replace(new RegExp("^" + (r.num || "@@").replace(/[-]/g, "\\-") + "[\\s,:-]*"), "").slice(0, 120); S.title = lines[k]; r.tHow = "line"; break;
     }
   }
   r.title = libUnhyph(r.title).replace(/\s+/g, " ").trim();
@@ -171,6 +171,7 @@ function libDocRead(text, fileName, pages){
   r.codes = libCodesIn(T, r.num);
   r.table.forEach(function(row){ if(r.codes.indexOf(row.key) < 0) r.codes.push(row.key); });
   if(r.table.length >= 2){ r.numKind = r.kind; r.kind = "codes"; }   /* 17.1: a DTC list files as Fault codes — the codes are read only for that kind */
+  libReadMore(r, T, one);   /* 17.3: parts, labor, chassis, symptoms, the repair, the likely kinds, the fields to check (library/read-more.js) */
   return r;
 }
 

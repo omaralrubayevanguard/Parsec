@@ -1,7 +1,7 @@
 /* Parsec · ro-page · library-on-ro.js
    The Library on the RO page: each operation’s codes, function group and documents, what each code means, the documents that cover its codes (Attach / Not now), the documents strip above the operations, and PDFs offered to the Library before they attach.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   libOpChips libOpBelow libPickFor libRouteDocs libDocStrip libProcsFor libStepsTxt (7 functions)
+   declares   libOpChips libOpBelow libOpUse libPickFor libRouteDocs libDocStrip libProcsFor libStepsTxt (8 functions)
    uses       library/ ro/ shell/ state/
 */
 /* ============================== the Library on the RO page (Parsec 17.1) ==============================
@@ -34,6 +34,7 @@ function libOpBelow(job, bar) {
     });
     bar.appendChild(mean);
   }
+  libOpUse(job, bar);
   var have = {}; libOpDocs(job).forEach(function (d) { have[d.id] = 1; });
   var skip = {}; (job.docSkip || []).forEach(function (id) { skip[id] = 1; });
   var offers = [], seen = {};
@@ -45,16 +46,39 @@ function libOpBelow(job, bar) {
     });
   });
   libProcsFor(job).forEach(function (o) { if (!have[o.d.id] && !skip[o.d.id] && !seen[o.d.id]) { seen[o.d.id] = 1; offers.push(o); } });
+  /* 17.3: a document whose symptoms the complaint names — with its code too, it says both */
+  var cmp = [job.complaint, job.cause].filter(Boolean).join(' ');
+  if (cmp) {
+    offers.forEach(function (o) { var hit = libSympHit(o.d, cmp); if (hit && o.f) o.why = 'covers ' + libCodeKey(o.f) + ' and “' + hit + '”'; });
+    libDocs().forEach(function (d0) { var d = libLatest(d0); if (!d || have[d.id] || skip[d.id] || seen[d.id]) return; var hit = libSympHit(d, cmp); if (hit) { seen[d.id] = 1; offers.push({ d: d, why: 'matches “' + hit + '”' }); } });
+  }
   offers.slice(0, 3).forEach(function (o) {
+    var fit = libFits(o.d, RO);
     bar.appendChild(el('div', { class: 'libOffer' }, [
       el('span', { class: 'libChip k-' + o.d.kind + ' ro' }, [el('i'), document.createTextNode(libDocChipText(o.d))]),
       el('span', { class: 'libOfferT', text: o.why || ('covers ' + libCodeKey(o.f) + (o.pg ? ' (page ' + o.pg + ')' : '')) }),
+      fit ? el('span', { class: 'libFit ' + (fit.ok ? 'ok' : 'no'), title: fit.why, text: fit.ok ? 'fits' : 'doesn’t fit' }) : null,
       el('button', { class: 'libOfferB', type: 'button', text: 'Open', onClick: function (e) { e.stopPropagation(); libOpen(o.d, o.pg, { ro: RO, op: job }); } }),
       el('button', { class: 'libOfferB pri', type: 'button', text: 'Attach', title: 'Put it on OP ' + ropN(job) + ' — a copy goes into Files',
         onClick: function (e) { e.stopPropagation(); pushUndo('document'); libAttach(RO, job, o.d, o.d.dtc ? 'dtc' : 'report', function () { render(); }); render(); toast(libDocChipText(o.d) + ' is on OP ' + ropN(job) + '.'); } }),
       el('button', { class: 'libOfferB', type: 'button', text: 'Not now', title: 'Don’t offer it on this operation again',
         onClick: function (e) { e.stopPropagation(); job.docSkip = (job.docSkip || []).concat([o.d.id]); save(true); render(); } })
     ]));
+  });
+}
+/* 17.3: what a document on the operation says it needs — does it fit the truck, its parts, its hours, its repair — one click each */
+function libOpUse(job, bar) {
+  libOpDocs(job).forEach(function (d) {
+    var fit = libFits(d, RO), parts = libPartsNew(job, d), hrs = Math.round(libHoursOf(d) * 10) / 10, fix = d.fix && ccLine(job, 'x') !== d.fix ? d.fix : '';
+    var useH = hrs > 0 && +job.quoted !== hrs;
+    if (!fit && !parts.length && !useH && !fix) return;
+    var row = el('div', { class: 'libUse' }, [el('span', { class: 'libChip k-' + d.kind + ' ro' }, [el('i'), document.createTextNode(libDocChipText(d))])]);
+    if (fit) row.appendChild(el('span', { class: 'libFit ' + (fit.ok ? 'ok' : 'no'), text: fit.why }));
+    var act = function (label, tip, run, msg) { row.appendChild(el('button', { class: 'libOfferB', type: 'button', text: label, title: tip, onClick: function (e) { e.stopPropagation(); pushUndo('use the document'); run(); save(true); render(); toast(msg); } })); };
+    if (parts.length) act('Add ' + parts.length + ' part' + (parts.length === 1 ? '' : 's'), parts.map(function (x) { return x.pn + ' ' + x.desc + (x.qty > 1 ? ' ×' + x.qty : ''); }).join(' · '), function () { libUseParts(RO, job, d); }, parts.length + ' part' + (parts.length === 1 ? '' : 's') + ' from ' + libDocLabel(d) + ' added to OP ' + ropN(job) + '.');
+    if (useH) act('Use ' + hrs + ' h', 'Make ' + hrs + ' h the quoted hours, from ' + libDocLabel(d), function () { libUseHours(job, d); }, 'OP ' + ropN(job) + ' quoted ' + hrs + ' h, from ' + libDocLabel(d) + '.');
+    if (fix) act('Use in the Correction', fix, function () { libUseFix(job, d); }, 'The Correction on OP ' + ropN(job) + ' is the repair from ' + libDocLabel(d) + '.');
+    bar.appendChild(row);
   });
 }
 /* + document on an operation */

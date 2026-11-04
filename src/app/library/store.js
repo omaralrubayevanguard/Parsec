@@ -1,7 +1,7 @@
 /* Parsec · library · store.js
    The Library’s records and files: STATE.libDocs / libCodes / libRules, the files in Parsec Data/Library/<kind>/, adding without doubles, and documents on an RO’s operations (op.docs) with a copy in Attachments.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   libDocs libCodesAll libDocById libWho libDocLabel libDocChipText libDocsForCode libIdb libIdbDo libFolderOn libFileName libKindDir … (25 functions, 3 constants)
+   declares   libDocs libCodesAll libDocById libWho libDocLabel libDocChipText libDocsForCode libIdb libIdbDo libFolderOn libFileName libKindDir … (26 functions, 3 constants)
    state      libCodes libDocs libRules techName
    uses       data/ pages/ ro-page/ state/
 */
@@ -30,7 +30,7 @@ function libDocsForCode(f){
   var add = function(d){ if(d && !seen[d.id]){ seen[d.id] = 1; out.push(d); } };
   if(row && row.doc) add(libDocById(row.doc));
   libDocs().forEach(function(d){ if(d && (d.codes || []).indexOf(key) > -1) add(d); });
-  return out;
+  var seen2 = {}; return out.map(libLatest).filter(function(d){ if(seen2[d.id]) return false; seen2[d.id] = 1; return true; });   /* 17.3: the newest release of each */
 }
 
 /* ---------- the files ---------- */
@@ -101,13 +101,24 @@ function libAdd(f, blob, origName){
     fgrp: String(f.fgrp || "").trim(), model: f.model || "", mod: f.mod || "", opNo: f.opNo || "", codes: (f.codes || []).slice(0, 400), dtc: !!(f.table && f.table.length),
     years: String(f.years || "").trim(), info: f.info || "", proc: f.proc || undefined,   /* dtc: it brought a code table · proc: an Impact procedure's steps, warnings, tools, torques */
     addedAt: nowIso(), addedBy: libWho() };
-  if(f.learn && f.num && f.kind){ var pre = libPrefixOf(f.num); if(pre && !(STATE.libRules || []).some(function(x){ return x.pre === pre; })) (STATE.libRules = STATE.libRules || []).push({ id: uid("lr"), pre: pre, kind: f.kind }); }
+  /* 17.3: what else it says — parts, labor, chassis ranges, symptoms, the repair in one line (library/read-more.js) */
+  ["parts", "labor", "chassis", "symp"].forEach(function(k){ if(f[k] && f[k].length) d[k] = f[k].slice(0, 40); });
+  if(f.fix) d.fix = String(f.fix);
+  libLearn(f);
   return (blob ? libWriteFile(d, blob, origName) : Promise.resolve(d)).then(function(){
     libDocs().push(d);
     if(f.table && f.table.length) libMergeCodes(d, f.table);
     scheduleSave(true);
     return d;
   });
+}
+/* what the person said yes to: numbers starting with these letters are this kind (a learned kind is changed, not doubled),
+   and a phrase to leave out of titles (17.3) */
+function libLearn(f){
+  var R = STATE.libRules = STATE.libRules || [];
+  if(f.learn && f.num && f.kind){ var pre = libPrefixOf(f.num), had = R.filter(function(x){ return x && x.pre === pre; })[0];
+    if(pre){ if(had) had.kind = f.kind; else R.push({ id: uid("lr"), pre: pre, kind: f.kind }); } }
+  if(f.drop && !R.some(function(x){ return x && x.drop === f.drop; })) R.push({ id: uid("lr"), drop: f.drop });
 }
 /* a DTC bulletin's codes go into the code list; a code already there keeps its FTBs and gains the new ones */
 function libMergeCodes(d, table){
