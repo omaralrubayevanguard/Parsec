@@ -411,9 +411,10 @@ function jobCard(job, idx) {
     /* notes: saved entries (an old stamp, if it has one, on the left), then the field and its Save button */
     var notesBox = el('div', { class: 'jp-notes' });
     noteEntries(p.notes).forEach(function (en, i) {
-      notesBox.appendChild(el('div', { class: 'jpn' + (en.ran ? '' : ' legacy') }, [
-        el('span', { class: 'jpn-st mono', title: en.ran ? 'Saved ' + en.ran + ' into this punch' : '',
-          text: en.ran ? en.ran : '\u2014' }),
+      var sat = ockNoteAt(p, en.text);   /* 17.3: the time it was saved */
+      notesBox.appendChild(el('div', { class: 'jpn' + (en.ran || sat != null ? '' : ' legacy') }, [
+        el('span', { class: 'jpn-st mono', title: sat != null ? 'Saved at ' + ropClk(sat) : en.ran ? 'Saved ' + en.ran + ' into this punch' : '',
+          text: sat != null ? ropClk(sat) : en.ran ? en.ran : '\u2014' }),
         (function () {
           /* click a saved note to fix it: Enter keeps it, Esc puts it back, emptying it deletes it */
           var tx = el('span', { class: 'jpn-tx', text: en.text, title: 'Click to edit this note', spellcheck: 'true' });
@@ -435,6 +436,7 @@ function jobCard(job, idx) {
             pushUndo(nv ? 'edit punch note' : 'delete punch note');
             if (nv) lines[i] = stamp + nv; else lines.splice(i, 1);
             p.notes = lines.join('\n');
+            if (p.noteAt && p.noteAt[orig]) { if (nv) p.noteAt[nv] = p.noteAt[orig]; delete p.noteAt[orig]; }   /* the note keeps its time */
             save(true); render();
             toast(nv ? 'Note updated' : 'Note deleted', { label: 'UNDO', run: function () { restoreSnapshot(); } });
           });

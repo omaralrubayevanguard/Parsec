@@ -3,7 +3,7 @@
    ── facts (generated; run tools/headers.py to refresh) ──
    declares   techOf holdOf notesOf fixOf photosOf mkOp dayOf checksOf teamOf boardOf build dayStats … (13 functions, 28 constants)
    state      cxChk goals punches ros
-   uses       access/ automations/ clock/ data/ kit/ pages/ pages/fixes/ pages/triage/ pages/warranty/ ro/ state/
+   uses       access/ automations/ clock/ data/ kit/ pages/ pages/fixes/ pages/triage/ pages/warranty/ ro/ ro-page/ state/
 */
   const ic = PG.ic, kbd = PG.kbd, esc = PG.e, h1 = PG.h1, dur = PG.dur, clk = PG.clk, clkM = PG.clkM, hms = PG.hms, hmH = PG.hmH;
   const sum = (L, f) => L.reduce((s, x) => s + f(x), 0);
@@ -45,7 +45,7 @@
     const L = [];
     opPunches(op.id).forEach(p => {
       const st = new Date(p.start).getTime();
-      noteEntries(p.notes).forEach(n => { let at = st; const m = /^(\d+):(\d{2})$/.exec(n.ran || ''); if(m) at = st + (+m[1] * 60 + +m[2]) * 60000; L.push([at, PG.isToday(at) ? clk(at) : PG.day(at) + ' ' + clk(at), n.text]); });
+      noteEntries(p.notes).forEach(n => { const at = noteTimeOf(p, n); L.push([at, PG.isToday(at) ? clk(at) : PG.day(at) + ' ' + clk(at), n.text]); });
     });
     (op.log || []).forEach(l => L.push([new Date(l.at).getTime(), (l.kind === 'fix' ? 'Correction · ' : 'Cause · ') + (PG.isToday(l.at) ? clk(l.at) : PG.day(l.at)), l.text]));
     return L.sort((a, b) => a[0] - b[0]).map(x => [x[1], x[2]]);

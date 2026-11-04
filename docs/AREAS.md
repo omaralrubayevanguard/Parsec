@@ -356,7 +356,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `cause-correction.js` | The Time tab's Cause and Correction (17.3): the two lines beside the notes, the notes underlined amber or green, click a sentence to move it, ask after a hand edit, ✦ suggests, copy the story. | 8 | 5 | 0 |
 | `clock-card-actions.js` | What you do on the clock card: hold to stop with a reason, lap / split, fix the start, notes, reopen; ockAuto for lunch and the end of the day (reminders only since Parsec 15). | 25 | 23 | 8 |
 | `clock-card-draw.js` | The clock card's pieces, markup and ticker: the big time, the ring, segments and facts; focus mode (the big shop-floor view); ockTick updates every card in place each second; the time bar's initials and note pins, and the note added where you click (17.1). | 52 | 83 | 1 |
-| `clock-card-model.js` | The operation clock card (Parsec 12.4 / 12.5), the model: the numbers each page counts (ockModel), the shop day, similar jobs and the tech's usual pace, parts on the job, the punches' notes (and each note's time, p.noteAt) and splits. | 18 | 41 | 22 |
+| `clock-card-model.js` | The operation clock card (Parsec 12.4 / 12.5), the model: the numbers each page counts (ockModel), the shop day, similar jobs and the tech's usual pace, parts on the job, the punches' notes (and each note's time, p.noteAt) and splits. | 18 | 42 | 22 |
 | `collapse-expand.js` | Collapse all / Expand all on the sections below the operations (Parsec 15), one switch. | 19 | 20 | 0 |
 | `constants.js` | The RO page's constants: job types, status looks, task kinds. | 3 | 3 | 6 |
 | `declined.js` | Declined on the operation's status menu (14.8 A) and the complaint edited in place while the clock runs or not. | 15 | 13 | 1 |
@@ -388,7 +388,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `summary-and-selection.js` | The work performed as one paragraph for warranty / triage (complaint, cause, correction), and the selection toolbar for marking text as a pill. | 22 | 23 | 11 |
 | `tab-actions.js` | Each tab's actions at the right of the tabs: attach, paste a screenshot, the notes paragraph to copy (Time), add a part (Parts). | 6 | 6 | 0 |
 | `task-bar.js` | Clock-string parsing for the time fields and the punch story builder. | 2 | 6 | 4 |
-| `time-tab.js` | An open operation's Time tab: every punch from its start to its stop, typed times, stops, the day bar; Parsec 15's notes that are not on a punch. | 25 | 26 | 2 |
+| `time-tab.js` | An open operation's Time tab: every punch from its start to its stop, typed times, stops, the day bar; Parsec 15's notes that are not on a punch. | 26 | 26 | 2 |
 | `toolbar.js` | The RO toolbar: tabs, the job stepper and job dots, files on the RO (allFiles / addFilesToRO), late parts. | 14 | 13 | 5 |
 | `totals.js` | The RO totals row and the day strip under it. | 7 | 4 | 1 |
 

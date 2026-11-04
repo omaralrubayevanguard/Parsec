@@ -155,9 +155,9 @@ function ropPunch(job, p, box) {
   blk.appendChild(srow);
   var ns = noteEntries(p.notes);
   ns.forEach(function (n, i) {
-    var at = st, m = /^(\d+):(\d{2})$/.exec(n.ran || ''); if (m) at = st + (+m[1] * 60 + +m[2]) * 60000;
+    var at = noteTimeOf(p, n);   /* the time it was saved */
     blk.appendChild(el('div', { class: 'rop-tn' }, [el('small', { text: ropClk(at) }), el('span', {}, ropCcMark(job, n.text)), ropIb('x', 'Delete this note', function () {
-      var lines = ropNoteLines(p); if (!lines[i]) return; pushUndo('delete punch note'); lines.splice(i, 1); p.notes = lines.join('\n'); save(true); render(); ropUndo('Note deleted.'); }, 'rop-tnx is-dng')]));
+      var lines = ropNoteLines(p); if (!lines[i]) return; pushUndo('delete punch note'); lines.splice(i, 1); p.notes = lines.join('\n'); if (p.noteAt) delete p.noteAt[String(n.text || '').trim()]; save(true); render(); ropUndo('Note deleted.'); }, 'rop-tnx is-dng')]));
   });
   if (ROPT.note === p.id) {
     var ni = el('input', { class: 'rop-nin', placeholder: live ? 'What are you doing right now? Enter saves' : 'A note on this punch — Enter saves', 'aria-label': 'A note on this punch' });

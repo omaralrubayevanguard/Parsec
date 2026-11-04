@@ -1,7 +1,7 @@
 /* Parsec · ro-page · clock-card-model.js
    The operation clock card (Parsec 12.4 / 12.5), the model: the numbers each page counts (ockModel), the shop day, similar jobs and the tech's usual pace, parts on the job, the punches' notes (and each note's time, p.noteAt) and splits.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   ockCalm ockE ockHms ockMs ockHm ockCd ockClk ockIni ockFirst ockIso ockMe ockSame … (41 functions, 22 constants)
+   declares   ockCalm ockE ockHms ockMs ockHm ockCd ockClk ockIni ockFirst ockIso ockMe ockSame … (42 functions, 22 constants)
    state      punches ros
    uses       access/ automations/ clock/ data/ kit/ library/ pages/ pages/fixes/ pages/foreman/ pages/warranty/ ro/ shell/ state/
    at load    builds OCK_VIEW (a closure)
@@ -154,13 +154,18 @@ var OCK_SYS_NOTE = /^(Split \d+ · |Start moved back )/;
 function ockNotes(p){
   var E = []; try{ E = noteEntries(p.notes); }catch(e){}
   var st = +new Date(p.start);
-  return E.map(function(e){ var mm = /^(\d+):(\d{2})$/.exec(e.ran || ""), tx = String(e.text || "").trim(), sv = ockNoteAt(p, tx);   /* 17.2: a time set by hand wins over the stamp */
-    return { at: sv != null ? sv : mm ? st + (+mm[1] * 60 + +mm[2]) * 60000 : st, text: tx, known: !!mm || sv != null }; }).filter(function(x){ return x.text; });
+  return E.map(function(e){ var tx = String(e.text || "").trim();   /* 17.2: a time set by hand wins over the stamp */
+    return { at: noteTimeOf(p, e), text: tx, known: !!e.ran || ockNoteAt(p, tx) != null }; }).filter(function(x){ return x.text; });
 }
 function ockLastNote(p){ var L = ockNotes(p).filter(function(x){ return !OCK_SYS_NOTE.test(x.text); }); return L[L.length - 1] || null; }
 /* ---------- a note's time (Parsec 17.1): kept beside the note, so its pin sits where it happened on the time bar ----------
    p.noteAt = { "<the note, as saved>": ISO time }. The note's words stay exactly as typed (16.1); the time only places the pin.
    Older notes have none: a stamped one ([10:05 · 0:26]) goes by its stamp, the rest sit at the end of their punch. */
+/* a saved note's time (17.3): when it was saved (p.noteAt), else an old "[10:05 · 0:26]" stamp, else the punch's start */
+function noteTimeOf(p, n){
+  var sv = ockNoteAt(p, n && n.text), st = +new Date(p && p.start), m = /^(\d+):(\d{2})$/.exec((n && n.ran) || "");
+  return sv != null ? sv : m ? st + (+m[1] * 60 + +m[2]) * 60000 : st;
+}
 function ockNoteAt(p, text){ var m = p && p.noteAt, v = m && typeof m === "object" ? m[String(text || "").trim()] : null, t = v ? +new Date(v) : NaN; return isNaN(t) ? null : t; }
 function ockNoteTime(p, text, at){
   var k = String(text || "").trim(); if(!p || !k) return;

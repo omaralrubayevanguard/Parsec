@@ -3,7 +3,7 @@
    ── facts (generated; run tools/headers.py to refresh) ──
    declares   ccKey ccSplitText ccSentences ccSplit ccEntry ccLine ccWrite ccSync ccTag ccSetHand ccRefill ccKeepMine … (13 functions, 4 constants)
    state      punches
-   uses       automations/ data/ state/
+   uses       automations/ data/ ro-page/ state/
 */
 /* ============================== Cause and Correction from the tech notes (Parsec 17.3) ==============================
    Every note on an operation (punch notes, notes off the clock, older Work performed text) is split into sentences in time order.
@@ -31,8 +31,7 @@ function ccSentences(op, extra){
   var add = function(text, at, force){ ccSplitText(text).forEach(function(s, i){ var k = ccKey(s); if(!k) return; L.push({ t: s, k: k, at: at + i / 1000, force: force || "" }); }); };
   if(op.work) add(op.work, 0);
   try{ (STATE.punches || []).filter(function(p){ return p.opId === op.id; }).forEach(function(p){
-    var st = +new Date(p.start) || 0;
-    noteEntries(p.notes).forEach(function(n, i){ var at = st + i, m = /^(\d+):(\d{2})$/.exec(n.ran || ""); if(m) at = st + (+m[1] * 60 + +m[2]) * 60000; add(n.text, at); });
+    noteEntries(p.notes).forEach(function(n, i){ add(n.text, noteTimeOf(p, n) + i / 100); });
   }); }catch(e){}
   (Array.isArray(op.offNotes) ? op.offNotes : []).forEach(function(n){ add(n.text, +new Date(n.at) || 0); });
   (op.log || []).forEach(function(l){ if(l && !l.cc && l.text && (l.kind === "cause" || l.kind === "fix")) add(l.text, +new Date(l.at) || 0, l.kind === "fix" ? "x" : "c"); });   /* a cause or fix written as its own note */
