@@ -152,6 +152,7 @@ pages/assets/assets-page.js
 pages/assets/_close.js
 pages/assets/view.js
 pages/library/_open.js
+pages/library/shop-and-cards.js
 pages/library/library-page.js
 pages/library/_close.js
 pages/library/view.js
@@ -363,6 +364,7 @@ library/store.js
 library/intake.js
 library/viewer.js
 library/models.js
+library/viewer-use.js
 library/read-more.js
 library/intake-list.js
 themes/more-themes.js

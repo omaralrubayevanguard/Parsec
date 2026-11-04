@@ -102,7 +102,7 @@ function libAdd(f, blob, origName){
     years: String(f.years || "").trim(), info: f.info || "", proc: f.proc || undefined,   /* dtc: it brought a code table · proc: an Impact procedure's steps, warnings, tools, torques */
     addedAt: nowIso(), addedBy: libWho() };
   /* 17.3: what else it says — parts, labor, chassis ranges, symptoms, the repair in one line (library/read-more.js) */
-  ["parts", "labor", "chassis", "symp"].forEach(function(k){ if(f[k] && f[k].length) d[k] = f[k].slice(0, 40); });
+  ["parts", "labor", "chassis", "symp", "steps"].forEach(function(k){ if(f[k] && f[k].length) d[k] = f[k].slice(0, 40); });
   if(f.fix) d.fix = String(f.fix);
   libLearn(f);
   return (blob ? libWriteFile(d, blob, origName) : Promise.resolve(d)).then(function(){

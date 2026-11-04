@@ -129,8 +129,9 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `models.js` | The Library’s Models tab: the truck pictures moved out of Settings, one row per model (Make, Model, Years, Body, Open ROs) with the view from above, Replace and Remove; the catalog and Add a picture. | 4 | 2 | 0 |
 | `read-docs.js` | Reading a document: its kind from its number (CBR, TSB, FSB, Recall, Procedure), number, release, date, title, function group, model, model years, the codes it mentions, a DTC bulletin’s code table with FTBs, and an Impact procedure’s steps, warnings, tools and torques; Volvo’s function groups. | 25 | 18 | 7 |
 | `read-files.js` | Reading a file for the Library: a PDF’s text and where each piece sits on the page (pdf.js), a screenshot through the built-in reader. | 3 | 3 | 0 |
-| `read-more.js` | More from a document (17.3): its part numbers, labor operations and hours, chassis ranges, symptoms and the repair in one line; the two likeliest kinds when the number doesn't say; the fields worth checking; and using them on an operation. | 16 | 19 | 5 |
+| `read-more.js` | More from a document (17.3): its part numbers, labor operations and hours, chassis ranges, symptoms and the repair in one line; the two likeliest kinds when the number doesn't say; the fields worth checking; and using them on an operation. | 17 | 20 | 5 |
 | `store.js` | The Library’s records and files: STATE.libDocs / libCodes / libRules, the files in Parsec Data/Library/<kind>/, adding without doubles, and documents on an RO’s operations (op.docs) with a copy in Attachments. | 10 | 26 | 3 |
+| `viewer-use.js` | The document panel's use (17.3): what it's valid for, its symptoms and repair steps to tick from an operation, Attach to… with the ROs it fits first, and the expand button that makes the panel a page of its own. | 7 | 9 | 0 |
 | `viewer.js` | A document open in a panel beside the page (libOpen): its facts, the PDF, Open in a tab; a procedure’s steps ticked from its operation; on Warranty, the documents per operation and the claim folder. | 12 | 6 | 1 |
 
 ## pages/  — the page modules and what they share
@@ -216,6 +217,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `_close.js` | Closes the Library page closure. | 0 | 0 | 0 |
 | `_open.js` | Opens the Library page closure (LIBPG). | 0 | 0 | 1 |
 | `library-page.js` | The Library page: tabs (Fault codes, CBRs, TSBs, FSBs, Recalls, Models, Procedures), the search, the function-group filter, documents in Impact’s columns by function group, procedures with sortable columns, codes by module with their FTBs, adding by button or drop. | 18 | 20 | 11 |
+| `shop-and-cards.js` | The Library page (17.3): For the shop (the documents that fit the open ROs), the bar by kind and what needs you, one search across every kind, the truck filter, To check, the document cards with older releases folded, and the panel opened by pointing at a row. | 10 | 10 | 6 |
 | `view.js` | viewLibrary() and libOpenFor(): the page module’s entry and opening it narrowed to an RO and operation. | 0 | 2 | 0 |
 
 ## pages/manager/  — Manager: the shop's KPIs

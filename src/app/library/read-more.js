@@ -1,7 +1,7 @@
 /* Parsec · library · read-more.js
    More from a document (17.3): its part numbers, labor operations and hours, chassis ranges, symptoms and the repair in one line; the two likeliest kinds when the number doesn't say; the fields worth checking; and using them on an operation.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   libReadLabels libPartsIn libLaborIn libChassisIn libSymptomsIn libFixLine libKindGuess libTitleRules libReadMore libFits libWords libSympHit … (19 functions, 5 constants)
+   declares   libReadLabels libPartsIn libLaborIn libChassisIn libSymptomsIn libStepsIn libFixLine libKindGuess libTitleRules libReadMore libFits libWords … (20 functions, 5 constants)
    state      libRules
    uses       data/ pages/inventory/ ro/ state/
 */
@@ -98,6 +98,23 @@ function libSymptomsIn(lines){
   });
   return out.slice(0, 8);
 }
+/* the numbered steps of the repair (a CBR's Corrective Action, a bulletin's procedure), each with the lines under it as notes */
+function libStepsIn(lines){
+  var out = [], st = -1, cur = null, gap = 0;
+  for(var i = 0; i < lines.length && out.length < 30; i++){
+    var L = lines[i], m = /^(\d{1,2})[.)]\s+(.{3,200})$/.exec(L);
+    if(m && (+m[1] === (cur ? cur.n + 1 : 1))){ cur = { n: +m[1], t: m[2].replace(/\s+$/, ""), notes: [] }; out.push(cur); gap = 0; continue; }
+    if(!cur) continue;
+    if(/^(?:https?:|\d+\/\d+$|\d{1,2}\/\d{1,2}\/\d{2,4},)/i.test(L)) continue;   /* the page's footer and header */
+    if(/^[A-Z][A-Za-z ]{2,40}$/.test(L) && !/[.:]$/.test(L) && L.split(" ").length <= 4){ if(out.length >= 2) break; else continue; }   /* the next heading */
+    if(++gap > 4) break;
+    cur.notes.push(L);
+  }
+  if(out.length < 2) return [];
+  /* a note that runs on over two lines joins up */
+  out.forEach(function(s){ var J = []; s.notes.forEach(function(x){ if(J.length && !/[.!?:]$/.test(J[J.length - 1]) && /^[a-z(]/.test(x)) J[J.length - 1] += " " + x; else J.push(x); }); s.notes = J.slice(0, 4); });
+  return out;
+}
 function libFixLine(lines, r){
   var tidy = function(s){ s = String(s || "").replace(/\s+/g, " ").trim(); if(!s) return "";
     if(s.length > 220){ var cut = s.lastIndexOf("; ", 220); s = cut > 60 ? s.slice(0, cut) : s.slice(0, s.lastIndexOf(" ", 220)); }   /* whole steps, never a word cut in half */
@@ -135,7 +152,7 @@ function libReadMore(r, T, one){
   var lines = String(T || "").split("\n").map(function(l){ return l.trim(); }).filter(Boolean);
   r.lines = lines.slice(0, 400);
   if(r.title) r.title = libTitleRules(r.title);
-  r.parts = libPartsIn(lines, r); r.labor = libLaborIn(one); r.chassis = libChassisIn(one); r.symp = libSymptomsIn(lines); r.fix = libFixLine(lines, r);
+  r.parts = libPartsIn(lines, r); r.labor = libLaborIn(one); r.chassis = libChassisIn(one); r.symp = libSymptomsIn(lines); r.fix = libFixLine(lines, r); r.steps = r.proc ? [] : libStepsIn(lines);
   /* the kind: a toss-up when the number gives none, or the words point firmly somewhere else */
   var G = libKindGuess(one), ruled = r.kind && r.kind !== "codes";
   r.toss = [];

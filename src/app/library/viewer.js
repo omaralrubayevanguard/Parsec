@@ -8,32 +8,37 @@
 /* ============================== a document, open beside the page (Parsec 17.1) ==============================
    libOpen(d): a panel on the right with the document itself (the browser's own PDF view), its facts on top, and
    Open in a new tab. The RO (or the Library) stays open beside it; Esc or ✕ closes it. */
-var LIB_VIEW = { el: null, url: null, key: null, id: null };
+var LIB_VIEW = { el: null, url: null, key: null, id: null, peek: false };   /* peek: opened by pointing at a row — a click keeps it (17.3) */
 function libClose(){
   if(LIB_VIEW.el){ LIB_VIEW.el.remove(); LIB_VIEW.el = null; }
   if(LIB_VIEW.url){ try{ URL.revokeObjectURL(LIB_VIEW.url); }catch(e){} LIB_VIEW.url = null; }
   if(LIB_VIEW.key){ document.removeEventListener("keydown", LIB_VIEW.key, true); LIB_VIEW.key = null; }
-  LIB_VIEW.id = null;
+  LIB_VIEW.id = null; LIB_VIEW.peek = false;
 }
 function libOpen(d, page, ctx){
   if(typeof d === "string") d = libDocById(d);
   if(!d) return;
-  if(LIB_VIEW.id === d.id){ libClose(); return; }   /* the same chip again closes it */
-  libClose();
+  var peek = !!(ctx && ctx.peek);
+  if(LIB_VIEW.id === d.id){ if(peek) return; if(LIB_VIEW.peek){ LIB_VIEW.peek = false; return; } libClose(); return; }   /* the same chip again closes it; a click on a peeked one keeps it */
+  var wasFull = !!(LIB_VIEW.el && LIB_VIEW.el.classList.contains("lib-view-full"));
+  libClose(); LIB_VIEW.peek = peek;
   var k = libKind(d.kind) || {}, w = document.createElement("aside");
   w.className = "lib-view"; w.setAttribute("aria-label", libDocChipText(d));
-  var facts = [d.date, d.fgrp ? "Fgrp " + d.fgrp + (libFgName(d.fgrp) ? " · " + libFgName(d.fgrp).replace(/^\d+ /, "") : "") : "", d.model, (d.codes || []).length ? d.codes.length + (d.codes.length === 1 ? " code" : " codes") : ""].filter(Boolean);
-  if((d.kind === "proc" || d.kind === "diag") && d.proc){ libProcView(w, d, ctx); return; }
+  var facts = [d.date, d.fgrp ? "Fgrp " + d.fgrp + (libFgName(d.fgrp) ? " · " + libFgName(d.fgrp).replace(/^\d+ /, "") : "") : "", (d.codes || []).length ? d.codes.length + (d.codes.length === 1 ? " code" : " codes") : ""].filter(Boolean);
+  if((d.kind === "proc" || d.kind === "diag") && d.proc){ libProcView(w, d, ctx); if(wasFull) w.classList.add("lib-view-full"); return; }
+  if(wasFull) w.classList.add("lib-view-full");
   w.innerHTML = '<header class="lib-view-h"><span class="lib-chip k-' + libE(d.kind) + '"><i></i>' + libE(k.one || "Document") + '</span>'
     + '<div class="lib-view-t"><b class="mono">' + libE(libDocLabel(d)) + '</b><span>' + libE(d.title || "") + '</span></div>'
-    + '<button type="button" class="lib-view-b" data-lv="tab" title="Open it in a new browser tab">Open in a tab</button>'
+    + libViewBtns(d) + '<button type="button" class="lib-view-b" data-lv="tab" title="Open it in a new browser tab">Open in a tab</button>'
     + '<button type="button" class="lib-view-x" data-lv="x" aria-label="Close" title="Close (Esc)"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header>'
     + (facts.length ? '<div class="lib-view-f">' + facts.map(libE).join('<i>·</i>') + '</div>' : '')
+    + libViewSum(d, ctx)
     + '<div class="lib-view-b2"><div class="lib-view-none">Opening…</div></div>';
   document.body.appendChild(w); LIB_VIEW.el = w; LIB_VIEW.id = d.id;
   try{ pxwAfter(); }catch(e){}   /* 17.1: its width, and the edge to drag */
   w.addEventListener("click", function(e){
-    var b = e.target.closest && e.target.closest("[data-lv]"); if(!b) return;
+    var b = e.target.closest && e.target.closest("[data-lv],[data-step]"); if(!b) return;
+    if(libViewAct(w, d, ctx, b)) return;
     if(b.getAttribute("data-lv") === "x") libClose();
     else if(LIB_VIEW.url){ var a = document.createElement("a"); a.href = LIB_VIEW.url; a.target = "_blank"; a.rel = "noopener"; document.body.appendChild(a); a.click(); a.remove(); }
   });
@@ -110,7 +115,7 @@ function libProcView(w, d, ctx){
     }).join("");
     var nDone = done.length, N = P.steps.length;
     w.innerHTML = '<header class="lib-view-h"><span class="lib-chip k-proc"><i></i>Procedure</span><div class="lib-view-t"><b>' + libE(d.title || d.num) + '</b><span>' + facts.map(libE).join(" · ") + '</span></div>'
-      + '<span class="lib-seg"><button type="button" data-lv="steps" class="' + (mode === "steps" ? "on" : "") + '">Steps</button><button type="button" data-lv="pdf" class="' + (mode === "pdf" ? "on" : "") + '">PDF</button></span>'
+      + '<span class="lib-seg"><button type="button" data-lv="steps" class="' + (mode === "steps" ? "on" : "") + '">Steps</button><button type="button" data-lv="pdf" class="' + (mode === "pdf" ? "on" : "") + '">PDF</button></span>' + libViewBtns(d)
       + '<button type="button" class="lib-view-x" data-lv="x" aria-label="Close" title="Close (Esc)"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header>'
       + '<div class="lib-view-f">' + (op ? '<span class="lib-pbar"><i style="width:' + (N ? nDone / N * 100 : 0).toFixed(1) + '%"></i></span><b>' + nDone + ' of ' + N + ' done</b><i>·</i>OP ' + ((ctx.ro.operations || []).indexOf(op) + 1) : N + ' steps · open it from an operation to tick them') + '</div>'
       + '<div class="lib-view-b2">' + (mode === "steps" ? '<div class="lib-proc">' + top + '<div class="lib-psteps">' + steps + '</div></div>' : '<div class="lib-view-none">Opening…</div>') + '</div>';
@@ -132,6 +137,7 @@ function libProcView(w, d, ctx){
       try{ if(typeof JC !== "undefined" && JC.rerender) JC.rerender(); }catch(er){}
       return;
     }
+    if(b.getAttribute("data-lv") === "att" || b.getAttribute("data-lv") === "full"){ libViewAct(w, d, ctx, b); return; }
     var k = b.getAttribute("data-lv");
     if(k === "x") libClose(); else if(k === "steps" || k === "pdf"){ mode = k; draw(); }
   });

@@ -201,7 +201,7 @@ function libAskForm(file, g, ctx, cb){
     var a = { kind: k, num: num, rel: $("lib-f-rel").value.trim(), date: $("lib-f-date").value.trim(), title: $("lib-f-title").value.trim(), fgrp: $("lib-f-fg").value.trim(),
       model: $("lib-f-model").value.trim(), years: libYears($("lib-f-years").value) || $("lib-f-years").value.trim(), info: g.info || "", proc: (k === "proc" || k === "diag") ? g.proc || null : null, mod: g.mod, opNo: g.opNo,
       codes: isC ? g.codes : [], table: tbl, learn: !$("lib-f-learnw").hidden && $("lib-f-learn").checked, drop: !$("lib-f-dropw").hidden && ans.drop ? dropTxt : "",
-      parts: g.parts || [], labor: g.labor || [], chassis: g.chassis || [], symp: g.symp || [], fix: g.fix || "" };
+      parts: g.parts || [], labor: g.labor || [], chassis: g.chassis || [], symp: g.symp || [], steps: g.steps || [], fix: g.fix || "" };
     if(ctx.ro){ a.op = opPicked(); a.task = $("lib-f-task").value; a.tick = $("lib-f-tick").checked;
       a.addParts = !!($("lib-f-parts") && $("lib-f-parts").checked && !$("lib-f-parts").closest("label").hidden); a.useHrs = !!($("lib-f-hrs") && $("lib-f-hrs").checked); a.useFix = !!($("lib-f-fix") && $("lib-f-fix").checked); }
     return a;

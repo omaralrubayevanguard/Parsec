@@ -43,7 +43,7 @@ function libAnswerOf(g, f, ctx){
   var isC = k === "codes", tbl = isC ? (g.table.length ? g.table : g.codes.map(function(c){ return { key: c, title: "", ftb: {} }; })) : [];
   var a = { kind: k, num: num, rel: g.rel || "", date: g.date || "", title: g.title || "", fgrp: g.fgrp || "", model: g.model || "", years: g.years || "", info: g.info || "",
     proc: (k === "proc" || k === "diag") ? g.proc || null : null, mod: g.mod, opNo: g.opNo, codes: isC ? g.codes : [], table: tbl, learn: false, drop: "",
-    parts: g.parts || [], labor: g.labor || [], chassis: g.chassis || [], symp: g.symp || [], fix: g.fix || "" };
+    parts: g.parts || [], labor: g.labor || [], chassis: g.chassis || [], symp: g.symp || [], steps: g.steps || [], fix: g.fix || "" };
   if(ctx.ro){ var ops = ctx.ro.operations || []; a.op = ctx.op || ops.filter(function(o){ return !o.declined; })[0] || ops[0] || null; a.task = isC ? "dtc" : "report"; a.tick = false; }
   return a;
 }

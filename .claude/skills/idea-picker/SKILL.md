@@ -56,8 +56,8 @@ More than 8 ideas about one component crowd the preview pane and repeat the same
 6. **Animate only on pick.** Nothing moves until an option is picked; then that option's version plays once and holds. See *Animation steps* and *Accuracy rules*.
 7. **Set the live preview** for a single component: `COMPONENT` = that component's HTML. Every pick lands on it as `data-p-<idea>="<option>"`, so one CSS block shows all the picks combined. `COMPONENT = null` for a workflow.
 8. **Build from `template.html`.** Fill `APP`, `TOPIC`, `KEY` (unique per mock-up), `IDEAS`, `COMPONENT` and the `v-` CSS. There is no top strip, lead line or keys line; don't add one. Leave the shell (`ip-`) alone. Delete the recipe CSS you didn't use.
-9. **Check, and show the evidence.** Open the page with `?check=1`. The header badge must read **check ✓** (green). Then paste the one-line report from the console (`ipReport()`) and attach one screenshot per theme (Ivory, Graphite, Carbon, Linear) plus one at 390 px. A check that produced no badge count and no screenshots did not happen. Full list under *Checks*.
-10. **Deliver it** as an artifact when the chat offers one, otherwise as a file. Name it "<App> <topic> ideas mock-up.html". Reply with 1–2 lines, the report line, and the screenshots.
+9. **Check it.** Open the page with `?check=1`. The header badge must read **check ✓** (green). Read the one-line report from the console (`ipReport()`) and take one screenshot per theme (Ivory, Graphite, Carbon, Linear) plus one at 390 px. A check that produced no badge count and no screenshots did not happen. The screenshots are for your own look; don't send them unless the person asks. Full list under *Checks*.
+10. **Deliver it** as an artifact when the chat offers one, otherwise as a file. Name it "<App> <topic> ideas mock-up.html". Reply with 1–2 lines and the report line — the mock-up itself, no screenshots.
 
 ## The idea fields
 
@@ -230,7 +230,7 @@ The page runs `ipCheck()` on load. It lists every drawn option without a `[data-
 Idea picker check · Parsec · Tooltips · 4 ideas, 12 options, 11 steps, 3 references · 0 to fix · preview on · 4 themes
 ```
 
-The hand-off must include that line and five screenshots (four themes, one phone). Then by eye:
+The hand-off includes that line. Take five screenshots (four themes, one phone) and look at them yourself — they aren't sent. Then by eye:
 
 - No console errors; no sideways scroll at 390 px.
 - Nothing plays before a pick; each option plays its own version once and holds it; ↻ replays; the dots jump.

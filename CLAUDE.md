@@ -36,6 +36,7 @@ The tests need Playwright for Python, set up once per computer with `pip install
 
 - **Mock-ups before UI changes.** Before anything changes on screen (a page, a workflow, a feature), make an Idea picker (below) and build from the picks. Skip the mock-up only when the user gives a directive ("go ahead", "just do it", or exact instructions).
 - **Fast turnarounds.** Keep replies short, in plain words, without recapping every step. Don't run the whole suite after every change: the build guards and the affected tests are enough until a release.
+- **No screenshots of the work.** Look at screens yourself to check them, but don't send them. Send only the mock-ups (and a built file when it's asked for).
 - **Plain words on screen.** Labels, tooltips and messages are written for the shop floor; `tipNorm` and the tooltip lint keep the style (see CONVENTIONS).
 - **Ideas are welcome.** Offer them in a line or two, but don't build them unasked.
 - **Ask first** before you change how data is saved (a `STATE` key's meaning, `PD_TOPICS`, the folder layout), because the real `Parsec Data/` folder has to keep opening. Ask before you delete a test, too.

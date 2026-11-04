@@ -12,7 +12,7 @@
    Add documents (or drop them on the page) → library/intake.js asks before anything is filed.
    Opened from an RO (libOpenFor), the list starts narrowed to that truck and operation. */
   const esc = PG.e;
-  const U = { tab: 'codes', q: '', fg: '', ro: null, op: null, open: null, sk: 'fgrp', sd: 1 };   /* sk / sd: the Procedures column sorted, and which way */
+  const U = { tab: 'shop', q: '', fg: '', ro: null, op: null, open: null, sk: 'fgrp', sd: 1, tm: '', ty: '', tro: '', chk: false, olds: {} };   /* sk / sd: the Procedures column sorted, and which way · 17.3: tm / ty / tro the truck filter, chk To check, olds the older releases unfolded */
   const rd = () => { try{ PG.keepScroll(render); }catch(e){ render(); } };
   const ICP = { add: '<path d="M12 5v14M5 12h14"/>', search: '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>', x: '<path d="M6 6l12 12M18 6L6 18"/>',
     edit: '<path d="M4.5 19.5l1-4L15 6l3 3-9.5 9.5z"/>', del: '<path d="M5 7h14M10 7V5h4v2M7 7l1 13h8l1-13"/>', chev: '<path d="M9 6l6 6-6 6"/>' };
@@ -44,7 +44,8 @@
       if(U.fg && String(d.fgrp || '').charAt(0) !== U.fg && !(U.fg === '-' && !d.fgrp)) return false;
       if(C){ const byCode = (d.codes || []).some(k => C.codes[k]), byFg = d.fgrp && C.fg[String(d.fgrp).slice(0, 2)], byModel = C.model && String(d.model || '').toUpperCase().indexOf(C.model.slice(0, 2)) >= 0;
         if(!(byCode || byFg || (d.kind === 'recall' && (byModel || !d.model)))) return false; }
-      return !W.length || hit([d.num, d.rel, d.title, d.model, d.fgrp, libFgName(d.fgrp), (d.codes || []).join(' ')].join(' ').toLowerCase(), W);
+      if(!passFilters(d)) return false;
+      return !W.length || hit([d.num, d.rel, d.title, d.model, d.years, d.fgrp, libFgName(d.fgrp), (d.codes || []).join(' '), (d.symp || []).join(' ')].join(' ').toLowerCase(), W);
     }).sort((a, b) => String(a.fgrp || '~').localeCompare(String(b.fgrp || '~')) || String(a.num).localeCompare(String(b.num)) || String(b.rel || '').localeCompare(String(a.rel || '')));
   }
   /* the codes: read from bulletins, then the built-in J1939 list */
@@ -62,32 +63,33 @@
 
   /* ---------- the page ---------- */
   function view(){
-    if(U.tab !== 'codes' && !libKind(U.tab)) U.tab = 'codes';
+    if(U.tab !== 'codes' && U.tab !== 'shop' && !libKind(U.tab)) U.tab = 'shop';
     return `<div class="tg lib" data-pg="library">${head()}${tabs()}<div class="lib-body">${tools()}<div class="lib-list" id="lib-list">${list()}</div></div>
       <input type="file" id="lib-file" accept=".pdf,application/pdf,image/*" multiple hidden data-ch="file"></div>`;
   }
   function head(){
-    const D = libDocs().length, C = libCodesAll().length;
-    return `<header class="tg-head lib-head"><h1 class="tg-h1">Library</h1><span class="tg-facts"><span class="tg-hf" style="cursor:default"><b>${D}</b>${D === 1 ? 'document' : 'documents'}</span><i>·</i><span class="tg-hf" style="cursor:default"><b>${C}</b>codes read</span></span>
+    return `<header class="tg-head lib-head"><h1 class="tg-h1">Library</h1>${headBar()}
       <span class="lib-hsp"></span><button class="lib-add" data-a="add" title="Add Volvo documents — Parsec reads them and asks before filing">${ic('add', 14)}Add documents</button></header>`;
   }
   function tabs(){
     const n = { codes: codeRows().length };
     kinds().forEach(k => { if(!k.page) n[k.k] = libDocs().filter(d => d && d.kind === k.k).length; });
     n.models = libModelsN();
-    return `<nav class="lib-tabs" role="tablist" aria-label="Library">${kinds().map(k => `<button class="lib-tab k-${k.k}${U.tab === k.k ? ' on' : ''}" role="tab" aria-selected="${U.tab === k.k}" data-a="tab" data-k="${k.k}"><i></i>${esc(k.tab)}<small>${n[k.k] || 0}</small></button>`).join('')}</nav>`;
+    const shopN = forShop().length;
+    return `<nav class="lib-tabs" role="tablist" aria-label="Library"><button class="lib-tab k-shop${U.tab === 'shop' ? ' on' : ''}" role="tab" aria-selected="${U.tab === 'shop'}" data-a="tab" data-k="shop" title="The documents that fit the trucks on the open ROs"><i></i>For the shop<small>${shopN}</small></button>${kinds().map(k => `<button class="lib-tab k-${k.k}${U.tab === k.k ? ' on' : ''}" role="tab" aria-selected="${U.tab === k.k}" data-a="tab" data-k="${k.k}"><i></i>${esc(k.tab)}<small>${n[k.k] || 0}</small></button>`).join('')}</nav>`;
   }
   function tools(){
     const C = roCtx();
+    const docTab = U.tab === 'shop' || !!SHOP_KINDS[U.tab];
     const src = U.tab === 'codes' ? codeRows().concat([]) : libDocs().filter(d => d && d.kind === U.tab);
     const G = {}; src.forEach(x => { const g = String(x.fgrp || '').charAt(0) || '-'; G[g] = (G[g] || 0) + 1; });
     const fgs = Object.keys(G).sort((a, b) => (a === '-') - (b === '-') || a.localeCompare(b));
     const chip = (v, t, n) => `<button class="tg-chip${U.fg === v ? ' on' : ''}" data-a="fg" data-v="${v}">${esc(t)}${n != null ? `<small>${n}</small>` : ''}</button>`;
-    return `<div class="lib-tools"><label class="lib-q">${ic('search', 15)}<input id="lib-q" data-in="q" value="${esc(U.q)}" placeholder="${U.tab === 'codes' ? 'Search codes — P1050, 3226, clutch, slow gear changes' : U.tab === 'models' ? 'Find a model — VNL 760, VHD, 2019' : U.tab === 'proc' ? 'Search procedures — clutch, 4134, VN' : U.tab === 'diag' ? 'Search diagnostics — no crank, 2841, MID 128' : 'Search number, title, code, truck'}" autocomplete="off" spellcheck="false" aria-label="Search the Library"></label>
-      ${fgs.length > 1 || U.fg ? `<div class="lib-fgs" role="group" aria-label="Function group">${chip('', 'All')}${fgs.map(g => chip(g, g === '-' ? 'No group' : g + ' ' + LIB_FG[g], G[g])).join('')}</div>` : ''}
+    return `<div class="lib-tools"><label class="lib-q">${ic('search', 15)}<input id="lib-q" data-in="q" value="${esc(U.q)}" placeholder="${U.tab === 'models' ? 'Find a model — VNL 760, VHD, 2019' : 'Search everything — CBR-2408, C10129B, P1050, slow gear changes'}" autocomplete="off" spellcheck="false" aria-label="Search the Library"></label>
+      ${docTab ? truckChips() : fgs.length > 1 || U.fg ? `<div class="lib-fgs" role="group" aria-label="Function group">${chip('', 'All')}${fgs.map(g => chip(g, g === '-' ? 'No group' : g + ' ' + LIB_FG[g], G[g])).join('')}</div>` : ''}
       ${C ? `<div class="lib-ctx">For <b>RO ${esc(C.ro.roNumber || '')}</b>${C.op ? ` · OP ${(C.ro.operations || []).indexOf(C.op) + 1} ${esc(String(C.op.complaint || '').slice(0, 40))}` : ''}${C.model ? ' · ' + esc(C.model) : ''} — its codes, function groups${U.tab === 'recall' ? ' and recalls' : ''}<button class="lib-ctx-x" data-a="all" title="Show the whole Library">Show all ${ic('x', 12)}</button></div>` : ''}</div>`;
   }
-  function list(){ return U.tab === 'codes' ? codesList() : U.tab === 'models' ? libModelsHtml(U.q) : U.tab === 'proc' || U.tab === 'diag' ? procList(U.tab) : docsList(); }
+  function list(){ if(String(U.q || '').trim() && U.tab !== 'models') return searchAll(); if(U.tab === 'shop') return shopList(); return U.tab === 'codes' ? codesList() : U.tab === 'models' ? libModelsHtml(U.q) : U.tab === 'proc' || U.tab === 'diag' ? procList(U.tab) : docsList(); }
 
   /* procedures: Impact's table with Model and Year, under function group headings; a column header sorts, again reverses */
   const PCOLS = [['fgrp', 'Fgrp'], ['title', 'Title'], ['info', 'Info type'], ['num', 'ID / Operation'], ['model', 'Model'], ['years', 'Year']];
@@ -110,30 +112,18 @@
     return `<div class="lib-cols lib-pcols">${PCOLS.map(c => `<button class="lib-sort${sk === c[0] ? ' on' : ''}" data-a="sort" data-k="${c[0]}" aria-sort="${sk === c[0] ? (sd > 0 ? 'ascending' : 'descending') : 'none'}" title="Sort by ${esc(c[1].toLowerCase())}">${esc(c[1])}<i>${sk === c[0] ? (sd > 0 ? '↑' : '↓') : '↕'}</i></button>`).join('')}<span></span></div>${h}`;
   }
 
-  /* documents: Impact's columns, under function group headings */
+  /* documents: cards under the function group headings (17.3) */
   function docsList(){
-    const L = docsOf(U.tab), used = usedOn(), k = libKind(U.tab);
+    const L = docsOf(U.tab), k = libKind(U.tab);
     if(!L.length) return empty(k);
-    let last = null, h = '';
-    L.forEach(d => {
-      const g = String(d.fgrp || ''), key = g ? g.slice(0, 2) : '-';
-      if(key !== last){ last = key;
-        h += `<div class="lib-gh">${g ? `<b class="mono">${esc(g.charAt(0))}</b>${esc(LIB_FG[g.charAt(0)] || '')}${LIB_FG[g.slice(0, 2)] && g.length > 1 ? `<i>›</i><b class="mono">${esc(g.slice(0, 2))}</b>${esc(LIB_FG[g.slice(0, 2)])}` : ''}` : 'No function group'}</div>`; }
-      const n = used[d.id] || 0;
-      h += `<div class="lib-row" data-a="open" data-id="${esc(d.id)}" role="button" tabindex="0" title="Open ${esc(libDocChipText(d))}">
-        <span class="lib-c-fg mono">${esc(g || '—')}</span>
-        <span class="lib-c-t"><b>${esc(d.title || '(no title)')}</b>${d.model ? `<small>${esc(d.model)}</small>` : ''}</span>
-        <span class="lib-c-n"><span class="lib-chip k-${esc(d.kind)}"><i></i><span class="mono">${esc(d.num)}</span></span>${d.rel ? `<small class="mono">rel ${esc(d.rel)}</small>` : ''}</span>
-        <span class="lib-c-d mono">${esc(d.date || '')}</span>
-        <span class="lib-c-k">${(d.codes || []).length ? pl(d.codes.length, 'code') : ''}</span>
-        <span class="lib-c-u">${n ? 'on ' + pl(n, 'RO') : ''}${d.file && d.file.inBrowser ? '<em title="Kept in this browser until the shop folder is connected">this browser</em>' : ''}</span>
-        <span class="lib-c-a"><button class="lib-ib" data-a="edit" data-id="${esc(d.id)}" title="Change its details">${ic('edit', 13)}</button><button class="lib-ib" data-a="del" data-id="${esc(d.id)}" title="Take it out of the Library">${ic('del', 13)}</button></span></div>`;
-    });
-    return `<div class="lib-cols"><span>Fgrp</span><span>Title</span><span>Number</span><span>Date</span><span>Codes</span><span>Used</span><span></span></div>${h}`;
+    const G = {}, order = [];
+    L.forEach(d => { const g = String(d.fgrp || ''), key = g ? g.slice(0, 2) : '-'; if(!G[key]){ G[key] = { g, L: [] }; order.push(key); } G[key].L.push(d); });
+    return order.map(key => { const g = G[key].g;
+      return `<div class="lib-gh">${g ? `<b class="mono">${esc(g.charAt(0))}</b>${esc(LIB_FG[g.charAt(0)] || '')}${LIB_FG[g.slice(0, 2)] && g.length > 1 ? `<i>›</i><b class="mono">${esc(g.slice(0, 2))}</b>${esc(LIB_FG[g.slice(0, 2)])}` : ''}` : 'No function group'}</div>` + cards(G[key].L); }).join('');
   }
   function empty(k){
     const C = roCtx();
-    if(U.q || U.fg || C) return `<div class="lib-none">Nothing matches${C ? ' this RO' : ''}. <button class="link-btn" data-a="all">Show the whole ${esc(k ? k.tab : 'list')}</button></div>`;
+    if(U.q || U.fg || C || truckOn()) return `<div class="lib-none">Nothing matches${C ? ' this RO' : truckOn() ? ' the truck filter' : ''}. <button class="link-btn" data-a="all">Show the whole ${esc(k ? k.tab : 'list')}</button></div>`;
     return `<div class="lib-none lib-drop"><b>No ${esc(k ? k.tab : 'documents')} yet.</b><span>Add the PDFs from Impact or the dealer portal. Parsec reads the number, title and codes, and asks before filing.</span><button class="lib-add" data-a="add">${ic('add', 14)}Add documents</button></div>`;
   }
 
@@ -170,9 +160,13 @@
   const H = {
     tab: tt => { U.tab = tt.dataset.k; U.fg = ''; U.open = null; rd(); },
     fg: tt => { U.fg = U.fg === tt.dataset.v ? '' : tt.dataset.v; rd(); },
-    all: () => { U.ro = null; U.op = null; U.q = ''; U.fg = ''; rd(); },
+    all: () => { U.ro = null; U.op = null; U.q = ''; U.fg = ''; U.tm = ''; U.ty = ''; U.tro = ''; U.chk = false; rd(); },
     add: () => pick(),
-    open: tt => libOpen(tt.dataset.id, tt.dataset.page),
+    open: tt => libOpen(tt.dataset.id, tt.dataset.page, viewCtx()),
+    older: tt => { const k = tt.dataset.k; U.olds[k] = !U.olds[k]; relist(); },
+    chk: () => { U.chk = !U.chk; if(U.chk && (U.tab === 'shop' || U.tab === 'codes' || U.tab === 'models')){ const d = libDocs().filter(x => missing(x).length)[0]; if(d) U.tab = d.kind; } rd(); },
+    tm: tt => { U.tm = U.tm === tt.dataset.v ? '' : tt.dataset.v; rd(); },
+    tclear: () => { U.tm = ''; U.ty = ''; U.tro = ''; U.chk = false; rd(); },
     sort: tt => { const k = tt.dataset.k; if(U.sk === k) U.sd = -U.sd; else { U.sk = k; U.sd = k === 'years' ? -1 : 1; } relist(); },
     code: tt => { U.open = U.open === tt.dataset.k ? null : tt.dataset.k; relist(); },
     edit: tt => { const d = libDocById(tt.dataset.id); if(d) libEdit(d, () => rd()); },
@@ -181,7 +175,7 @@
         k => { if(k !== 'yes') return; pushUndo('library'); libRemove(d); try{ libClose(); }catch(e){} rd(); pushToast(libDocChipText(d) + ' is out of the Library.'); }); }
   };
   function input(tt){ if(tt.dataset.in === 'q'){ U.q = tt.value; relist(); } }
-  function change(tt){ if(tt.dataset.ch === 'file') intake(tt.files); }
+  function change(tt){ if(tt.dataset.ch === 'file') intake(tt.files); else if(tt.dataset.ch === 'ty' || tt.dataset.ch === 'tro'){ U[tt.dataset.ch] = tt.value; rd(); } }
   function keydown(ev){
     if(ev.ctrlKey || ev.metaKey || ev.altKey || PG.typing(ev)) return;
     if(ev.key === '/'){ const q = document.getElementById('lib-q'); if(q){ ev.preventDefault(); q.focus(); } }
