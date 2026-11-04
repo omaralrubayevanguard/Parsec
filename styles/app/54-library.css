@@ -103,7 +103,7 @@ button.lib-chip:focus-visible{outline:2px solid var(--tg-acc,#86643A);outline-of
 :root[data-device="phone"] .lib-ftbs{padding-left:12px;}
 
 /* ---------- the card that files a document (on the .roreo look) ---------- */
-.lib-ask .roreo-c.lib-ask-c{width:min(600px,100%);}
+.lib-ask .roreo-c.lib-ask-c{width:min(820px,100%);}
 .lib-ask-read{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--r-ink2);padding:6px 2px;}
 .lib-ask-read b{color:var(--r-ink);font-weight:600;}
 .lib-spin{width:16px;height:16px;border-radius:50%;box-shadow:inset 0 0 0 2px var(--r-hair);border-top:2px solid var(--r-acc);animation:lib-spin .8s linear infinite;box-sizing:border-box;}
@@ -261,7 +261,7 @@ button.lib-chip:focus-visible{outline:2px solid var(--tg-acc,#86643A);outline-of
 [data-pg="fleets"] .mq-tr[data-a="truck"]{cursor:pointer;}
 
 /* ---------- 17.3: the card — fields to check, the page beside it, ask once, what else it says ---------- */
-.lib-ask .roreo-c.lib-ask-c.has-pg{width:min(1040px,100%);display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,340px);gap:18px;align-items:start;}
+.lib-ask .roreo-c.lib-ask-c.has-pg{width:min(1180px,100%);display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,340px);gap:18px;align-items:start;}
 .lib-ask-c.has-pg .lib-ask-main{min-width:0;}
 .lib-ask .roreo-c.lib-ask-c{max-height:calc(100vh - 32px);overflow:auto;}
 .lib-pg{position:sticky;top:0;display:flex;flex-direction:column;max-height:min(640px,calc(100vh - 80px));border-radius:10px;background:var(--r-fill);overflow:hidden;}
@@ -272,7 +272,7 @@ button.lib-chip:focus-visible{outline:2px solid var(--tg-acc,#86643A);outline-of
 .lib-pg-b span.hl{background:var(--r-acct);color:var(--r-ink);box-shadow:inset 2px 0 0 var(--r-acc);}
 .lib-pg-note{padding:7px 12px;font-size:12px;color:var(--r-ink2);box-shadow:inset 0 1px 0 var(--r-hair);}
 .lib-pg-note[hidden]{display:none;}
-.lib-chk{margin-left:6px;font:600 10.5px/1 inherit;font-style:normal;color:var(--px-warn,#94610c);cursor:help;}
+.lib-chk{font:600 10.5px/1 inherit;font-style:normal;color:var(--px-warn,#94610c);cursor:help;}
 .lib-chk-n{color:var(--px-warn,#94610c);font-weight:500;}
 .lib-f-c.doubt input{box-shadow:inset 0 0 0 1.5px var(--px-warn,#94610c);}
 .lib-f-c:not(.doubt) .lib-chk{display:none;}
@@ -318,3 +318,6 @@ button.lib-chip:focus-visible{outline:2px solid var(--tg-acc,#86643A);outline-of
 .lib-li.st-check .lib-li-s{color:var(--px-warn,#94610c);}
 .lib-list-plain{margin:8px 0 0 44px;font-size:12.5px;color:var(--r-ink3);}
 @media (max-width:560px){.lib-list,.lib-list-plain{margin-left:0;} .lib-li{grid-template-columns:minmax(0,1fr) auto;} .lib-li-n{display:none;} .lib-li-s{grid-column:1/-1;text-align:left;}}
+/* 17.3: a field's label and its "check" on one line, so the boxes line up; the kinds on one row when there's room */
+.lib-f-lt{display:flex;align-items:baseline;gap:6px;min-height:15px;white-space:nowrap;}
+@media (min-width:900px){.lib-kinds{flex-wrap:nowrap;} .lib-f-row{flex-wrap:nowrap;}}

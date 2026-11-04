@@ -754,6 +754,7 @@
 "library/intake.js \u00b7 var LIB_F_IDS",
 "library/viewer.js \u00b7 var LIB_VIEW",
 "library/viewer.js \u00b7 document.addEventListener() \u00b7 on document click",
+"library/read-more.js \u00b7 var LIB_DATE_ANY",
 "library/read-more.js \u00b7 var LIB_PN",
 "library/read-more.js \u00b7 var LIB_KIND_WORDS",
 "library/read-more.js \u00b7 var LIB_STOP",

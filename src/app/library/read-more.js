@@ -1,7 +1,7 @@
 /* Parsec · library · read-more.js
    More from a document (17.3): its part numbers, labor operations and hours, chassis ranges, symptoms and the repair in one line; the two likeliest kinds when the number doesn't say; the fields worth checking; and using them on an operation.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   libPartsIn libLaborIn libChassisIn libSymptomsIn libFixLine libKindGuess libTitleRules libReadMore libFits libWords libSympHit libLatest … (18 functions, 3 constants)
+   declares   libReadLabels libPartsIn libLaborIn libChassisIn libSymptomsIn libFixLine libKindGuess libTitleRules libReadMore libFits libWords libSympHit … (19 functions, 4 constants)
    state      libRules
    uses       data/ pages/inventory/ ro/ state/
 */
@@ -17,6 +17,25 @@
      lines   the page's lines, for the page beside the card
    A title rule the shop taught (STATE.libRules { drop: "Service Bulletin –" }) is applied to the title first.
    Nothing here is saved by itself: libAdd keeps parts, labor, chassis, symp and fix on the document. */
+/* the labelled lines a CBR (and most other documents) carry: "Release: 02", "Revision 3", "Published: 08/23/2023",
+   "Model(s): VNL, VNR", "Model year(s): 2019, 2020, 2021" or "MY 2019–2022". A labelled line wins over a loose mention. */
+var LIB_DATE_ANY = "([A-Za-z]{3,9}\\.? \\d{1,2},? \\d{4}|\\d{1,2}[ -][A-Za-z]{3,9}\\.?[ -,]+\\d{4}|\\d{1,2}\\/\\d{1,2}\\/\\d{4}|\\d{4}-\\d{2}-\\d{2}|\\d{1,2}\\.\\d{4}|[A-Za-z]{3,9} \\d{4})";
+function libReadLabels(r, T){
+  var S = r.src = r.src || {}, L = String(T || "").split("\n").map(function(l){ return l.replace(/\s+/g, " ").trim(); }).filter(Boolean), m;
+  var find = function(re){ for(var i = 0; i < L.length; i++){ var x = re.exec(L[i]); if(x) return { m: x, line: L[i] }; } return null; };
+  var f;
+  if(!r.rel && (f = find(/\b(?:release|revision|rev\.?|version)\s*(?:no\.?|number|#)?\s*[:#\-]?\s*(\d{1,3})\b(?![\/.\-]\d)/i))){ r.rel = ("0" + f.m[1]).slice(-2); S.rel = f.line; }
+  if(!r.date && (f = find(new RegExp("\\b(?:release date|publish(?:ed)?(?: date)?|issue(?:d)?(?: date)?|date(?: issued| published| created)?|created|updated|last (?:updated|modified|revised)|revised|effective(?: date)?)\\s*(?:on)?\\s*[:\\-]?\\s*" + LIB_DATE_ANY, "i"))) && libDate(f.m[1])){ r.date = libDate(f.m[1]); S.date = f.line; }
+  if((f = find(/^(?:(?:truck |vehicle )?models?|applies to|applicable (?:models?|vehicles?)|vehicles?(?: affected)?|product(?: line)?)\s*(?:\(s\))?\s*[:\-]\s*(.+)$/i))){
+    var md = f.m[1].match(/\b(VNL|VNR|VNX|VHD|VAH|VN)\b/g);
+    if(md){ var seen = {}; r.model = md.filter(function(x){ if(seen[x]) return false; seen[x] = 1; return true; }).join(", "); S.model = f.line; r.modelLbl = 1; }
+  }
+  if((f = find(/^(?:model years?|years?|my)\s*(?:\(s\))?\s*[:\-]?\s*(.*(?:19|20)\d\d.*)$/i)) || (f = find(/\b(?:model years?|MY)\s*(?:\(s\))?\s*[:\-]?\s*((?:19|20)\d\d.*)$/i))){
+    var v = f.m[1], y = libYears(v);
+    if(!y){ var ys = (v.match(/\b(?:19|20)\d\d\b/g) || []).map(Number).sort(); if(ys.length) y = ys.length > 1 ? ys[0] + "–" + ys[ys.length - 1] : String(ys[0]); }
+    if(y){ r.years = y; S.years = f.line; r.yearsLbl = 1; }
+  }
+}
 var LIB_PN = /(?:^|[^\d-])(\d{8})(?![\d-])/g;
 function libPartsIn(lines, r){
   var out = [], seen = {}, own = String(r.num || "").replace(/\D/g, "");
@@ -96,10 +115,11 @@ function libReadMore(r, T, one){
   /* the fields read from somewhere weak */
   var D = {};
   if(r.num && r.how === "file name") D.num = "Read from the file name, not the page";
-  if(r.title && r.tHow === "line") D.title = "Taken from the first line of the page — no Subject line";
+  var flat = function(x){ return String(x || "").toLowerCase().replace(/[^a-z0-9]+/g, ""); };
+  if(r.title && r.tHow === "line" && !(flat(r.title).length >= 8 && flat(r.fname).indexOf(flat(r.title)) > -1)) D.title = "Taken from the first line of the page — no Subject line";   /* the page and the file name agree: sure */
   if(r.title && r.tHow === "file") D.title = "Taken from the file name";
-  if(r.model && (!/(?:applies to|models?|vehicles?|trucks?)\s*:?[^.]{0,60}\b(VNL|VNR|VNX|VHD|VAH|VN)\b/i.test(one) || r.model.split(",").length > 2)) D.model = "Found in the text, not on an “Applies to” or “Model” line";
-  if(r.years && !/(?:model years?|\bMY\b|years?|applies to)\s*:?[^.]{0,30}(?:19|20)\d\d/i.test(one)) D.years = "Found in the text, not on a “Model year” line";
+  if(r.model && !r.modelLbl && (!/(?:applies to|models?|vehicles?|trucks?)\s*:?[^.]{0,60}\b(VNL|VNR|VNX|VHD|VAH|VN)\b/i.test(one) || r.model.split(",").length > 2)) D.model = "Found in the text, not on an “Applies to” or “Model” line";
+  if(r.years && !r.yearsLbl && !/(?:model years?|\bMY\b|years?|applies to)\s*:?[^.]{0,30}(?:19|20)\d\d/i.test(one)) D.years = "Found in the text, not on a “Model year” line";
   r.doubt = D;
 }
 

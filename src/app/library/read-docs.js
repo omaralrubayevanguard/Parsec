@@ -94,6 +94,8 @@ function libDate(s){
   if((m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})/.exec(s))) return m[3] + "-" + p2(+m[1]) + "-" + p2(+m[2]);
   if((m = /^(\d{1,2})\.(\d{4})$/.exec(s))) return m[2] + "-" + p2(+m[1]);
   if((m = /^(\d{4})-(\d{2})(?:-(\d{2}))?/.exec(s))) return m[0];
+  if((m = /^(\d{1,2})[ -]([A-Za-z]{3})[a-z]*\.?[ -,]+(\d{4})/.exec(s)) && LIB_MON[m[2].toLowerCase()]) return m[3] + "-" + p2(LIB_MON[m[2].toLowerCase()]) + "-" + p2(+m[1]);   /* 17.3: 23 August 2023 · 23-Aug-2023 */
+  if((m = /^([A-Za-z]{3})[a-z]*\.? (\d{4})$/.exec(s)) && LIB_MON[m[1].toLowerCase()]) return m[2] + "-" + p2(LIB_MON[m[1].toLowerCase()]);   /* August 2023 */
   return "";
 }
 /* the lines that are the same on every Volvo page — never a title */
@@ -163,6 +165,7 @@ function libDocRead(text, fileName, pages){
   if(md){ var seen = {}; r.model = md.map(function(x){ return x.replace(/\s/g, ""); }).filter(function(x){ if(seen[x]) return false; seen[x] = 1; return true; }).slice(0, 4).join(", "); }
 
   r.years = libYears(one);
+  libReadLabels(r, T);   /* 17.3: Release: / Date: / Model: / Model year: lines, as a CBR writes them (library/read-more.js) */
   if(r.kind === "proc" || r.kind === "diag") r.proc = libProcRead(raw);   /* an Impact procedure: steps, warnings, tools, torques */
   r.table = libDocCodeTable(T);
   /* with the page positions, the FTB wording comes straight from its column */
@@ -171,7 +174,7 @@ function libDocRead(text, fileName, pages){
   r.codes = libCodesIn(T, r.num);
   r.table.forEach(function(row){ if(r.codes.indexOf(row.key) < 0) r.codes.push(row.key); });
   if(r.table.length >= 2){ r.numKind = r.kind; r.kind = "codes"; }   /* 17.1: a DTC list files as Fault codes — the codes are read only for that kind */
-  libReadMore(r, T, one);   /* 17.3: parts, labor, chassis, symptoms, the repair, the likely kinds, the fields to check (library/read-more.js) */
+  r.fname = name; libReadMore(r, T, one);   /* 17.3: parts, labor, chassis, symptoms, the repair, the likely kinds, the fields to check (library/read-more.js) */
   return r;
 }
 

@@ -19,6 +19,8 @@ DOC4 = "\n".join(["05.2026 RVXX2602 01 1(3)", "Subject: Brake hose", "Replace th
 DOC5 = "\n".join(["Bulletin: SNM23-003", "Subject: Turbo actuator", "Date: May 2, 2024"])
 DOC6 = "\n".join(["9.2012 430 13 02 1(50)", "Subject: Gear selector"])
 DOC7 = "\n".join(["CBR-23004", "Subject: Shifting complaints", "Symptoms: slow gear changes, hard to shift"])
+CBR = "\n".join(["Volvo Trucks North America", "CBR-2408", "Air Production Modulator (APM) DTC C10129B - High or Excessive Flow",
+  "Release: 3", "Release Date: 05/12/2026", "Model(s): VNL, VNR", "Model Year(s): 2018, 2019, 2020, 2021, 2022"])
 F = lambda txt, name: "new File([" + json.dumps(txt) + "], " + json.dumps(name) + ", {type:'text/plain'})"
 
 async def main():
@@ -36,6 +38,8 @@ async def main():
         ok(r2[0] == "" and sorted(r2[1]) == ["fsb", "tsb"], "no rule for the number: the two likeliest kinds, nothing picked (%s)" % r2)
         r3 = await pg.evaluate("(()=>{ const r=__tg.libDocRead(" + json.dumps(DOC3) + ", 'x.txt'); return [r.title, Object.keys(r.doubt)]; })()")
         ok(r3[0] == "Potential vehicle roll" and r3[1] == ["title"], "a title from the first line is marked to check (%s)" % r3)
+        cb = await pg.evaluate("(()=>{ const r=__tg.libDocRead(" + json.dumps(CBR) + ", 'CBR-2408 Air Production Modulator (APM) DTC C10129B - High or Excessive Flow.pdf'); return [r.kind, r.num, r.rel, r.date, r.model, r.years, Object.keys(r.doubt)]; })()")
+        ok(cb == ["cbr", "CBR-2408", "03", "2026-05-12", "VNL, VNR", "2018–2022", []], "a CBR: release, date, trucks and model years from its labelled lines, nothing to check (%s)" % cb)
         # ---- the card: marks, the page beside it, the two likeliest kinds
         await pg.evaluate("__tg.libIntake([" + F(DOC3, "x.txt") + "], null, ()=>{})"); await pg.wait_for_selector(".lib-ask:not(.mx-out) .lib-f"); await pg.wait_for_timeout(150)
         c = await pg.evaluate("(()=>{ const w=document.querySelector('.lib-ask:not(.mx-out)'); return w ? [!!w.querySelector('.lib-f-c.doubt[data-f=title] .lib-chk'), !!w.querySelector('.lib-pg'), w.querySelectorAll('.lib-pg-b span').length] : null; })()")
