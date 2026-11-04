@@ -125,11 +125,11 @@ Load order is `build/manifest.txt`; this page is for finding things.
 |---|---|---:|---:|---:|
 | `codes.js` | Fault codes in every form (P105E, P1050 FTB 17, 3226/2, MID 128 PID 110 FMI 0): reading what was typed, the label and chip text, what a code means from the Library or the built-in J1939 list. | 7 | 11 | 3 |
 | `intake-list.js` | Filing a stack of files (17.3): a progress window while they read, then one list with each file's kind, number and whether it's ready, needs a check or is already in the Library; open a row to check it, or file the ready ones in one click. | 8 | 4 | 1 |
-| `intake.js` | Filing a document, always asked first: libIntake reads each file, shows what was found to check or change, then files it in the Library and, from an RO, links it to the operation. | 24 | 8 | 2 |
+| `intake.js` | Filing a document, always asked first: libIntake reads each file, shows what was found to check or change, then files it in the Library and, from an RO, links it to the operation. | 25 | 8 | 2 |
 | `models.js` | The Library’s Models tab: the truck pictures moved out of Settings, one row per model (Make, Model, Years, Body, Open ROs) with the view from above, Replace and Remove; the catalog and Add a picture. | 4 | 2 | 0 |
 | `read-docs.js` | Reading a document: its kind from its number (CBR, TSB, FSB, Recall, Procedure), number, release, date, title, function group, model, model years, the codes it mentions, a DTC bulletin’s code table with FTBs, and an Impact procedure’s steps, warnings, tools and torques; Volvo’s function groups. | 25 | 18 | 7 |
 | `read-files.js` | Reading a file for the Library: a PDF’s text and where each piece sits on the page (pdf.js), a screenshot through the built-in reader. | 3 | 3 | 0 |
-| `read-more.js` | More from a document (17.3): its part numbers, labor operations and hours, chassis ranges, symptoms and the repair in one line; the two likeliest kinds when the number doesn't say; the fields worth checking; and using them on an operation. | 13 | 19 | 4 |
+| `read-more.js` | More from a document (17.3): its part numbers, labor operations and hours, chassis ranges, symptoms and the repair in one line; the two likeliest kinds when the number doesn't say; the fields worth checking; and using them on an operation. | 16 | 19 | 5 |
 | `store.js` | The Library’s records and files: STATE.libDocs / libCodes / libRules, the files in Parsec Data/Library/<kind>/, adding without doubles, and documents on an RO’s operations (op.docs) with a copy in Attachments. | 10 | 26 | 3 |
 | `viewer.js` | A document open in a panel beside the page (libOpen): its facts, the PDF, Open in a tab; a procedure’s steps ticked from its operation; on Warranty, the documents per operation and the claim folder. | 12 | 6 | 1 |
 

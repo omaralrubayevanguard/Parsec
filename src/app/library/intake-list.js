@@ -19,8 +19,8 @@ function libIntakeMany(L, ctx, done){
     if(i >= L.length){ libListShow(items, ctx, res, done); return; }
     var f = L[i]; i++;
     libAskShow({ reading: f.name, n: i, of: L.length });
-    libReadFile(f).then(function(r){ return r; }, function(){ return { text: "", pages: null }; }).then(function(r){
-      var got = libDocRead(r.text, f.name, r.pages);
+    libReadFile(f).then(function(r){ return r; }, function(){ return { text: "", pages: null, err: 1 }; }).then(function(r){
+      var got = libDocRead(r.text, f.name, r.pages); got.readErr = !!r.err && /\.pdf$/i.test(f.name || "");
       if(ctx.ro && !got.num) res.plain.push(f);   /* not a Volvo document: attached as usual */
       else items.push({ f: f, g: got, st: "" });
       readNext();

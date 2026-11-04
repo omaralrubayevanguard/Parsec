@@ -1,7 +1,7 @@
 /* Parsec · library · read-more.js
    More from a document (17.3): its part numbers, labor operations and hours, chassis ranges, symptoms and the repair in one line; the two likeliest kinds when the number doesn't say; the fields worth checking; and using them on an operation.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   libReadLabels libPartsIn libLaborIn libChassisIn libSymptomsIn libFixLine libKindGuess libTitleRules libReadMore libFits libWords libSympHit … (19 functions, 4 constants)
+   declares   libReadLabels libPartsIn libLaborIn libChassisIn libSymptomsIn libFixLine libKindGuess libTitleRules libReadMore libFits libWords libSympHit … (19 functions, 5 constants)
    state      libRules
    uses       data/ pages/inventory/ ro/ state/
 */
@@ -20,18 +20,35 @@
 /* the labelled lines a CBR (and most other documents) carry: "Release: 02", "Revision 3", "Published: 08/23/2023",
    "Model(s): VNL, VNR", "Model year(s): 2019, 2020, 2021" or "MY 2019–2022". A labelled line wins over a loose mention. */
 var LIB_DATE_ANY = "([A-Za-z]{3,9}\\.? \\d{1,2},? \\d{4}|\\d{1,2}[ -][A-Za-z]{3,9}\\.?[ -,]+\\d{4}|\\d{1,2}\\/\\d{1,2}\\/\\d{4}|\\d{4}-\\d{2}-\\d{2}|\\d{1,2}\\.\\d{4}|[A-Za-z]{3,9} \\d{4})";
+/* A CBR printed from Volvo's portal ("Print Solution") is laid out as label · value:
+     ID #  CBR-2408 · Version  19 · Title / <the title on the next line> · Published 8 January 2026 ·
+     Valid For / Volvo Chassis - VN (4) / Mack Chassis - PR (4) / Model year - 2024 to curent
+   The page's own header ("3/12/26, 1:49 PM  Print Solution") and footer (the link, "1/4") are when it was printed, not read. */
+var LIB_TRUCK_TAG = /(?:\s+[-–]\s+(?:VNL|VNR|VNX|VHD|VAH|VN|PR|GR|LR|MD|AN|HR|MR|TE)\s*\(\d+\))+\s*$/;
 function libReadLabels(r, T){
   var S = r.src = r.src || {}, L = String(T || "").split("\n").map(function(l){ return l.replace(/\s+/g, " ").trim(); }).filter(Boolean), m;
-  var find = function(re){ for(var i = 0; i < L.length; i++){ var x = re.exec(L[i]); if(x) return { m: x, line: L[i] }; } return null; };
+  var find = function(re){ for(var i = 0; i < L.length; i++){ var x = re.exec(L[i]); if(x) return { m: x, line: L[i], i: i }; } return null; };
   var f;
+  /* ID # CBR-2408: the number, from the page */
+  if((f = find(/^ID\s*#?\s*:?\s*([A-Z]{2,5}-?\d{2,}[A-Z0-9-]*)$/i)) && (!r.num || r.how === "file name" || r.how === "CBR")){ r.num = f.m[1].toUpperCase(); r.how = "ID #"; S.num = f.line; if(!r.kind || r.numKind) r.kind = libKindOf(r.num) || r.kind; }
+  /* Title on its own line, the title under it (its "- VN (4) - PR (4)" tail is the trucks, not the title) */
+  if((f = find(/^title\s*:?$/i)) && L[f.i + 1] && (!r.title || r.tHow === "line" || r.tHow === "file" || r.tHow === "")){
+    r.title = libUnhyph(L[f.i + 1]).replace(LIB_TRUCK_TAG, "").trim(); r.tHow = "label"; S.title = L[f.i + 1];
+  }
+  /* Valid For: Volvo Chassis - VN (4) · Model year - 2024 to current */
+  if((f = find(/^(?:volvo\s+)?chassis\s*[:\-–]\s*(.+)$/i))){
+    var vm = f.m[1].match(/\b(VNL|VNR|VNX|VHD|VAH|VN)\b/g);
+    if(vm){ var sn = {}; r.model = vm.filter(function(x){ if(sn[x]) return false; sn[x] = 1; return true; }).join(", "); S.model = f.line; r.modelLbl = 1; }
+  }
   if(!r.rel && (f = find(/\b(?:release|revision|rev\.?|version)\s*(?:no\.?|number|#)?\s*[:#\-]?\s*(\d{1,3})\b(?![\/.\-]\d)/i))){ r.rel = ("0" + f.m[1]).slice(-2); S.rel = f.line; }
   if(!r.date && (f = find(new RegExp("\\b(?:release date|publish(?:ed)?(?: date)?|issue(?:d)?(?: date)?|date(?: issued| published| created)?|created|updated|last (?:updated|modified|revised)|revised|effective(?: date)?)\\s*(?:on)?\\s*[:\\-]?\\s*" + LIB_DATE_ANY, "i"))) && libDate(f.m[1])){ r.date = libDate(f.m[1]); S.date = f.line; }
   if((f = find(/^(?:(?:truck |vehicle )?models?|applies to|applicable (?:models?|vehicles?)|vehicles?(?: affected)?|product(?: line)?)\s*(?:\(s\))?\s*[:\-]\s*(.+)$/i))){
     var md = f.m[1].match(/\b(VNL|VNR|VNX|VHD|VAH|VN)\b/g);
     if(md){ var seen = {}; r.model = md.filter(function(x){ if(seen[x]) return false; seen[x] = 1; return true; }).join(", "); S.model = f.line; r.modelLbl = 1; }
   }
-  if((f = find(/^(?:model years?|years?|my)\s*(?:\(s\))?\s*[:\-]?\s*(.*(?:19|20)\d\d.*)$/i)) || (f = find(/\b(?:model years?|MY)\s*(?:\(s\))?\s*[:\-]?\s*((?:19|20)\d\d.*)$/i))){
-    var v = f.m[1], y = libYears(v);
+  if((f = find(/^(?:model years?|years?|my)\s*(?:\(s\))?\s*[:\-–]?\s*(.*(?:19|20)\d\d.*)$/i)) || (f = find(/\b(?:model years?|MY)\s*(?:\(s\))?\s*[:\-]?\s*((?:19|20)\d\d.*)$/i))){
+    var v = f.m[1], y = "", to = /((?:19|20)\d\d)\s*(?:to|through|thru|[-–])\s*(?:(?:the\s+)?cur+ent|present|now|today|newer|later|onwards?)\b/i.exec(v), ft = /((?:19|20)\d\d)\s*(?:to|through|thru)\s*((?:19|20)\d\d)/i.exec(v);
+    if(to) y = to[1] + "+"; else if(ft) y = ft[1] + "–" + ft[2]; else y = libYears(v);
     if(!y){ var ys = (v.match(/\b(?:19|20)\d\d\b/g) || []).map(Number).sort(); if(ys.length) y = ys.length > 1 ? ys[0] + "–" + ys[ys.length - 1] : String(ys[0]); }
     if(y){ r.years = y; S.years = f.line; r.yearsLbl = 1; }
   }
@@ -40,7 +57,7 @@ var LIB_PN = /(?:^|[^\d-])(\d{8})(?![\d-])/g;
 function libPartsIn(lines, r){
   var out = [], seen = {}, own = String(r.num || "").replace(/\D/g, "");
   lines.forEach(function(L){
-    if(/chassis|\bvin\b|serial|phone|fax|\btel\b|page \d/i.test(L)) return;
+    if(/chassis|\bvin\b|serial|phone|fax|\btel\b|page \d|https?:/i.test(L)) return;
     var m; LIB_PN.lastIndex = 0;
     while((m = LIB_PN.exec(L))){
       var pn = m[1], at = m.index + m[0].length;
@@ -68,8 +85,11 @@ function libChassisIn(one){
   return out.slice(0, 8);
 }
 function libSymptomsIn(lines){
-  var out = [], seen = {};
-  lines.forEach(function(L){
+  var out = [], seen = {}, sec = -1;
+  lines.forEach(function(L, i){
+    if(/^symptoms?(?: description)?\s*:?$/i.test(L)){ sec = i; return; }
+    var dm = sec > -1 && i - sec <= 6 && /^description\s*:\s*(.{4,120})$/i.exec(L);
+    if(dm){ var t = dm[1].replace(/[“”"]/g, "").replace(/\s+[–-]\s+.*$/, "").trim(); if(t.split(/[\s\/]+/).length >= 2 && !seen[t.toLowerCase()]){ seen[t.toLowerCase()] = 1; out.push(t); } return; }
     var m = /^(?:symptoms?|conditions?|complaints?|customer concerns?|concerns?|problem)\s*[:\-–]\s*(.{4,160})$/i.exec(L); if(!m) return;
     m[1].split(/\s*[;•]\s*|,\s+(?=[a-z])/).forEach(function(s){
       s = s.replace(/[.\s]+$/, "").trim(); var k = s.toLowerCase();
@@ -79,10 +99,21 @@ function libSymptomsIn(lines){
   return out.slice(0, 8);
 }
 function libFixLine(lines, r){
-  var tidy = function(s){ s = String(s || "").replace(/\s+/g, " ").trim(); if(!s) return ""; s = s.charAt(0).toUpperCase() + s.slice(1); return /[.!?]$/.test(s) ? s : s + "."; };
+  var tidy = function(s){ s = String(s || "").replace(/\s+/g, " ").trim(); if(!s) return "";
+    if(s.length > 220){ var cut = s.lastIndexOf("; ", 220); s = cut > 60 ? s.slice(0, cut) : s.slice(0, s.lastIndexOf(" ", 220)); }   /* whole steps, never a word cut in half */
+    s = s.charAt(0).toUpperCase() + s.slice(1); return /[.!?]$/.test(s) ? s : s + "."; };
   for(var i = 0; i < lines.length; i++){
     var m = /^(?:correction|corrective action|repair|remedy|solution|service action)\s*[:\-–]\s*(.{6,220})$/i.exec(lines[i]); if(m) return tidy(m[1]);
-    if(/^(?:correction|corrective action|repair|remedy|solution|service procedure|repair procedure)\s*:?$/i.test(lines[i]) && lines[i + 1]) return tidy(lines.slice(i + 1, i + 3).join(" ")).slice(0, 220);
+    if(/^(?:correction|corrective action|repair|remedy|solution|service procedure|repair procedure)\s*:?$/i.test(lines[i]) && lines[i + 1]){
+      var st0 = [], plain = "";
+      for(var k = i + 1; k < Math.min(lines.length, i + 30) && st0.length < 4; k++){
+        var nn = /^\d{1,2}[.)]\s+(.{4,120})$/.exec(lines[k]);
+        if(nn) st0.push(nn[1].replace(/[.\s]+$/, ""));
+        else if(!plain && !st0.length && lines[k].length > 20 && !/^(?:note\b|procedure$|.*following steps)/i.test(lines[k])) plain = lines[k];
+      }
+      if(st0.length >= 2) return tidy(st0.map(function(x, q){ return q ? x.charAt(0).toLowerCase() + x.slice(1) : x; }).join("; "));
+      if(plain) return tidy(plain);
+    }
   }
   var st = [];
   for(var j = 0; j < lines.length && st.length < 4; j++){ var n = /^\d{1,2}[.)]\s+(.{4,120})$/.exec(lines[j]); if(n) st.push(n[1].replace(/[.\s]+$/, "")); else if(st.length) break; }
@@ -109,7 +140,7 @@ function libReadMore(r, T, one){
   var G = libKindGuess(one), ruled = r.kind && r.kind !== "codes";
   r.toss = [];
   if(!r.kind && G.length) r.toss = G.slice(0, 2).map(function(x){ return x.k; });
-  else if(ruled && r.how !== "Impact" && G.length && G[0].k !== r.kind && G[0].n >= 2 && !G.some(function(x){ return x.k === r.kind; })){ r.toss = [r.kind, G[0].k]; r.kindRead = r.kind; r.kind = ""; }
+  else if(ruled && r.how !== "Impact" && r.how !== "ID #" && G.length && G[0].k !== r.kind && G[0].n >= 2 && !G.some(function(x){ return x.k === r.kind; })){ r.toss = [r.kind, G[0].k]; r.kindRead = r.kind; r.kind = ""; }
   if(r.src && !r.src.model && r.model){ var ml = lines.filter(function(l){ return /\b(VNL|VNR|VNX|VHD|VAH|VN)\b/.test(l); })[0]; if(ml) r.src.model = ml; }
   if(r.src && !r.src.years && r.years){ var yl = lines.filter(function(l){ return /(?:19|20)\d\d\s*(?:[-–]|\+|and (?:newer|later))/i.test(l); })[0]; if(yl) r.src.years = yl; }
   /* the fields read from somewhere weak */

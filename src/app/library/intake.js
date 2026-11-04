@@ -29,8 +29,8 @@ function libIntake(files, ctx, done){
     if(i >= L.length){ libAskClose(); if(done) done(res); return; }
     var f = L[i++];
     libAskShow({ reading: f.name });
-    libReadFile(f).then(function(r){ return r; }, function(){ return { text: "", pages: null }; }).then(function(r){
-      var got = libDocRead(r.text, f.name, r.pages);
+    libReadFile(f).then(function(r){ return r; }, function(){ return { text: "", pages: null, err: 1 }; }).then(function(r){
+      var got = libDocRead(r.text, f.name, r.pages); got.readErr = !!r.err && /\.pdf$/i.test(f.name || "");
       if(ctx.ro && !got.num){ res.plain.push(f); next(); return; }   /* not a Volvo document: attached as usual */
       libAskForm(f, got, ctx, function(ans){
         if(ans === "plain"){ res.plain.push(f); next(); return; }
@@ -112,7 +112,7 @@ function libAskForm(file, g, ctx, cb){
     g.fix ? '<label class="lib-f-tick"><input type="checkbox" id="lib-f-fix"> <span>Use the repair as the Correction</span></label>' : ''].join("") : '';
   var pg = lines.length >= 2 && !ctx.edit;
   w.innerHTML = '<div class="roreo-c lib-ask-c' + (pg ? ' has-pg' : '') + '"><div class="lib-ask-main"><div class="roreo-h"><span class="roreo-i" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V20a.5.5 0 0 1-.5.5h-10A.5.5 0 0 1 7 20z"/><path d="M14 3.5V8h4M9.5 12.5h5M9.5 16h5"/></svg></span>'
-    + '<div><b>' + (ctx.edit ? 'Change this document' : 'File this document?') + '</b><p>' + libE(file.name) + (g.how ? ' · read from its ' + libE(g.how === "header" ? "header" : g.how) : "") + (Object.keys(dbt).length ? ' · <span class="lib-chk-n">' + Object.keys(dbt).length + ' to check</span>' : '') + (!ctx.edit && !lines.length ? '<br><span class="lib-chk-n">No words could be read from the file — only its name. A scanned page needs a clearer copy or a screenshot.</span>' : '') + '</p></div></div>'
+    + '<div><b>' + (ctx.edit ? 'Change this document' : 'File this document?') + '</b><p>' + libE(file.name) + (g.how ? ' · read from its ' + libE(g.how === "header" ? "header" : g.how) : "") + (Object.keys(dbt).length ? ' · <span class="lib-chk-n">' + Object.keys(dbt).length + ' to check</span>' : '') + (!ctx.edit && !lines.length ? '<br><span class="lib-chk-n">' + (g.readErr ? 'Parsec’s PDF reader didn’t load on this computer, so only the file name was read. Connect the Parsec Data folder (the reader is kept in tools/pdfjs), or open Parsec once with internet so it can fetch it.' : 'No words could be read from the file — only its name. A scanned page needs a clearer copy or a screenshot.') + '</span>' : '') + '</p></div></div>'
     + '<div class="lib-f">'
     + '<div class="lib-f-row"><span class="lib-f-l">Kind</span><span class="lib-kinds" role="radiogroup" aria-label="Kind">' + kinds.map(function(k){ return '<button type="button" role="radio" class="lib-kd k-' + k.k + (g.kind === k.k ? " on" : "") + (!g.kind && toss.indexOf(k.k) > -1 ? " maybe" : "") + '" data-kind="' + k.k + '" aria-checked="' + (g.kind === k.k) + '"><i></i>' + libE(k.one) + '</button>'; }).join("") + '</span></div>'
     + '<div class="lib-f-grid">'

@@ -21,6 +21,12 @@ DOC6 = "\n".join(["9.2012 430 13 02 1(50)", "Subject: Gear selector"])
 DOC7 = "\n".join(["CBR-23004", "Subject: Shifting complaints", "Symptoms: slow gear changes, hard to shift"])
 CBR = "\n".join(["Volvo Trucks North America", "CBR-2408", "Air Production Modulator (APM) DTC C10129B - High or Excessive Flow",
   "Release: 3", "Release Date: 05/12/2026", "Model(s): VNL, VNR", "Model Year(s): 2018, 2019, 2020, 2021, 2022"])
+CBRP = "\n".join(["3/12/26, 1:49 PM\tPrint Solution", "Uncontrolled Copy", "ID #\tCBR-2408", "Version\t19", "Title",
+  "Air Production Modulator (APM) DTC C10129B - High/Excessive Flow - VN (4) - PR (4)", "Abstract", "This document provides guidance.", "Content",
+  "Published 8 January 2026", "Valid For", "Volvo Chassis - VN (4)", "Mack Chassis - PR (4)", "Model year - 2024 to curent", "Symptom Description",
+  "DTC Code: C10129B", "Description: \"High/Excessive Flow\" – APM (Air Production Modulator)", "Corrective Action", "Procedure",
+  "Note: Tech Tool needs to be at update to 2.8.351 or newer", "To address the issue, perform the following steps:", "1. Idle the truck for 15-20 minutes.",
+  "2. After 15-20 minutes, turn off the engine.", "Tech Tool requires engine-off as a precondition for the operation"])
 F = lambda txt, name: "new File([" + json.dumps(txt) + "], " + json.dumps(name) + ", {type:'text/plain'})"
 
 async def main():
@@ -40,6 +46,9 @@ async def main():
         ok(r3[0] == "Potential vehicle roll" and r3[1] == ["title"], "a title from the first line is marked to check (%s)" % r3)
         cb = await pg.evaluate("(()=>{ const r=__tg.libDocRead(" + json.dumps(CBR) + ", 'CBR-2408 Air Production Modulator (APM) DTC C10129B - High or Excessive Flow.pdf'); return [r.kind, r.num, r.rel, r.date, r.model, r.years, Object.keys(r.doubt)]; })()")
         ok(cb == ["cbr", "CBR-2408", "03", "2026-05-12", "VNL, VNR", "2018–2022", []], "a CBR: release, date, trucks and model years from its labelled lines, nothing to check (%s)" % cb)
+        cp = await pg.evaluate("(()=>{ const r=__tg.libDocRead(" + json.dumps(CBRP) + ", 'CBR-2408 Air Production Modulator.pdf'); return [r.num, r.how, r.rel, r.date, r.title, r.model, r.years, r.symp, r.fix, Object.keys(r.doubt)]; })()")
+        ok(cp == ["CBR-2408", "ID #", "19", "2026-01-08", "Air Production Modulator (APM) DTC C10129B - High/Excessive Flow", "VN", "2024+", ["High/Excessive Flow"],
+                  "Idle the truck for 15-20 minutes; after 15-20 minutes, turn off the engine.", []], "a CBR printed from the portal: ID #, Version, Title, Published, Valid For, the symptom and the steps (%s)" % cp)
         # ---- the card: marks, the page beside it, the two likeliest kinds
         await pg.evaluate("__tg.libIntake([" + F(DOC3, "x.txt") + "], null, ()=>{})"); await pg.wait_for_selector(".lib-ask:not(.mx-out) .lib-f"); await pg.wait_for_timeout(150)
         c = await pg.evaluate("(()=>{ const w=document.querySelector('.lib-ask:not(.mx-out)'); return w ? [!!w.querySelector('.lib-f-c.doubt[data-f=title] .lib-chk'), !!w.querySelector('.lib-pg'), w.querySelectorAll('.lib-pg-b span').length] : null; })()")
@@ -106,7 +115,9 @@ async def main():
         await pg.click(".lib-ask:not(.mx-out) .lib-li.st-check"); await pg.wait_for_timeout(400)
         ok(await pg.evaluate("!!document.querySelector('.lib-ask:not(.mx-out) .lib-back') && !!document.querySelector('#lib-f-num')"), "a row opens the card, with ‹ Back to the list")
         await pg.click(".lib-ask:not(.mx-out) .lib-back"); await pg.wait_for_timeout(800)
-        await pg.click(".lib-ask:not(.mx-out) [data-ll=ready]"); await pg.wait_for_timeout(900)
+        await pg.click(".lib-ask:not(.mx-out) [data-ll=ready]")
+        try: await pg.wait_for_function("[...document.querySelectorAll('.lib-ask:not(.mx-out) .lib-li-s')].filter(x=>x.textContent==='✓ filed').length >= 2", timeout=8000)
+        except Exception: pass
         L2 = dict(await pg.evaluate("(()=>[...document.querySelectorAll('.lib-ask:not(.mx-out) .lib-li')].map(x=>[x.querySelector('.lib-li-f').textContent, x.querySelector('.lib-li-s').textContent]))()"))
         ok(L2.get("RVXX2602.txt") == "✓ filed" and L2.get("CBR-23005.txt") == "✓ filed" and L2.get("RVXX2601.txt", "").startswith("check"), "the ready ones filed, the doubtful one waits (%s)" % L2)
         await pg.click(".lib-ask:not(.mx-out) [data-ll=done]"); await pg.wait_for_timeout(300)
