@@ -1,9 +1,9 @@
 ---
 name: "idea-picker"
-description: "Build an Idea picker (v4): an interactive ideas mock-up for picking visual references — animated drawn options and real screenshots, Love / OK / No, mix-and-match parts, blind compare, pinned notes, a mood board and a DESIGN.md spec to copy back. Use when asked for ideas, options, references or a mock-up before a UI, workflow or feature change."
+description: "Build an Idea picker (v5): an interactive ideas mock-up for picking visual references — animated drawn options and real screenshots, Love / OK / No, mix-and-match parts, blind compare, linked ideas that carry a pick forward, a mood board and a DESIGN.md spec to copy back. Use when asked for ideas, options, references or a mock-up before a UI, workflow or feature change."
 ---
 
-# Idea picker (v4)
+# Idea picker (v5)
 
 An **Idea picker** is a single interactive HTML page that shows ideas for a change, drawn as they would look. Each idea's action plays as a short animation when an option is picked. The person picks one option per idea, or Skip, and copies the picks back into the chat. You build from those picks.
 
@@ -43,22 +43,21 @@ More than 8 ideas about one component crowd the preview pane and repeat the same
 
 ## How to run it
 
-1. **Survey first, briefly.** Look at the current state of what's being changed, in the code or the screenshots. Count what matters, e.g. "560 tooltips, 7 styles, 4 ways to write a key". This fills the top strip. Note the product's real control names, labels and numbers; the visuals use them.
+1. **Survey first, briefly.** Look at the current state of what's being changed, in the code or the screenshots. Note the product's real control names, labels and numbers; the visuals use them.
 2. **Write the ideas** (count per the table above).
    - Each group is named by its job ("Find what's wrong", "Fix it fast", "Who fixes, and the record").
    - Each idea gets a short title, one line of why, a drawn visual, and 2–4 options. Skip is added automatically.
    - Each option has a short label and an optional one-line note. The first option is the recommended one, unless the options are equal; give it a `rec` line saying why.
    - Tag each idea with `pri` (H / M / L impact) and `effort` (S / M / L). The sort chips and the build-size line use them.
-   - If an idea only makes sense once another is picked, add `needs: '<that idea's k>'`. The card dims until its parent is picked, and the shell keeps the two consistent (see *needs*).
+   - If an idea only makes sense once another is picked, add `needs: '<that idea's k>'`. The card dims until its parent is picked, the shell keeps the two consistent, and the dependent card's drawing **shows the parent's pick** (see *needs*).
 3. **Draw each visual in the product's own look.** Real names, numbers and wording, not lorem ipsum. Plain HTML/CSS: buttons, pills, rows, bars, cards. Every class in a visual starts with `v-`, and every visual sits in its own wrapper `<div class="v-<k>">` so its step rules can be scoped to it.
 4. **Start from a recipe when the motion matches.** `template.html` carries four tested motions — **menu** (a button opens a menu, an item is chosen), **drag** (a row is lifted, moved, dropped), **type** (a field takes focus, text grows, Save lands), **flow** (three stages light up and a panel changes). Their CSS is live in the template and their `vis` + `steps` are in the `RECIPES` comment under `IDEAS`. Copy one, rename the wrapper to your `v-<k>`, change the words, add the `[data-opt]` rules. Invent a motion from scratch only when none of the four fits.
 5. **Bring real references when the ask is about a look.** Search 21st.dev (`mcp__21dev__search`, `type: 'component'` or `'theme'`) for the thing being designed — "status badge", "kanban board", "stepper". Each result's `previewUrl` is the picture, `url` the link back. Put them on options as `ref: { img, url, src: '21st.dev', title }`. Mobbin (`mcp__Mobbin__search_screens`) gives whole app screens, but needs a paid Mobbin plan; if it says so, say it in one line and use 21st.dev. Pictures load from the source in the person's browser and can't be downloaded into the workspace; a placeholder with the link shows if one is blocked. 2–4 references per idea; never more than one idea per page that is only references with nothing drawn, unless the whole page is a reference board.
 6. **Animate only on pick.** Nothing moves until an option is picked; then that option's version plays once and holds. See *Animation steps* and *Accuracy rules*.
 7. **Set the live preview** for a single component: `COMPONENT` = that component's HTML. Every pick lands on it as `data-p-<idea>="<option>"`, so one CSS block shows all the picks combined. `COMPONENT = null` for a workflow.
-8. **Add the top strip.** "Already there — staying as it is" (what exists and won't change), or "How it looks now" (the survey numbers, or 2–4 crops). One row.
-9. **Build from `template.html`.** Fill `APP`, `TOPIC`, `KEY` (unique per mock-up), `IDEAS`, `COMPONENT`, the top strip, and the `v-` CSS. Leave the shell (`ip-`) alone. Delete the recipe CSS you didn't use.
-10. **Check, and show the evidence.** Open the page with `?check=1`. The header badge must read **check ✓** (green). Then paste the one-line report from the console (`ipReport()`) and attach one screenshot per theme (Ivory, Graphite, Carbon, Linear) plus one at 390 px. A check that produced no badge count and no screenshots did not happen. Full list under *Checks*.
-11. **Deliver it** as an artifact when the chat offers one, otherwise as a file. Name it "<App> <topic> ideas mock-up.html". Reply with 1–2 lines, the report line, and the screenshots.
+8. **Build from `template.html`.** Fill `APP`, `TOPIC`, `KEY` (unique per mock-up), `IDEAS`, `COMPONENT` and the `v-` CSS. There is no top strip, lead line or keys line; don't add one. Leave the shell (`ip-`) alone. Delete the recipe CSS you didn't use.
+9. **Check, and show the evidence.** Open the page with `?check=1`. The header badge must read **check ✓** (green). Then paste the one-line report from the console (`ipReport()`) and attach one screenshot per theme (Ivory, Graphite, Carbon, Linear) plus one at 390 px. A check that produced no badge count and no screenshots did not happen. Full list under *Checks*.
+10. **Deliver it** as an artifact when the chat offers one, otherwise as a file. Name it "<App> <topic> ideas mock-up.html". Reply with 1–2 lines, the report line, and the screenshots.
 
 ## The idea fields
 
@@ -92,6 +91,9 @@ More idea fields: `rate: true | false` (force Love / OK / No on or off), `parts:
 - Skipping a parent **skips its dependents** too, with the same toast and Undo.
 - A dependent card is dimmed with a "needs: …" badge until the parent is picked; the badge turns green after.
 - This holds for every way of deciding: a pick, a ♥, a mix part, a blind win, Accept all.
+- **The parent's pick carries forward.** The dependent card's `.ip-vis` gets `data-from="<parent's option>"`, and its "needs: …" badge becomes "from <Parent> · <option>". Draw it: for each parent option that changes how the dependent looks, add a rule such as `[data-from="card"] .v-dly .v-tip{background:var(--raised)}`, so the second card is drawn in the look picked on the first. The check flags a dependent visual with no `[data-from="…"]` rule.
+- **Changing the parent later replays the dependent.** If the dependent is already picked, it opens (if folded), plays again with the new parent pick and its glow ring, and its badge flashes.
+- Every pick also lands on `<html>` as `data-pk-<k>="<option>"`, for the rare card that should follow an idea it doesn't `need`.
 - The only way to get `(needs … — not picked)` in the text is an imported `.json`; treat it as "ask in one line".
 
 ## The picks text (keep this format exactly)
@@ -104,7 +106,6 @@ More idea fields: `rate: true | false` (force Love / OK / No on or off), `parts:
 · <Idea title>: ♥ <Label>, <Label> · ok <Label> · no <Label>
 · <Idea title>: Colour ← <Label>, Layout ← <Label>
   note: <per-idea note if any>
-  pin 1 on <Label>: <the note pinned to a spot>
 · <Idea title>: skip
 <Group>:
 · …
@@ -131,7 +132,7 @@ References:
 - Build each picked option as described on its card.
 - `skip` means leave it as it is.
 - `(not picked yet: N)` means use the recommended option, or ask about it in one line.
-- Per-idea `note:` and the global `Notes:` override the cards. A `pin` is a note about one spot of that option's visual or picture.
+- Per-idea `note:` and the global `Notes:` override the cards.
 - `♥` options are what to build towards; `ok` is acceptable; `no` is what to avoid. A rated idea with only `no` reads as `skip`.
 - For a mixed idea, take each part from the named option.
 - If the person also sends a DESIGN.md from **Copy spec**, its tokens are the theme they were looking at and its picks section repeats the picks with each option's `spec` line — build from it.
@@ -144,12 +145,11 @@ References:
 - **References** sit in a grid of pictures in the card; ⤢ zooms one full screen, the source link opens the original, a placeholder with the link shows if a picture is blocked. A badge on each picture shows ♥ Love / OK / Picked / the parts taken from it.
 - **Love / OK / No** buttons on each option row; clicking a picture loves it; 1–4 love an option from the keyboard.
 - **Mix and match** rows: one row per part, a chip per option; clicking a picture fills the next empty part; 1–4 do the same from the keyboard.
-- **Blind** (on a card, or in the header to run through every unpicked idea): two options at a time, names hidden, ← / → to choose; the winner stays on until one is left, then it's picked (or loved, or used for every part).
-- **Pin** (on a card): click a spot on the visual or picture, type a note, Enter. Numbered pins stay on the visual, show their note on hover, go into the picks text and the spec, and undo.
+- **Blind** (header only: runs through every unpicked idea): two options at a time, names hidden, ← / → to choose; the winner stays on until one is left, then it's picked (or loved, or used for every part).
 - **Board** (header or panel): everything picked or loved on one page — pictures, or the drawn visual at its end state — with Print / PDF.
-- **Copy spec / DESIGN.md ↓** (panel): the current theme's tokens as CSS variables plus every pick with its `spec` line, notes, pins and reference links, as Markdown.
+- **Copy spec / DESIGN.md ↓** (panel): the current theme's tokens as CSS variables plus every pick with its `spec` line, notes and reference links, as Markdown.
 - **+ Theme** (header): paste or choose a DESIGN.md (the awesome-design-md format); its canvas, surface, ink, hairline and primary colours, font and corner radius become a theme on the switch, kept in the browser. Remove it from the same popover.
-- **Before / after:** drop, paste or choose a screenshot of today's screen in the top strip (or set `BEFORE` to an image URL). The live preview gets After / Before / Both; without a `COMPONENT` it shows Before alone. The screenshot is shrunk to 1400 px and kept in the browser when it fits.
+- **Before / after:** set `BEFORE` to an image URL of today's screen; the live preview gets After / Before / Both (without a `COMPONENT` it shows Before alone).
 
 
 - **Sticky header, two rows.** Row 1: app name, topic in small caps, jump links to the groups, the theme switch, Accept all recommended (fills only the unpicked ideas with each card's first option), and **Your picks** with an n/total count. Row 2: the progress bar and "n of N decided", the filter tabs All / Unpicked / Picked / Skipped with counts, and the sort chips Author order / By impact / By effort.
@@ -159,15 +159,20 @@ References:
   - **Linear** (dark, from Linear) — near-black canvas, indigo `#5e6ad2`, Inter at 600, 8 px cards / 6 px controls, compact 12 px padding.
   - Each theme sets colour tokens plus `--head`/`--hw` (heading font and weight), `--rc`/`--rp`/`--rv`/`--rb`/`--rs` (card, panel, visual, control, tag corners) and `--cp`/`--gg` (card padding, grid gap). The frame uses only these, so switching theme restyles everything. Keep the names. Old saved `mist` / `obsidian` picks open as Carbon / Linear.
   - The visuals follow the colour tokens for free. Keep their own radii fixed: they draw the product, not the picker.
-- **Cards** sit in a grid, `minmax(440px, 1fr)`, one column under 980 px. A picked card gets an accent ring; a skipped one doesn't. The current card (for the keyboard) gets a stronger ring.
+**New in v5**
+- **Cards** sit one per row, full width (beside the live preview when it's on). From 900 px wide the **options sit beside the picture** in a right-hand column (220–280 px; 280–360 px for Love / OK / No and mix), with the note under them; below 900 px they stack under the picture. A drawn visual is at least 220 px tall; draw at the product's real size — don't scale the drawing up. A picked card gets an accent ring; a skipped one doesn't. The current card (for the keyboard) gets a stronger ring. A card whose `needs` parent isn't picked is dimmed with a "needs: …" badge; once the parent is picked it reads "from <Parent> · <option>".
+- **No Compare, Blind or Pin on the cards.** A card holds the title, the picture, the options and the note.
+- **Sure / Leaning** is a two-part switch at the **top right** of a picked card (Sure lit by default; Leaning lights amber and gives the card an amber ring). Under 640 px it sits above the title.
+- **Fold to one line:** once a pick-one card's sequence has played and the pointer has left the card, it folds to its title and "✓ <option> · Edit" (or "Skipped · Edit"); click it to reopen. It stays open until you pick on it again. Decided cards start folded when the page reopens. Love / OK / No and mix cards fold only when skipped.
+- **Pick feel:** an option presses in (scale .97) when clicked, a tick pops into its dot, and the other options fade back.
+- **All decided:** when the last idea is decided, a bar slides up at the bottom — "All N decided · Copy for the chat · ✕". Toasts move up above it.
 - **Options** show their key cap (1–4, S). The first option carries a **Recommended** badge; hover or focus it to read the `rec` line.
-- **Visuals** stay still until a pick, with a "Pick an option to see it play" hint. After a pick: ↻ replays, and the **step dots** under the visual show the sequence; click a dot to jump to that step, hover for its name.
+- **Visuals** stay still until a pick, with a "Pick an option to see it play" hint. When a sequence plays: an accent **glow ring** pulses twice around the visual so the eye finds it; a **step badge** in the top-right counts along ("2 / 5 · point"); the **pointer** is 22 px with a soft shadow, leaves a short fading **trail** as it moves, and rings on `click`. The **first play** on each card runs 1.5× slower (the step times and the pointer's travel); ↻ replays at normal speed. The step dots under the visual show the sequence; click a dot to jump to that step, hover for its name. Reduced motion: no glow, trail or ring; the end state shows still.
 - **Peek:** hover an option for half a second and the visual shows that option's end state as a ghost with a "peek · B" label; move away and the real state returns. Only on hover-capable pointers, never while a sequence is playing.
 - **Keyboard:** J / K (or ↓ / ↑) move between cards, 1–4 pick an option, S skips, Z undoes, Esc closes the panel. Clicking anywhere on a card makes it the current one. Keys are ignored while typing in a note.
-- **Auto-scroll:** after a pick, the next unpicked card scrolls into view (nearest edge, so the card just picked usually stays visible) and becomes current. A checkbox in the panel turns it off; `AUTOSCROLL` sets the default.
+- **Auto-scroll:** off by default; picking never moves the page or highlights another card. A checkbox in the panel turns it on for the session (it scrolls to the next unpicked card and highlights it); `AUTOSCROLL` sets the default and the saved setting is not restored.
 - **Undo:** every pick, skip, accept-all, reset and import shows a toast with **Undo**; Z also undoes. **Reset all** in the panel clears picks and sure/leaning marks (notes stay) and can be undone.
-- **Compare:** each card has a Compare button that shows two options side by side at their end state; two selects choose which two. Picking an option closes it.
-- **Sure / Leaning:** a toggle appears on a picked card; Leaning is written into the picks text.
+- **Sure / Leaning:** Leaning is written into the picks text.
 - **Live preview pane:** shown when `COMPONENT` (or a `PREVIEW` function) is set, and pinned with the header as you scroll: on the right, 12 px under the header, on wide screens; above the cards and flush under the header below 1100 px. **Hide / Show** in its title collapses it to one line (remembered). The header's real height is measured into `--hdr`, so the pane, the Your picks panel and the jump targets all clear it, however many rows the header wraps to. Don't add `overflow:hidden` to `html`, `body` or any wrapper of the cards: it stops sticky from working (the template uses `overflow-x:clip`). Picks land on `.ip-prev-root` as `data-p-<k>="<opt>"`. `PREVIEW(ctx)` runs after every change with `{ v, conf, notes, note, th, root, mount, ideas, app, topic }` for anything CSS can't express.
 - **Your picks panel:** the live text, an "Anything else" box, the auto-scroll checkbox, **Copy for the chat** (clipboard with a textarea fallback), Download .json, Import .json, PDF / Print, Reset all. Esc closes it.
 - Picks, marks, notes, theme, filter and sort are kept in `localStorage` under `KEY`, and the picks also in the URL hash `#p=` so the link can be shared. Every storage access is in try/catch.
@@ -207,7 +212,7 @@ These are what make the animations read as the real thing rather than a sketch.
 - **Every option has a rule.** Each `opts` value appears at least once in the CSS as `[data-opt="value"]`, so each option visibly shows its own outcome. If two options would look the same, merge them or make the difference visible (a label, a size, a timing).
 - **Every step after the first has a rule**, as `.ip-s-name` or `[data-step="name"]`. A step with no rule is a pause the person can't see; name the pause (`wait`) and draw it (a filling bar, a dimmed control).
 - **Scope to the wrapper.** Pointer coordinates and step rules are written as `.ip-s-<step> .v-<k> …`, never bare `.ip-s-<step> .v-cur`, so two cards that share a step name can't move each other's pointer.
-- **The pointer lands on its target.** Put the control at a known spot (left-aligned, fixed `top`), then set the pointer's `left`/`top` so its tip sits inside the control, roughly a third in and halfway down: for a 26 px button at `left:12px` (the visual's padding) that is about `left:52px;top:22px`. Keep the resting spot (`.v-cur` default) away from the hint at the bottom-left and the ↻ and dots at the bottom.
+- **The pointer lands on its target.** Put the control at a known spot (left-aligned, fixed `top`), then set the pointer's `left`/`top` so its tip sits inside the control, roughly a third in and halfway down: for a 26 px button at `left:12px` (the visual's padding) that is about `left:52px;top:22px`. Keep the resting spot (`.v-cur` default) away from the hint at the bottom-left, the ↻ and dots at the bottom, and the step badge at the top-right. The visual column is narrower now that options sit beside it (about 560–700 px on a laptop), so keep drawings under ~400 px wide. The shell draws the pointer at 22 px, tip at its top-left corner, so coordinates still mean "where the tip lands".
 - **Give tall visuals a height.** A menu or a list is taller than the 96 px minimum; set the wrapper's `height` (the recipes do) so nothing is clipped.
 - **Things that stay, stay.** Use `.ip-s-<step>` (reached) for changes that persist, `[data-step]` (current) only for one-moment effects like the ripple.
 - **Timing follows the real interaction.** A tooltip delay is drawn as a wait of that length; a save shows its spinner for as long as a save takes. Give each option its own timing when the option is about timing (`[data-opt="d300"].ip-s-wait .v-delay i{transition-duration:.3s}`).
@@ -219,7 +224,7 @@ These are what make the animations read as the real thing rather than a sketch.
 
 ## Checks
 
-The page runs `ipCheck()` on load. It lists every drawn option without a `[data-opt]` rule (a mixed one without a `[data-mixN]` rule), every step without a `.ip-s-`/`[data-step]` rule, sequences outside 2.5–7 s, a `needs` that points nowhere, a `ref` with no `img` or `url`, an idea with neither a `vis` nor references, and classes in a visual not prefixed `v-`. Options that are references need no CSS. With `?check=1` the header shows a badge: **N to fix** (amber) or **check ✓** (green). `ipReport()` in the console returns one line, e.g.
+The page runs `ipCheck()` on load. It lists every drawn option without a `[data-opt]` rule (a mixed one without a `[data-mixN]` rule), every step without a `.ip-s-`/`[data-step]` rule, sequences outside 2.5–7 s, a `needs` that points nowhere, a dependent visual with no `[data-from="…"]` rule, a `ref` with no `img` or `url`, an idea with neither a `vis` nor references, and classes in a visual not prefixed `v-`. Options that are references need no CSS. With `?check=1` the header shows a badge: **N to fix** (amber) or **check ✓** (green). `ipReport()` in the console returns one line, e.g.
 
 ```
 Idea picker check · Parsec · Tooltips · 4 ideas, 12 options, 11 steps, 3 references · 0 to fix · preview on · 4 themes
@@ -229,10 +234,10 @@ The hand-off must include that line and five screenshots (four themes, one phone
 
 - No console errors; no sideways scroll at 390 px.
 - Nothing plays before a pick; each option plays its own version once and holds it; ↻ replays; the dots jump.
-- Peek shows and clears; Compare shows the two chosen options.
+- Peek shows and clears. A decided card folds after its play and reopens on click. A dependent card draws the parent's pick, and changing the parent replays it. The "All decided" bar appears after the last pick.
 - No labels overlap. No class names collide: the frame uses `ip-`, visuals use `v-`, never generic names like `.mk`, `.pk` or `.empty`.
 - Every option toggles, the copied text reads right, and the live preview reflects the picks.
 - References: the pictures load in a normal browser (they can't from the workspace — that's expected there), ⤢ zooms, the link opens; ♥ / OK / No and mix parts show on the picture badges.
-- Blind, Pin, Board and Copy spec each run once without an error.
+- Blind (header), Board and Copy spec each run once without an error.
 
-Three test pages ship with the skill under `samples/`: **1 Single component** (every option kind on a tooltip, with the live preview), **2 Workflow** (the four recipes, no preview, blind run), **3 Visual references** (a reference board of real 21st.dev components). Open one to see a feature working before using it.
+Three test pages ship with the skill under `samples/`: **1 Single component** (every option kind on a tooltip, with the live preview; the delay card draws the look picked above it), **2 Workflow** (the four recipes, no preview, blind run), **3 Visual references** (a reference board of real 21st.dev components). Open one to see a feature working before using it.

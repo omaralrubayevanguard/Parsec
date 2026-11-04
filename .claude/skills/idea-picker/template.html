@@ -213,6 +213,63 @@ button,input,textarea,select{font:inherit;color:inherit}
 #ip-preview.ip-min .ip-before,#ip-preview.ip-min .ip-after-lbl{display:none!important}
 @media print{ html.ip-board-on body>*:not(#ip-board){display:none!important} html.ip-board-on #ip-board{position:static;display:block;background:#fff;backdrop-filter:none} html.ip-board-on #ip-board .ip-ov-top button{display:none} }
 
+/* ---------- v4.1: one card per row, taller visuals, motion you notice ---------- */
+.ip-grid{grid-template-columns:1fr}
+.ip-vis:not(.ip-isref){min-height:220px}
+.ip-ol{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+@keyframes ip-glow{0%{box-shadow:inset 0 0 0 1px var(--hair),0 0 0 0 transparent}45%{box-shadow:inset 0 0 0 1.5px var(--acc),0 0 0 7px color-mix(in srgb,var(--acc) 24%,transparent)}100%{box-shadow:inset 0 0 0 1px var(--hair),0 0 0 0 transparent}}
+.ip-vis.ip-glow{animation:ip-glow 1.1s cubic-bezier(0.23,1,0.32,1) 2}
+.ip-stepb{position:absolute;right:8px;top:8px;z-index:6;padding:0 8px;border-radius:999px;background:var(--acct);color:var(--acc);font:600 11px/20px var(--sans);opacity:0;transition:opacity .2s cubic-bezier(0.23,1,0.32,1);pointer-events:none}
+.ip-vis.ip-has .ip-stepb{opacity:1}.ip-vis.ip-comparing .ip-stepb,.ip-vis.ip-peeking .ip-stepb{opacity:0}
+.v-cur{width:22px!important;height:22px!important;transition-duration:calc(.6s * var(--ip-slow, 1))!important}
+.v-cur::before{filter:drop-shadow(0 0 1.5px var(--canvas)) drop-shadow(0 2px 3px rgba(0,0,0,.35))}
+@keyframes ip-ring{0%{opacity:.7;transform:scale(.3)}100%{opacity:0;transform:scale(2.2)}}
+[data-step="click"] .v-cur::after{animation:ip-ring .6s cubic-bezier(0.23,1,0.32,1)!important;background:transparent!important;box-shadow:inset 0 0 0 3px var(--acc)}
+.ip-trail{position:absolute;z-index:5;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:var(--acc);pointer-events:none;animation:ip-trail .5s cubic-bezier(0.23,1,0.32,1) forwards}
+@keyframes ip-trail{from{opacity:.55;transform:scale(1)}to{opacity:0;transform:scale(.3)}}
+@media (prefers-reduced-motion:reduce){.ip-vis.ip-glow{animation:none}.ip-trail{display:none}[data-step="click"] .v-cur::after{animation:none!important}}
+
+/* ---------- v5: Sure | Leaning top right · options beside the picture · fold to one line · press and tick · from chip · done bar ---------- */
+.ip-idea>header{position:relative;padding-right:150px}
+.ip-conf{display:none;position:absolute;top:-2px;right:0}.ip-idea.picked .ip-conf{display:inline-flex}
+.ip-conf button{height:24px;font-size:11.5px}
+.ip-conf button[data-conf="sure"][aria-pressed="true"]{background:var(--primary);color:var(--onprimary)}
+.ip-conf button[data-conf="leaning"][aria-pressed="true"]{background:var(--warn);color:var(--onprimary)}
+.ip-idea.picked.ip-lean{box-shadow:var(--shadow),inset 0 0 0 1.5px var(--warn)}
+.ip-sum{display:none;margin-top:4px;font-size:12.5px;color:var(--ink2)}.ip-sum b{color:var(--acc);font-weight:600}.ip-sum u{color:var(--ink3)}
+.ip-idea.ip-fold{cursor:pointer;gap:0;padding-bottom:var(--cp)}
+.ip-idea.ip-fold>:not(header){display:none!important}
+.ip-idea.ip-fold>header p{display:none}.ip-idea.ip-fold .ip-sum{display:block;animation:ip-in .3s cubic-bezier(0.23,1,0.32,1)}
+.ip-idea.ip-fold:hover .ip-sum u{color:var(--acc)}
+@keyframes ip-in{from{opacity:0;transform:translateY(-3px)}}
+@media (min-width:900px){
+  .ip-idea{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,280px);column-gap:18px;row-gap:10px;align-items:start}
+  .ip-idea[data-mode="rate"],.ip-idea[data-mode="mix"]{grid-template-columns:minmax(0,1fr) minmax(280px,360px)}
+  .ip-idea>header{grid-column:1/-1}
+  .ip-idea>.ip-vis{grid-column:1;grid-row:2/span 2}
+  .ip-idea>.ip-ol,.ip-idea>.ip-mix{grid-column:2;grid-row:2}
+  .ip-idea>.ip-ol{grid-template-columns:1fr}
+  .ip-idea>.ip-idea-note{grid-column:2;grid-row:3}
+  .ip-idea.ip-fold{display:flex}
+}
+@media (max-width:640px){.ip-idea>header{padding-right:0}.ip-idea.picked>header{padding-top:30px}}
+.ip-opt{transition:transform .12s cubic-bezier(0.23,1,0.32,1),background .2s,opacity .25s}
+.ip-opt:active{transform:scale(.97)}
+.ip-opt i{display:grid;place-items:center}
+.ip-opt[aria-pressed="true"] i{box-shadow:none;background:var(--acc)}
+.ip-opt[aria-pressed="true"] i::after{content:"✓";color:var(--onprimary);font:700 9px/1 var(--sans);animation:ip-tick .35s cubic-bezier(.34,1.56,.64,1)}
+@keyframes ip-tick{from{opacity:0;transform:scale(.2)}}
+.ip-ol:has(.ip-opt[aria-pressed="true"]) .ip-opt[aria-pressed="false"]{opacity:.6}.ip-ol .ip-opt:hover{opacity:1}
+.ip-need.ip-from{background:var(--acct);color:var(--acc)}
+.ip-need.ip-flash{animation:ip-flash .9s cubic-bezier(0.23,1,0.32,1)}
+@keyframes ip-flash{30%{box-shadow:0 0 0 4px color-mix(in srgb,var(--acc) 30%,transparent)}}
+html.ip-done-on .ip-toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+#ip-done{position:fixed;z-index:84;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:12px;padding:10px 10px 10px 16px;border-radius:var(--rp);background:var(--primary);color:var(--onprimary);box-shadow:var(--raise);font:600 13px/1 var(--sans);transform:translate(-50%,calc(100% + 32px));transition:transform .45s cubic-bezier(0.23,1,0.32,1);max-width:calc(100vw - 32px)}
+#ip-done.on{transform:translate(-50%,0)}
+#ip-done .ip-btn{background:var(--onprimary);color:var(--primary)}
+.ip-done-x{all:unset;cursor:pointer;padding:4px 6px;opacity:.7}.ip-done-x:hover{opacity:1}
+@media (prefers-reduced-motion:reduce){.ip-opt,#ip-done{transition:none}.ip-opt[aria-pressed="true"] i::after,.ip-idea.ip-fold .ip-sum{animation:none}}
+@media print{#ip-done,.ip-conf{display:none!important}.ip-idea.ip-fold>:not(header){display:revert!important}}
 /* ---------- the drawn visuals: prefix v- · animate with [data-step], .ip-s-<step> and [data-opt] on .ip-vis ---------- */
 .v-btn{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:7px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--border);font:500 12px/1 var(--sans);white-space:nowrap;transition:background .2s,color .2s}
 .v-tip{position:absolute;left:12px;top:48px;padding:6px 9px;border-radius:7px;background:var(--primary);color:var(--onprimary);font-size:12px;font-weight:500;white-space:nowrap;opacity:0;transform:translateY(-4px);transition:opacity .18s,transform .18s}
@@ -287,6 +344,9 @@ button,input,textarea,select{font:inherit;color:inherit}
 [data-opt="d300"].ip-s-wait .v-delay i{transition-duration:.3s}
 [data-opt="d600"].ip-s-wait .v-delay i{transition-duration:.6s}
 
+/* the "delay" card needs "look": it draws the tooltip in whatever look was picked there (data-from on .ip-vis) */
+[data-from="card"] .v-dly .v-tip{background:var(--raised);color:var(--ink);box-shadow:var(--raise)}
+[data-from="quiet"] .v-dly .v-tip{background:var(--acct);color:var(--ink);box-shadow:inset 0 0 0 1px var(--accl)}
 /* idea "anat" (mix): part 0 = Colour → data-mix0, part 1 = Shape → data-mix1 */
 .v-anat{display:flex;align-items:center;gap:10px}
 .v-anat .v-tip{position:static;opacity:.35;transform:none;transition:opacity .3s,background .3s,border-radius .3s,box-shadow .3s}
@@ -325,9 +385,6 @@ button,input,textarea,select{font:inherit;color:inherit}
 </div>
 </header>
 <main class="ip-wrap">
-<section class="ip-now"><h2>How it looks now</h2><div class="ip-now-row"><div><b>560 tooltips</b> across 41 screens, 7 styles</div><div><b>4 ways</b> to write a shortcut key: C, [C], ⌘C, Ctrl+C</div><div><b>Time Log</b> is the only screen with a styled tip</div></div></section>
-<p class="ip-lead" id="ip-lead"></p>
-<p class="ip-keys"><kbd>J</kbd> <kbd>K</kbd> next / previous card · <kbd>1</kbd>–<kbd>4</kbd> pick an option · <kbd>S</kbd> skip · <kbd>Z</kbd> undo · hover an option to peek at its result</p>
 <div class="ip-layout" id="ip-layout">
   <div id="ip-secs"></div>
   <aside id="ip-preview" hidden></aside>
@@ -338,7 +395,7 @@ button,input,textarea,select{font:inherit;color:inherit}
 <script>
 /* ---------- the content: groups → ideas → options (Skip is added to each) ---------- */
 var APP = 'Parsec', TOPIC = 'Tooltips', KEY = 'ip-parsec-tooltips';   /* KEY: unique per mock-up */
-var AUTOSCROLL = true;                                                 /* after a pick, bring the next unpicked card into view */
+var AUTOSCROLL = false;                                                 /* after a pick, bring the next unpicked card into view */
 var IDEAS = [
   { group: 'One look', items: [
     { k: 'look', t: 'One tooltip, the same everywhere', why: 'Today: the browser’s grey box on most things; the Time Log has its own.',
@@ -388,7 +445,7 @@ function flat() { var a = []; IDEAS.forEach(function (g) { g.items.forEach(funct
 function find(k) { var r = null; flat().forEach(function (it) { if (it.k === k) r = it; }); return r; }
 var THEMES = ['ivory', 'graphite', 'carbon', 'linear'], THMAP = { light: 'ivory', dark: 'graphite', mist: 'carbon', obsidian: 'linear' };
 var V = { th: 'ivory', open: false, v: {}, conf: {}, notes: {}, note: '', filter: 'all', sort: 'author', cmp: null, auto: AUTOSCROLL, r: {}, m: {}, pins: {}, ct: [], ba: 'both' };
-function load(d) { if (!d || typeof d !== 'object') return; if (d.v) V.v = d.v; if (d.conf) V.conf = d.conf; if (d.notes) V.notes = d.notes; if (typeof d.note === 'string') V.note = d.note; if (d.th) V.th = THMAP[d.th] || d.th; if (d.filter) V.filter = d.filter; if (d.sort) V.sort = d.sort; if (typeof d.auto === 'boolean') V.auto = d.auto; if (typeof d.pvMin === 'boolean') V.pvMin = d.pvMin; if (d.r) V.r = d.r; if (d.m) V.m = d.m; if (d.pins) V.pins = d.pins; if (d.ct) V.ct = d.ct; if (d.ba) V.ba = d.ba; }
+function load(d) { if (!d || typeof d !== 'object') return; if (d.v) V.v = d.v; if (d.conf) V.conf = d.conf; if (d.notes) V.notes = d.notes; if (typeof d.note === 'string') V.note = d.note; if (d.th) V.th = THMAP[d.th] || d.th; if (d.filter) V.filter = d.filter; if (d.sort) V.sort = d.sort;  if (typeof d.pvMin === 'boolean') V.pvMin = d.pvMin; if (d.r) V.r = d.r; if (d.m) V.m = d.m; if (d.pins) V.pins = d.pins; if (d.ct) V.ct = d.ct; if (d.ba) V.ba = d.ba; }
 try { load(JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
 try { var hm = (location.hash || '').match(/[#&]p=([^&]+)/); if (hm) load(JSON.parse(decodeURIComponent(hm[1]))); } catch (e) {}
 if (THEMES.indexOf(V.th) < 0 && !(V.ct || []).some(function (c) { return c.id === V.th; })) V.th = 'ivory';
@@ -403,7 +460,7 @@ flat().forEach(function (it) {
   if (it.rate === undefined) it.rate = !it.parts && Object.keys(it.ref).length > 0;
 });
 var total = flat().length;
-$('#ip-lead').textContent = total + ' idea' + (total === 1 ? '' : 's') + ' for the ' + TOPIC.replace(/^The\s+/i, '').toLowerCase() + ' — pick an option to see it play, or Skip, then copy Your picks into the chat.';
+if ($('#ip-lead')) $('#ip-lead').textContent = total + ' idea' + (total === 1 ? '' : 's') + ' for the ' + TOPIC.replace(/^The\s+/i, '').toLowerCase() + ' — pick an option to see it play, or Skip, then copy Your picks into the chat.';
 $('#ip-jump').innerHTML = IDEAS.map(function (g, i) { return '<a href="#ip-s' + i + '">' + esc(g.group) + '</a>'; }).join('');
 /* ---------- cards ---------- */
 function priRank(p) { return { H: 0, M: 1, L: 2 }[p] != null ? { H: 0, M: 1, L: 2 }[p] : 9; }
@@ -439,26 +496,75 @@ function buildSecs() {
           var key = x[0] === 'skip' ? 'S' : (xi < 4 ? String(xi + 1) : '');
           return '<button type="button" class="ip-opt" data-k="' + it.k + '" data-v="' + x[0] + '" aria-pressed="false"><i></i><span><b>' + (key ? '<kbd>' + key + '</kbd>' : '') + esc(x[1]) + rec + '</b>' + (x[2] ? '<small>' + esc(x[2]) + '</small>' : '') + '</span></button>';
         }).join('') + '</div>';
-      return '<article class="ip-idea" data-k="' + it.k + '" data-mode="' + md + '" tabindex="-1"><header><h3>' + esc(it.t) + ' ' + tagHtml(it) + '</h3><p>' + esc(it.why) + '</p></header>' +
+      return '<article class="ip-idea" data-k="' + it.k + '" data-mode="' + md + '" tabindex="-1"><header><h3>' + esc(it.t) + ' ' + tagHtml(it) + '</h3><p>' + esc(it.why) + '</p><span class="ip-sum"></span><div class="ip-seg ip-conf" role="group" aria-label="How sure"><button type="button" data-conf="sure" data-k="' + it.k + '" aria-pressed="true">Sure</button><button type="button" data-conf="leaning" data-k="' + it.k + '" aria-pressed="false">Leaning</button></div></header>' +
         '<div class="ip-vis' + (isref ? ' ip-isref' : '') + '" data-step="' + (it.steps ? it.steps[0][0] : '') + '"><div class="ip-body">' + (it.vis || '') + (isref ? refsHtml(it) : '') + '</div>' +
-        (it.steps ? '<span class="ip-hint">Pick an option to see it play</span><span class="ip-peek-lbl"></span><span class="ip-dots" role="group" aria-label="Steps">' + it.steps.map(function (s, j) { return '<i tabindex="0" role="button" data-n="' + j + '" title="' + esc(s[0]) + '" aria-label="Jump to step ' + esc(s[0]) + '"></i>'; }).join('') + '</span><button type="button" class="ip-replay" aria-label="Play it again" title="Play it again">↻</button>' : '') +
-        '<div class="ip-pins"></div>' +
-        (it.steps && !isref ? '<div class="ip-cmp" aria-hidden="true"><div class="ip-cmp-top"><select class="ip-sel" data-side="a" aria-label="Left side"></select><b>vs</b><select class="ip-sel" data-side="b" aria-label="Right side"></select></div><div class="ip-cmp-a"></div><div class="ip-cmp-b"></div></div>' : '') + '</div>' +
+        (it.steps ? '<span class="ip-stepb" aria-live="polite"></span><span class="ip-hint">Pick an option to see it play</span><span class="ip-peek-lbl"></span><span class="ip-dots" role="group" aria-label="Steps">' + it.steps.map(function (s, j) { return '<i tabindex="0" role="button" data-n="' + j + '" title="' + esc(s[0]) + '" aria-label="Jump to step ' + esc(s[0]) + '"></i>'; }).join('') + '</span><button type="button" class="ip-replay" aria-label="Play it again" title="Play it again">↻</button>' : '') +
+        '<div class="ip-pins"></div></div>' +
         opts +
-        '<div class="ip-card-tools">' + (it.steps && !isref ? '<button type="button" class="ip-btn" data-cmp="' + it.k + '">Compare</button>' : '') + (it.opts.length > 1 ? '<button type="button" class="ip-btn" data-blind="' + it.k + '" title="Names hidden, two at a time">Blind</button>' : '') + '<button type="button" class="ip-btn" data-pin="' + it.k + '" aria-pressed="false" title="Click a spot on the visual to leave a note">Pin</button><div class="ip-seg" role="group" aria-label="How sure"><button type="button" data-conf="sure" data-k="' + it.k + '" aria-pressed="true">Sure</button><button type="button" data-conf="leaning" data-k="' + it.k + '" aria-pressed="false">Leaning</button></div></div>' +
         '<textarea class="ip-idea-note" data-nk="' + it.k + '" placeholder="Note for this idea (optional)">' + esc(V.notes[it.k] || '') + '</textarea></article>';
     }).join('') + '</div></section>';
   }).join('');
+  $$('.ip-idea').forEach(function (a) { a.classList.toggle('ip-fold', foldable(a.dataset.k) && !OPEN[a.dataset.k]); });
+}
+/* ---------- v5: a decided card folds to one line; a dependent card draws its parent's pick; the last pick offers Copy ---------- */
+var OPEN = {}, DONE_X = false;
+function cardOf(k) { return $('.ip-idea[data-k="' + k + '"]'); }
+function foldable(k) { var it = find(k), v = V.v[k]; return !!v && (v === 'skip' || modeOf(it) === 'pick'); }
+function foldTo(a, on) {
+  if (!a || a.classList.contains('ip-fold') === on) return;
+  var h0 = a.offsetHeight; a.classList.toggle('ip-fold', on); var h1 = a.offsetHeight;
+  if (!RM && a.animate) a.animate([{ height: h0 + 'px', overflow: 'hidden' }, { height: h1 + 'px', overflow: 'hidden' }], { duration: 380, easing: 'cubic-bezier(0.23,1,0.32,1)' });
+}
+function autoFold(k, wait) {   /* fold once the sequence has played and the pointer has left the card */
+  var a = cardOf(k); if (!a) return; clearTimeout(a._ft);
+  a._ft = setTimeout(function () {
+    if (!foldable(k) || OPEN[k]) return;
+    var vis = visOf(k); if (vis && vis._playing) { autoFold(k, 300); return; }
+    if (a.matches(':hover') || a.contains(D.activeElement) && D.activeElement.tagName === 'TEXTAREA') { a.addEventListener('mouseleave', function h() { a.removeEventListener('mouseleave', h); autoFold(k, 600); }); return; }
+    foldTo(a, true);
+  }, wait == null ? 900 : wait);
+}
+function fromVal(it) { var c = chosen(it); return c && c.length ? c[0] : ''; }
+function carry() {   /* every pick lands on <html> as data-pk-<k>; a card with needs gets data-from="<parent's pick>" and a chip saying so */
+  var h = D.documentElement;
+  flat().forEach(function (it) { var fv = isPicked(it.k) ? fromVal(it) : ''; if (fv) h.setAttribute('data-pk-' + it.k, fv); else h.removeAttribute('data-pk-' + it.k);
+    if (!it.needs) return; var vis = visOf(it.k), par = find(it.needs); if (!vis || !par) return;
+    var pv = isPicked(par.k) ? fromVal(par) : '', tag = $('.ip-idea[data-k="' + it.k + '"] .ip-need');
+    if (pv) vis.dataset.from = pv; else delete vis.dataset.from;
+    if (tag) { var tx = pv ? 'from ' + par.t.replace(/^(.{30}).+/, '$1…') + ' · ' + optLabel(par, pv) : 'needs: ' + par.t; if (tag.textContent !== tx) { tag.textContent = tx; tag.classList.toggle('ip-from', !!pv); if (pv && !RM) { tag.classList.remove('ip-flash'); void tag.offsetWidth; tag.classList.add('ip-flash'); } } } });
+}
+function replayDeps(k) {   /* an earlier pick changed: every decided card that depends on it opens and plays again with the new pick */
+  var n = 0;
+  flat().forEach(function (x) { if (x.needs !== k || !isPicked(x.k) || !x.steps) return; n++; var a = cardOf(x.k), vis = visOf(x.k);
+    foldTo(a, false); setTimeout(function () { play(vis, x); autoFold(x.k, 0); }, 260); });
+  return n;
+}
+function doneBar() {
+  var c = counts(), bar = $('#ip-done');
+  if (!bar) { bar = D.createElement('div'); bar.id = 'ip-done'; bar.setAttribute('role', 'status'); bar.innerHTML = '<span></span><button type="button" class="ip-btn pri" data-done="copy">Copy for the chat</button><button type="button" class="ip-done-x" data-done="x" aria-label="Close">✕</button>'; D.body.appendChild(bar); }
+  if (c.n < total) DONE_X = false;
+  $('span', bar).textContent = 'All ' + total + ' decided';
+  var on = c.n === total && total > 0 && !DONE_X; bar.classList.toggle('on', on); D.documentElement.classList.toggle('ip-done-on', on);
 }
 /* ---------- the animations: still until you pick — then that option plays once and holds (↻ replays, dots jump to a step) ---------- */
 var RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-function mark(vis, it, n) { if (!it.steps) return; vis._n = n; it.steps.forEach(function (s, j) { vis.classList.toggle('ip-s-' + s[0], j <= n); }); vis.dataset.step = it.steps[n][0]; $$('.ip-dots i', vis).forEach(function (d, j) { d.classList.toggle('f', j <= n); }); }
+function mark(vis, it, n) { if (!it.steps) return; vis._n = n; it.steps.forEach(function (s, j) { vis.classList.toggle('ip-s-' + s[0], j <= n); }); vis.dataset.step = it.steps[n][0]; var sb = vis.querySelector(':scope > .ip-stepb'); if (sb) sb.textContent = (n + 1) + ' / ' + it.steps.length + ' · ' + it.steps[n][0]; $$('.ip-dots i', vis).forEach(function (d, j) { d.classList.toggle('f', j <= n); }); }
 function rest(vis, it, end) { clearTimeout(vis._t); vis._playing = false; if (it.steps) mark(vis, it, end ? it.steps.length - 1 : 0); }
 function play(vis, it) {
   clearTimeout(vis._t); if (!it.steps) return;
   if (RM) { rest(vis, it, 1); return; }
+  var slow = vis._played ? 1 : 1.5; vis._played = true; vis.style.setProperty('--ip-slow', slow);   /* the first play on a card runs 1.5× slower, replays at normal speed */
+  vis.classList.remove('ip-glow'); void vis.offsetWidth; vis.classList.add('ip-glow');                    /* the glow ring pulses twice so the eye finds the card that's playing */
   vis._playing = true; var i = 0;
-  (function next() { var s = it.steps[i]; mark(vis, it, i); i++; if (i < it.steps.length) vis._t = setTimeout(next, s[1]); else vis._playing = false; })();
+  (function next() { var s = it.steps[i]; mark(vis, it, i); trail(vis, slow); i++; if (i < it.steps.length) vis._t = setTimeout(next, s[1] * slow); else vis._playing = false; })();
+}
+/* the pointer leaves a short fading trail while it moves */
+function trail(vis, slow) {
+  var c = vis.querySelector(':scope > .ip-body .v-cur'); if (!c || RM) return; clearInterval(vis._tr);
+  var last = null, n = 0, max = Math.ceil(700 * slow / 40);
+  vis._tr = setInterval(function () { var r = c.getBoundingClientRect(), vr = vis.getBoundingClientRect(), x = r.left - vr.left + 3, y = r.top - vr.top + 3;
+    if (last && Math.abs(x - last[0]) + Math.abs(y - last[1]) > 5) { var d = D.createElement('i'); d.className = 'ip-trail'; d.style.left = x + 'px'; d.style.top = y + 'px'; vis.appendChild(d); setTimeout(function () { d.remove(); }, 520); }
+    last = [x, y]; if (++n > max) clearInterval(vis._tr); }, 40);
 }
 function setOpt(vis, v) { if (v && v !== 'skip') vis.dataset.opt = v; else delete vis.dataset.opt; vis.classList.toggle('ip-has', !!v && v !== 'skip'); vis.classList.toggle('ip-skip', v === 'skip'); }
 function visOf(k) { return $('.ip-idea[data-k="' + k + '"] .ip-vis'); }
@@ -532,11 +638,15 @@ function sync() {
     bd.textContent = lbl; if (lbl) f.dataset.badge = ''; else f.removeAttribute('data-badge'); });
   $$('[data-pin]').forEach(function (b) { b.setAttribute('aria-pressed', String(!!pinMode[b.dataset.pin])); var n = (V.pins[b.dataset.pin] || []).length; b.textContent = n ? 'Pin · ' + n : 'Pin'; });
   $$('[data-conf]').forEach(function (b) { b.setAttribute('aria-pressed', String((V.conf[b.dataset.k] || 'sure') === b.dataset.conf)); });
+  $$('.ip-idea').forEach(function (a) { var k = a.dataset.k, it0 = find(k), v0 = V.v[k], lean = isPicked(k) && V.conf[k] === 'leaning';
+    a.classList.toggle('ip-lean', lean); if (!foldable(k)) a.classList.remove('ip-fold');
+    var sm = $('.ip-sum', a); if (sm) sm.innerHTML = v0 ? (v0 === 'skip' ? 'Skipped' : '<b>✓ ' + esc(decidedLine(it0)) + '</b>' + (lean ? ' · leaning' : '')) + ' · <u>Edit</u>' : ''; });
   $$('.ip-idea').forEach(function (a) { var it = find(a.dataset.k); a.classList.toggle('picked', isPicked(a.dataset.k)); a.classList.toggle('ip-locked', locked(it)); a.hidden = !visible(it); });
   var c = counts(); $('#ip-n').textContent = c.n ? c.n + '/' + total : '';
   $('.ip-prog-bar i').style.width = Math.round((c.n / total) * 100) + '%'; $('#ip-prog-lab').textContent = c.n + ' of ' + total + ' decided';
   $$('[data-f]').forEach(function (b) { var f = b.dataset.f; b.textContent = b.dataset.label + ' ' + (f === 'all' ? total : f === 'unpicked' ? c.u : f === 'picked' ? c.p : c.s); b.setAttribute('aria-pressed', String(V.filter === f)); });
   $$('[data-sort]').forEach(function (b) { b.setAttribute('aria-pressed', String(V.sort === b.dataset.sort)); });
+  carry(); doneBar();
   renderPreview();
 }
 /* ---------- the current card (keyboard) and auto-scroll ---------- */
@@ -579,7 +689,7 @@ function downloadJson() { var blob = new Blob([JSON.stringify({ app: APP, topic:
 function importJson(file) { var r = new FileReader(); r.onload = function () { try { snap(); load(JSON.parse(String(r.result || '{}'))); save(); restoreAll(); sync(); draw(); toast('Imported picks', { label: 'Undo', fn: undo }); } catch (e) { toast('Could not read that .json'); } }; r.readAsText(file); }
 /* ---------- changes ---------- */
 function setPick(k, v) {
-  var it = find(k), vis = visOf(k), was = V.v[k]; snap();
+  var it = find(k), vis = visOf(k), was = V.v[k]; snap(); OPEN[k] = false;
   if (was === v) { delete V.v[k]; delete V.conf[k]; } else V.v[k] = v;
   if (v === 'skip') { delete V.r[k]; delete V.m[k]; }
   save(); sync(); draw(); setCur(k, false);
@@ -593,6 +703,8 @@ function setPick(k, v) {
   renderPins(k);
   if (V.v[k]) { var lbl = optLabel(it, V.v[k]); toast((V.v[k] === 'skip' ? 'Skipped ' : 'Picked ') + it.t.replace(/^(.{34}).+/, '$1…') + (V.v[k] === 'skip' ? '' : ' → ' + lbl) + (also.length ? ' · also ' + also.join(', ') : ''), { label: 'Undo', fn: undo }); }
   if (V.v[k] && V.auto) { var n = nextUnpicked(k); if (n) setTimeout(function () { setCur(n, true); }, 350); }
+  if (was && isPicked(k) && was !== V.v[k]) replayDeps(k);
+  if (foldable(k)) autoFold(k);
 }
 function acceptAll() { snap(); var n = 0; flat().forEach(function (it) { if (!V.v[it.k] && it.opts.length) { var o0 = it.opts[0][0]; if (modeOf(it) === 'rate') { V.r[it.k] = {}; V.r[it.k][o0] = 'love'; } if (modeOf(it) === 'mix') { V.m[it.k] = {}; it.parts.forEach(function (p) { V.m[it.k][p] = o0; }); } V.v[it.k] = o0; n++; } }); save(); restoreAll(); sync(); draw(); toast(n ? 'Accepted ' + n + ' recommended' : 'Nothing left to fill', n ? { label: 'Undo', fn: undo } : null); }
 function resetAll() { var n = Object.keys(V.v).length; if (!n) { toast('Nothing to reset'); return; } snap(); V.v = {}; V.conf = {}; V.r = {}; V.m = {}; save(); restoreAll(); sync(); draw(); toast('Cleared ' + n + ' pick' + (n === 1 ? '' : 's'), { label: 'Undo', fn: undo }); }
@@ -622,6 +734,8 @@ D.addEventListener('click', function (ev) {
   if ((b = t.closest('.ip-ref')) && !t.closest('a')) { var fit = find(b.dataset.k), md2 = modeOf(fit);
     if (md2 === 'rate') setRate(fit.k, b.dataset.v, 'love'); else if (md2 === 'mix') { var free = fit.parts.filter(function (p) { return !(V.m[fit.k] || {})[p]; })[0]; setMix(fit.k, free || fit.parts[0], b.dataset.v); } else setPick(fit.k, b.dataset.v); return; }
   if ((b = t.closest('.ip-opt'))) { setPick(b.dataset.k, b.dataset.v); return; }
+  if ((b = t.closest('[data-done]'))) { if (b.dataset.done === 'copy') copy(pkText()); else { DONE_X = true; doneBar(); } return; }
+  if ((b = t.closest('.ip-idea.ip-fold')) && !t.closest('[data-conf]')) { OPEN[b.dataset.k] = true; foldTo(b, false); setCur(b.dataset.k, false); return; }
   if ((b = t.closest('.ip-idea'))) setCur(b.dataset.k, false);
 });
 D.addEventListener('change', function (ev) {
@@ -691,6 +805,7 @@ function afterChange(it, msg, wasDecided) {
   var also = cascade(it); if (msg && also.length) msg += ' · also ' + also.join(', ');
   save(); sync(); draw(); restoreVis(it.k); setCur(it.k, false); if (it.needs) restoreVis(it.needs);
   var vis = visOf(it.k); if (isPicked(it.k) && it.steps) play(vis, it);
+  if (wasDecided && isPicked(it.k)) replayDeps(it.k);
   if (msg) toast(msg, { label: 'Undo', fn: undo });
   if (!wasDecided && V.v[it.k] && V.auto) { var n = nextUnpicked(it.k); if (n) setTimeout(function () { setCur(n, true); }, 350); }
 }
@@ -914,6 +1029,7 @@ function ipCheck() {
     (it.steps || []).forEach(function (s, j) { if (j && css.indexOf('.ip-s-' + s[0]) < 0 && css.indexOf('[data-step="' + s[0] + '"]') < 0) out.push(it.k + ': step "' + s[0] + '" has no .ip-s-' + s[0] + ' or [data-step="' + s[0] + '"] rule (nothing will change)'); });
     if (it.steps) { var ms = it.steps.reduce(function (a, s) { return a + s[1]; }, 0); if (ms < 2500 || ms > 7000) out.push(it.k + ': sequence runs ' + ms + ' ms (aim for 3–6 s)'); }
     if (it.needs && !find(it.needs)) out.push(it.k + ': needs "' + it.needs + '" which is not an idea');
+    if (it.needs && it.vis && find(it.needs) && !find(it.needs).opts.some(function (o) { return css.indexOf('[data-from="' + o[0] + '"]') >= 0; })) out.push(it.k + ': needs "' + it.needs + '" but no [data-from="…"] rule draws the parent’s pick in its visual');
     ((it.vis || '').match(/class="[^"]*"/g) || []).forEach(function (c) { c.slice(7, -1).split(/\s+/).forEach(function (n) { if (n && !/^(v-|ip-)/.test(n)) out.push(it.k + ': class "' + n + '" in the visual is not prefixed v-'); }); });
   });
   ipCheck._last = out;
