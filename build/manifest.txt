@@ -160,6 +160,7 @@ pages/library/view.js
 access/admin-helpers.js
 access/admin-page/_open.js
 access/admin-page/admin-page.js
+access/admin-page/person-page.js
 access/admin-page/_close.js
 access/admin-page/view.js
 

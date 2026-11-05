@@ -91,7 +91,7 @@ Library/<kind>/<number> - <title> (rel NN).pdf   the Library's documents (Fault 
 - `access/sign-in.js` — who is using this computer (`tec_viewas`); `pin-pad.js`, `lock-screen.js`, `pins.js` (salted SHA-256).
 - `access/permissions.js` — roles → pages and actions, per-person changes; `can(action)`, `canPage(page)`. Time Log and Career are not on the page list (17.1): everyone has their own (`navAllowed`), and `t.others` lets someone see other people's.
 - `access/guards.js` — the shared functions are *wrapped* at load so a role that may not act is refused before any page sees the click; `permRootSync` puts a class per missing action on `<html>` so the button isn't drawn.
-- `access/admin-page/` — the Admin page; `admin-helpers.js` is shared with Manager → Team.
+- `access/admin-page/` — the Admin page; `admin-helpers.js` is shared with Manager → Team. `person-page.js` (17.3) is one person's page: role, Sign-in, and tabs for Pages, What they can do (Role · On · Off) and Activity. Settings › People & access only links to it.
 
 ## 7. Cross-cutting pieces
 

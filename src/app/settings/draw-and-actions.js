@@ -2,7 +2,7 @@
    Drawing the Settings page (groups, rows, Recently changed, search results), its actions, and the person pop-over's Size / Tooltips / Theme rows (pxProfileView).
    ── facts (generated; run tools/headers.py to refresh) ──
    declares   sgCtl sgRowHtml sgGroupHtml sgRecentHtml sgSearchHtml pxProfileView sgQSet sgAct sgInput sgAfter sgThemeRow sgSizeRow … (16 functions)
-   uses       access/ automations/ clock/ data/ kit/ pages/triage/ ro/ shell/ state/
+   uses       access/ access/admin-page/ automations/ clock/ data/ kit/ pages/triage/ ro/ shell/ state/
    at load    on document change · on document keydown · on document input · wraps render
 */
 /* ---------- drawing ---------- */
@@ -92,6 +92,7 @@ function sgAct(a, t, e){
   if(a === "px-sg-rgroup"){ var g = t.dataset.g; if(UI.sgArm !== g){ UI.sgArm = g; render(); setTimeout(function(){ if(UI.sgArm === g){ UI.sgArm = null; render(); } }, 4000); return true; } sgResetGroup(g); return true; }
   if(a === "px-sg-undo"){ sgUndo(t.dataset.log); return true; }
   if(a === "px-sg-go"){ if(t.dataset.person) UI.sgPerson = t.dataset.person; if(id) sgGo(id); else sgOpen(t.dataset.g || "me"); return true; }
+  if(a === "px-sg-person"){ if(typeof ADMPG !== "undefined" && ADMPG.U){ var AU = ADMPG.U(); AU.view = "people"; AU.sel = t.dataset.person; AU.pop = null; AU.ptab = "pages"; } UI.roFrom = null; UI.view = "admin"; UI.modal = null; render(); window.scrollTo(0, 0); return true; }   /* 17.3 */
   if(a === "px-sg-q0"){ sgQSet(""); return true; }
   if(a === "px-sg-tpl"){ if(!sgCan(SG_BY["shop.tpl"])){ pushToast(sgOnly(SG_BY["shop.tpl"]) + "."); return true; } UI.modal = { type: "tg-tpl", sel: tgTpls()[0].id }; render(); return true; }
   if(a === "px-sg-am"){ if(!sgCan(SG_BY["auto.rules"])){ pushToast(sgOnly(SG_BY["auto.rules"]) + "."); return true; } UI.modal = { type: "automations", edit: null }; render(); return true; }

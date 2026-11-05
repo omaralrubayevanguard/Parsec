@@ -25,7 +25,8 @@ Load order is `build/manifest.txt`; this page is for finding things.
 |---|---|---:|---:|---:|
 | `_close.js` | Closes the Admin page closure. | 0 | 0 | 0 |
 | `_open.js` | Opens the Admin page closure (ADMPG): people and what each can do. | 0 | 0 | 1 |
-| `admin-page.js` | The Admin page: people (role, pages, actions per person), roles, sign-in rules, the sign-in log, the add-a-person pop; H() handles its clicks. | 21 | 20 | 15 |
+| `admin-page.js` | The Admin page: people (role, pages, actions per person), roles, sign-in rules, the sign-in log, the add-a-person pop; H() handles its clicks. | 19 | 19 | 15 |
+| `person-page.js` | One person’s page on Admin › People (17.3): the name, role and what’s changed from it, the Sign-in card, and tabs for Pages (tiles), What they can do (Role · On · Off, ↺ per row) and Activity; a role change says first what it adds and takes away. | 9 | 10 | 0 |
 | `view.js` | viewAdmin(): the page module's entry, called by render(). | 0 | 1 | 0 |
 
 ## automations/  — the change watcher, the rules, the built-ins, the sentence builder
@@ -261,7 +262,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 |---|---|---:|---:|---:|
 | `_close.js` | Closes the RO list closure. | 0 | 0 | 0 |
 | `_open.js` | Opens the RO list closure (RL): one flat list of ROs and a peek pane. | 0 | 0 | 1 |
-| `columns.js` | The RO list's columns (13.1): drag into any order, add fields or your own, saved views, the Display pop-over. | 41 | 32 | 19 |
+| `columns.js` | The RO list's columns (13.1): drag into any order, add fields or your own, saved views, the Display pop-over. | 40 | 32 | 19 |
 | `embed.js` | The ROs tab on Triage, Foreman, Parts, Manager and Technician (14.3): rlEmbed puts the RO list inside another page, with Back. | 2 | 9 | 2 |
 | `model.js` | The RO list's model: one RO as the list draws it (info, spot, next step), rows and counts. | 10 | 6 | 24 |
 | `page-base.js` | The RO list page's older base (RL_GROUPS, rlList) and the permission labels and role tables it shares with Admin (permRoles, permState…). | 8 | 11 | 7 |
@@ -409,7 +410,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | file | what it is | KB | functions | constants |
 |---|---|---:|---:|---:|
 | `draw-and-actions.js` | Drawing the Settings page (groups, rows, Recently changed, search results), its actions, and the person pop-over's Size / Tooltips / Theme rows (pxProfileView). | 19 | 16 | 0 |
-| `registry.js` | The registry: SG_REG, every setting as one row — id, group, label, help, who may change it, where it applies, get / set, default. sgReg() is what other areas call to add one. | 42 | 1 | 2 |
+| `registry.js` | The registry: SG_REG, every setting as one row — id, group, label, help, who may change it, where it applies, get / set, default. sgReg() is what other areas call to add one. | 40 | 1 | 2 |
 | `settings-page.js` | One Settings page (16.2 C): the groups (Me · The shop · People & access · Data · Automations · Shortcuts), the old places that link in (SG_OLD), small helpers the registry's rows use. | 4 | 16 | 3 |
 | `shop-buttons.js` | Shop buttons by department (16.3 C): the table in Settings → The shop (STATE.shopBtns), v163ShopOk(ro, act) that every shop button asks, the department label on the truck card. | 9 | 14 | 4 |
 | `values-and-changes.js` | Values, defaults and who: sgVal / sgDef / sgChanged, who may change a setting (sgCan / sgWho), and sgChange — every change goes through here (before and after, the Recently changed log with Undo, the save). Also going to a setting and search. | 9 | 29 | 1 |

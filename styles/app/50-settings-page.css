@@ -141,3 +141,11 @@ html[data-device="phone"] .sg-page .sg-themes{grid-template-columns:repeat(2,min
 html[data-device="phone"] .sg-page .sg-goals,html[data-device="phone"] .sg-page .sg-acts{grid-template-columns:minmax(0,1fr);}
 html[data-device="phone"] .sg-page .sg-lr{grid-template-columns:52px minmax(0,1fr) auto;} html[data-device="phone"] .sg-page .sg-lr .who{grid-column:2;} html[data-device="phone"] .sg-page .sg-lr .sg-lk{display:none;}
 html[data-device="phone"] .sg-page .sg-txt{width:100%;}
+/* 17.3: People & access › Person by person — a way to each person's page in Admin › People */
+.sg-pl{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px;width:100%;}
+.sg-plr{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:8px;min-height:36px;padding:6px 10px;border-radius:9px;background:var(--px-fill);font-size:13px;color:var(--px-ink);}
+.sg-plr b{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sg-plr span{flex:1;min-width:0;font-size:12px;color:var(--px-ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sg-plr:hover{box-shadow:inset 0 0 0 1px var(--px-border);}
+.sg-plr:focus-visible{outline:2px solid var(--px-acc);outline-offset:2px;}
+.sg-plr[disabled]{cursor:default;opacity:.7;}

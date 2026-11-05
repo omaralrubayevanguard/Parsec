@@ -152,24 +152,18 @@ var SG_REG = [
     after: function(before, now){   /* like permRoleSet: a person whose change now matches the role has no change any more */
       Object.keys(now).forEach(function(r){ ["pages", "acts"].forEach(function(k){ Object.keys(now[r][k] || {}).forEach(function(x){ if(!!now[r][k][x] === !!(((before[r] || {})[k] || {})[x])) return;
         (STATE.staff || []).forEach(function(sf){ if(sf.role === r && sf.ov && sf.ov[k] && sf.ov[k][x] === !!now[r][k][x]) delete sf.ov[k][x]; permSyncPages(sf); }); }); }); }); } },
-  { id: "people.each", g: "people", sub: "Person by person", label: "Role, pages and what they can do", help: "from their role — change any for one person alone", who: "a.people", where: "That person’s pages and buttons", kind: "custom",
+  { id: "people.each", g: "people", sub: "Person by person", label: "Role, pages and what they can do", help: "on each person’s page in Admin › People — change any for one person alone", who: "a.people", where: "That person’s pages and buttons", kind: "custom",
     show: function(){ return staffList().some(function(sf){ return sf && sf.name; }); },
     def: function(){ var o = {}; staffList().forEach(function(sf){ if(sf && sf.id) o[sf.id] = { role: sf.role, ov: { pages: {}, acts: {} } }; }); return o; },
     get: function(){ var o = {}; staffList().forEach(function(sf){ if(sf && sf.id) o[sf.id] = { role: sf.role, ov: sgCopy(sf.ov || { pages: {}, acts: {} }) }; }); return o; },
     set: function(v){ var me = sgMe(); Object.keys(v || {}).forEach(function(id){ var sf = sgRoleOf(id); if(!sf || !v[id] || (me && me.id === id)) return; if(v[id].role && v[id].role !== sf.role) permSetRole(sf, v[id].role); sf.ov = sgCopy(v[id].ov || { pages: {}, acts: {} }); sf.ov.pages = sf.ov.pages || {}; sf.ov.acts = sf.ov.acts || {}; permSyncPages(sf); }); },
     text: function(v){ var L = []; Object.keys(v || {}).forEach(function(id){ var sf = sgRoleOf(id), x = v[id], n = x && x.ov ? Object.keys(x.ov.pages || {}).length + Object.keys(x.ov.acts || {}).length : 0; if(sf && n) L.push(admFirst(sf.name) + " " + n + " changed"); }); return L.join(", ") || "everyone as their role"; },
     words: function(){ return staffList().map(function(sf){ return sf.name + " " + sf.role; }).join(" "); },
-    render: function(ro){ var P = staffList().filter(function(sf){ return sf && sf.name; }), id = UI.sgPerson && sgRoleOf(UI.sgPerson) ? UI.sgPerson : (P[0] || {}).id, sf = sgRoleOf(id); if(!sf) return '';
-      var self = !!(sgMe() && sgMe().id === sf.id), lk = ro || self, d = lk ? ' disabled' : '', f = esc(admFirst(sf.name)), n = permChangedN(sf);
-      var h = '<div class="sg-pp"><span class="sg-ctl"><select data-sg-person="1" aria-label="Person">' + P.map(function(x){ return '<option value="' + x.id + '"' + (x.id === sf.id ? ' selected' : '') + '>' + esc(x.name) + ' — ' + esc(x.role) + (permChangedN(x) ? ' · ' + permChangedN(x) + ' changed' : '') + '</option>'; }).join('') + '</select>'
-        + '<small>Role</small><select data-sg-in="people.each" data-op="' + sf.id + '|role" aria-label="Role"' + d + '>' + permRoles().map(function(r){ return '<option' + (r === sf.role ? ' selected' : '') + '>' + esc(r) + '</option>'; }).join('') + '</select>'
-        + (n && !lk ? '<button class="px-btn sm ghost" data-action="px-sg-op" data-id="people.each" data-op="' + sf.id + '|back">Back to the ' + esc(sf.role) + ' role</button>' : '') + '</span>'
-        + (self ? '<p class="sg-p">This is you — someone else with “Manage people and PINs”, or the Admin, changes your own pages and actions.</p>' : '')
-        + '<div class="sg-sh">Pages</div><div class="sg-chips">' + PERM_PAGES.map(function(p){ var on = permHas(sf, "pages", p[0]), c = permChanged(sf, "pages", p[0]);
-          return '<button class="sg-chip' + (on ? ' on' : '') + (c ? ' ov' : '') + '" data-action="px-sg-op" data-id="people.each" data-op="' + sf.id + '|pages|' + p[0] + '" aria-pressed="' + on + '"' + d + '>' + (on ? pxI("check", 12) : '') + esc(p[1]) + '</button>'; }).join('') + '</div>'
-        + '<div class="sg-sh">What ' + f + ' can do</div><div class="sg-acts">' + PERM_ACTS.map(function(g){ return '<div><b>' + esc(g[0]) + '</b>' + g[1].map(function(a){ var on = permHas(sf, "acts", a[0]), c = permChanged(sf, "acts", a[0]);
-          return '<button class="sg-sw' + (c ? ' ov' : '') + '" role="switch" aria-checked="' + on + '" data-action="px-sg-op" data-id="people.each" data-op="' + sf.id + '|acts|' + a[0] + '"' + d + '><span>' + esc(a[1]) + '</span>' + pxSw(on) + '</button>'; }).join('') + '</div>'; }).join('') + '</div></div>';
-      return h; },
+    /* 17.3: each person's role, pages and actions are on their page in Admin › People — here, a way there */
+    render: function(ro){ var P = staffList().filter(function(sf){ return sf && sf.name; }), go = typeof canPage !== "function" || canPage("admin");
+      return '<div class="sg-pl">' + P.map(function(sf){ var n = permChangedN(sf);
+        return '<button class="sg-plr" data-action="px-sg-person" data-person="' + sf.id + '"' + (go ? '' : ' disabled') + ' title="' + (go ? 'Open ' + esc(sf.name) + '’s page in Admin › People' : 'Admin › People opens for anyone given “Manage people and PINs”') + '">'
+          + '<b>' + esc(sf.name) + '</b><span>' + esc(sf.role) + (n ? ' · ' + n + ' changed' : '') + '</span>' + (go ? pxI("chevR", 13) : '') + '</button>'; }).join('') + '</div>'; },
     change: function(b, a){ return sgCh(b, a, function(p){ var sf = sgRoleOf(p[0]), n = sf ? admFirst(sf.name) : p[0]; return p[1] === "role" ? n + "’s role" : n + " · " + (p[2] === "pages" ? permPageLabel(p[3]) + " page" : permActLabel(p[3] || "")); },
       function(v, p){ return p[1] === "role" ? String(v || "") : sgOnOff(v); }); },
     op: function(op, val, cur){ var p = op.split("|"), sf = sgRoleOf(p[0]); if(!sf) return cur; if(sgMe() && sgMe().id === sf.id) return "Someone else changes your own pages — the Admin, or another person with “Manage people and PINs”.";

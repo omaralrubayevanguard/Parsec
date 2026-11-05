@@ -66,6 +66,7 @@
   "access/admin-helpers.js": "Admin's shared actions (also used by Manager → Team): add a person, reset a PIN, turn sign-in off, show a temporary PIN once.",
   "access/admin-page/_open.js": "Opens the Admin page closure (ADMPG): people and what each can do.",
   "access/admin-page/admin-page.js": "The Admin page: people (role, pages, actions per person), roles, sign-in rules, the sign-in log, the add-a-person pop; H() handles its clicks.\nFlow: view() draws from staffList() and the permission tables; changes go through permSet / permRoleSet and audit.",
+  "access/admin-page/person-page.js": "One person’s page on Admin › People (17.3): the name, role and what’s changed from it, the Sign-in card, and tabs for Pages (tiles), What they can do (Role · On · Off, ↺ per row) and Activity; a role change says first what it adds and takes away.",
   "access/admin-page/_close.js": "Closes the Admin page closure.",
   "access/admin-page/view.js": "viewAdmin(): the page module's entry, called by render().",
   "ro/lookups.js": "Finding things: getRO(id), the Shop RO (shop time), prices and money per part / operation / RO.",

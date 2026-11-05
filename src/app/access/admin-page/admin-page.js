@@ -2,13 +2,13 @@
    The Admin page: people (role, pages, actions per person), roles, sign-in rules, the sign-in log, the add-a-person pop; H() handles its clicks.
    Flow: view() draws from staffList() and the permission tables; changes go through permSet / permRoleSet and audit.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   people tag guard act view head vPeople whoBar sw personPane adminPane vRoles … (20 functions, 15 constants)
+   declares   people tag guard act view head vPeople whoBar sw adminPane vRoles vRules … (19 functions, 15 constants)
    uses       access/ data/ kit/ pages/ pages/foreman/ pages/rolist/ pages/triage/ ro/ settings/ shell/ state/
 */
   const ic = n => (PG.ic(n, 15) || (typeof TG_IC !== 'undefined' && TG_IC[n] ? '<svg class="tg-ic" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">' + TG_IC[n] + '</svg>' : ''));
   const ics = (n, s) => PG.ic(n, s) || ic(n);
   const esc = PG.e;
-  const U = { view: 'people', q: '', sel: null, pop: null, lf: 'all', an: '', ar: 'Technician', ap1: '', ap2: '', _me: null };
+  const U = { view: 'people', q: '', sel: null, ptab: 'pages', pop: null, lf: 'all', an: '', ar: 'Technician', ap1: '', ap2: '', _me: null };
   const rd = () => { try{ PG.keepScroll(render); }catch(e){ render(); } };
   const phone = () => document.documentElement.getAttribute('data-device') === 'phone';
   const meId = () => viewAsId();
@@ -55,20 +55,7 @@
   }
   function whoBar(){ const L = permAdmins().map(sf => sf.name); return `<div class="adm-bar">${ic('shield')}<span>Anyone given “Manage people and PINs” opens this page — today: the Admin${L.length ? ', ' + esc(L.join(', ')) : ''}</span></div>`; }
   function sw(on, label, attrs, chg, dis, sub){ return `<button class="adm-sw" ${attrs} aria-pressed="${!!on}"${dis ? ' disabled' : ''}><i></i><span>${label}${sub ? `<small>${sub}</small>` : ''}</span>${chg ? '<em>changed</em>' : ''}</button>`; }
-  function personPane(sf){
-    const self = isSelf(sf), lock = self, n = permChangedN(sf), t = tag(sf), last = admLastIn(sf), f = esc(admFirst(sf.name));
-    let h = `<div class="adm-ph">${staffAvHtml(sf, 'adm-av xl', 'adm')}<span class="adm-pt"><b>${esc(sf.name)}</b><small>${esc(sf.role)} · ${sf.off ? 'sign-in turned off ' + esc(day(sf.offAt)) + ' — their history stays' : last ? 'last signed in ' + esc(when(last).toLowerCase()) : 'hasn’t signed in yet'}</small></span></div>`;
-    if(self) h += `<div class="adm-note">${ic('info')}<span>This is you — someone else with “Manage people and PINs”, or the Admin, changes your own pages and actions.</span></div>`;
-    /* sign-in */
-    const pinTxt = !pinIs(sf) ? `<span class="adm-w">No PIN yet — ${f} picks one at their next sign-in</span>` : sf.pinTemp ? `<span class="adm-w">Temporary — ${f} picks their own at their next sign-in</span>` : `<span class="adm-pinbx">••••</span><span class="adm-mu">set ${esc(day(sf.pinAt) || '')}</span>`;
-    h += `<div class="adm-card"><h5>${ic('lock')}Sign-in</h5><div class="adm-kv">
-      <span>Role</span><span>${esc(sf.role)}</span>
-      <span>PIN</span><span class="adm-pinr">${pinTxt}<button class="btn btn-sm" data-a="reset" data-id="${sf.id}"${sf.off ? ' disabled' : ''} title="A new temporary PIN — ${f} picks their own at the next sign-in">${ic('key')}${pinIs(sf) ? 'Reset' : 'Give a temporary PIN'}</button></span>
-      <span>Can sign in</span><span>${sw(!sf.off, sf.off ? 'Off — their punches, notes and ROs keep their name' : 'On', `data-a="off" data-id="${sf.id}"`, false, self)}</span></div></div>`;
-    h += `<div class="adm-card">${sgLinkHtml('people', 'people.each', 'Role, pages and what ' + f + ' can do', sf.id)}</div>`;   /* Parsec 16.2 */
-    h += `<div class="adm-foot"><span class="sp"></span>${self ? '' : sf.off ? `<button class="btn btn-sm" data-a="off" data-id="${sf.id}">${ic('user')}Turn sign-in back on</button>` : `<button class="btn btn-sm adm-danger" data-a="off" data-id="${sf.id}">Turn off sign-in</button>`}</div>`;
-    return h;
-  }
+  /* personPane(sf) — one person’s page — is in person-page.js (17.3) */
   function adminPane(){
     const amAdmin = !viewAsId();
     let h = `<div class="adm-ph"><span class="adm-av xl adm-shield">${ics('shield', 26)}</span><span class="adm-pt"><b>Admin</b><small>Every page and every action — always</small></span></div>`;
@@ -123,6 +110,8 @@
   const H = {
     view: t => { U.view = t.dataset.v; U.pop = null; rd(); },
     sel: t => { U.sel = t.dataset.id; U.pop = null; U.ap1 = U.ap2 = ''; rd(); const p = document.querySelector('[data-pg="admin"] .adm-pane'); if(p) p.scrollTop = 0; },
+    ptab: t => { U.ptab = t.dataset.v; rd(); },
+    a3: t => { const sf = byId(t.dataset.id); if(!sf || isSelf(sf) || !guard()) return; ppAct3(sf, t.dataset.k, t.dataset.v); },
     back0: () => { U.sel = null; rd(); },
     lf: t => { U.lf = t.dataset.v; rd(); },
     popx: () => { U.pop = null; rd(); },
@@ -153,7 +142,7 @@
     if(d === 'ap1' || d === 'ap2'){ U[d] = t.value.replace(/\D/g, '').slice(0, 4); if(t.value !== U[d]) t.value = U[d]; return; } }
   function change(t){ const c = t.dataset.ch;
     if(c === 'ar'){ U.ar = t.value; return; }
-    if(c === 'role'){ const sf = byId(t.dataset.id), r = t.value; if(!sf || isSelf(sf) || r === sf.role) return; act('role', () => permSetRole(sf, r), admFirst(sf.name) + ' is a ' + r.toLowerCase() + ' now — the role’s pages and actions, and what was changed for ' + admFirst(sf.name) + '.'); return; }
+    if(c === 'role'){ const sf = byId(t.dataset.id), r = t.value; if(!sf || isSelf(sf) || r === sf.role || !guard()) return; ppRoleAsk(sf, r); return; }   /* 17.3: says first what the new role adds and takes away */
     if(c === 'idle'){ const v = +t.value || 0, R = permRules(); act('sign-in rule', () => { R.idle = v; }, v ? 'Parsec locks after ' + (v === 60 ? 'an hour' : v + ' minutes') + ' with no one on it.' : 'Parsec doesn’t lock by itself.'); return; } }
   function fieldKey(t, ev){ const k = ev.key, d = t.dataset.in;
     if(k === 'Escape'){ if(U.pop){ U.pop = null; rd(); ev.preventDefault(); return true; } if(d === 'q' && U.q){ U.q = ''; rd(); ev.preventDefault(); return true; } return false; }
