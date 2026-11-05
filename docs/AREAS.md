@@ -337,7 +337,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `lookups.js` | Finding things: getRO(id), the Shop RO (shop time), prices and money per part / operation / RO. | 4 | 16 | 2 |
 | `ordering.js` | How ROs sort: last touched, finished, days open; sortedROs(); pillHtml for the fast-punch pill. | 3 | 8 | 0 |
 | `reopen-question.js` | The question when a completed RO is set back to open: reopen its operations too, or just the RO. | 5 | 13 | 1 |
-| `ro-panel.js` | The one RO side panel's shared pieces: the stage line, Time · Parts · Files on one line, the operations, the buttons by role, and the folds each person keeps. | 14 | 12 | 5 |
+| `ro-panel.js` | The one RO side panel's shared pieces: the stage line, Time · Parts · Files on one line, the operations, the buttons by role, and the folds each person keeps. | 16 | 14 | 5 |
 | `road-test-and-release.js` | Road test before release (a switch per RO), what “work done” means, the stage label shown for a status (roStageInfo / pgStRo). | 6 | 16 | 0 |
 | `route.js` | The RO's route between departments: who holds it now (writer, tech, parts, foreman…), the next step for a role (rtNext / rtStepFor). | 7 | 15 | 8 |
 | `stages.js` | The six RO stages (Check-in → Close-out), each with one “done when” rule; roStages(ro) says where an RO stands, stageToggle checks one off by hand. | 12 | 5 | 2 |

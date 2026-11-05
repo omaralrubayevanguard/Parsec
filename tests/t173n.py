@@ -32,6 +32,16 @@ async def main():
         # an older RO with no road test and no noChecks: checks off
         old = await pg.evaluate("() => { const r = __tg.S().ros.filter(r => !r.shop && !r.dateClosed)[3]; r.noRoadTest = true; delete r.noChecks; return __tg.qcNeeded(r); }")
         ok(old is False, "an older RO with no road test keeps its checks off")
+        # the RO list's side panel: the same Shop block — buttons, then the three switches
+        await pg.evaluate("() => { const U = __tg.UI(); U.view = 'rolist'; __tg.render(); }"); await pg.wait_for_timeout(800)
+        await pg.click("[data-pg=rolist] .rq-row[data-a=sel] >> nth=3"); await pg.wait_for_timeout(800)
+        P = await pg.evaluate("() => { const p = document.querySelector('[data-pg=rolist] .rp-list .rp-shop'); return p ? { sw: [...p.querySelectorAll('.rtt-l')].map(e => e.textContent), b: [...p.querySelectorAll('.rp-acts .btn')].map(e => e.textContent.trim()), foot: !!document.querySelector('[data-pg=rolist] .rp-foot') } : null; }")
+        ok(P and P["sw"] == ["Road test before release", "Truck checks before release", "Warranty RO"] and P["b"][0].startswith("Open RO") and not P["foot"], "the RO list's panel has the RO page's Shop block (%s)" % P)
+        pid = await pg.evaluate("document.querySelector('[data-pg=rolist] .rp-list').getAttribute('data-rp-ro')")
+        await pg.click("[data-pg=rolist] .rp-shop [data-rp-sw=qc]"); await pg.wait_for_timeout(400)
+        await pg.click("[data-pg=rolist] .rp-shop [data-rp-sw=w]"); await pg.wait_for_timeout(400)
+        q = await pg.evaluate("id => { const r = __tg.getRO(id); return [__tg.qcNeeded(r), !!r.warranty, [...document.querySelectorAll('[data-pg=rolist] .rp-shop .rp-acts .btn')].map(e => e.textContent.trim())]; }", pid)
+        ok(q[0] is False and q[1] is True and "Truck checks" not in q[2], "its switches work there: checks off (the button goes), warranty on (%s)" % q)
         ok(not errs, "no page errors (%s)" % errs[:2])
         await b.close()
     print("\n%d failed" % len(FAILS) if FAILS else "\nall passed")

@@ -1,10 +1,10 @@
 /* Parsec · ro · ro-panel.js
    The one RO side panel's shared pieces: the stage line, Time · Parts · Files on one line, the operations, the buttons by role, and the folds each person keeps.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   rpWho rpFolds rpFold rpFoldSet rpE rpStageHtml rpFactsHtml rpOpsHtml rpActsHtml rpPanelHtml rpAnyOpen rpMountRo … (12 functions, 5 constants)
+   declares   rpWho rpFolds rpFold rpFoldSet rpE rpStageHtml rpFactsHtml rpOpsHtml rpActsHtml rpRelBtn rpSwHtml rpPanelHtml … (14 functions, 5 constants)
    state      punches
-   uses       access/ clock/ kit/ pages/ pages/triage/ pages/warranty/ ro-page/ shell/ state/ trucks/
-   at load    2× on document click · on document keydown
+   uses       access/ clock/ data/ kit/ pages/ pages/triage/ pages/warranty/ ro-page/ shell/ state/ trucks/
+   at load    3× on document click · on document keydown
 */
 /* ============================== one RO side panel (Parsec 17.1) ==============================
    The RO list's side panel (and the Technician's ROs tab) and the RO page's right column (and Technician › My ROs) are
@@ -69,8 +69,40 @@ function rpActsHtml(ro, o){
   }
   if(!tech || o.xfer) h += '<button class="btn btn-sm" data-a="pop" data-p="xfer" data-id="' + rpE(ro.id) + '">Transfer…</button>';
   try{ if(trxBtnsOk(ro)) h += trxBtns(ro, "btn btn-sm");   /* 17.3: each button by its own switch */ }catch(e){}   /* the road test, unless this truck needs none */
+  h += rpRelBtn(ro);
   return '<div class="rp-acts">' + h + "</div>";
 }
+/* 17.3: Release, as on the RO page — when the road test and the truck checks are done or switched off */
+function rpRelBtn(ro){
+  try{
+    if(!ro || ro.shop || ro.id === SHOP_RO_ID || ro.dateClosed || tyCat(ro) === "arr" || (typeof can === "function" && !can("ro.release"))) return "";
+    if((roStatus(ro) || {}).status === "Complete – Released") return "";
+    var rt = rtNeeded(ro), qc = qcNeeded(ro), ready = (!rt || trxPassed(ro)) && (!qc || trxQcDone(ro));
+    if(!ready && (rt || qc)) return "";
+    var all = trxAllDone(ro);
+    return '<button class="btn btn-sm' + (all ? " btn-primary" : "") + '" data-action="triage-release" data-ro="' + rpE(ro.id) + '" title="' + (all ? "Release the truck" : "Release — the work isn’t all done yet") + '">' + tgI("release", 14) + "Release</button>";
+  }catch(e){ return ""; }
+}
+/* 17.3: the RO page's three switches — Road test before release · Truck checks before release · Warranty RO */
+function rpSwHtml(ro){
+  if(!ro || ro.shop || ro.id === SHOP_RO_ID || ro.dateClosed) return "";
+  var w = !!ro.warranty, h = "";
+  try{ h += rtToggleHtml(ro, 'data-rp-sw="rt"', false) + rtToggleHtml(ro, 'data-rp-sw="qc"', true); }catch(e){}
+  h += '<div class="rtt' + (w ? " on" : "") + '"><span class="rtt-l">Warranty RO</span><button type="button" class="rtt-sw" role="switch" aria-checked="' + w + '" aria-label="Warranty RO" title="' + (w ? "Not a warranty RO" : "Make it a warranty RO") + '" data-rp-sw="w"><i></i></button></div>';
+  return '<div class="rp-sws">' + h + "</div>";
+}
+document.addEventListener("click", function(e){
+  var t = e.composedPath ? e.composedPath()[0] : e.target; if(t && t.nodeType !== 1) t = t.parentElement; if(!t || !t.closest) return;
+  var b = t.closest("[data-rp-sw]"); if(!b) return;
+  var box = b.closest("[data-rp-ro]"), ro = box && getRO(box.getAttribute("data-rp-ro")); if(!ro) return;
+  e.preventDefault(); e.stopPropagation();
+  var k = b.getAttribute("data-rp-sw"), n = roLabel(ro), msg = "";
+  if(k === "rt"){ var on = !rtNeeded(ro); if(!rtToggle(ro, on)) return; msg = on ? n + " needs a road test again." : "No road test for " + n + "."; }
+  else if(k === "qc"){ var on2 = !qcNeeded(ro); if(!qcToggle(ro, on2)) return; msg = on2 ? n + " needs truck checks again." : "No truck checks for " + n + "."; }
+  else { pushUndo("warranty RO"); ro.warranty = !ro.warranty; scheduleSave(true); msg = ro.warranty ? n + " is a warranty RO." : n + " isn’t a warranty RO."; }
+  try{ render(); }catch(x){} try{ tecRender(); }catch(x){}
+  pushToast(msg, true);
+}, true);
 /* one click handler for the panel's own controls, in the page and inside the RO page's shadow root (composedPath) */
 document.addEventListener("click", function(e){
   var t = e.composedPath ? e.composedPath()[0] : e.target; if(!t || !t.closest) return;
@@ -97,10 +129,10 @@ function rpPanelHtml(ro, o){
     + (o.close ? '<button class="btn btn-sm ib tg-gh" data-a="peekx" title="Close (Esc)">' + tgI("x", 15) + "</button>" : "") + "</div>"
     + '<div class="rp-nm">' + (typeof trkThumb === "function" ? trkThumb(ro) : "") + "<h2>" + rifHtml(ro, "customerName", ro.customerName || "", "Customer") + '</h2></div><div class="sub">' + rifVeh(ro, veh) + (spot && spot !== "—" ? " · " + rpE(spot) : "") + v149KeySeg(ro) + "</div>"
     + '<div class="rq-strow">' + pill + (tech ? '<span class="rq-with">with ' + av + " " + rpE(tech) + "</span>" : '<span class="rq-with">No tech yet</span>') + "</div>"
-    + rpStageHtml(ro) + (o.page === "ro" ? "<!--rp-split-->" : "") + rpOpsHtml(ro)
+    + rpStageHtml(ro) + (o.page === "ro" ? "<!--rp-split-->" : o.foot === false ? "" : '<div class="rp-shop"><div class="rp-shh">Shop</div>' + rpActsHtml(ro, { open: true }) + rpSwHtml(ro) + "</div>") + rpOpsHtml(ro)
     + '<div class="rp-allw"><button type="button" class="rp-all" data-rp-all="1">' + (rpAnyOpen() ? RP_CHEV_U + "Collapse all" : RP_CHEV_D + "Expand all") + "</button></div>"
     + det
-    + (o.foot === false ? "" : '<div class="rp-foot">' + rpActsHtml(ro, { open: o.page !== "ro" }) + "</div>") + "</aside>";
+    + "</aside>";   /* 17.3: the buttons and switches are the Shop block under the stages, as on the RO page */
 }
 var RP_CHEV_U = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 14.5L12 9l5.5 5.5"/></svg>', RP_CHEV_D = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 9.5L12 15l5.5-5.5"/></svg>';
 var RP_KEYS = ["ops", "vehicle", "customer", "people", "schedule", "paperwork"];

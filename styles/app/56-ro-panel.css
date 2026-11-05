@@ -48,3 +48,9 @@
 }
 @keyframes rpSlide{from{opacity:0;transform:translateX(18px);}to{opacity:1;transform:none;}}
 @keyframes rpGlide{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
+/* 17.3: the Shop block under the stages, as on the RO page — the buttons, then Road test · Truck checks · Warranty RO */
+.rp-shop{margin-top:14px;padding-bottom:12px;box-shadow:inset 0 -1px 0 var(--tg-hair);}
+.rp-shh{font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--tg-ink3);}
+.rp-shop .rp-acts{margin-top:6px;}
+.rp-shop .rp-acts>*{flex:1 1 40%;min-width:0;justify-content:center;}
+.rp-sws{margin-top:6px;}
