@@ -4,13 +4,6 @@
 /* ---------- Messages | Customer: one box, a segmented pill ---------- */
 .rop-mc { margin-bottom: 8px; }
 .rop-blk.rop-mc > .rop-sech.rop-mc__h { margin: 4px 0 6px; }   /* 17.3: less room above the box */
-.rop-mc__pill { position: relative; display: inline-flex; gap: 2px; padding: 2px; border-radius: 10px; background: var(--fill); }
-.rop-mc__th { position: absolute; left: 2px; top: 2px; bottom: 2px; width: 0; border-radius: 8px; background: var(--raised); box-shadow: 0 0 0 1px var(--hairline), 0 1px 2px rgba(0,0,0,.06); transition: transform .2s var(--e-out), width .2s var(--e-out); }
-.rop-mc__t { all: unset; box-sizing: border-box; position: relative; z-index: 1; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 30px; padding: 0 14px; border-radius: 8px; font: 500 13px/1 var(--font-sans); color: var(--ink-3); transition: color .2s ease; }
-.rop-mc__t.is-on { color: var(--ink); }
-.rop-mc__t:focus-visible { box-shadow: var(--shadow-focus); }
-.rop-mc__n { font: 600 11px/18px var(--font-mono); padding: 0 6px; border-radius: 6px; background: var(--raised); color: var(--ink-2); box-shadow: inset 0 0 0 1px var(--hairline); }
-.rop-mc__t.is-on .rop-mc__n { background: var(--accent-tint); color: var(--accent-text); box-shadow: none; }
 .rop-mc__body { position: relative; }
 .rop-mc.is-shut .rop-mc__body { display: none; }
 
@@ -83,14 +76,13 @@
 @keyframes rop-grow { from { opacity: 0; transform: scale(.97); } }
 
 /* ---------- Customer: edited in place, a check draws in ---------- */
-.rop-cus { padding: 4px 12px 12px; border-radius: var(--radius-lg); background: var(--panel); box-shadow: inset 0 0 0 1px var(--hairline); }
 .rop-saved { display: inline-grid; place-items: center; width: 16px; height: 16px; margin-left: 6px; vertical-align: -3px; border-radius: 50%; background: var(--good-tint); color: var(--good); animation: rop-savedfade 1.5s ease-out both; }
 .rop-saved svg { width: 11px; height: 11px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 22; animation: rop-draw .35s var(--e-out) .05s both; }
 @keyframes rop-draw { from { stroke-dashoffset: 22; } to { stroke-dashoffset: 0; } }
 @keyframes rop-savedfade { 0%, 75% { opacity: 1; } 100% { opacity: 0; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .rop-mc__th, .rop-msg, .rop-msg__b, .rop-sf, .rop-sug, .rop-saved, .rop-saved svg { transition: none !important; animation: none !important; }
+  .rop-msg, .rop-msg__b, .rop-sf, .rop-sug, .rop-saved, .rop-saved svg { transition: none !important; animation: none !important; }
 }
 
 /* ---------- the operation card: one surface, hairlines between its parts ---------- */

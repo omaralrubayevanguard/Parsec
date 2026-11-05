@@ -1,64 +1,26 @@
 /* Parsec · ro-page · messages-chat.js
-   Messages | Customer above the operations (17.2): one box with a segmented pill, the RO's messages as a chat (bubbles or lines, To and @ for anyone in the shop, files and the operation, a seen dot, quick lines by role) and the Customer fields.
-   Flow: ropBuild puts ropMC() above Operations; the pill switches the pane in place (slides toward the tab), sending goes through IB.send and redraws.
+   Messages above the operations (17.2; the Customer tab left in 17.3): the RO's messages as a chat (bubbles or lines, To and @ for anyone in the shop, files and the operation, a seen dot, quick lines by role).
+   Flow: ropBuild puts ropMC() above Operations; sending goes through IB.send and redraws.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   ropCalm ropMcTab ropChatLines ropMsgs ropMC ropCusPane ropRoleOf ropDayLbl ropMenText ropMsgMine ropChat ropBubble … (16 functions, 3 constants)
+   declares   ropCalm ropChatLines ropMsgs ropMC ropRoleOf ropDayLbl ropMenText ropMsgMine ropChat ropBubble ropPeople ropComposer … (14 functions, 3 constants)
    uses       access/ kit/ pages/inbox/ shell/
 */
 /* ---------- the box ---------- */
-var ROPC = { tab: null, lines: null, mine: false, files: [], op: undefined, draft: '', saved: null };
+var ROPC = { lines: null, mine: false, files: [], op: undefined, draft: '', saved: null };
 var ROPC_EASE = 'cubic-bezier(.23,1,.32,1)';
 function ropCalm() { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } }
-function ropMcTab() { if (!ROPC.tab) { try { ROPC.tab = localStorage.getItem('rop_mc_tab') === 'cus' ? 'cus' : 'msg'; } catch (e) { ROPC.tab = 'msg'; } } return ROPC.tab; }
 function ropChatLines() { if (ROPC.lines === null) { try { ROPC.lines = localStorage.getItem('rop_chat_lines') === '1'; } catch (e) { ROPC.lines = false; } } return ROPC.lines; }
 function ropMsgs() {
   var L = []; try { L = IB.store().items.filter(function (n) { return n.ro === RO.id && !(n.x && n.x.mof); }); } catch (e) {}
   return L.slice().sort(function (a, b) { return new Date(a.at) - new Date(b.at); });
 }
 function ropMC() {
-  var L = ropMsgs(), tab = ropMcTab();
-  function tb(t, label, n) {
-    return el('button', { class: 'rop-mc__t' + (tab === t ? ' is-on' : ''), type: 'button', role: 'tab', 'aria-selected': tab === t ? 'true' : 'false', 'data-t': t,
-      html: esc(label) + (n ? '<span class="rop-mc__n">' + n + '</span>' : '') });
-  }
-  var bM = tb('msg', 'Messages', L.length), bC = tb('cus', 'Customer', 0), thumb = el('i', { class: 'rop-mc__th', 'aria-hidden': 'true' });
-  var pill = el('div', { class: 'rop-mc__pill', role: 'tablist', 'aria-label': 'Messages or Customer' }, [thumb, bM, bC]);
-  var body = el('div', { class: 'rop-mc__body' }, [tab === 'msg' ? ropChat(L) : ropCusPane()]);
-  var head = el('div', { class: 'px-sec rop-sech rop-mc__h' }, [pill]);
-  var sec = el('section', { class: 'rop-blk rop-k-mc rop-mc' }, [head, body]);
-  function place(anim) {
-    var on = pill.querySelector('.is-on'); if (!on || !on.offsetWidth) return;
-    if (!anim) thumb.style.transition = 'none';
-    thumb.style.width = on.offsetWidth + 'px'; thumb.style.transform = 'translateX(' + (on.offsetLeft - 2) + 'px)';
-    if (!anim) { void thumb.offsetWidth; thumb.style.transition = ''; }
-  }
-  requestAnimationFrame(function () { place(false); });
-  [bM, bC].forEach(function (b) {
-    b.addEventListener('click', function (e) {
-      e.stopPropagation();
-      var t = b.getAttribute('data-t'); if (t === ROPC.tab) return;
-      var dir = t === 'cus' ? 1 : -1; ROPC.tab = t; try { localStorage.setItem('rop_mc_tab', t); } catch (er) {}
-      [bM, bC].forEach(function (x) { var on = x === b; x.classList.toggle('is-on', on); x.setAttribute('aria-selected', on ? 'true' : 'false'); });
-      place(true);
-      var old = body.firstElementChild, nu = t === 'msg' ? ropChat(ropMsgs()) : ropCusPane();
-      if (ropCalm() || !old) { body.innerHTML = ''; body.appendChild(nu); return; }
-      var h0 = body.offsetHeight;
-      body.style.height = h0 + 'px'; body.style.overflow = 'hidden';
-      old.style.position = 'absolute'; old.style.left = '0'; old.style.right = '0'; old.style.top = '0';
-      body.appendChild(nu);
-      var h1 = nu.offsetHeight;
-      old.animate([{ transform: 'none', opacity: 1 }, { transform: 'translateX(' + (-24 * dir) + 'px)', opacity: 0 }], { duration: 200, easing: ROPC_EASE, fill: 'forwards' }).onfinish = function () { old.remove(); };
-      nu.animate([{ transform: 'translateX(' + (24 * dir) + 'px)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 220, easing: ROPC_EASE });
-      var ha = body.animate([{ height: h0 + 'px' }, { height: h1 + 'px' }], { duration: 220, easing: ROPC_EASE });
-      body.style.height = h1 + 'px';
-      ha.onfinish = function () { body.style.height = ''; body.style.overflow = ''; };
-    });
-  });
-  return sec;
+  var L = ropMsgs();
+  /* 17.3: the Customer tab is gone — the customer's fields are in the right column's Customer group */
+  var head = el('div', { class: 'px-sec rop-sech rop-mc__h' }, [el('h3', { text: 'Messages' })].concat(L.length ? [el('span', { class: 'n', text: String(L.length) })] : []));
+  var body = el('div', { class: 'rop-mc__body' }, [ropChat(L)]);
+  return el('section', { class: 'rop-blk rop-k-mc rop-mc' }, [head, body]);
 }
-/* the Customer pane: the fields that were the Customer section, edited in place */
-function ropCusPane() { return el('div', { class: 'rop-cus rop-k-customer' }, ropCustomerBody()); }
-
 /* ---------- the chat ---------- */
 function ropRoleOf(n) { try { var s = staffForTech(n); return s ? s.role : ''; } catch (e) { return ''; } }
 function ropDayLbl(t) { var d = new Date(t), now = new Date(); if (d.toDateString() === now.toDateString()) return 'Today'; var y = new Date(now); y.setDate(now.getDate() - 1); if (d.toDateString() === y.toDateString()) return 'Yesterday'; return d.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' }); }

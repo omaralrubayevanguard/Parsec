@@ -69,6 +69,10 @@ function ropBand() {
   try { var tgl = rtToggleHtml(RO); if (tgl) { var tw = el('div', { class: 'rop-rtt', html: tgl }), sw = tw.querySelector('.rtt-sw');
     if (sw) sw.addEventListener('click', function (e) { e.stopPropagation(); var on = !rtNeeded(RO); if (rtToggle(RO, on)) { render(); tecRender(); ropUndo(on ? 'Road test needed again — Road test and Truck checks are back.' : 'No road test for this RO — no truck checks either. When the work is done it’s ready to release.'); } });
     foot.appendChild(tw); } } catch (er) { console.error(er); }
+  /* 17.3: Warranty RO, under Road test before release (it was in the Customer tab) */
+  try { if (!RO.shop && RO.id !== SHOP_RO_ID) { var wOn = !!RO.warranty, ww = el('div', { class: 'rop-rtt rop-wrt', html: '<div class="rtt' + (wOn ? ' on' : '') + '"><span class="rtt-l">Warranty RO</span><button type="button" class="rtt-sw" role="switch" aria-checked="' + wOn + '" aria-label="Warranty RO" title="' + (wOn ? 'Not a warranty RO' : 'Make it a warranty RO') + '"><i></i></button></div>' });
+    ww.querySelector('.rtt-sw').addEventListener('click', function (e) { e.stopPropagation(); pushUndo('warranty RO'); RO.warranty = !RO.warranty; save(true); render(); tecRender(); });
+    foot.appendChild(ww); } } catch (er) { console.error(er); }
   return el('div', { class: 'rop-band' }, [band]);
 }
 function ropWho() {

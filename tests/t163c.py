@@ -110,8 +110,8 @@ async def main():
         dh = await pg.evaluate("(id)=>{ __tg.UI().rodFold = { customer: false }; try{ localStorage.setItem('rpfold:' + (localStorage.getItem('tec_viewas') || 'admin'), JSON.stringify({ customer: false })); }catch(e){}   /* 17.1: folds are kept per person */ return __tg.roDetailsHtml(__tg.STATE().ros.filter(r=>r.id===id)[0]); }", NEWRO)
         ok("Driver’s phone" in dh and "Email" in dh and "Tony Ruiz" in dh, "the RO list / Technician details pane shows the new rows")
         await pg.evaluate(f"(()=>{{ const U=__tg.UI(); U.view='ros'; U.selectedRo='{NEWRO}'; __tg.render(); }})()"); await pg.wait_for_timeout(1000)
-        cs = await pg.evaluate(J("const s=R.querySelector('.rop-k-customer'); return s ? s.textContent : ''"))
-        ok("Dave Miller" in cs and "Driver’s phone" in cs and "(919) 555-0142" in cs and "ops@rick.com" in cs, "the RO page Customer section: contact, phone, email, driver: %r" % cs[:160])
+        cs = await pg.evaluate(J("const h=R.querySelector('.rod-gh[data-rod-g=customer]')||document.querySelector('.rod-gh[data-rod-g=customer]'), s=h&&h.closest('.rod-g'); return s ? s.textContent : ''   /* 17.3: the Customer tab left; the right column's Customer group */"))
+        ok("Dave Miller" in cs and "Driver’s phone" in cs and "(919) 555-0142" in cs and "ops@rick.com" in cs, "the RO page Customer group (right column): contact, phone, email, driver: %r" % cs[:160])
 
         # ---------- 6. Settings: Shop buttons by department (the manager)
         D = await pg.evaluate("""(()=>{ const L=__tg.STATE().ros.filter(r=>!r.shop && r.id!=='ro_shop' && !r.dateClosed); L[0].department='Service'; L[1].department='Body shop'; L[2].department='body  shop'; return [L[0].id, L[1].id, L[2].id]; })()""")

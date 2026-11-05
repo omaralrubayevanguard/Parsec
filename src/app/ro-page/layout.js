@@ -1,9 +1,9 @@
 /* Parsec · ro-page · layout.js
    The RO page in your layout (Parsec 12): the one-panel page — operations in the middle, the truck card and the sections on the right (ROPS), who is on it, the right column's fit.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   ri ropH1 ropN ropFirst ropMe ropIsMe ropPerson ropWriter ropAgo ropClk ropLive ropRun … (21 functions, 3 constants)
-   state      punches ros
-   uses       access/ kit/ pages/ pages/inbox/ pages/triage/ ro/ shell/ state/
+   declares   ri ropH1 ropN ropFirst ropMe ropIsMe ropPerson ropWriter ropAgo ropClk ropLive ropRun … (19 functions, 3 constants)
+   state      punches
+   uses       access/ kit/ pages/ pages/inbox/ pages/triage/ ro/ state/
 */
 /* ============================== Parsec 12: the RO page in your layout (b9/rop1.js — inside the RO page, JC) ==============================
    From the RO page mock-up. The middle: Operations, Parts on this RO, Fault codes, Photos & codes, Messages about this RO, Truck history,
@@ -59,29 +59,6 @@ function ropSec(key, title, sub, body, act) {
 }
 
 /* Messages about this RO now live in the box above the operations (messages-chat.js, 17.2) */
-function ropOpenRo(id) { UI.view = 'ros'; UI.selectedRo = id; UI.modal = null; tecRender(); }
-function ropCustomerBody() {
-  var c = RO.customerName || '', mine = STATE.ros.filter(function (x) { return c && x.customerName === c && !x.shop && x.id !== SHOP_RO_ID; }), open = mine.filter(function (x) { return x.id !== RO.id && !roIsDone(x); });
-  var ct = (RO.contacts || []).slice(-1)[0];
-  var warr = pxToggle(!!RO.warranty, function (v) { pushUndo('warranty RO'); RO.warranty = v; save(true); render(); tecRender(); }, 'Warranty RO');
-  var props = el('div', { class: 'rop-props' }, [
-    pxProp('Customer', c || 'Add customer', { empty: !c, edit: pxField2('customerName') }),
-    pxProp('Cust #', RO.custNo || 'Add', { id: !!RO.custNo, empty: !RO.custNo, edit: pxField2('custNo') }),
-    pxProp('Contact', RO.contactName || 'Add who to call', { empty: !RO.contactName, edit: pxField2('contactName') }),   /* Parsec 16.3 */
-    pxProp('Phone', RO.contactPhone || 'Add a number', { empty: !RO.contactPhone, copy: RO.contactPhone || null, edit: pxField2('contactPhone') }),
-    pxProp('Email', RO.contactEmail || 'Add an email', { empty: !RO.contactEmail, copy: RO.contactEmail || null, edit: pxField2('contactEmail') }),
-    pxProp('Driver', RO.driverName || 'Add the driver', { empty: !RO.driverName, edit: pxField2('driverName') }),
-    pxProp('Driver’s phone', RO.driverPhone || 'Add a number', { empty: !RO.driverPhone, copy: RO.driverPhone || null, edit: pxField2('driverPhone') }),
-    pxProp('Case #', RO.caseNumber || 'Add case', { id: !!RO.caseNumber, empty: !RO.caseNumber, copy: RO.caseNumber || null, edit: pxField2('caseNumber') }),
-    pxProp('PO #', RO.poNumber || 'Add PO', { id: !!RO.poNumber, empty: !RO.poNumber, edit: pxField2('poNumber') }),
-    pxProp('Auth #', RO.authNumber || 'Add auth', { id: !!RO.authNumber, empty: !RO.authNumber, edit: pxField2('authNumber') }),
-    pxProp('Tech support', RO.techSupportCase || 'Add case', { id: !!RO.techSupportCase, empty: !RO.techSupportCase, edit: pxField2('techSupportCase') }),
-    pxProp('Warranty RO', warr)]);
-  var body = [props, el('div', { class: 'rop-cu', html: '<small>' + mine.length + ' RO' + (mine.length === 1 ? '' : 's') + ' in Parsec' + (open.length ? ' · ' + open.length + ' other open' : '') + '</small>' + (ct ? '<small>Last contact: ' + esc(ct.kind || 'Contact') + (ct.out ? ' — ' + esc(ct.out) : '') + (ct.note ? ' · ' + esc(ct.note) : '') + ' · ' + esc(ropAgo(ct.at)) + '</small>' : '') })];
-  if (open.length) { var box = el('div', { class: 'px-list' }); open.slice(0, 3).forEach(function (x) { box.appendChild(el('button', { class: 'px-li rop-hr', type: 'button', title: 'Open ' + roLabel(x), onClick: function (e) { e.stopPropagation(); ropOpenRo(x.id); }, html: '<span class="px-id">' + esc(tgNum(x)) + '</span><span><b>' + (x.unitNumber ? 'Unit ' + esc(x.unitNumber) + ' · ' : '') + esc(roStatus(x).status) + '</b><small>' + esc(((raLive(x)[0]) || {}).complaint || '') + '</small></span><span></span>' })); }); body.push(box); }
-  return body;
-}
-
 /* ---------- the right ---------- */
 /* Parsec 12.7: the band's Start / Stop is about your own clock */
 /* ===== Parsec 14.7 (B) — inside the RO page (JC): second-level menus that stay on screen, and Release without checks ===== */
