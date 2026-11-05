@@ -159,11 +159,11 @@ function v141Workable(live){
 /* ---------- 6 + 7: one release list ---------- */
 function v141Hand(ro){
   var W = []; try{ W = trxWalk(); }catch(e){}
-  var hasKeys = W.some(function(w){ return /\bkey/i.test(w); }), hasClean = W.some(function(w){ return /clean|tools out/i.test(w); }), rt = true; try{ rt = rtNeeded(ro); }catch(e){}
+  var hasKeys = W.some(function(w){ return /\bkey/i.test(w); }), hasClean = W.some(function(w){ return /clean|tools out/i.test(w); }), rt = true; try{ rt = qcNeeded(ro); }catch(e){}   /* 17.3: with the checks off, keys and clean are asked here */
   return RELEASE_CHECK.filter(function(x){ if(x[0] === "road") return false; if(!rt) return true; if(x[0] === "keys" && hasKeys) return false; if(x[0] === "clean" && hasClean) return false; return true; });
 }
 function v141WalkH(ro){
-  var rt = true; try{ rt = rtNeeded(ro); }catch(e){} if(!rt) return "";
+  var rt = true; try{ rt = qcNeeded(ro); }catch(e){} if(!rt) return "";
   var C = trxQc(ro), W = trxWalk(); if(!W.length) return "";
   return '<span class="tg-lbl top">Walk-around <small>' + C.n + ' of ' + C.of + '</small></span><div class="tg-r v141-walk">' + W.map(function(w, i){ var on = C.ticks.indexOf(w) > -1;
     return '<button class="tg-chip tick' + (on ? ' on' : '') + '" data-action="tg-qc" data-f="tick" data-v="' + i + '" title="' + v141E(w) + '">' + (on ? tgI("check", 12) : '') + v141E(w) + '</button>'; }).join('') + '</div>';

@@ -55,9 +55,9 @@ function ropBand() {
     acts.appendChild(el('button', { class: 'px-btn px-btn--sm ' + (on ? '' : 'px-btn--primary'), type: 'button', title: on ? 'Stop the clock on Op ' + ropN(job) : 'Start the clock on Op ' + ropN(job), html: (on ? pxI('stop', 14) + 'Stop' : pxI('play', 14) + 'Start') + ' Op ' + ropN(job), onClick: function (e) { e.stopPropagation(); toggleJobClock(job); tecRender(); } })); }
   acts.appendChild(el('button', { class: 'px-btn px-btn--sm', type: 'button', title: 'Transfer (T)', html: pxI('swap', 14) + 'Transfer…', onClick: function (e) { e.stopPropagation(); pxTransfer(); } }));
   /* Parsec 12.2: the road test and the truck checks, on every RO */
-  try { if (trxBtnsOk(RO)) { var qcHot = trxPassed(RO) && !trxQcDone(RO) && trxAllDone(RO);
-    acts.appendChild(el('button', { class: 'px-btn px-btn--sm rop-rtb', type: 'button', title: 'Road test — send someone or log the result', html: pxI('road', 14) + 'Road test', onClick: function (e) { e.stopPropagation(); trxOpen('road', RO.id); } }));
-    acts.appendChild(el('button', { class: 'px-btn px-btn--sm rop-qcb' + (qcHot ? ' px-btn--primary' : ''), type: 'button', title: 'Truck checks before release', html: pxI('check', 14) + 'Truck checks', onClick: function (e) { e.stopPropagation(); trxOpen('checks', RO.id); } })); } } catch (er) { console.error(er); }
+  try { if (trxBtnsOk(RO)) { var rtOn = rtNeeded(RO), qcHot = (!rtOn || trxPassed(RO)) && !trxQcDone(RO) && trxAllDone(RO);   /* 17.3: each by its own switch */
+    if (rtOn) acts.appendChild(el('button', { class: 'px-btn px-btn--sm rop-rtb', type: 'button', title: 'Road test — send someone or log the result', html: pxI('road', 14) + 'Road test', onClick: function (e) { e.stopPropagation(); trxOpen('road', RO.id); } }));
+    if (qcNeeded(RO)) acts.appendChild(el('button', { class: 'px-btn px-btn--sm rop-qcb' + (qcHot ? ' px-btn--primary' : ''), type: 'button', title: 'Truck checks before release', html: pxI('check', 14) + 'Truck checks', onClick: function (e) { e.stopPropagation(); trxOpen('checks', RO.id); } })); } } catch (er) { console.error(er); }
   try { if (ropBypassOk()) acts.appendChild(ropBypassBtn()); } catch (er) { console.error(er); }   /* Parsec 14.7 */
   /* Parsec 14.3: on the Technician page, Ask <the foreman> sits with the others — it opens Messages about this RO, to them */
   try { if (typeof tcxOn === 'function' && tcxOn(RO.id)) { var fm = ropPerson('Foreman'); if (fm && !ropIsMe(fm)) acts.appendChild(el('button', { class: 'px-btn px-btn--sm rop-askf', type: 'button', title: 'Ask ' + ropFirst(fm) + ' about this RO — a message on it', html: pxI('chat', 14) + 'Ask ' + esc(ropFirst(fm)), onClick: function (e) { e.stopPropagation(); ROPU.msgTo = fm; ROPC.tab = 'msg'; render(); requestAnimationFrame(function () { var i = R.querySelector('.rop-in__i'); if (i) { try { i.scrollIntoView({ block: 'center' }); } catch (er) {} i.focus(); } }); } })); } } catch (er) { console.error(er); }
@@ -65,10 +65,11 @@ function ropBand() {
   /* 17.1 — the one RO panel: the buttons sit at the bottom of the right column, always in reach (ropRail) */
   var foot = el('div', { class: 'rop-foot' }, [acts]); ROP_FOOT = foot;
   try { var byl = ropBypassLine(RO); if (byl) foot.appendChild(byl); } catch (er) { console.error(er); }   /* Parsec 14.7 */
-  /* Parsec 14: does this truck need a road test? Off — no Road test, no Truck checks, ready to release when the work is done */
-  try { var tgl = rtToggleHtml(RO); if (tgl) { var tw = el('div', { class: 'rop-rtt', html: tgl }), sw = tw.querySelector('.rtt-sw');
-    if (sw) sw.addEventListener('click', function (e) { e.stopPropagation(); var on = !rtNeeded(RO); if (rtToggle(RO, on)) { render(); tecRender(); ropUndo(on ? 'Road test needed again — Road test and Truck checks are back.' : 'No road test for this RO — no truck checks either. When the work is done it’s ready to release.'); } });
-    foot.appendChild(tw); } } catch (er) { console.error(er); }
+  /* Parsec 14: does this truck need a road test? 17.3: and truck checks — a switch each */
+  [false, true].forEach(function (qc) { try { var tgl = rtToggleHtml(RO, '', qc); if (!tgl) return; var tw = el('div', { class: 'rop-rtt' + (qc ? ' rop-qct' : ''), html: tgl }), sw = tw.querySelector('.rtt-sw');
+    if (sw) sw.addEventListener('click', function (e) { e.stopPropagation(); var on = qc ? !qcNeeded(RO) : !rtNeeded(RO); if (qc ? qcToggle(RO, on) : rtToggle(RO, on)) { render(); tecRender();
+      ropUndo(qc ? (on ? 'Truck checks needed again.' : 'No truck checks for this RO.') : (on ? 'Road test needed again.' : 'No road test for this RO.')); } });
+    foot.appendChild(tw); } catch (er) { console.error(er); } });
   /* 17.3: Warranty RO, under Road test before release (it was in the Customer tab) */
   try { if (!RO.shop && RO.id !== SHOP_RO_ID) { var wOn = !!RO.warranty, ww = el('div', { class: 'rop-rtt rop-wrt', html: '<div class="rtt' + (wOn ? ' on' : '') + '"><span class="rtt-l">Warranty RO</span><button type="button" class="rtt-sw" role="switch" aria-checked="' + wOn + '" aria-label="Warranty RO" title="' + (wOn ? 'Not a warranty RO' : 'Make it a warranty RO') + '"><i></i></button></div>' });
     ww.querySelector('.rtt-sw').addEventListener('click', function (e) { e.stopPropagation(); pushUndo('warranty RO'); RO.warranty = !RO.warranty; save(true); render(); tecRender(); });

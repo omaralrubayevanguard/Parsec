@@ -244,7 +244,7 @@ function trxQcSet(f, v){
 }
 function trxQcDone(ro){ var C = trxQc(ro); return C.all && C.aok; }
 /* the Release pop-up counts the truck checks too — the open ones need a reason, like every other check */
-function trxRelCheck(ro){ if(!rtNeeded(ro)) return null; var C = trxQc(ro); /* the operations, parts and road test have their own lines here — this one is the walk-around */
+function trxRelCheck(ro){ if(!qcNeeded(ro)) return null; var C = trxQc(ro); /* the operations, parts and road test have their own lines here — this one is the walk-around */
   return { k: "qc", ok: C.all, t: "Truck checks", d: C.all ? (C.of ? "walk-around done" : "no walk-around list") + (C.at ? " " + fmtTime(C.at) : "") + (C.by ? " · " + tgFirst(C.by) : "") : (C.of - C.n) + " of " + C.of + " walk-around not ticked", fix: "Truck checks" }; }
 
 /* ---------- Needs action: Road test, Truck checks, Ready to go ---------- */
@@ -253,30 +253,31 @@ function trxNeed(ro, c, lt, a){
   /* past back by comes first: it goes to Held too long */
   var due = tgDue(ro); if(due){ var hd = tgHold(ro); return { g: "held", pr: 3, ic: "swap", why: "Due back from " + trxNm(hd.who) + " at " + tgWhen(due) + " · " + tgDur(Date.now() - due) + " late", btn: "Nudge", act: "nudge" }; }
   var st = roStatus(ro).status; if(st === "Declined") return null;
-  var all = trxAllDone(ro), pass = trxPassed(ro), need = rtNeeded(ro);
+  var all = trxAllDone(ro), pass = trxPassed(ro), need = rtNeeded(ro), qc = qcNeeded(ro);
   if(c === "rdy" || all){
-    if(!need){ if(!all) return null; return { g: "go", pr: lt ? 1 : 2, ic: "release", why: "Work done · no road test" + " · " + tgSpotLbl(tgSpotOf(ro)) + (lt ? " · waiting " + a : ""), btn: "Release", act: "release" }; }   /* Parsec 14 */
-    if(!pass){ if(!all && c !== "rdy") return null; var S = trxRoadState(ro);
+    if(!need && !all) return null;
+    if(need && !pass){ var S = trxRoadState(ro);
       return { g: "road", pr: S.due ? 0 : S.k === "plan" ? 3 : 1, ic: "road", why: S.txt, btn: S.k === "plan" ? (S.due ? "Log result" : "Road test") : "Road test", act: "road" }; }
-    if(!trxQcDone(ro)){ var C = trxQc(ro); return { g: "checks", pr: 1, ic: "check", why: "Road test passed" + (ro.roadTest && ro.roadTest.at ? " " + fmtTime(ro.roadTest.at) : "") + " · " + (C.total - C.done) + " check" + (C.total - C.done === 1 ? "" : "s") + " to go", btn: "Check", act: "checks" }; }
-    var C2 = trxQc(ro); return { g: "go", pr: lt ? 1 : 2, ic: "release", why: "Checks done" + (C2.at ? " " + fmtTime(C2.at) : "") + " · " + tgSpotLbl(tgSpotOf(ro)) + (lt ? " · waiting " + a : ""), btn: "Release", act: "release" };
+    var was = need ? "Road test passed" + (ro.roadTest && ro.roadTest.at ? " " + fmtTime(ro.roadTest.at) : "") : "Work done · no road test";
+    if(qc && !trxQcDone(ro)){ var C = trxQc(ro); return { g: "checks", pr: 1, ic: "check", why: was + " · " + (C.total - C.done) + " check" + (C.total - C.done === 1 ? "" : "s") + " to go", btn: "Check", act: "checks" }; }
+    var C2 = trxQc(ro); return { g: "go", pr: lt ? 1 : 2, ic: "release", why: (qc ? "Checks done" + (C2.at ? " " + fmtTime(C2.at) : "") : was) + " · " + tgSpotLbl(tgSpotOf(ro)) + (lt ? " · waiting " + a : ""), btn: "Release", act: "release" };   /* 17.3: road test and checks each by their own switch */
   }
   return null;
 }
 /* past back by: a red countdown on the row */
 function trxPill(x){ if(!x || x.g !== "held" || !x.ro) return ''; var due = tgDue(x.ro); if(!due) return ''; return '<span class="trx-late" title="Past back by ' + esc(tgWhen(due)) + '">+' + esc(tgShortDur(Date.now() - due)) + '</span>'; }
 /* the selected RO: Road test and Truck checks buttons, and where each stands */
-function trxBtnsOk(ro){ return !!ro && !ro.shop && ro.id !== SHOP_RO_ID && !ro.dateClosed && tyCat(ro) !== "arr" && rtNeeded(ro); }   /* Parsec 14: none when the RO needs no road test */
+function trxBtnsOk(ro){ return !!ro && !ro.shop && ro.id !== SHOP_RO_ID && !ro.dateClosed && tyCat(ro) !== "arr" && (rtNeeded(ro) || qcNeeded(ro)); }   /* Parsec 14: none when the RO needs no road test */
 function trxBtns(ro, cls){ if(!trxBtnsOk(ro)) return ''; var all = trxAllDone(ro), c = cls || "btn btn-sm";
-  return '<button class="' + c + ' trx-rtb" data-action="tg-pop" data-p="road" data-ro="' + ro.id + '" title="Road test — send someone or log the result">' + tgI("road", 14) + 'Road test</button>'
-    + '<button class="' + c + ' trx-qcb' + (trxPassed(ro) && !trxQcDone(ro) && all ? ' btn-primary' : '') + '" data-action="tg-pop" data-p="checks" data-ro="' + ro.id + '" title="Truck checks before release">' + tgI("check", 14) + 'Truck checks</button>'; }
+  return (rtNeeded(ro) ? '<button class="' + c + ' trx-rtb" data-action="tg-pop" data-p="road" data-ro="' + ro.id + '" title="Road test — send someone or log the result">' + tgI("road", 14) + 'Road test</button>' : '')
+    + (qcNeeded(ro) ? '<button class="' + c + ' trx-qcb' + ((trxPassed(ro) || !rtNeeded(ro)) && !trxQcDone(ro) && all ? ' btn-primary' : '') + '" data-action="tg-pop" data-p="checks" data-ro="' + ro.id + '" title="Truck checks before release">' + tgI("check", 14) + 'Truck checks</button>' : ''); }
 function trxBackRow(ro){ var r = ro && ro.route; if(!r || !r.back || r.state === "pending") return ''; var b = new Date(r.back).getTime(), d = b - Date.now(), hd = tgHold(ro);
   return '<div class="tg-m sys trx-st' + (d < 0 ? ' late' : '') + '"><span class="gi">' + tgI("clock", 15) + '</span><div class="bd"><div class="hd">Back from <b>' + esc(trxNm(hd.who)) + '</b> by <b>' + esc(tgWhen(b)) + '</b> · ' + (d < 0 ? '<span class="trx-late">+' + esc(tgShortDur(-d)) + '</span> past — in Held too long' : 'in ' + esc(tgDur(d))) + '</div></div></div>'; }
 function trxCards(ro){
-  if(!ro) return ''; var bk = trxBackRow(ro); if(tyCat(ro) === "arr" || !rtNeeded(ro)) return bk; var all = trxAllDone(ro), S = trxRoadState(ro), C = trxQc(ro);
+  if(!ro) return ''; var bk = trxBackRow(ro); if(tyCat(ro) === "arr" || (!rtNeeded(ro) && !qcNeeded(ro))) return bk; var all = trxAllDone(ro), S = trxRoadState(ro), C = trxQc(ro);
   if(!all && !ro.roadTest && !ro.fmRt && !C.ticks.length) return bk;
-  var rc = '<div class="tg-m sys trx-st"><span class="gi">' + tgI("road", 15) + '</span><div class="bd"><div class="hd">Road test · <b>' + esc(S.txt) + '</b><button class="tg-link" data-action="tg-pop" data-p="road" data-ro="' + ro.id + '">' + (S.k === "pass" ? 'Change' : S.k === "plan" ? 'Log the result' : 'Road test…') + '</button></div></div></div>';
-  var qc = trxPassed(ro) || C.ticks.length ? '<div class="tg-m sys trx-st"><span class="gi">' + tgI("check", 15) + '</span><div class="bd"><div class="hd">Truck checks · <b>' + (C.all && C.aok ? 'done' + (C.at ? ' ' + fmtTime(C.at) : '') : C.done + ' of ' + C.total) + '</b><button class="tg-link" data-action="tg-pop" data-p="checks" data-ro="' + ro.id + '">' + (C.all && C.aok ? 'Release…' : 'Check') + '</button></div></div></div>' : '';
+  var rc = !rtNeeded(ro) ? '' : '<div class="tg-m sys trx-st"><span class="gi">' + tgI("road", 15) + '</span><div class="bd"><div class="hd">Road test · <b>' + esc(S.txt) + '</b><button class="tg-link" data-action="tg-pop" data-p="road" data-ro="' + ro.id + '">' + (S.k === "pass" ? 'Change' : S.k === "plan" ? 'Log the result' : 'Road test…') + '</button></div></div></div>';
+  var qc = qcNeeded(ro) && (trxPassed(ro) || !rtNeeded(ro) || C.ticks.length) ? '<div class="tg-m sys trx-st"><span class="gi">' + tgI("check", 15) + '</span><div class="bd"><div class="hd">Truck checks · <b>' + (C.all && C.aok ? 'done' + (C.at ? ' ' + fmtTime(C.at) : '') : C.done + ' of ' + C.total) + '</b><button class="tg-link" data-action="tg-pop" data-p="checks" data-ro="' + ro.id + '">' + (C.all && C.aok ? 'Release…' : 'Check') + '</button></div></div></div>' : '';
   return bk + rc + qc;
 }
 function trxInput(k, v){

@@ -26,12 +26,13 @@ async def main():
         ok(t["sw"] and t["on"] == "true" and t["rt"] and t["qc"], f"RO page: the road test toggle is on, Road test and Truck checks show ({t})")
         await pg.screenshot(path=os.path.join(OUT, "t1_ro_on.png"))
         await pg.evaluate(J("R.querySelector('.rop-rtt .rtt-sw').click()")); await pg.wait_for_timeout(500)
+        await pg.evaluate(J("R.querySelector('.rop-qct .rtt-sw').click()")); await pg.wait_for_timeout(500)   # 17.3: the truck checks have their own switch now
         t = await pg.evaluate(J(f"const s=R.querySelector('.rop-rtt .rtt-sw'); return {{ on: s && s.getAttribute('aria-checked'), rt: !!R.querySelector('.rop-rtb'), qc: !!R.querySelector('.rop-qcb'), no: __tg.getRO('{A}').noRoadTest === true, txt: (R.querySelector('.rop-rtt')||{{}}).textContent }}"))
-        ok(t["on"] == "false" and not t["rt"] and not t["qc"] and t["no"], f"turned off: no Road test or Truck checks on the RO page, stored on the RO ({t})")
+        ok(t["on"] == "false" and not t["rt"] and not t["qc"] and t["no"], f"both switches off: no Road test or Truck checks on the RO page, stored on the RO ({t})")
         await pg.screenshot(path=os.path.join(OUT, "t2_ro_off.png"))
-        await pg.evaluate("__tg.undoLast()"); await pg.wait_for_timeout(400)
-        ok(await pg.evaluate(f"__tg.getRO('{A}').noRoadTest !== true"), "Undo turns it back on")
-        await pg.evaluate(f"__tg.rtToggle(__tg.getRO('{A}'), false)"); await pg.wait_for_timeout(300)
+        await pg.evaluate("__tg.undoLast()"); await pg.wait_for_timeout(400); await pg.evaluate("__tg.undoLast()"); await pg.wait_for_timeout(400)   # 17.3: one Undo per switch
+        ok(await pg.evaluate(f"__tg.getRO('{A}').noRoadTest !== true && __tg.qcNeeded(__tg.getRO('{A}'))"), "Undo turns them back on")
+        await pg.evaluate(f"__tg.rtToggle(__tg.getRO('{A}'), false); __tg.qcToggle(__tg.getRO('{A}'), false)"); await pg.wait_for_timeout(300)
         act = await pg.evaluate("(()=>{ const S=__tg.STATE(); const L=(S.auditLog||S.audit||(S.shop&&S.shop.audit)||[]); return (Array.isArray(L)?L:[]).slice(-3).map(x=>x.text||'').join(' | '); })()")
         ok("no road test" in act.lower(), f"the change is in Activity ({act[-90:]})")
         # ---------- every page: no road test buttons for that RO ----------
@@ -74,11 +75,11 @@ async def main():
         rl = await pg.evaluate(f"!![...document.querySelectorAll('[data-pg=rolist] .rq-row')].find(x=>x.textContent.includes('{X['bn']}'))")
         ok(rl, "the RO list's Open tab still lists it")
         # ---------- turning it back on brings it all back ----------
-        await pg.evaluate(f"__tg.rtToggle(__tg.getRO('{A}'), true)"); await pg.wait_for_timeout(500)
+        await pg.evaluate(f"__tg.rtToggle(__tg.getRO('{A}'), true); __tg.qcToggle(__tg.getRO('{A}'), true)"); await pg.wait_for_timeout(500)
         back = await pg.evaluate(f"(()=>{{ const ro=__tg.getRO('{A}'); const it=__tg.tgNeedsAll().find(x=>x.ro && x.ro.id==='{A}'); return [it ? it.g : null, __tg.tyCloseChecks(ro).some(c=>c.k==='road'), !!__tg.trxBtns(ro)]; }})()")
         ok(back[0] == "road" and back[1] and back[2], f"turned back on: Road test group, the release line and the buttons are back ({back})")
         # ---------- C · one stage label ----------
-        await pg.evaluate(f"__tg.rtToggle(__tg.getRO('{A}'), true)")
+        await pg.evaluate(f"__tg.rtToggle(__tg.getRO('{A}'), true); __tg.qcToggle(__tg.getRO('{A}'), true)")
         X2 = await pg.evaluate("(()=>{ const r=__tg.STATE().ros.find(r=>!r.shop && r.id!=='shop' && !r.dateClosed && r.assignedTech && r.operations.some(o=>!__tg.opDoneNow(o)) && __tg.tyCat(r)!=='arr'); return { id: r.id, txt: __tg.roStageTxt(r), I: __tg.roStageInfo(r) && [__tg.roStageInfo(r).i, __tg.roStageInfo(r).of] }; })()")
         await view(pg, "triage", f"U.tgSel='{X2['id']}'; U.tgView='inbox';")
         tg = await pg.evaluate("(document.querySelector('[data-pg=triage] .tg-stg, .tg-ib .tg-stg')||{}).textContent||''")

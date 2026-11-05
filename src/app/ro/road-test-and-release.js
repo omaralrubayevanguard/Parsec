@@ -1,16 +1,30 @@
 /* Parsec · ro · road-test-and-release.js
    Road test before release (a switch per RO), what “work done” means, the stage label shown for a status (roStageInfo / pgStRo).
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   rtNeeded roWorkDone rtToggle roStFor roStShown pgStRo roStageInfo roStageTxt rtNoTech rtToggleHtml sentToMe sentDone … (14 functions)
+   declares   rtNeeded qcNeeded qcToggle roWorkDone rtToggle roStFor roStShown pgStRo roStageInfo roStageTxt rtNoTech rtToggleHtml … (16 functions)
    uses       access/ data/ kit/ pages/ pages/inbox/ state/
 */
 /* ============================== Parsec 14 (T) — the road test toggle, closing at release, one stage label ==============================
-   · Road test: on every RO, default on. Off (ro.noRoadTest) → no Road test or Truck checks anywhere — no buttons, no Needs action
-     groups, no release checks for them, the stage track skips Road test — and the work done goes straight to Ready to release.
+   · Road test: on every RO, default on. Off (ro.noRoadTest) → no Road test anywhere — no button, no Needs action group, no release
+     check for it, the stage track skips Road test. 17.3: the truck checks have their own switch (qcNeeded / ro.noChecks).
    · An RO is closed (dateClosed, the Done lists, Manager's counts) only when it's released (or declined) — roIsDone; the work being
      done is roWorkDone.
    · One stage label everywhere: roStageInfo — the RO page's "Repair · stage 4 of 6". */
 function rtNeeded(ro){ return !(ro && ro.noRoadTest); }
+/* 17.3: the truck checks have their own switch. ro.noChecks true = off, false = on; not set = as before — an RO with no road test
+   had no checks either, so it keeps them off */
+function qcNeeded(ro){ if(!ro) return true; if(ro.noChecks === true) return false; if(ro.noChecks === false) return true; return !ro.noRoadTest; }
+function qcToggle(ro, on){
+  if(!ro || ro.shop || ro.id === SHOP_RO_ID) return false;
+  if(typeof permOk === "function" && !permOk("ro.status")) return false;
+  on = on == null ? !qcNeeded(ro) : !!on; if(on === qcNeeded(ro)) return true;
+  pushUndo(on ? "truck checks on" : "no truck checks");
+  ro.noChecks = !on;
+  try{ audit("road", roLabel(ro) + (on ? ": truck checks needed again" : ": no truck checks needed"), ro); }catch(e){}
+  try{ if(UI.tgPop && UI.tgPop.type === "checks" && UI.tgPop.ro === ro.id) UI.tgPop = null; }catch(e){}
+  scheduleSave(true);
+  return true;
+}
 /* the work is done: every operation complete, the RO at Complete – Road test or later (what roIsDone used to say) */
 function roWorkDone(ro){ var s = roStatus(ro); s = typeof s === "string" ? s : s.status; return s === "Complete – Road test" || s === "Complete – Released" || s === "Declined"; }
 /* turn the road test on or off for one RO */
@@ -19,9 +33,9 @@ function rtToggle(ro, on){
   if(typeof permOk === "function" && !permOk("ro.status")) return false;
   on = on == null ? !rtNeeded(ro) : !!on; if(on === rtNeeded(ro)) return true;
   pushUndo(on ? "road test on" : "no road test");
-  if(on) delete ro.noRoadTest; else { ro.noRoadTest = true; if(ro.fmRt) delete ro.fmRt; }
-  try{ audit("road", roLabel(ro) + (on ? ": road test needed again" : ": no road test needed — no truck checks either"), ro); }catch(e){}
-  try{ if(UI.tgPop && /^(road|checks)$/.test(UI.tgPop.type) && UI.tgPop.ro === ro.id) UI.tgPop = null; }catch(e){}
+  if(on) delete ro.noRoadTest; else { if(ro.noChecks === undefined) ro.noChecks = false; ro.noRoadTest = true; if(ro.fmRt) delete ro.fmRt; }   /* 17.3: the checks stay as they were */
+  try{ audit("road", roLabel(ro) + (on ? ": road test needed again" : ": no road test needed"), ro); }catch(e){}
+  try{ if(UI.tgPop && UI.tgPop.type === "road" && UI.tgPop.ro === ro.id) UI.tgPop = null; }catch(e){}
   scheduleSave(true);
   return true;
 }
@@ -44,12 +58,12 @@ function roStageTxt(ro){ var I = roStageInfo(ro); return I ? I.txt : ""; }
 /* nobody holds it yet: the tech desk with no tech named */
 function rtNoTech(ro){ try{ var h = rtHolder(ro); return !h.q && h.to === "tech" && !(h.who || ro.assignedTech); }catch(e){ return false; } }
 /* the toggle: a switch where you can change it, the words where you can't */
-function rtToggleHtml(ro, attrs){
+function rtToggleHtml(ro, attrs, qc){
   if(!ro || ro.shop || ro.id === SHOP_RO_ID || ro.dateClosed) return "";
-  var on = rtNeeded(ro), may = typeof can !== "function" || can("ro.status");
-  var txt = on ? "Road test before release" : "No road test — no truck checks";
+  var on = qc ? qcNeeded(ro) : rtNeeded(ro), may = typeof can !== "function" || can("ro.status");
+  var txt = qc ? "Truck checks before release" : "Road test before release";   /* 17.3: two switches, the label stays put */
   if(!may) return '<div class="rtt ro' + (on ? " on" : "") + '"><span class="rtt-l">' + txt + "</span></div>";
-  return '<div class="rtt' + (on ? " on" : "") + '"><span class="rtt-l">' + txt + '</span><button type="button" class="rtt-sw" role="switch" aria-checked="' + (on ? "true" : "false") + '" aria-label="Needs a road test" title="' + (on ? "Turn the road test off — no road test, no truck checks" : "Turn the road test on") + '" ' + (attrs || "") + "><i></i></button></div>";
+  return '<div class="rtt' + (on ? " on" : "") + '"><span class="rtt-l">' + txt + '</span><button type="button" class="rtt-sw" role="switch" aria-checked="' + (on ? "true" : "false") + '" aria-label="' + (qc ? "Needs truck checks" : "Needs a road test") + '" title="' + (qc ? (on ? "Turn the truck checks off" : "Turn the truck checks on") : (on ? "Turn the road test off" : "Turn the road test on")) + '" ' + (attrs || "") + "><i></i></button></div>";
 }
 /* the sent-to-you notes for one person (the Inbox page is gone — 12.2 — so they show on that person's own page) */
 function sentToMe(name){

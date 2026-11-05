@@ -8,7 +8,7 @@
 var ROP_BYW = ['Customer is waiting', 'Checked on paper', 'Not needed for this job'];
 function ropBypassRel(ro) { var s = ''; try { s = roStatus(ro).status || ''; } catch (e) {} return s === 'Complete – Released' || !!ro.dateClosed; }
 function ropBypassOk() {
-  try { if (!RO || RO.shop || ropBypassRel(RO) || !(trxBtnsOk(RO) || (!rtNeeded(RO) && !RO.dateClosed && tyCat(RO) !== 'arr'))) return false;   /* 17.3: with no road test, it's the way to release */ return typeof can !== 'function' || can('ro.release'); } catch (e) { return false; }
+  try { if (!RO || RO.shop || ropBypassRel(RO) || !(trxBtnsOk(RO) || (!rtNeeded(RO) && !qcNeeded(RO) && !RO.dateClosed && tyCat(RO) !== 'arr'))) return false;   /* 17.3: with no road test, it's the way to release */ return typeof can !== 'function' || can('ro.release'); } catch (e) { return false; }
 }
 /* what Release without checks skips: the release checks that aren't done, and the hand-ticked ones (keys, clean) */
 function ropBypassOpen(ro) {
@@ -18,7 +18,7 @@ function ropBypassOpen(ro) {
   return L;
 }
 function ropBypassBtn() {
-  var noRt = typeof rtNeeded === 'function' && !rtNeeded(RO);   /* 17.3: no road test — no truck checks to skip, just Release */
+  var noRt = typeof rtNeeded === 'function' && !rtNeeded(RO) && !qcNeeded(RO);   /* 17.3: no road test — no truck checks to skip, just Release */
   return el('button', { class: 'px-btn px-btn--sm rop-byb' + (noRt ? ' px-btn--primary' : ''), type: 'button', title: noRt ? 'Release the truck — no road test or truck checks on this RO; asks why if anything is still open' : 'Complete and release the truck without the truck checks — asks why', html: pxI('release', 14) + (noRt ? 'Release' : 'Release without checks'), onClick: function (e) { e.stopPropagation(); ropBypassAsk(); } });
 }
 function ropBypassAsk() {
@@ -36,7 +36,7 @@ function ropBypassAsk() {
   });
   txt.addEventListener('input', function () { pick.other = txt.value; });
   txt.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Enter') { e.preventDefault(); var b = PXM && PXM.submit; if (b) b.click(); } });
-  var noRt = typeof rtNeeded === 'function' && !rtNeeded(ro);
+  var noRt = typeof rtNeeded === 'function' && !rtNeeded(ro) && !qcNeeded(ro);
   if (noRt && !open.length) { chips.hidden = true; }
   pxModal({ title: noRt ? (open.length ? 'Release anyway?' : 'Release the truck?') : 'Release without checks', sub: (typeof ropNo === 'function' ? ropNo() + ' · ' : '') + (noRt ? 'no road test or truck checks on this RO — ' : '') + 'completes the RO and releases the truck', size: 'sm', submit: noRt ? (open.length ? 'Release anyway' : 'Release') : 'Release without checks', hintWord: 'to release',
     body: noRt && !open.length ? [skip] : [skip, el('div', { class: 'rop-bywl', text: 'Why?' }), chips, txt],

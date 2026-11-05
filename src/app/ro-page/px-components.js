@@ -129,7 +129,7 @@ function pxStatusMenu(anchor) {
   var items = [], sub = null;
   function pick(name, s) {
     pxClosePop();
-    if (name === 'Complete – Released' && typeof rtNeeded === 'function' && !rtNeeded(RO) && typeof ropBypassAsk === 'function' && ropBypassOk()) { ropBypassAsk(); return; }   /* 17.3: no road test — the release question, not the checks */
+    if (name === 'Complete – Released' && typeof rtNeeded === 'function' && !rtNeeded(RO) && !qcNeeded(RO) && typeof ropBypassAsk === 'function' && ropBypassOk()) { ropBypassAsk(); return; }   /* 17.3: no road test — the release question, not the checks */
     if (setRoStatus(RO.id, name, s || null) === false) { setTimeout(tecRender, 0); return; }
     save(true); render(); tecRender();
     toast('Status set to ' + roStShown(RO) + (s ? ' · ' + s.charAt(0) + s.slice(1).toLowerCase() : ''), { label: 'UNDO', run: function () { restoreSnapshot(); } });

@@ -56,7 +56,7 @@
     trsts: t => { const ro = getRO(t.dataset.ro), v = t.dataset.v; U.pop = null; if(!ro || roStatus(ro).status === v){ PG.keepScroll(render); return; }
       if(setRoStatus(ro.id, v, null) !== false){ scheduleSave(true); pushToast(`${tgNum(ro)} set to ${roStShown(ro)}.`, true); } PG.keepScroll(render); },
     /* Parsec 14: the road test toggle; what was sent to you */
-    trtt: t => { const ro = getRO(t.dataset.ro); if(!ro) return; const on = !rtNeeded(ro); if(rtToggle(ro, on)) pushToast(on ? `${tgNum(ro)} needs a road test again — Road test and Truck checks are back.` : `No road test for ${tgNum(ro)} — no truck checks either. When the work is done it’s ready to release.`, true); PG.keepScroll(render); },
+    trtt: t => { const ro = getRO(t.dataset.ro); if(!ro) return; const on = !rtNeeded(ro); if(rtToggle(ro, on)) pushToast(on ? `${tgNum(ro)} needs a road test again.` : `No road test for ${tgNum(ro)}.`, true); PG.keepScroll(render); },
     tsent: t => { const k = t.dataset.k, id = t.dataset.ro; sentSeen(k); if(id && tcRos().some(x => x.id === id)){ if(TU.ro !== id) tcSelClear(); TU.ro = id; TU.kb = false; U.pop = null; tcViewSet('list'); PG.keepScroll(render); const p = document.querySelector('[data-pg="tech"] .mq-pane'); if(p) p.scrollTop = 0; } else if(id && getRO(id)) PG.openRo(id); else PG.keepScroll(render); },
     tasset: t => { const ro = getRO(t.dataset.ro); if(ro && typeof asOpenFor === 'function') asOpenFor(ro); },
     tsentx: t => { if(sentDone(t.dataset.k)) pushToast('Done — off your Sent to you list.', true); PG.keepScroll(render); },

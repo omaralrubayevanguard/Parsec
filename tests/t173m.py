@@ -20,7 +20,7 @@ async def main():
         m = await pg.evaluate(f"(() => {{ const r = {R}, mc = r.querySelector('.rop-mc'); return {{ box: !!mc, tabs: mc ? mc.querySelectorAll('[role=tab]').length : -1, head: mc ? (mc.querySelector('.rop-mc__h h3') || {{}}).textContent : '', cus: !!r.querySelector('.rop-k-customer'), chat: !!(mc && mc.querySelector('.rop-chat')), grp: !!(r.querySelector('.rod-gh[data-rod-g=customer]') || document.querySelector('.rod-gh[data-rod-g=customer]')) }}; }})()")
         ok(m == {"box": True, "tabs": 0, "head": "Messages", "cus": False, "chat": True, "grp": True}, "the box above the operations is Messages only; the Customer group stays in the right column (%s)" % m)
         f = await pg.evaluate(f"(() => {{ const r = {R}, L = [...r.querySelectorAll('.rop-foot .rtt-l')].map(e => e.textContent); return L; }})()")
-        ok(len(f) == 2 and f[0].startswith("Road test") and f[1] == "Warranty RO", "Warranty RO sits under Road test before release (%s)" % f)
+        ok(len(f) == 3 and f[0].startswith("Road test") and f[1].startswith("Truck checks") and f[2] == "Warranty RO", "Warranty RO sits under the Road test and Truck checks switches (%s)" % f)
         await pg.evaluate(f"(() => {{ const r = {R}; r.querySelector('.rop-wrt .rtt-sw').click(); }})()"); await pg.wait_for_timeout(500)
         w = await pg.evaluate(f"id => [__tg.S().ros.find(r => r.id === id).warranty, ({R}.querySelector('.rop-wrt .rtt-sw') || {{}}).getAttribute('aria-checked')]", rid)
         ok(w == [True, "true"], "the switch makes it a warranty RO (%s)" % w)
