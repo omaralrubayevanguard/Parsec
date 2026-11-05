@@ -1,0 +1,244 @@
+<title>Parsec Checks and Release</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,500&display=swap">
+<style>
+/* Layout: Parsec's own Ivory / Graphite look — the RO page's right column beside the window it opens, one flow: Road test → Truck checks → Release */
+:root{
+  --canvas:#F2F0EA;--panel:#FBFAF7;--raised:#FFFFFF;--fill:#F0EDE6;--hair:#E6E2D8;--border:#D6D0C3;
+  --ink:#1D1C1A;--ink2:#57534B;--ink3:#67625A;--ink4:#A8A398;
+  --acc:#86643A;--acct:#F4EDE1;--accl:#D9C5A3;--primary:#1D1C1A;--onprimary:#FBFAF7;
+  --good:#2C7350;--goodt:#E7F1EA;--warn:#8C5B0B;--warnt:#F8EEDC;--scrim:rgba(29,28,26,.28);
+  --shadow:0 0 0 1px rgba(29,28,26,.06),0 1px 3px rgba(29,28,26,.04);
+  --raise:0 0 0 1px rgba(29,28,26,.07),0 2px 4px rgba(29,28,26,.04),0 12px 32px -8px rgba(29,28,26,.18);
+  --sans:"Geist","Inter","Segoe UI",system-ui,sans-serif;--serif:"Newsreader","Iowan Old Style",Georgia,serif;--mono:"Geist Mono","Cascadia Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --canvas:#0E0E0D;--panel:#151514;--raised:#1D1D1B;--fill:#222220;--hair:#262624;--border:#363532;
+  --ink:#EDEBE6;--ink2:#B0ACA3;--ink3:#9A968D;--ink4:#5E5B55;
+  --acc:#D1B184;--acct:#2A241B;--accl:#6B5A40;--primary:#EDEBE6;--onprimary:#151514;
+  --good:#63C291;--goodt:#16261E;--warn:#E0A64A;--warnt:#2A2114;--scrim:rgba(0,0,0,.6);
+  --shadow:0 0 0 1px rgba(255,255,255,.06);--raise:0 0 0 1px rgba(255,255,255,.07),0 16px 40px -8px rgba(0,0,0,.7);color-scheme:dark}}
+:root[data-theme="dark"]{
+  --canvas:#0E0E0D;--panel:#151514;--raised:#1D1D1B;--fill:#222220;--hair:#262624;--border:#363532;
+  --ink:#EDEBE6;--ink2:#B0ACA3;--ink3:#9A968D;--ink4:#5E5B55;
+  --acc:#D1B184;--acct:#2A241B;--accl:#6B5A40;--primary:#EDEBE6;--onprimary:#151514;
+  --good:#63C291;--goodt:#16261E;--warn:#E0A64A;--warnt:#2A2114;--scrim:rgba(0,0,0,.6);
+  --shadow:0 0 0 1px rgba(255,255,255,.06);--raise:0 0 0 1px rgba(255,255,255,.07),0 16px 40px -8px rgba(0,0,0,.7);color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--canvas);color:var(--ink);font:400 14px/1.45 var(--sans);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding-block:28px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:22px}
+h1{margin:0;font:500 28px/1.15 var(--serif);letter-spacing:-.01em;text-wrap:balance}
+.lede{margin:6px 0 0;color:var(--ink3);max-width:62ch}
+.changes{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.chg{padding:12px 14px;border-radius:12px;background:var(--panel);box-shadow:inset 0 0 0 1px var(--hair);font-size:13px;color:var(--ink2)}
+.chg b{display:block;margin-bottom:3px;color:var(--ink);font-weight:600}
+.chg s{color:var(--ink4)}
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.bar .lbl{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);margin-right:4px}
+.chip{appearance:none;border:0;margin:0;padding:0;background:none;text-align:left;cursor:pointer;height:30px;padding:0 12px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--border);font-size:12.5px;line-height:30px;color:var(--ink2);background:var(--raised)}
+.chip:hover{color:var(--ink)}.chip[aria-pressed="true"]{background:var(--primary);color:var(--onprimary);box-shadow:none}
+.chip:focus-visible,.btn:focus-visible,.ck:focus-visible,.rc:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.stage{display:grid;grid-template-columns:300px minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:820px){.stage{grid-template-columns:minmax(0,1fr)}}
+/* the RO page's right column */
+.rail{padding:16px;border-radius:14px;background:var(--panel);box-shadow:inset 0 0 0 1px var(--hair);display:flex;flex-direction:column;gap:14px}
+.ro-id{font:500 12px/1 var(--mono);color:var(--ink3)}
+.ro-nm{font:500 22px/1.15 var(--serif);margin-top:4px}
+.ro-tk{font-size:12.5px;color:var(--ink3);margin-top:2px}
+.sh{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)}
+.steps{display:flex;flex-direction:column;gap:6px}
+.step{appearance:none;border:0;margin:0;padding:0;background:none;text-align:left;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:10px;align-items:center;min-height:46px;padding:7px 10px;border-radius:10px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--border);transition:background .25s,box-shadow .25s,transform .12s}
+.step:active{transform:scale(.98)}
+.step .dot{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font:600 11px/1 var(--sans);background:var(--fill);color:var(--ink3);transition:background .3s,color .3s}
+.step b{display:block;font-weight:500;font-size:13.5px}
+.step small{display:block;font-size:11.5px;color:var(--ink3)}
+.step em{font-style:normal;font-size:11px;color:var(--ink4)}
+.step.done{background:var(--panel);box-shadow:inset 0 0 0 1px var(--hair)}
+.step.done .dot{background:var(--good);color:#fff}
+.step.next{box-shadow:inset 0 0 0 1.5px var(--acc)}
+.step.next .dot{background:var(--acct);color:var(--acc)}
+.step.go{background:var(--primary);color:var(--onprimary);box-shadow:none}
+.step.go small,.step.go em{color:var(--onprimary);opacity:.75}
+.step.go .dot{background:var(--onprimary);color:var(--primary)}
+.step.off{opacity:.55}
+.step:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.tg{display:flex;align-items:center;justify-content:space-between;font-size:12.5px;color:var(--ink2);padding:2px 2px}
+.sw{width:30px;height:18px;border-radius:999px;background:var(--good);position:relative}.sw::after{content:"";position:absolute;top:2px;left:14px;width:14px;height:14px;border-radius:50%;background:#fff}
+.sw.offs{background:var(--border)}.sw.offs::after{left:2px}
+.relbox{padding:10px 12px;border-radius:10px;background:var(--goodt);color:var(--good);font-size:12.5px;font-weight:500;display:none}
+.relbox.on{display:block;animation:pop .4s cubic-bezier(.34,1.56,.64,1)}
+/* the window */
+.win-area{position:relative;min-height:560px;border-radius:14px;background:var(--fill);box-shadow:inset 0 0 0 1px var(--hair);display:grid;place-items:center;padding:20px 14px;overflow:hidden}
+.hint{color:var(--ink3);font-size:13px;text-align:center;max-width:34ch}
+.win{width:min(440px,100%);border-radius:14px;background:var(--raised);box-shadow:var(--raise);display:flex;flex-direction:column;animation:winin .26s cubic-bezier(.23,1,.32,1)}
+@keyframes winin{from{opacity:0;transform:translateY(6px) scale(.98)}}
+@keyframes pop{from{opacity:0;transform:scale(.94)}}
+.wh{display:flex;align-items:baseline;gap:8px;padding:14px 16px 4px}
+.wh b{font:500 18px/1.2 var(--serif)}
+.wh span{font-size:12px;color:var(--ink3)}
+.wh .x{margin-left:auto;appearance:none;border:0;margin:0;padding:0;background:none;text-align:left;cursor:pointer;color:var(--ink3);font-size:16px;padding:0 4px}
+.wsum{padding:0 16px 10px;display:flex;align-items:baseline;gap:8px;font-size:12.5px;color:var(--ink3)}
+.wsum strong{font:600 20px/1 var(--sans);color:var(--warn);font-variant-numeric:tabular-nums}
+.wsum.ok strong{color:var(--good)}
+.prog{margin:0 16px 12px;height:5px;border-radius:3px;background:var(--fill);overflow:hidden}
+.prog i{display:block;height:100%;background:var(--acc);transition:width .4s cubic-bezier(.23,1,.32,1)}
+.prog.ok i{background:var(--good)}
+.wb{padding:0 16px;display:flex;flex-direction:column;gap:12px}
+.grp{display:flex;flex-direction:column}
+.grp .sh{display:flex;justify-content:space-between;margin-bottom:4px}
+.grp .sh em{font-style:normal;text-transform:none;letter-spacing:0;font-weight:400;color:var(--ink4)}
+.row{display:grid;grid-template-columns:20px minmax(0,1fr) auto;gap:9px;align-items:center;min-height:32px;padding:4px 0;box-shadow:inset 0 -1px 0 var(--hair);font-size:13px}
+.row:last-child{box-shadow:none}
+.row .st{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700}
+.row .st.y{background:var(--goodt);color:var(--good)}
+.row .st.n{background:var(--warnt);color:var(--warn)}
+.row small{font-size:11.5px;color:var(--ink3);text-align:right}
+.row .fix{appearance:none;border:0;margin:0;padding:0;background:none;text-align:left;cursor:pointer;font-size:11.5px;font-weight:600;color:var(--acc)}
+.row.merged b{font-weight:500}
+.row .tag{display:inline-block;margin-left:6px;padding:0 6px;border-radius:5px;background:var(--acct);color:var(--acc);font-size:10.5px;line-height:17px;vertical-align:1px}
+.ck{appearance:none;border:0;margin:0;padding:0;background:none;text-align:left;cursor:pointer;display:grid;grid-template-columns:20px minmax(0,1fr);gap:9px;align-items:center;min-height:32px;padding:3px 0;font-size:13px;box-shadow:inset 0 -1px 0 var(--hair)}
+.ck:last-child{box-shadow:none}
+.ck i{width:18px;height:18px;border-radius:5px;box-shadow:inset 0 0 0 1.5px var(--border);display:grid;place-items:center;transition:background .2s}
+.ck[aria-checked="true"] i{background:var(--ink);box-shadow:none}
+.ck[aria-checked="true"] i::after{content:"✓";color:var(--onprimary);font-size:11px;font-weight:700;animation:pop .3s cubic-bezier(.34,1.56,.64,1)}
+.ck[aria-checked="true"] span{color:var(--ink3)}
+.info{font-size:12px;color:var(--ink3);padding:8px 10px;border-radius:8px;background:var(--fill)}
+.wf{display:flex;align-items:center;gap:10px;padding:14px 16px;margin-top:6px;box-shadow:inset 0 1px 0 var(--hair)}
+.wf .note{flex:1;font-size:12px;color:var(--ink3)}
+.btn{appearance:none;border:0;margin:0;padding:0;background:none;text-align:left;box-sizing:border-box;cursor:pointer;height:34px;padding:0 14px;border-radius:9px;font-size:13px;font-weight:500;line-height:34px;box-shadow:inset 0 0 0 1px var(--border);background:var(--raised);white-space:nowrap;transition:background .2s,opacity .2s,transform .12s}
+.btn:active{transform:scale(.97)}
+.btn.pri{background:var(--primary);color:var(--onprimary);box-shadow:none}
+.btn.good{background:var(--good);color:#fff;box-shadow:none}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+.done-line{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;background:var(--goodt);font-size:12.5px;color:var(--ink2)}
+.done-line .st{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:var(--good);color:#fff;font-size:11px;font-weight:700;flex:none}
+.done-line b{color:var(--ink);font-weight:500}
+.warnbox{padding:10px 12px;border-radius:10px;background:var(--warnt);font-size:12.5px;color:var(--ink2);display:flex;flex-direction:column;gap:4px}
+.warnbox b{color:var(--warn);font-weight:600}
+.warnbox .fix{appearance:none;border:0;margin:0;padding:0;background:none;text-align:left;cursor:pointer;align-self:flex-start;font-weight:600;color:var(--acc);font-size:12px}
+.reasons{display:flex;flex-wrap:wrap;gap:6px}
+.rc{appearance:none;border:0;margin:0;padding:0;background:none;text-align:left;cursor:pointer;height:28px;padding:0 11px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--border);font-size:12px;line-height:28px;color:var(--ink2)}
+.rc[aria-pressed="true"]{background:var(--primary);color:var(--onprimary);box-shadow:none}
+.phone{font-family:var(--mono);font-size:12px;color:var(--ink2);user-select:all}
+.cap{font-size:12px;color:var(--ink3);text-align:center}
+.flash{animation:flash .8s cubic-bezier(.23,1,.32,1)}
+@keyframes flash{30%{box-shadow:0 0 0 4px color-mix(in srgb,var(--acc) 30%,transparent),inset 0 0 0 1.5px var(--acc)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Checks, then release</h1>
+    <p class="lede">One flow on the RO page: road test, then truck checks, then release. Truck checks only gets the truck ready. Release is the only thing that releases it.</p>
+  </header>
+
+  <section class="changes" aria-label="What changes">
+    <div class="chg"><b>Mark checked, not Release</b>Truck checks ends with <b style="display:inline">Mark checked</b>. It saves who checked and when, then hands off to Release.</div>
+    <div class="chg"><b>One notes check</b><s>Notes written</s> and <s>Story on every operation</s> become “Story and notes on every operation”.</div>
+    <div class="chg"><b>One Release button</b><s>Release without checks</s> is gone. Release asks why when checks are still open.</div>
+    <div class="chg"><b>Release lists only what’s left</b>Invoice closed out, customer told, keys out. The checks show as one done line, not again.</div>
+  </section>
+
+  <div class="bar" role="group" aria-label="Try it">
+    <span class="lbl">Try it</span>
+    <button class="chip" id="sc-flow" aria-pressed="true">Checks first, then release</button>
+    <button class="chip" id="sc-skip" aria-pressed="false">Release before the checks</button>
+    <button class="chip" id="sc-reset">↻ Start over</button>
+  </div>
+
+  <div class="stage">
+    <aside class="rail" aria-label="RO page, right column">
+      <div><div class="ro-id">RO-35533 · 14 days open</div><div class="ro-nm">Prairie Line Trucking</div><div class="ro-tk">2022 Volvo VNL 300 · Unit T-261 · Key 29</div></div>
+      <div class="sh">Shop</div>
+      <div class="steps" id="steps"></div>
+      <div class="relbox" id="relbox">Released 2:20 pm · Sofia — the RO is complete</div>
+      <div class="tg"><span>Road test before release</span><i class="sw"></i></div>
+      <div class="tg"><span>Warranty RO</span><i class="sw offs"></i></div>
+    </aside>
+    <div class="win-area" id="area"></div>
+  </div>
+  <p class="cap">Sample RO and names. Click the steps and the buttons; nothing is saved.</p>
+</div>
+
+<script>
+var WALK = ['Tools out of the truck', 'Covers and caps on', 'No leaks under the truck', 'Cab clean, no grease on the seat or wheel', 'Keys in the key box', 'Paperwork in the cab'];
+var S;
+function reset(){ S = { open: null, ticks: [true, true, false, false, false, false], story: false, files: true, checked: false, released: false, reason: '', inv: false, told: false, keys: false }; }
+reset();
+var $ = function(s){ return document.querySelector(s); };
+function esc(t){ return String(t).replace(/[&<>"]/g, function(c){ return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+/* Parsec's own checks — the notes check is one row now */
+function sys(){ return [
+  { k: 'ops', t: 'All operations closed', ok: true, d: '2 of 2' },
+  { k: 'story', t: 'Story and notes on every operation', ok: S.story, d: S.story ? 'every operation and punch' : 'Op 2 has no cause and correction', fix: 'Write it', merged: true },
+  { k: 'parts', t: 'Parts installed', ok: true, d: '1 of 1' },
+  { k: 'road', t: 'Road test passed', ok: true, d: '1:40 pm · Luis' },
+  { k: 'files', t: 'Photos and paperwork on the RO', ok: S.files, d: '3 files' }]; }
+function left(){ return sys().filter(function(x){ return !x.ok; }).length + S.ticks.filter(function(x){ return !x; }).length; }
+function total(){ return sys().length + WALK.length; }
+function steps(){
+  var n = left(), h = '';
+  h += '<button class="step done" data-go="road"><span class="dot">✓</span><span><b>Road test</b><small>Passed 1:40 pm · Luis</small></span><em></em></button>';
+  var cs = S.checked ? 'done' : (S.released ? 'off' : 'next');
+  h += '<button class="step ' + cs + '" data-go="checks"' + (S.released ? ' disabled' : '') + '><span class="dot">' + (S.checked ? '✓' : '2') + '</span><span><b>Truck checks</b><small>' + (S.checked ? 'Checked 2:14 pm · Sofia' : S.released ? 'Skipped · ' + esc(S.reason) : n + ' of ' + total() + ' to go') + '</small></span><em>' + (S.checked ? '' : 'gets it ready') + '</em></button>';
+  var rs = S.released ? 'done' : S.checked ? 'go' : '';
+  h += '<button class="step ' + rs + '" data-go="release"' + (S.released ? ' disabled' : '') + '><span class="dot">' + (S.released ? '✓' : '3') + '</span><span><b>Release</b><small>' + (S.released ? '2:20 pm · Sofia' : S.checked ? 'Ready — checks done' : 'Asks why if checks are open') + '</small></span><em>' + (S.released ? '' : 'releases it') + '</em></button>';
+  $('#steps').innerHTML = h;
+  $('#relbox').classList.toggle('on', S.released);
+}
+function checksWin(){
+  var L = sys(), n = left(), T = total(), ok = n === 0;
+  var h = '<div class="win" role="dialog" aria-label="Truck checks"><div class="wh"><b>Truck checks</b><span>RO-35533 · Prairie Line Trucking</span><button class="x" data-x aria-label="Close">×</button></div>'
+    + '<div class="wsum' + (ok ? ' ok' : '') + '"><strong>' + (T - n) + ' of ' + T + '</strong>' + (ok ? 'all checked — ready for Release' : 'getting it ready for release') + '</div>'
+    + '<div class="prog' + (ok ? ' ok' : '') + '"><i style="width:' + ((T - n) / T * 100) + '%"></i></div><div class="wb">'
+    + '<div class="grp"><div class="sh">Parsec checks <em>it checks these itself</em></div>' + L.map(function(x){
+      return '<div class="row' + (x.merged ? ' merged' : '') + '"><span class="st ' + (x.ok ? 'y' : 'n') + '">' + (x.ok ? '✓' : '!') + '</span><span><b>' + esc(x.t) + '</b>' + (x.merged ? '<span class="tag">was 2 checks</span>' : '') + '</span>'
+        + (x.ok ? '<small>' + esc(x.d) + '</small>' : '<span><small>' + esc(x.d) + '</small> <button class="fix" data-fix="' + x.k + '">' + esc(x.fix) + ' ›</button></span>') + '</div>'; }).join('') + '</div>'
+    + '<div class="grp"><div class="sh">Walk-around <em>you tick these</em></div>' + WALK.map(function(w, i){
+      return '<button class="ck" role="checkbox" data-tick="' + i + '" aria-checked="' + S.ticks[i] + '"><i></i><span>' + esc(w) + '</span></button>'; }).join('') + '</div>'
+    + '<div class="info">Hours: 1.5 of 2.7 quoted — for the advisor, not a check.</div></div>'
+    + '<div class="wf"><span class="note">' + (ok ? 'Marks the truck checked. It doesn’t release it.' : n + ' to go. You can still release from step 3 — it asks why.') + '</span>'
+    + '<button class="btn pri" data-mark' + (ok ? '' : ' disabled') + '>Mark checked</button></div></div>';
+  return h;
+}
+function releaseWin(){
+  var n = left(), early = !S.checked;
+  var need = [['inv', 'Invoice closed out in ASIST'], ['told', 'Customer told it’s ready'], ['keys', 'Keys at the counter']];
+  var all = need.every(function(x){ return S[x[0]]; }), can = all && (!early || S.reason);
+  var h = '<div class="win" role="dialog" aria-label="Release"><div class="wh"><b>Release the truck?</b><span>RO-35533</span><button class="x" data-x aria-label="Close">×</button></div><div class="wb" style="padding-top:8px">'
+    + '<div class="done-line"><span class="st">✓</span><span><b>Road test passed</b> 1:40 pm · Luis</span></div>'
+    + (early ? '<div class="warnbox"><b>Truck checks aren’t done · ' + n + ' open</b><span>Story and notes on Op 2 · walk-around ' + S.ticks.filter(Boolean).length + ' of 6</span><button class="fix" data-go="checks">Finish the checks first ›</button></div>'
+      + '<div class="grp"><div class="sh">Why release now?</div><div class="reasons">' + ['Customer is waiting', 'Checked on paper', 'Not needed for this job', 'Other…'].map(function(r){ return '<button class="rc" data-reason="' + esc(r) + '" aria-pressed="' + (S.reason === r) + '">' + esc(r) + '</button>'; }).join('') + '</div></div>'
+      : '<div class="done-line"><span class="st">✓</span><span><b>Truck checks done</b> 2:14 pm · Sofia · ' + total() + ' of ' + total() + '</span></div>')
+    + '<div class="grp"><div class="sh">Before it goes <em>release only</em></div>' + need.map(function(x){
+      return '<button class="ck" role="checkbox" data-need="' + x[0] + '" aria-checked="' + !!S[x[0]] + '"><i></i><span>' + esc(x[1]) + (x[0] === 'told' ? ' · <span class="phone">(336) 555-0142</span>' : '') + '</span></button>'; }).join('') + '</div></div>'
+    + '<div class="wf"><span class="note">Completes the RO and releases the truck.</span><button class="btn" data-x>Cancel</button><button class="btn ' + (early ? 'pri' : 'good') + '" data-rel' + (can ? '' : ' disabled') + '>' + (early ? 'Release anyway' : 'Release') + '</button></div></div>';
+  return h;
+}
+function draw(){
+  steps();
+  var a = $('#area');
+  if(S.open === 'checks') a.innerHTML = checksWin();
+  else if(S.open === 'release') a.innerHTML = releaseWin();
+  else a.innerHTML = '<p class="hint">' + (S.released ? 'Released. The RO is complete and the truck can go.' : S.checked ? 'Checked. Now Release is the dark button — click it.' : 'Click <b>Truck checks</b> in the right column to start.') + '</p>';
+}
+function flashStep(k){ var b = document.querySelector('[data-go="' + k + '"].step'); if(b){ b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash'); } }
+document.addEventListener('click', function(e){
+  var t = e.target.closest('button'); if(!t) return;
+  if(t.id === 'sc-reset'){ reset(); draw(); return; }
+  if(t.id === 'sc-flow'){ reset(); setSc(t); draw(); flashStep('checks'); return; }
+  if(t.id === 'sc-skip'){ reset(); setSc(t); S.open = 'release'; draw(); return; }
+  if(t.hasAttribute('data-go')){ var g = t.getAttribute('data-go'); if(g === 'road') return; if(S.released) return; S.open = g; draw(); return; }
+  if(t.hasAttribute('data-x')){ S.open = null; draw(); return; }
+  if(t.hasAttribute('data-tick')){ var i = +t.getAttribute('data-tick'); S.ticks[i] = !S.ticks[i]; draw(); return; }
+  if(t.hasAttribute('data-fix')){ var k = t.getAttribute('data-fix'); if(k === 'story') S.story = true; if(k === 'files') S.files = true; draw(); return; }
+  if(t.hasAttribute('data-mark')){ S.checked = true; S.open = null; draw(); flashStep('release'); return; }
+  if(t.hasAttribute('data-need')){ var n = t.getAttribute('data-need'); S[n] = !S[n]; draw(); return; }
+  if(t.hasAttribute('data-reason')){ S.reason = t.getAttribute('data-reason'); draw(); return; }
+  if(t.hasAttribute('data-rel')){ S.released = true; S.open = null; draw(); return; }
+});
+function setSc(b){ ['#sc-flow', '#sc-skip'].forEach(function(s){ $(s).setAttribute('aria-pressed', $(s) === b ? 'true' : 'false'); }); }
+draw();
+</script>
