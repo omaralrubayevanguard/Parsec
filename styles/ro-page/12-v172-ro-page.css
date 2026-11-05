@@ -124,3 +124,6 @@
 @media (prefers-reduced-motion: reduce) {
   .px-op.rop-op172, .rop-otabs .px-tab__n.is-pop, .px-panes.rop-in-r, .px-panes.rop-in-l, .rop-flash, .rop-stpop { animation: none !important; }
 }
+/* 17.3: the pick box sits inside the row, not past the card's edge — parts and punch entries, at every width (the phone already did) */
+.px-li.rop-prow, .px-li.rop-pth, .px-li.rop-pkr { padding-left: 30px; }
+.rop-prow > .rop-cb, .rop-pth > .rop-cb, .rop-pkr > .rop-cb { left: 6px; }

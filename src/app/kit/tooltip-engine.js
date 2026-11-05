@@ -10,7 +10,7 @@ var PTIP = (function(){
   var EP = Element.prototype, GA = EP.getAttribute, SA = EP.setAttribute, HA = EP.hasAttribute, RA = EP.removeAttribute;
   var TD = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "title");
   var S = { t: null, kind: "tip", via: "mouse", shown: false, timer: 0, lastHide: 0, x: -1, y: -1, pe: null, raf: 0, sup: null, supXY: null,
-            pin: false, lp: 0, lpT: 0, lpXY: null, dirty: false, aria: null, el: null };
+            pin: false, anc: null, lp: 0, lpT: 0, lpXY: null, dirty: false, aria: null, el: null };
   /* ---- the title stash, and the reads and writes that go through it ---- */
   EP.getAttribute = function(n){ if(n === "title" && HA.call(this, "data-ptt")) return GA.call(this, "data-ptt"); return GA.apply(this, arguments); };
   EP.hasAttribute = function(n){ if(n === "title" && HA.call(this, "data-ptt")) return true; return HA.apply(this, arguments); };
@@ -113,11 +113,14 @@ var PTIP = (function(){
   function leave(){
     if(S.timer){ clearTimeout(S.timer); S.timer = 0; }
     if(S.t){ unstash(S.t); if(S.aria === S.t){ RA.call(S.t, "aria-describedby"); S.aria = null; } }
+    if(S.anc){ S.anc.forEach(unstash); S.anc = null; }
     if(S.shown){ S.lastHide = Date.now(); hideEl(); }
     S.t = null; S.shown = false; S.pin = false;
   }
   function enter(t, kind, via){
     S.t = t; S.kind = kind; S.via = via; stash(t);
+    /* 17.3: the titles above it too — otherwise the browser shows the next title up (a row's) beside this tip */
+    S.anc = []; for(var a = up(t), n = 0; a && n < 14; a = up(a), n++){ if(a.nodeType === 1 && HA.call(a, "title") && !HA.call(a, "data-ptt")){ stash(a); S.anc.push(a); } }
     if(ptipMode() === "off") return;
     var d = via === "touch" || via === "info" ? 0 : (Date.now() - S.lastHide < 300 ? 0 : 400);
     if(d) S.timer = setTimeout(show, d); else show();
