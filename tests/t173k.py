@@ -74,15 +74,13 @@ async def main():
         sr = await pg.evaluate(CARDS)
         ok("CBRs" in gh and "TSBs" in gh and "CBR-2290" in sr and "430-13" in sr, "one search finds a CBR and a TSB together, grouped by kind (%s %s)" % (gh, sr))
         await pg.fill("#lib-q", ""); await pg.wait_for_timeout(300)
-        # ---- the panel: pointing opens it, a click keeps it, ⤢ makes it a page
+        # ---- the panel: a click opens it, ⤢ makes it a page
         await pg.hover("[data-pg=library] .lib-card[data-id] .lib-cd-m"); await pg.wait_for_timeout(800)
         pk = await pg.evaluate("!!document.querySelector('.lib-view:not(.mx-out)')")
-        ok(pk, "pointing at a card opens its panel")
-        await pg.mouse.move(5, 450); await pg.wait_for_timeout(700)
-        ok(await pg.evaluate("!document.querySelector('.lib-view:not(.mx-out)')"), "moving away closes it again")
+        ok(not pk, "pointing at a card opens nothing — a click does (17.3)")
         await pg.click("[data-pg=library] .lib-card[data-id] .lib-cd-m"); await pg.wait_for_timeout(700)
         await pg.mouse.move(5, 450); await pg.wait_for_timeout(700)
-        ok(await pg.evaluate("!!document.querySelector('.lib-view:not(.mx-out)')"), "a click keeps it open")
+        ok(await pg.evaluate("!!document.querySelector('.lib-view:not(.mx-out)')"), "a click opens it, and it stays when the pointer leaves")
         await pg.click(".lib-view:not(.mx-out) [data-lv=full]"); await pg.wait_for_timeout(300)
         ok(await pg.evaluate("document.querySelector('.lib-view:not(.mx-out)').classList.contains('lib-view-full')"), "⤢ makes the panel a page of its own")
         await pg.evaluate("__tg.libClose()"); await pg.mouse.move(5, 450); await pg.wait_for_timeout(600)

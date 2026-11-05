@@ -174,7 +174,7 @@
 "pages/foreman/shift-handover.js \u00b7 (iife) \u00b7 on document click, on document change, on document input, on window keydown (capture)",
 "pages/inventory/_open.js \u00b7 var INVPG \u00b7 on document keydown",
 "pages/assets/_open.js \u00b7 var ASPG",
-"pages/library/_open.js \u00b7 var LIBPG \u00b7 on document mouseover, on document keydown, on document dragleave, on document drop",
+"pages/library/_open.js \u00b7 var LIBPG \u00b7 on document keydown, on document dragleave, on document drop",
 "access/admin-page/_open.js \u00b7 var ADMPG",
 "shell/nav-rail.js \u00b7 var PX_GROUPS",
 "shell/nav-rail.js \u00b7 var PX_NARROW",

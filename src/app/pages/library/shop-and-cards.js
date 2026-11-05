@@ -1,10 +1,9 @@
 /* Parsec · pages/library · shop-and-cards.js
    The Library page (17.3): For the shop (the documents that fit the open ROs), the bar by kind and what needs you, one search across every kind, the truck filter, To check, the document cards with older releases folded, and the panel opened by pointing at a row.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   forShop missing passTruck headBar truckChips card cards shopList searchAll viewCtx SHOP_KINDS checkN … (10 functions, 6 constants)
+   declares   forShop missing passTruck headBar truckChips card cards shopList searchAll viewCtx SHOP_KINDS checkN … (10 functions, 4 constants)
    state      ros
    uses       kit/ library/ ro/ state/
-   at load    on document mouseover
 */
 /* ============================== the Library page, 17.3 ==============================
    For the shop: every document (its newest release) that matches an open RO by its codes or its symptoms and doesn't
@@ -111,17 +110,6 @@
     });
     return n ? `<div class="lib-shop-h">Every kind · “${esc(U.q)}”</div>` + h : `<div class="lib-none">Nothing in the Library matches “${esc(U.q)}”.</div>`;
   }
-  /* the panel by pointing: a short rest on a card opens it; leaving the card and the panel closes it unless it was clicked */
-  let peekT = null, leaveT = null;
-  document.addEventListener('mouseover', e => {
-    const r = e.target.closest && e.target.closest('[data-pg="library"] .lib-card[data-id]');
-    if(e.target.closest && e.target.closest('.lib-view')){ clearTimeout(leaveT); return; }
-    if(!r){ clearTimeout(peekT); if(LIB_VIEW.peek){ clearTimeout(leaveT); leaveT = setTimeout(() => { if(LIB_VIEW.peek && !document.querySelector('.lib-view:hover')) libClose(); }, 350); } return; }
-    if(e.target.closest('.lib-ib, .lib-older')) return;
-    clearTimeout(leaveT); clearTimeout(peekT);
-    const id = r.getAttribute('data-id'); if(LIB_VIEW.id === id) return;
-    if(LIB_VIEW.id && !LIB_VIEW.peek) return;   /* one kept open by a click stays until closed */
-    peekT = setTimeout(() => { if(LIB_VIEW.id && !LIB_VIEW.peek) return; if(r.matches(':hover')) libOpen(id, null, Object.assign({ peek: true }, viewCtx())); }, 450);   /* a panel kept by a click stays */
-  });
+  /* 17.3: the panel opens on a click only (pointing at a card did, for a while) */
   /* the RO the page was opened for, so the steps can be ticked */
   function viewCtx(){ const C = roCtx(); return C && C.op ? { ro: C.ro, op: C.op } : {}; }

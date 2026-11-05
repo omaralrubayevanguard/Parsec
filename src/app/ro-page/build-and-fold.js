@@ -11,9 +11,8 @@ function ropBuild(page, stash, slotEl) {
   if (slotEl) stash.appendChild(slotEl);
   var ops = pxOps(stash); ropDecorOps(ops);
   var col = el('div', { class: 'px-ro__col rop-col' + (ropAny() ? ' rop-any' : '') }, []);
-  try { col.appendChild(ropMC()); } catch (e) { console.error(e); }   /* Parsec 17.2: Messages | Customer above the operations */
   col.appendChild(ops);
-  /* Parsec 15 put only Messages and Customer below Operations; 17.2 moved them into the box above */
+  try { col.appendChild(ropMC()); } catch (e) { console.error(e); }   /* 17.3: Messages below the operations (17.2 had them above) */
   var bar = ropSelBar(); if (bar) col.appendChild(bar);
   try { HOST.classList.toggle('rop-picking', !!bar); } catch (e) {}   /* the toasts rise above the bar */
   if (bar) requestAnimationFrame(function () { try { document.body.style.setProperty('--rop-sbh', (bar.offsetHeight || 52) + 'px'); } catch (e) {} });

@@ -125,5 +125,5 @@ function sgLinkHtml(g, id, what, person){
 function sgWords(e){ var w = typeof e.words === "function" ? (function(){ try{ return e.words(); }catch(x){ return ""; } })() : (e.words || "");
   return [e.label, e.help, e.sub || "", e.where, sgHasVal(e) ? sgText(e) : "", (e.kind === "seg" || e.kind === "sel") ? sgOpts(e).map(function(o){ return o[1]; }).join(" ") : "", e.ph || "", w].join(" ").toLowerCase(); }
 function sgFind(q){ q = String(q || "").trim().toLowerCase(); if(!q) return []; var T = q.split(/\s+/);
-  return SG_REG.filter(function(e){ if(!sgShown(e)) return false; var w = sgWords(e); return T.every(function(t){ return w.indexOf(t) > -1; }); })
+  return SG_REG.filter(function(e){ if(!sgShown(e) || !sgGroupOk(e.g)) return false; var w = sgWords(e); return T.every(function(t){ return w.indexOf(t) > -1; }); })
     .sort(function(a, b){ var la = a.label.toLowerCase().indexOf(q) > -1 ? 0 : 1, lb = b.label.toLowerCase().indexOf(q) > -1 ? 0 : 1; return la - lb; }); }

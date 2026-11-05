@@ -53,21 +53,24 @@ var PERM_ACTS = [
   ["Repair orders", [["ro.new", "Open new ROs"], ["ro.status", "Change an RO’s status"], ["ro.release", "Release a truck"], ["ro.reopen", "Reopen a completed RO"], ["ro.del", "Delete ROs"]]],
   ["Time", [["t.own", "Start and stop their own clock"], ["t.editown", "Fix their own punches"], ["t.editall", "Fix anyone’s punches"], ["t.move", "Move time to someone else"], ["t.approve", "Approve timesheets"], ["t.others", "See other people’s time"]]],
   ["Parts and money", [["p.order", "Order parts"], ["p.stock", "Adjust stock counts"], ["p.cost", "See costs and prices"], ["w.claim", "File warranty claims"]]],
-  ["Admin", [["a.people", "Manage people and PINs"], ["a.settings", "Change settings and automations"], ["a.data", "Export or reset the data"]]]
+  ["Admin", [["a.people", "Manage people and PINs"], ["a.settings", "Change settings and automations"], ["a.data", "Export or reset the data"]]],
+  /* 17.3: which Settings menus they see — Me and Shortcuts are everyone's */
+  ["Settings menus", [["s.shop", "See The shop settings"], ["s.people", "See People & access"], ["s.data", "See Data settings"], ["s.auto", "See Automations"]]]
 ];
 /* what each action stops, said plainly — "You can’t delete ROs" */
 var PERM_VERB = { "ro.new": "open new ROs", "ro.status": "change an RO’s status", "ro.release": "release a truck", "ro.reopen": "reopen a completed RO", "ro.del": "delete ROs",
   "t.own": "start the clock", "t.editown": "fix your punches", "t.editall": "fix someone else’s punches", "t.move": "move time to someone else", "t.approve": "approve timesheets", "t.others": "see other people’s time",
   "p.order": "order parts", "p.stock": "adjust stock counts", "p.cost": "see costs and prices", "w.claim": "file warranty claims",
-  "a.people": "manage people and PINs", "a.settings": "change settings and automations", "a.data": "export or reset the data" };
+  "a.people": "manage people and PINs", "a.settings": "change settings and automations", "a.data": "export or reset the data",
+  "s.shop": "see The shop settings", "s.people": "see People & access", "s.data": "see the Data settings", "s.auto": "see Automations" };
 var PERM_ROLE_ACTS = {
   "Technician": "t.own t.editown",
-  "Foreman": "ro.new ro.status ro.release ro.reopen t.own t.editown t.editall t.move t.approve t.others p.order",
-  "Manager": "ro.new ro.status ro.release ro.reopen ro.del t.own t.editown t.editall t.move t.approve t.others p.order p.stock p.cost w.claim a.people a.settings",
-  "Service writer": "ro.new ro.status ro.release ro.reopen t.own p.order p.cost w.claim",
-  "Warranty admin": "ro.status t.own p.cost w.claim",
+  "Foreman": "ro.new ro.status ro.release ro.reopen t.own t.editown t.editall t.move t.approve t.others p.order s.shop s.auto",
+  "Manager": "ro.new ro.status ro.release ro.reopen ro.del t.own t.editown t.editall t.move t.approve t.others p.order p.stock p.cost w.claim a.people a.settings s.shop s.people s.data s.auto",
+  "Service writer": "ro.new ro.status ro.release ro.reopen t.own p.order p.cost w.claim s.shop",
+  "Warranty admin": "ro.status t.own p.cost w.claim s.shop",
   "Triage": "ro.new ro.status ro.release t.own",
-  "Parts": "t.own p.order p.stock p.cost"
+  "Parts": "t.own p.order p.stock p.cost s.shop"
 };
 function permActKeys(){ var L = []; PERM_ACTS.forEach(function(g){ g[1].forEach(function(a){ L.push(a[0]); }); }); return L; }
 function permActLabel(k){ var r = k; PERM_ACTS.forEach(function(g){ g[1].forEach(function(a){ if(a[0] === k) r = a[1]; }); }); return r; }

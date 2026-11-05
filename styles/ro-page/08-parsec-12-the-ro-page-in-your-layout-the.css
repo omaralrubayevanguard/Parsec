@@ -288,8 +288,9 @@
 .rop-mi > span:last-child { min-width: 0; } .rop-mi b { display: block; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .rop-mi small { display: block; font-size: 12px; color: var(--ink-3); }
 .rop-what { white-space: pre-line; font-size: 12.5px; line-height: 18px; color: var(--ink-2); padding: 8px 10px; border-radius: 8px; background: var(--fill); }
 
-/* ---------- one column: a narrow window or a phone — the truck first, then the work, then the facts ---------- */
-@container (max-width: 880px) {
+/* ---------- one column: a phone-narrow pane only — the truck first, then the work, then the facts (17.3: was 880 px, which
+   which stacked the page beside the Technician list and pushed the operations under the right column; it stays a column until 600) ---------- */
+@container (max-width: 600px) {
   .rop-r .px-ro { flex-direction: column; overflow-y: auto; overscroll-behavior: contain; }
   .rop-r .px-ro__main { overflow: visible; flex: none; order: 1; }
   .pxr .rop-r .rop-rail, .rop-r .rop-rail { display: contents; }

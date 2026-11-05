@@ -218,7 +218,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `_close.js` | Closes the Library page closure. | 0 | 0 | 0 |
 | `_open.js` | Opens the Library page closure (LIBPG). | 0 | 0 | 1 |
 | `library-page.js` | The Library page: tabs (Fault codes, CBRs, TSBs, FSBs, Recalls, Models, Procedures), the search, the function-group filter, documents in Impact’s columns by function group, procedures with sortable columns, codes by module with their FTBs, adding by button or drop. | 18 | 20 | 11 |
-| `shop-and-cards.js` | The Library page (17.3): For the shop (the documents that fit the open ROs), the bar by kind and what needs you, one search across every kind, the truck filter, To check, the document cards with older releases folded, and the panel opened by pointing at a row. | 10 | 10 | 6 |
+| `shop-and-cards.js` | The Library page (17.3): For the shop (the documents that fit the open ROs), the bar by kind and what needs you, one search across every kind, the truck filter, To check, the document cards with older releases folded, and the panel opened by pointing at a row. | 9 | 10 | 4 |
 | `view.js` | viewLibrary() and libOpenFor(): the page module’s entry and opening it narrowed to an RO and operation. | 0 | 2 | 0 |
 
 ## pages/manager/  — Manager: the shop's KPIs
@@ -265,7 +265,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `columns.js` | The RO list's columns (13.1): drag into any order, add fields or your own, saved views, the Display pop-over. | 40 | 32 | 19 |
 | `embed.js` | The ROs tab on Triage, Foreman, Parts, Manager and Technician (14.3): rlEmbed puts the RO list inside another page, with Back. | 2 | 9 | 2 |
 | `model.js` | The RO list's model: one RO as the list draws it (info, spot, next step), rows and counts. | 10 | 6 | 24 |
-| `page-base.js` | The RO list page's older base (RL_GROUPS, rlList) and the permission labels and role tables it shares with Admin (permRoles, permState…). | 8 | 11 | 7 |
+| `page-base.js` | The RO list page's older base (RL_GROUPS, rlList) and the permission labels and role tables it shares with Admin (permRoles, permState…). | 9 | 11 | 7 |
 | `view.js` | viewRoList(): the page module's entry. | 0 | 1 | 0 |
 
 ## pages/technician/  — Console (your day) and the Technician page
@@ -375,7 +375,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `job-road.js` | The job road: the small animated scene under an open job card (truck, road, sky by time of day) — RD_SCENES and the SVG builders; ROAD_CSS is appended to JC_CSS. | 23 | 10 | 18 |
 | `layout.js` | The RO page in your layout (Parsec 12): the one-panel page — operations in the middle, the truck card and the sections on the right (ROPS), who is on it, the right column's fit. | 7 | 19 | 3 |
 | `library-on-ro.js` | The Library on the RO page: each operation’s codes, function group and documents, what each code means, the documents that cover its codes (Attach / Not now), the documents strip above the operations, and PDFs offered to the Library before they attach. | 9 | 8 | 0 |
-| `messages-chat.js` | Messages above the operations (17.2; the Customer tab left in 17.3): the RO's messages as a chat (bubbles or lines, To and @ for anyone in the shop, files and the operation, a seen dot, quick lines by role). | 15 | 14 | 3 |
+| `messages-chat.js` | Messages below the operations (17.2; the Customer tab left in 17.3): the RO's messages as a chat (bubbles or lines, To and @ for anyone in the shop, files and the operation, a seen dot, quick lines by role). | 15 | 14 | 3 |
 | `modal-export-print.js` | The RO page's modal, and export / import / print of one RO (sheetFromRO, importSheet). | 10 | 15 | 2 |
 | `one-ro-view.js` | One RO view (14.3 B): the Technician page's middle and right are the RO page itself; TCX says when the RO page is embedded there. | 1 | 3 | 2 |
 | `op-card.js` | The open operation card (jobCard): header, body, parts, the day strip and rail, the metrics and the quote; built fresh on every render. | 58 | 1 | 0 |
@@ -409,9 +409,9 @@ Load order is `build/manifest.txt`; this page is for finding things.
 
 | file | what it is | KB | functions | constants |
 |---|---|---:|---:|---:|
-| `draw-and-actions.js` | Drawing the Settings page (groups, rows, Recently changed, search results), its actions, and the person pop-over's Size / Tooltips / Theme rows (pxProfileView). | 19 | 16 | 0 |
+| `draw-and-actions.js` | Drawing the Settings page (groups, rows, Recently changed, search results), its actions, and the person pop-over's Size / Tooltips / Theme rows (pxProfileView). | 20 | 16 | 0 |
 | `registry.js` | The registry: SG_REG, every setting as one row — id, group, label, help, who may change it, where it applies, get / set, default. sgReg() is what other areas call to add one. | 40 | 1 | 2 |
-| `settings-page.js` | One Settings page (16.2 C): the groups (Me · The shop · People & access · Data · Automations · Shortcuts), the old places that link in (SG_OLD), small helpers the registry's rows use. | 4 | 16 | 3 |
+| `settings-page.js` | One Settings page (16.2 C): the groups (Me · The shop · People & access · Data · Automations · Shortcuts), the old places that link in (SG_OLD), small helpers the registry's rows use. | 4 | 18 | 3 |
 | `shop-buttons.js` | Shop buttons by department (16.3 C): the table in Settings → The shop (STATE.shopBtns), v163ShopOk(ro, act) that every shop button asks, the department label on the truck card. | 9 | 14 | 4 |
 | `values-and-changes.js` | Values, defaults and who: sgVal / sgDef / sgChanged, who may change a setting (sgCan / sgWho), and sgChange — every change goes through here (before and after, the Recently changed log with Undo, the save). Also going to a setting and search. | 9 | 29 | 1 |
 

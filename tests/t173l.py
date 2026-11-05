@@ -34,7 +34,8 @@ async def main():
         # Role · On · Off
         await pg.click(A + "[data-a=ptab][data-v=acts]"); await pg.wait_for_timeout(300)
         n3 = await pg.evaluate("document.querySelectorAll('[data-pg=admin] .adm-seg3').length")
-        ok(n3 == 18, "What they can do: Role · On · Off on every action (%d)" % n3)
+        na = await pg.evaluate("__tg.permActKeys ? __tg.permActKeys().length : 22")
+        ok(n3 == na, "What they can do: Role · On · Off on every action (%d of %d)" % (n3, na))
         await pg.click(A + ".adm-s3[data-k='p.order'][data-v=on]"); await pg.wait_for_timeout(300)
         r = await pg.evaluate("""id => { const sf = __tg.staffList().find(s => s.id === id), row = document.querySelector('[data-pg=admin] .adm-s3[data-k="p.order"][data-v=on]').closest('.adm-ar');
           return [__tg.permHas(sf, 'acts', 'p.order'), row.classList.contains('ov'), !!row.querySelector('.adm-dot'), (row.querySelector('.adm-rs') || {}).textContent, !!row.querySelector('.adm-rb'),
@@ -80,6 +81,9 @@ async def main():
                           await pg.evaluate("__tg.staffList().filter(s => s.role === 'Technician')[1].id")); await pg.wait_for_timeout(500)
         dis = await pg.evaluate("[...document.querySelectorAll('.sg-plr')].every(b => b.disabled)")
         ok(dis, "a technician sees the list but can't open anyone's page")
+        # 17.3: Settings menus by role — a technician sees Me and Shortcuts only, and a link to The shop lands on Me
+        mn = await pg.evaluate("() => { const U = __tg.UI(); U.pxSec = 'shop'; __tg.render(); return [[...document.querySelectorAll('.sg-menu .px-it b')].map(e => e.textContent), document.querySelector('.sg-page').dataset.sgSec]; }")
+        ok(mn == [["Me", "Shortcuts", "Recently changed"], "me"], "a technician's Settings: Me and Shortcuts, not The shop or People & access (%s)" % mn)
         ok(not errs, "no page errors (%s)" % errs[:2])
         await b.close()
     print("\n%d failed" % len(FAILS) if FAILS else "\nall passed")

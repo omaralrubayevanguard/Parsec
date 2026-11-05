@@ -1,6 +1,6 @@
 /* Parsec · ro-page · messages-chat.js
-   Messages above the operations (17.2; the Customer tab left in 17.3): the RO's messages as a chat (bubbles or lines, To and @ for anyone in the shop, files and the operation, a seen dot, quick lines by role).
-   Flow: ropBuild puts ropMC() above Operations; sending goes through IB.send and redraws.
+   Messages below the operations (17.2; the Customer tab left in 17.3): the RO's messages as a chat (bubbles or lines, To and @ for anyone in the shop, files and the operation, a seen dot, quick lines by role).
+   Flow: ropBuild puts ropMC() below Operations; sending goes through IB.send and redraws.
    ── facts (generated; run tools/headers.py to refresh) ──
    declares   ropCalm ropChatLines ropMsgs ropMC ropRoleOf ropDayLbl ropMenText ropMsgMine ropChat ropBubble ropPeople ropComposer … (14 functions, 3 constants)
    uses       access/ kit/ pages/inbox/ shell/

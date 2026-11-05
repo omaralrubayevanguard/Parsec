@@ -99,7 +99,7 @@ Library/<kind>/<number> - <title> (rel NN).pdf   the Library's documents (Fault 
 |---|---|---|
 | Inbox | `pages/inbox/model.js` `IB.send({to, t, b, …})` | how any area tells a person something; derived items (hand-offs, asks) are computed, stored ones kept |
 | Automations | `automations/` | `autoRun` compares the last saved snapshot with the new one, raises events, rules act (built-ins + sentence rules); What ran with Undo |
-| Settings | `settings/registry.js` `sgReg()` | every setting is one row: group, who may change, where it applies, get/set, default; the page, search, Reset and Recently changed come free |
+| Settings | `settings/registry.js` `sgReg()` | every setting is one row: group, who may change, where it applies, get/set, default; the page, search, Reset and Recently changed come free. Which menus someone sees is a role action, "Settings menus" (`s.shop`, `s.people`, `s.data`, `s.auto`; `sgGroupOk`) — Me and Shortcuts are everyone's |
 | Tooltips | `kit/tooltip-words.js` + `kit/tooltip-engine.js` | one tooltip; `tipNorm` rewrites every title into the house style; the build lints them |
 | Status look | `kit/status-look.js` `pgSt()` | one icon + word per status everywhere |
 | RO links / pictures | `shell/ro-rail.js` `rl163Deco` | every RO number is a link, every RO row shows the truck; runs on the new markup before the morph |

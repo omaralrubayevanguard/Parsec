@@ -42,7 +42,7 @@ function sgGroupHtml(g){
     + (g === "data" ? '<div class="px-build mono">' + esc(BUILD) + '</div>' : '');
 }
 function sgRecentHtml(){
-  var L = sgLog().slice().reverse().slice(0, 60);
+  var L = sgLog().filter(function(x){ var e = SG_BY[x.k]; return sgGroupOk(e ? e.g : "me"); }).slice().reverse().slice(0, 60);   /* 17.3: only the menus they see */
   if(!L.length) return '<section class="px-card sg-card"><p class="sg-p">Nothing changed yet. Changes made here — and Size, Theme and Tooltips from your menu — show up with who made them, and Undo.</p></section>';
   var days = []; L.forEach(function(x){ var d = localDay(x.at); if(days.indexOf(d) < 0) days.push(d); });
   return days.map(function(d){ return '<section class="px-card sg-card"><div class="px-ch"><b>' + esc(d === todayStr() ? "Today" : new Date(d + "T12:00:00").toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" })) + '</b></div>'
@@ -69,7 +69,7 @@ function pxProfileView(){
     + '<span class="sp"></span><button class="px-btn sm" data-action="nav" data-view="' + back + '">' + pxI(IV_NAV_IC[back] || "console", 14) + 'Back to ' + esc(bn) + '</button></header>';
   var cnt = function(g){ return SG_REG.filter(function(e){ return e.g === g && sgShown(e) && sgChanged(e); }).length; }, today = sgLog().filter(function(x){ return localDay(x.at) === todayStr(); }).length;
   var list = '<section class="px-list sg-menu"><div class="sg-srch">' + pxI("search", 14) + '<input data-sg-q="1" placeholder="Search settings" value="' + esc(q) + '" autocomplete="off" aria-label="Search settings">' + (q ? '<button class="sg-qx" data-action="px-sg-q0" aria-label="Clear the search">' + pxI("x", 12) + '</button>' : '') + '</div><div class="px-scroll sg-nav">'
-    + SG_GROUPS.map(function(g){ var n = cnt(g[0]);
+    + sgGroups().map(function(g){ var n = cnt(g[0]);
       return '<div class="px-it' + (!q && sec === g[0] ? ' on' : '') + '" data-action="px-sec" data-s="' + g[0] + '" role="button" tabindex="0"><span class="px-gi">' + pxI(g[1], 15) + '</span><span class="px-t"><b>' + esc(g[2]) + '</b></span><span class="px-w">' + esc(g[3]) + '</span>'
         + (n ? '<span class="sg-n" title="' + n + ' changed from the default"><i class="sg-dot"></i>' + n + '</span>' : g[0] === "data" && warn ? '<i class="pxr-warn in"></i>' : '') + '</div>'; }).join('')
     + '<div class="sg-sep"></div><div class="px-it' + (!q && sec === "recent" ? ' on' : '') + '" data-action="px-sec" data-s="recent" role="button" tabindex="0"><span class="px-gi">' + pxI("history", 15) + '</span><span class="px-t"><b>Recently changed</b></span><span class="px-w">who changed what, when — with Undo</span>' + (today ? '<span class="sg-n">' + today + '</span>' : '') + '</div>'

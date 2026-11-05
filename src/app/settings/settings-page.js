@@ -1,7 +1,7 @@
 /* Parsec · settings · settings-page.js
    One Settings page (16.2 C): the groups (Me · The shop · People & access · Data · Automations · Shortcuts), the old places that link in (SG_OLD), small helpers the registry's rows use.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   sgSec sgJ sgCopy sgK sgSame sgAnd sgMe sgByName sgHrs sgShopDay sgPt sgPtRow … (16 functions, 3 constants)
+   declares   sgGroupOk sgGroups sgSec sgJ sgCopy sgK sgSame sgAnd sgMe sgByName sgHrs sgShopDay … (18 functions, 3 constants)
    state      ptSet setLog techName
    uses       access/ pages/foreman/ pages/warranty/ ro/ shell/ state/
 */
@@ -24,7 +24,10 @@ var SG_GROUPS = [
   ["keys", "keyTag", "Shortcuts", "every key — for reference"]
 ];
 var SG_OLD = { you: "me", sign: "me", look: "me", tools: "auto", admin: "people" };   /* the old section names still open the right group */
-function sgSec(s){ s = SG_OLD[s] || s; return s === "recent" || SG_GROUPS.some(function(g){ return g[0] === s; }) ? s : "me"; }
+/* 17.3: which menus someone sees — Me and Shortcuts for everyone, the rest by role ("Settings menus" on the role and the person's page) */
+function sgGroupOk(g){ if(g === "me" || g === "keys" || g === "recent") return true; try{ return typeof can !== "function" || can("s." + g); }catch(e){ return true; } }
+function sgGroups(){ return SG_GROUPS.filter(function(g){ return sgGroupOk(g[0]); }); }
+function sgSec(s){ s = SG_OLD[s] || s; return (s === "recent" || SG_GROUPS.some(function(g){ return g[0] === s; })) && sgGroupOk(s) ? s : "me"; }
 function sgJ(v){ try{ return JSON.stringify(v === undefined ? null : v); }catch(e){ return ""; } }
 function sgCopy(v){ return v === undefined ? null : JSON.parse(sgJ(v)); }
 var SG_META = { updatedAt: 1, updatedBy: 1 };   /* the data store's marks on a record — not part of the setting */

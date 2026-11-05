@@ -127,3 +127,8 @@
 /* 17.3: the pick box sits inside the row, not past the card's edge — parts and punch entries, at every width (the phone already did) */
 .px-li.rop-prow, .px-li.rop-pth, .px-li.rop-pkr { padding-left: 30px; }
 .rop-prow > .rop-cb, .rop-pth > .rop-cb, .rop-pkr > .rop-cb { left: 6px; }
+/* 17.3: the right column keeps its width (324 px, or what it was dragged to) and the operations take the rest — no 760 px
+   floor that pushed the column past the edge beside the Technician list; one column only under 600 px */
+.page.pxB { min-width: 0; }
+.pxr .px-ro__main { min-width: 340px; }
+.pxr .px-ro__main .px-ro__col { min-width: 0; }

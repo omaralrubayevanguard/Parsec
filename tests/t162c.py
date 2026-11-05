@@ -145,6 +145,12 @@ async def main():
         # ---------------------------------------------------------------- read-only for a technician
         await pg.evaluate(SIGNIN(tA)); await pg.wait_for_timeout(500)
         await pg.evaluate(GO("shop")); await pg.wait_for_timeout(400)
+        # 17.3: a technician's Settings menus are Me and Shortcuts; The shop opens Me instead
+        tm = await pg.evaluate("[[...document.querySelectorAll('.sg-menu .px-it b')].map(e=>e.textContent), document.querySelector('.sg-page').dataset.sgSec]")
+        ok(tm == [["Me", "Shortcuts", "Recently changed"], "me"], f"a technician sees Me and Shortcuts only ({tm})")
+        # given the menus (Settings menus on their page), the rows they can't change are read-only, as before
+        await pg.evaluate(f"(()=>{{ const sf=__tg.staffList().find(s=>s.id==='{tA}'); ['s.shop','s.people','s.data'].forEach(k=>__tg.permSet(sf,'acts',k,true)); __tg.render(); }})()")
+        await pg.evaluate(GO("shop")); await pg.wait_for_timeout(400)
         ro = await pg.evaluate(f"(()=>{{ const r=document.querySelector('{ROW('shop.rate')}'); return {{ ro: r.classList.contains('ro'), dis: r.querySelector('input').disabled, txt: (r.querySelector('.sg-ro')||{{}}).textContent||'' }}; }})()")
         ok(ro["ro"] and ro["dis"] and ro["txt"] == "Only the manager can change this", f"a technician sees the labor rate read-only: “Only the manager can change this” ({ro})")
         tried = await pg.evaluate("__tg.sgSet('shop.rate', 300)")
