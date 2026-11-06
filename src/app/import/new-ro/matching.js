@@ -17,7 +17,7 @@
     P.ops.forEach(function(o){
       var a = acc.ops.filter(function(x){ return sameOp(x, o); })[0];
       if(!a){ a = JSON.parse(JSON.stringify(o)); a.parts = []; acc.ops.push(a); }
-      else ["hours", "price", "rate", "partsAmt", "misc", "sublet", "total", "approval", "label", "opCode", "vmrs", "skill", "priceCode", "storyBy"].forEach(function(k){ if(o[k] !== "" && o[k] != null) a[k] = o[k]; });
+      else ["hours", "price", "rate", "partsAmt", "misc", "sublet", "total", "approval", "label", "opCode", "vmrs", "skill", "priceCode", "storyBy", "cause", "correction"].forEach(function(k){ if(o[k] !== "" && o[k] != null) a[k] = o[k]; });
       if(o.name && o.name.length > (a.name || "").length && sim(o.name, a.name) >= .34) a.name = o.name;
       if(o.story && o.story.length >= (a.story || "").length * .6) a.story = o.story;
       o.parts.forEach(function(p){ addPart(a.parts, JSON.parse(JSON.stringify(p))); });

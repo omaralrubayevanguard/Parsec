@@ -64,6 +64,7 @@
       if(t.id === "ix-shots" || t.id === "ix-pdf"){ var fl = Array.prototype.slice.call(t.files || []); t.value = ""; readFiles(fl); return; }
       if(t.getAttribute("data-ix") === "pcon"){ var pc = D.pieces[+t.getAttribute("data-i")]; if(pc) pc.off = !t.checked; draw(); return; }
       if(t.getAttribute("data-ix") === "opon"){ D.skip[t.getAttribute("data-k")] = !t.checked; draw(); return; }
+      if(t.getAttribute("data-ix") === "pto"){ D.opId = t.value; D.opAuto = false; rebuild(); return; }   /* 17.3 */
       if(t.getAttribute("data-ix") === "lp"){ var v = +t.value; D.lpOff = v < 0; if(v >= 0) D.lpTo = v; D.lpSet = true; draw(); return; }
       if(t.getAttribute("data-ixf")) onInput(t);
     });

@@ -120,6 +120,9 @@
     var empty = !D.pieces.length && !D.manual && D.new && D.target === "ro" && !Object.keys(D.edits).length;
     var LZ = D.loose || { auto: [], rest: [] }, lpTxt = (LZ.auto.length ? LZ.auto.map(function(x){ return esc(x.p.desc || x.p.pn) + ' → Op ' + (D.acc.ops[x.i].no || x.i + 1) + ' (' + esc(x.by) + ')'; }).join(", ") + (LZ.rest.length ? '; ' : '') : '') + (LZ.rest.length ? LZ.rest.length + ' part' + (LZ.rest.length === 1 ? '' : 's') + ' with no operation named go on' : '');
     var lpSel = D.acc.parts.length && D.acc.ops.length ? '<div class="ix-lp">' + ic("parts", 13) + '<span>' + (LZ.rest.length ? '' : 'Parts listed apart from their operations: ') + lpTxt + '</span>' + (LZ.rest.length ? '<select data-ix="lp" class="ix-in">' + D.acc.ops.map(function(o, i){ return '<option value="' + i + '"' + (i === D.lpTo && !D.lpOff ? ' selected' : '') + '>Op ' + (o.no || i + 1) + ' · ' + esc(o.name) + '</option>'; }).join("") + '<option value="-1"' + (D.lpOff ? ' selected' : '') + '>Leave them out</option></select>' : '') + '</div>' : '';
+    /* 17.3: parts on their own — which of the RO's operations they go on */
+    var ptoSel = D.ro && !D.new && D.opId && D.pieces.length && D.pieces.every(function(p){ return p.off || !p.P || !p.P.ops.length; }) && D.acc.parts.length
+      ? '<div class="ix-lp">' + ic("parts", 13) + '<span>These parts go on</span><select data-ix="pto" class="ix-in" aria-label="The operation the parts go on">' + (D.ro.operations || []).map(function(o, i){ return '<option value="' + esc(o.id) + '"' + (o.id === D.opId ? ' selected' : '') + '>Op ' + (i + 1) + ' · ' + esc(o.complaint || "Operation") + '</option>'; }).join("") + '</select></div>' : '';
     var ppl = Pl.people.length ? '<div class="ix-ppl">' + ic("user", 13) + '<span><b>' + Pl.people.length + (Pl.people.length === 1 ? ' person joins' : ' people join') + ' the Team</b> — no pages, no sign-in: ' + Pl.people.map(function(p){ return esc(p.n) + ' (' + esc(p.why) + ')'; }).join(", ") + '</span></div>' : '';
     var reading = D.busy ? '<div class="imp-status busy" id="imp-status" role="status">' + esc(D.busy) + '</div>' : '<div class="imp-status" id="imp-status" role="status" aria-live="polite">' + esc(D.msg || "") + '</div>';
     var C2 = [["new", C.new, "new"], ["upd", C.upd, "updated"], ["kept", C.kept, "kept yours"], ["edit", C.edit, "typed"], ["same", C.same, "same"]].filter(function(x){ return x[1]; });
@@ -136,12 +139,15 @@
             var all = rs.every(function(r){ return lyEmptyRow(r); }) && !D.allf; return '<div class="ix-tr' + (all ? ' emp' : '') + (g[0] === "Story" ? ' story' : '') + '"><span class="ix-trh">' + g[0] + '</span><div class="ix-trc">' + rs.map(cell).join("") + '</div></div>'; }).join("")
         + (nEmp ? '<button class="ix-lk ix-allf" data-ix="allf">' + (D.allf ? 'Hide the empty fields' : '+ ' + nEmp + ' empty field' + (nEmp === 1 ? '' : 's') + ' — show to type one') + '</button>' : '')
         + '</section>';
+      /* 17.3: an operation or parts pasted into an RO — the RO's own fields aren't shown when the paste brings nothing for them */
+      var partial = upd && D.pieces.length && !D.allf && !Pl.rows.some(function(r){ return r.bd === "new" || r.bd === "upd" || r.bd === "edit"; }) && D.pieces.every(function(p){ return p.off || !p.P || !p.P.found.length; });
+      if(partial) ticket = '<div class="ix-mu ix-roskip">Nothing for the RO’s own fields in this — only ' + (D.pieces.some(function(p){ return !p.off && p.P && p.P.ops.length; }) ? 'operations' : 'parts') + '. <button class="ix-lk" data-ix="allf">Show the RO’s fields</button></div>';
       body = (D.checking != null ? '' : lyNote(L))
         + ticket
-        + '<section class="ix-sec" id="ix-s-ops" data-for="ro inv"><div class="ix-sh"><h4>Operations</h4><span>' + Pl.ops.length + '</span><em>→ on the RO · parts on each</em></div>' + lpSel + (Pl.ops.length ? '<div class="ix-ops">' + Pl.ops.map(opCard).join("") + '</div>' : '<div class="ix-mu ix-none">No operations read yet.</div>') + '</section>'
+        + '<section class="ix-sec" id="ix-s-ops" data-for="ro inv"><div class="ix-sh"><h4>Operations</h4><span>' + Pl.ops.length + '</span><em>→ on the RO · parts on each</em></div>' + ptoSel + (ptoSel ? '' : lpSel) + (Pl.ops.length ? '<div class="ix-ops">' + Pl.ops.map(opCard).join("") + '</div>' : '<div class="ix-mu ix-none">No operations read yet.</div>') + '</section>'
         + lyExtras()
-        + '<section class="ix-sec" id="ix-s-notes" data-for="ro"><div class="ix-sh"><h4>Notes</h4><span>' + Pl.notes.length + '</span><em>→ Activity, with who and when</em></div>' + ppl + notesHtml(Pl) + '</section>'
-        + '<section class="ix-sec" id="ix-s-tot" data-for="ro"><div class="ix-sh"><h4>Totals</h4><em>checked against what Parsec adds up</em></div>' + totals(Pl) + '</section>';
+        + (partial && !Pl.notes.length && !ppl ? '' : '<section class="ix-sec" id="ix-s-notes" data-for="ro"><div class="ix-sh"><h4>Notes</h4><span>' + Pl.notes.length + '</span><em>→ Activity, with who and when</em></div>' + ppl + notesHtml(Pl) + '</section>')
+        + (partial && !D.acc.totals ? '' : '<section class="ix-sec" id="ix-s-tot" data-for="ro"><div class="ix-sh"><h4>Totals</h4><em>checked against what Parsec adds up</em></div>' + totals(Pl) + '</section>');   /* 17.3: not for a partial paste with none */
     }
     w.innerHTML = '<div class="ix" role="dialog" aria-modal="true" aria-label="' + (upd ? 'Update RO ' + esc(tgNum(ro)) : 'New repair order') + '" data-target="' + D.target + '" data-new="' + (D.new ? 1 : 0) + '">'
       + '<div class="ix-h"><div class="ix-ht"><h2>' + title + '</h2><div class="ix-sub">' + sub + '</div></div>'
@@ -176,6 +182,8 @@
   function rebuild(){ D.acc = blankAcc(); D.pieces.forEach(function(p){ if(p.P && !p.off) mergeInto(D.acc, p.P); }); suppliesOf(D.acc);
     /* 17.3: opened from an operation (Extract parts) — a quote's parts go on that operation */
     var tOp = D.opId && D.ro ? (D.ro.operations || []).filter(function(o){ return o.id === D.opId; })[0] : null;
+    /* 17.3: parts pasted on their own into an RO go on one of its operations (the first one being worked, until another is picked) — not on a new operation called Parts */
+    if(!tOp && D.ro && !D.new && D.target === "ro" && !D.acc.ops.length && D.acc.parts.length){ var R0 = (D.ro.operations || []).filter(function(o){ return !o.declined; }); tOp = R0[0] || (D.ro.operations || [])[0] || null; if(tOp){ D.opId = tOp.id; D.opAuto = true; } }
     if(tOp && !D.acc.ops.length && D.acc.parts.length){ var bo = blankOp((D.ro.operations || []).indexOf(tOp) + 1, tOp.complaint || "Operation"); D.acc.ops.push(bo); D.lpTo = 0; D.lpSet = true; } if(D.lpTo >= D.acc.ops.length) D.lpTo = 0; match(); D.err = ""; draw(); }
   var SECN = { case: "Case header", asset: "Truck", complaint: "Complaint" };
   function pieceName(kind, P, n){

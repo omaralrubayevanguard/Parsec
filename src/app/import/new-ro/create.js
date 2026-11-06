@@ -82,6 +82,8 @@
         if(!/^Complete/.test(P.st.want) && typeof opReopenMark === "function") try{ opReopenMark(op, ro.id, P.st.want); }catch(e){}
         op.jobStatus = { status: P.st.want, sub: null, setAt: nowIso(), hand: true }; }
       if(P.story && (P.story.bd === "new" || P.story.bd === "upd")) op.work = esc(P.story.fin);
+      /* 17.3: an operation pasted on its own brings its Cause and Correction — they fill the lines when the operation has none yet */
+      [["cause", o.cause], ["fix", o.correction]].forEach(function(x){ if(!x[1] || opStory(op, x[0])) return; if(!Array.isArray(op.log)) op.log = []; op.log.push({ id: uid("lg"), at: nowIso(), kind: x[0], text: String(x[1]) }); });
       if(P.codes && P.codesNew){ op.offNotes = (Array.isArray(op.offNotes) ? op.offNotes : []).concat([{ id: "on" + uid("x"), at: nowIso(), text: "From ASIST — " + P.codes, by: "ASIST" }]); }
       var M = mem.ops[mk] = mem.ops[mk] || { parts: {} }; M.id = op.id; M.no = o.no; M.name = o.name; M.f = M.f || {}; M.parts = M.parts || {};
       OPF.forEach(function(x){ if(o[x[1]] !== "" && o[x[1]] != null) M.f[x[0]] = o[x[1]]; });

@@ -481,6 +481,17 @@
     try{ if(typeof v163ReadContact === "function") v163ReadContact(text, L, f); }catch(e){ console.error(e); }   /* Parsec 16.3: the contact and the driver */
     var O = readOps(L), notes = readNotes(L), tot = readTotals(L);
     if(f.status && /^(approved|pending|declined)$/i.test(f.status)) delete f.status;
+    /* 17.3: one operation pasted on its own — "Operation 3", Complaint / Cause / Correction, the hours — is an operation, not the
+       case's story (the case's story needs the case page: an RO #, a customer or the truck around it) */
+    var caseLike = f.caseNo || f.roNumber || f.customer || f.vin || f.unit || f.model;
+    if(!O.ops.length && f.complaint && !caseLike){
+      var on = /\bop(?:eration)?\s*#?\s*(\d{1,2})\b/i.exec(text), o1 = blankOp(on ? +on[1] : 0, cjClean(String(f.complaint)));
+      var lh = /labou?r(?:\s*hours?)?\s*[:#]?\s*(\d{1,3}(?:\.\d{1,2})?)\s*(?:h|hrs?|hours?)\b/i.exec(text) || /\b(\d{1,3}(?:\.\d{1,2})?)\s*(?:hrs?|hours)\b/i.exec(text); if(lh) o1.hours = +lh[1];
+      if(f.cause) o1.cause = String(f.cause); if(f.correction) o1.correction = String(f.correction);
+      var ap1 = AP.exec(text); if(ap1) o1.approval = normAp(ap1[1]);
+      o1.parts = O.parts; O.ops = [o1]; O.parts = [];
+      delete f.complaint; delete f.cause; delete f.correction;
+    }
     var found = [];
     if(f.caseNo || f.roNumber || f.customer || f.status || f.etr || f.cname || f.cphone || f.cemail || f.dname || f.dphone) found.push("case");
     if(f.vin || f.model || f.unit || f.miles || f.engine) found.push("asset");
