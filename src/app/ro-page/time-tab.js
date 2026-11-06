@@ -8,7 +8,7 @@
    Each punch from start to stop with its notes in between. The line and the start dot wear the start reason's color, the stop dot the
    stop reason's (one color per reason, everywhere — b9/v123.css). A slim day bar sits on top. Everything is edited right here: click a time
    or a reason to change it, trash on hover deletes (Undo in the toast), a + between punches or the tab's clock icon adds a time entry. */
-var ROPT = { ed: null, add: null, note: null, padd: null, why: null };
+var ROPT = { ed: null, add: null, note: null, padd: null, why: null, pnedit: null };
 var ROPCC = { sug: null, live: null, t: 0 };   /* 17.3: Cause and Correction — a ✦ suggestion, the note being typed (ro-page/cause-correction.js) */
 function ropStops() { var L = []; try { L = STOP_REASONS_BREAK.concat(STOP_REASONS_EXPLICIT); } catch (e) {} return L.concat(['Switched job', 'Pulled to another truck', 'Declined']); }
 function ropRc(r) { try { return r ? reasonVar(r) : 'var(--ink-4)'; } catch (e) { return 'var(--ink-4)'; } }
@@ -156,7 +156,29 @@ function ropPunch(job, p, box) {
   var ns = noteEntries(p.notes);
   ns.forEach(function (n, i) {
     var at = noteTimeOf(p, n);   /* the time it was saved */
-    blk.appendChild(el('div', { class: 'rop-tn' }, [el('small', { text: ropClk(at) }), el('span', {}, ropCcMark(job, n.text)), ropIb('x', 'Delete this note', function () {
+    /* 17.3: a saved note changes in place — click it (or ✎); Enter keeps it, Esc leaves it as it was; its saved time stays */
+    var nk = p.id + '|' + i, NP = v150NoteOk(job, { by: (typeof punchWho === 'function' ? punchWho(p) : p.by) || p.by || '' }, RO);
+    if (ROPT.pnedit === nk) {
+      var inp = el('input', { class: 'rop-nin rop-nined', value: String(n.text || ''), 'aria-label': 'Change the note' }), done = false;
+      var fin = function (keep) {
+        if (done) return; done = true; ROPT.pnedit = null; var v = autoPunct(String(inp.value || '').trim()), old = String(n.text || '').trim(), lines = ropNoteLines(p);
+        if (keep && v && v !== old && lines[i] != null) {
+          pushUndo('change a punch note'); lines[i] = v; p.notes = lines.join('\n');
+          if (p.noteAt && p.noteAt[old]) { p.noteAt[v] = p.noteAt[old]; delete p.noteAt[old]; }
+          try { audit('op-note-edit', roLabel(RO) + ': changed a punch note on Op ' + ropN(job) + ' — ' + v.slice(0, 80), RO); } catch (e) {}
+          save(true); render(); try { tecRender(); } catch (e) {} ropUndo('Note changed.');
+        } else render();
+      };
+      inp.addEventListener('click', function (e) { e.stopPropagation(); });
+      inp.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Escape') { e.preventDefault(); fin(false); } else if (e.key === 'Enter') { e.preventDefault(); fin(true); } });
+      inp.addEventListener('blur', function () { setTimeout(function () { fin(true); }, 0); });
+      blk.appendChild(el('div', { class: 'rop-tn is-ed' }, [el('small', { text: ropClk(at) }), el('span', { class: 'rop-tnb' }, [inp])]));
+      requestAnimationFrame(function () { try { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); } catch (e) {} });
+      return;
+    }
+    var txs = el('span', { class: 'rop-tnt', title: NP.ok ? 'Click to change the note' : NP.why }, ropCcMark(job, n.text));
+    txs.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('button, .rop-ccm')) return; e.stopPropagation(); if (!NP.ok) { toast(NP.why); return; } ROPT.pnedit = nk; ROPT.note = null; render(); });
+    blk.appendChild(el('div', { class: 'rop-tn' }, [el('small', { text: ropClk(at) }), txs, ropIb('pencil', 'Change the note', function () { if (!NP.ok) { toast(NP.why); return; } ROPT.pnedit = nk; ROPT.note = null; render(); }, 'rop-tnx rop-tnp'), ropIb('x', 'Delete this note', function () {
       var lines = ropNoteLines(p); if (!lines[i]) return; pushUndo('delete punch note'); lines.splice(i, 1); p.notes = lines.join('\n'); if (p.noteAt) delete p.noteAt[String(n.text || '').trim()]; save(true); render(); ropUndo('Note deleted.'); }, 'rop-tnx is-dng')]));
   });
   if (ROPT.note === p.id) {

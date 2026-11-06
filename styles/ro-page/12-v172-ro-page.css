@@ -131,4 +131,4 @@
    floor that pushed the column past the edge beside the Technician list; one column only under 600 px */
 .page.pxB { min-width: 0; }
 .pxr .px-ro__main { min-width: 340px; }
-.pxr .px-ro__main .px-ro__col { min-width: 0; }
+.pxr .px-ro__main .px-ro__col { min-width: 0; max-width: none; width: 100%; box-sizing: border-box; padding-left: 24px; padding-right: 24px; }   /* 17.3: the operations take the whole pane and grow and shrink with it */

@@ -393,7 +393,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `summary-and-selection.js` | The work performed as one paragraph for warranty / triage (complaint, cause, correction), and the selection toolbar for marking text as a pill. | 22 | 23 | 11 |
 | `tab-actions.js` | Each tab's actions at the right of the tabs: attach, paste a screenshot, the notes paragraph to copy (Time), add a part (Parts). | 6 | 6 | 0 |
 | `task-bar.js` | Clock-string parsing for the time fields and the punch story builder. | 2 | 6 | 4 |
-| `time-tab.js` | An open operation's Time tab: every punch from its start to its stop, typed times, stops, the day bar; Parsec 15's notes that are not on a punch. | 26 | 26 | 2 |
+| `time-tab.js` | An open operation's Time tab: every punch from its start to its stop, typed times, stops, the day bar; Parsec 15's notes that are not on a punch. | 28 | 26 | 2 |
 | `toolbar.js` | The RO toolbar: tabs, the job stepper and job dots, files on the RO (allFiles / addFilesToRO), late parts. | 14 | 13 | 5 |
 | `totals.js` | The RO totals row and the day strip under it. | 7 | 4 | 1 |
 

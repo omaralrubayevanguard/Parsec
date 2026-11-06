@@ -51,8 +51,15 @@ async def main():
             ok("Swapped the chamber" in last[1] and hm(last[0]) is not None and abs(hm(last[0]) - now) <= 1, "a note added now shows the time now, not the start (%s · now %02d:%02d · start %02d:%02d)" % (last[0], now // 60, now % 60, st // 60, st % 60))
             sv = await pg.evaluate("(() => { const p = __tg.S().punches.find(p => p.id === 'pn1'); return !!(p.noteAt && p.noteAt['Swapped the chamber.']); })()")
             ok(sv, "the time is saved beside the note")
+            # 17.3: a saved note changes in place — click it, Enter keeps it, its saved time stays
+            await pg.evaluate("(() => { const r = " + R + ", L = [...r.querySelectorAll('.rop-tp[data-pid=\"pn1\"] .rop-tnt')]; L[L.length - 1].click(); })()"); await pg.wait_for_timeout(500)
+            await pg.evaluate("(() => { const i = " + R + ".querySelector('.rop-tp[data-pid=\"pn1\"] .rop-nined'); i.value = 'swapped the brake chamber'; i.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); })()"); await pg.wait_for_timeout(500)
+            ch = await pg.evaluate("(() => { const p = __tg.S().punches.find(p => p.id === 'pn1'); return [String(p.notes).includes('Swapped the brake chamber.'), String(p.notes).includes('Swapped the chamber.'), !!(p.noteAt && p.noteAt['Swapped the brake chamber.'])]; })()")
+            ok(ch == [True, False, True], "a saved punch note can be changed; it keeps its saved time (%s)" % ch)
+            await pg.evaluate("__tg.undoLast()"); await pg.wait_for_timeout(500)
+            ok(await pg.evaluate("(() => String(__tg.S().punches.find(p => p.id === 'pn1').notes).includes('Swapped the chamber.'))()"), "Undo puts the old words back")
             # deleting a note takes its time with it
-            await pg.evaluate("(() => { const r = " + R + ", L = [...r.querySelectorAll('.rop-tp[data-pid=\"pn1\"] .rop-tn:not(.is-add)')]; L[L.length - 1].querySelector('.rop-tnx').click(); })()"); await pg.wait_for_timeout(500)
+            await pg.evaluate("(() => { const r = " + R + ", L = [...r.querySelectorAll('.rop-tp[data-pid=\"pn1\"] .rop-tn:not(.is-add)')]; L[L.length - 1].querySelector('.rop-tnx:not(.rop-tnp)').click(); })()"); await pg.wait_for_timeout(500)
             gone = await pg.evaluate("(() => { const p = __tg.S().punches.find(p => p.id === 'pn1'); return [String(p.notes).includes('Swapped'), !!(p.noteAt && p.noteAt['Swapped the chamber.'])]; })()")
             ok(gone == [False, False], "deleting a note takes its time with it (%s)" % gone)
         ok(not errs, "no page errors (%s)" % errs[:2])
