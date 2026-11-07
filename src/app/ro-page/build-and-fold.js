@@ -19,7 +19,7 @@ function ropBuild(page, stash, slotEl) {
   var mainEl = el('main', { class: 'px-ro__main' }, [col]);
   var keepTop = UI.ivScroll && UI.ivScroll.ro === RO.id ? UI.ivScroll.top : 0;
   mainEl.addEventListener('scroll', function () { UI.ivScroll = { ro: RO.id, top: mainEl.scrollTop }; }, { passive: true });
-  var pro = el('div', { class: 'px-ro rop-ro' }, [mainEl, ropRail()]);
+  var pro = el('div', { class: 'px-ro rop-ro' + (rfShut() ? ' rf-shut' : '') }, [mainEl, ropRail()]);   /* 17.3: folded or not, from the first frame */
   pro.addEventListener('scroll', function () { UI.ivScroll = { ro: RO.id, top: pro.scrollTop, one: 1 }; }, { passive: true });
   var root = el('div', { class: 'pxr rop-r' }, [typeof rlCrumbFix === 'function' ? rlCrumbFix(pxHeader()) : pxHeader(), pro]);
   page.appendChild(root); page.appendChild(stash);

@@ -320,6 +320,7 @@ ro-page/_open.js
 ro-page/constants.js
 ro-page/helpers.js
 ro-page/state.js
+ro-page/rail-fold.js
 ro-page/builders.js
 ro-page/render-header.js
 ro-page/bulletins.js

@@ -736,7 +736,7 @@
 "ro-page/job-road.js \u00b7 set JC_CSS \u00b7 wrap JC_CSS",
 "ro-page/job-road.js \u00b7 var JC_ZF",
 "ro-page/icons.js \u00b7 var IC",
-"ro-page/_open.js \u00b7 var JC \u00b7 on window resize, on window scroll (capture), on document pointerdown (capture), on document click, on window resize, on document keydown, on window focus, on document visibilitychange, on document pointerdown (capture), on document selectionchange, on window scroll (capture), on window resize, on document pointerdown (capture), on document paste, on window keydown (capture)",
+"ro-page/_open.js \u00b7 var JC \u00b7 on window resize, on document keydown, on window resize, on window scroll (capture), on document pointerdown (capture), on document click, on window resize, on document keydown, on window focus, on document visibilitychange, on document pointerdown (capture), on document selectionchange, on window scroll (capture), on window resize, on document pointerdown (capture), on document paste, on window keydown (capture)",
 "shell/header-shrink.js \u00b7 var TB_SHRINK_AT,TB_GROW_AT,TB_FULL_H",
 "shell/header-shrink.js \u00b7 window.addEventListener() \u00b7 on window scroll (capture)",
 "library/codes.js \u00b7 var LIB_SPN",

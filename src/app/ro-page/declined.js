@@ -154,5 +154,5 @@ function ropRail() {
      light DOM; the band is still built for its buttons (ROP_FOOT), which stay at the bottom, always in reach */
   /* 17.3 — the panel's top (name, status, stages) in slot rp; then the contact and the buttons; then the rest of the panel in slot rp2 */
   var ct = null; try { ct = ropContactCard(); } catch (e) { console.error(e); }
-  return el('aside', { class: 'px-ro__rail rop-rail rop-rail-rp' }, [el('slot', { name: 'rp' }), ct].concat(ROP_FOOT ? [ROP_FOOT] : []).concat([el('slot', { name: 'rp2' })]).filter(Boolean));
+  return el('aside', { class: 'px-ro__rail rop-rail rop-rail-rp' }, [rfFoldBtn(), rfStrip(), el('slot', { name: 'rp' }), ct].concat(ROP_FOOT ? [ROP_FOOT] : []).concat([el('slot', { name: 'rp2' })]).filter(Boolean));   /* 17.3: the fold button and the strip (rail-fold.js) */
 }

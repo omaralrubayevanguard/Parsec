@@ -385,6 +385,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `page-helpers.js` | Helpers the RO page's renderers share: operation state chips, parts arrived checks, dropping files on a job, visit words, similar jobs. | 38 | 25 | 13 |
 | `picking.js` | Picking several operations or parts at once on the RO page: the selection, the bulk actions, the pick toolbar. | 25 | 23 | 1 |
 | `px-components.js` | The RO page's components from the Parsec design system: pop-overs (one at a time, fixed to the viewport), the modal with scrim, StatusMenu, PartStatus dropdown, the Transfer / Add operation / Delete dialogs. | 29 | 31 | 3 |
+| `rail-fold.js` | Folding the RO page's right column (17.3): a fold button at its top, a strip of icons when folded (a click opens it at that part), the \ key, remembered per page, folds by itself under 1 100 px. | 4 | 8 | 4 |
 | `release-bypass.js` | Release without checks: the truck card's way past the truck checks, with a reason and an Activity line. | 5 | 7 | 1 |
 | `render-header.js` | The RO header band: compact or open, Details, delete RO. | 17 | 4 | 2 |
 | `render.js` | The RO page's render: openState (which card is open), renderNow draws every part into the shadow root, flipCards animates, and the scroll / pin bookkeeping. | 20 | 16 | 2 |
