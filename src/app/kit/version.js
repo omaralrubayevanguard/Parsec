@@ -4,5 +4,5 @@
    ── facts (generated; run tools/headers.py to refresh) ──
    declares   BUILD BUILD_WAS (2 constants)
 */
-var BUILD = "Parsec 17.3 · Cause and Correction on the operation card, filled from the tech notes; per-operation status in the extraction window; better truck colour and past-fix matching; the road-test and checks bypass and the notes question fixed";
-var BUILD_WAS = "Parsec 17.2 · the operation card redesigned: Messages and Customer above the operations, Time, Parts and Files inside the clock card, a new clock bar with similar jobs and note flags, a bevelled timer button";
+var BUILD = "Parsec 17.4 · each person's page in Admin › People; Road test, Truck checks and Warranty RO as switches; the RO page's right column folds to icons; Settings menus by role; a new Library page; 12 more themes; pasting one operation or parts alone";
+var BUILD_WAS = "Parsec 17.3 · Cause and Correction on the operation card, filled from the tech notes; per-operation status in the extraction window; better truck colour and past-fix matching; the road-test and checks bypass and the notes question fixed";

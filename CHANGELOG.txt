@@ -1,6 +1,22 @@
 Parsec — changelog
-The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 17.3 is the newest.
+The version notes that used to sit in the code, newest first. Parsec 8 took them out of the file; Parsec 17.4 is the newest.
 
+
+Parsec 17.4 — each person's page · checks and release switches · the right column folds · Settings by role · Library page
+  For the shop floor:
+  · Admin › People: each person has one page — the Sign-in card at the top, then Pages (tiles), What they can do (Role · On · Off on each action) and Activity; a change from the role shows a dot, the role's value and ↺; Back to the role clears them; a new role asks first and lists what it adds and takes away; Settings › People & access links to each page
+  · Settings menus by role: a technician sees Me and Shortcuts; The shop, People & access, Data and Automation follow the role's permissions
+  · RO page: the Customer tab is gone; Messages sit below the operations; Road test and Truck checks are two switches, each button following its own; Warranty RO is a switch under them; Release reads like Start Op
+  · RO page: the right column keeps its width beside the work and folds to a strip of icons (the button at its top, or \); a click on an icon opens it at that part; each page remembers its own fold; under 1 100 px it folds by itself
+  · RO list: the side panel has the RO page's Shop block (buttons, Release, the three switches); the facts line under the title is gone
+  · Operation card: the whole pane is wide; punch notes can be changed after they're saved; Cause & Correction sit under the punches
+  · Pasting into an RO: one operation on its own becomes an operation; parts on their own go on the operation you pick
+  · Library page: opens on For the shop, one search for every kind, filter by truck and To check, documents as cards; opens on a click only; reads Volvo CBRs (ID, version, title, trucks covered, symptom, steps), parts and labor hours, and marks the fields to check
+  · Technician page header: name, clock and efficiency removed
+  · One tooltip at a time on the operation row; pick boxes stay inside the card; the active page in the navigation has a hairline all round
+  · Settings: 12 more themes (Slate, Indigo, Lilac, Arctic, Steel, Midnight, Violet, Deep sea, Carbon, Graph paper, Blueprint, Dot grid, Dot grid light)
+  · Time tab: each punch note shows the time it was saved
+  For the developer: new access/admin-page/person-page.js and ro-page/rail-fold.js; ro.noChecks (unset follows noRoadTest); acts s.shop s.people s.data s.auto; Idea picker in the repository is v5; tests t173k–t173p.
 
 Parsec 17.3 — Cause and Correction on the operation card · status in the extraction window · truck colour · past fixes · release checks
   For the shop floor:
