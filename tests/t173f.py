@@ -1,6 +1,6 @@
 # Parsec 17.3 (F) — the operation's one running tech notes count as its story: no "write the story", no "punch without a note",
 # no cause or correction missing in the checks. With the RO's road test off: the status reads Complete, there's a Release
-# button, and Released from the status menu asks "Release anyway?" — no road test, no truck checks, no notes on its list.
+# button, and Released from the status menu opens Release — no road test, no truck checks, no notes open on it (17.5).
 import asyncio, os, sys
 from playwright.async_api import async_playwright
 H = os.path.dirname(os.path.abspath(__file__))
@@ -30,8 +30,8 @@ async def main():
         ok("Release" in bt and "Road test" not in bt and "Truck checks" not in bt, "a Release button, no Road test or Truck checks (%s)" % bt)
         await pg.evaluate("document.querySelector('.rp-host .pgst').click()"); await pg.wait_for_timeout(400)
         await pg.get_by_text("Complete – Released", exact=True).last.click(); await pg.wait_for_timeout(600)
-        d = await pg.evaluate("(() => { const m = document.querySelector('.jc-host:not(.jc-band-host)'); const R = m && m.shadowRoot; const t = (R && R.querySelector('.px-modal')) || document.querySelector('.px-modal'); return t ? t.textContent : ''; })()")
-        ok("Release anyway" in d and "oad test" not in d.split("RO")[-1].replace("no road test or truck checks", "") and "Truck checks" not in d and "Notes" not in d and "Story" not in d, "Released asks “Release anyway?” without the road test, truck checks or notes (%r)" % d[:160])
+        d = await pg.evaluate("(() => { const t = document.querySelector('.tg-pop.rl'); return t ? [[...t.querySelectorAll('.tg-ck.no span, .tg-rwarn b')].map(x => x.textContent).join(' · '), t.innerText] : ['', '']; })()")
+        ok(d[1] and "Release" in d[1] and not any(w in d[0] for w in ("oad test", "Truck checks", "otes", "Story")), "17.5: Released opens Release — nothing open about the road test, truck checks or notes (%r)" % d[0][:160])
         ok(await pg.evaluate("x => __tg.getRO(x).status.status", rid) != "Complete – Released", "…and nothing is released until it's answered")
         ok(not errs, "no page errors: %s" % errs[:2])
         await b.close()

@@ -3,7 +3,7 @@
    ── facts (generated; run tools/headers.py to refresh) ──
    declares   pxSi pxPsi pxCase pxI pxNum pxMoney pxDay pxHM pxWhen pxStMeta pxCopy pxClosePop … (31 functions, 3 constants)
    state      punches ros
-   uses       access/ data/ kit/ pages/ ro/ shell/ state/
+   uses       access/ data/ kit/ pages/ pages/triage/ ro/ shell/ state/
    at load    on document pointerdown
 */
 /* ============ the RO page, built from the Parsec design system (ROPage pattern) ============
@@ -129,7 +129,7 @@ function pxStatusMenu(anchor) {
   var items = [], sub = null;
   function pick(name, s) {
     pxClosePop();
-    if (name === 'Complete – Released' && typeof rtNeeded === 'function' && !rtNeeded(RO) && !qcNeeded(RO) && typeof ropBypassAsk === 'function' && ropBypassOk()) { ropBypassAsk(); return; }   /* 17.3: no road test — the release question, not the checks */
+    if (name === 'Complete – Released' && typeof rtNeeded === 'function' && !rtNeeded(RO) && !qcNeeded(RO) && ropBypassOk()) { trxOpen('release', RO.id); return; }   /* 17.5: no road test — Release, not the checks */
     if (setRoStatus(RO.id, name, s || null) === false) { setTimeout(tecRender, 0); return; }
     save(true); render(); tecRender();
     toast('Status set to ' + roStShown(RO) + (s ? ' · ' + s.charAt(0) + s.slice(1).toLowerCase() : ''), { label: 'UNDO', run: function () { restoreSnapshot(); } });

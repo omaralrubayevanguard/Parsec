@@ -106,8 +106,11 @@ async def main():
         ok(await pg.evaluate("__tg.STATE().truckCheckList.length") == 6, "took it off again")
         await pg.click('.trx-q [data-action="tg-qc"][data-f="edit"]'); await pg.wait_for_timeout(150)
         g = await pg.evaluate(ROW_GROUP + f"('{r2}')"); print("after checks:", g, "| aok", q["aok"])
-        await pg.click('.trx-q [data-action="tg-qc-go"]'); await pg.wait_for_timeout(300)
-        rl = await pg.evaluate("document.querySelector('.tg-pop.rl') ? document.querySelector('.tg-pop.rl .tg-cks').innerText : ''")
+        # 17.5: Mark checked when every check is done, then Release; otherwise Release straight from the row
+        if q["aok"]:
+            await pg.click('.trx-q [data-action="tg-qc"][data-f="mark"]'); await pg.wait_for_timeout(300)
+        await pg.evaluate(f"__tg.tgOpenPop('release', '{r2}')"); await pg.wait_for_timeout(300)
+        rl = await pg.evaluate("document.querySelector('.tg-pop.rl') ? document.querySelector('.tg-pop.rl').innerText : ''")
         print("release checks:", rl.replace("\n", " · "))
         ok("Truck checks" in rl and "Road test passed" in rl, "Release lists the truck checks and the road test")
         await pg.screenshot(path=os.path.join(OUT, "c3_release.png"))
@@ -117,9 +120,11 @@ async def main():
         await pg.evaluate(DONE_ALL + f"('{r3}')"); await pg.evaluate(f"(()=>{{ const r=__tg.getRO('{r3}'); r.roadTest={{result:'Pass', miles:'5', at:new Date().toISOString()}}; __tg.render(); }})()"); await pg.wait_for_timeout(300)
         g = await pg.evaluate(ROW_GROUP + f"('{r3}')"); ok(g == "Truck checks", "road test passed, no ticks → " + str(g))
         await pg.evaluate(f"__tg.tgOpenPop('release', '{r3}')"); await pg.wait_for_timeout(300)
-        bad = await pg.evaluate("[...document.querySelectorAll('.tg-pop.rl .tg-ck.no span')].map(x=>x.textContent)"); print("open:", bad)
-        ok("Truck checks" in bad, "Truck checks open in Release")
-        await pg.click('.tg-pop.rl [data-action="tg-rl"][data-f="any"]'); await pg.wait_for_timeout(200)
+        bad = await pg.evaluate("[...document.querySelectorAll('.tg-pop.rl .tg-ck.no span, .tg-pop.rl .tg-rwarn b')].map(x=>x.textContent).join(' · ')"); print("open:", bad)
+        ok("Truck checks" in bad, "Truck checks open in Release — one box, and the reasons show straight away")
+        for _ in range(6):   # 17.5: Before it goes is ticked first, even releasing anyway
+            if not await pg.evaluate("(()=>{ const c=document.querySelector('.tg-pop.rl [data-action=tg-rl][data-f=tick]:not(.on)'); if(c){ c.click(); return true; } return false; })()"): break
+            await pg.wait_for_timeout(150)
         await pg.click('.tg-pop.rl .tg-any .tg-chip >> nth=0'); await pg.wait_for_timeout(200)
         await pg.fill('.tg-pop.rl [data-tg-in="rl-why"]', 'Nothing clocked — test data'); await pg.wait_for_timeout(150)   # Parsec 14.1: 0 h clocked needs a note
         await pg.click('.tg-pop.rl [data-action="tg-rl-go"][data-v="any"]'); await pg.wait_for_timeout(500)

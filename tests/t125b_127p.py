@@ -49,7 +49,7 @@ async def complete_part(p):
     ok(any(c[0] == "notes" and not c[2] for c in cl), "Ready to close still checks the notes")
     ok(any(c[0] == "files" and not c[2] for c in cl), "Ready to close checks the files")
     ta = await pg.evaluate(f"__tg.trxAuto(__tg.getRO('{rid}')).map(x=>[x.t,x.ok])")
-    ok(["Notes written", False] in ta and ["Files on the RO", False] in ta, f"the truck checks check notes and files ({ta})")
+    ok(["Story and notes on every operation", False] in ta and ["Files on the RO", False] in ta, f"the truck checks check notes and files ({ta})")
     # parts still gate Complete
     await pg.evaluate(f"(()=>{{ const r=__tg.getRO('{rid}'), op=r.operations[0]; op.parts=op.parts||[]; op.parts.push({{id:'ptx', description:'Test hose', partNumber:'TX-1', qty:'1', status:'Ordered'}}); __tg.STATE().punches.push({{id:'pb3', roId:r.id, opId:op.id, start:new Date(Date.now()-600e3).toISOString(), stop:null, startReason:'Repairing', stopReason:null, notes:'', by:'Marcus Lee'}}); }})()")
     await pg.evaluate("__tg.doStopPunch('Complete')"); await pg.wait_for_timeout(300)
@@ -61,10 +61,10 @@ async def complete_part(p):
     await pg.evaluate(f"(()=>{{ const U=__tg.UI(); U.tgView='inbox'; U.tgSel='{rid}'; U.tgPop={{type:'release', ro:'{rid}'}}; __tg.render(); }})()"); await pg.wait_for_timeout(500)
     rl = await pg.evaluate("document.querySelector('.tg-pop.rl') ? document.querySelector('.tg-pop.rl').innerText : ''")
     print("    release:", rl.replace("\n", " · ")[:400])
-    ok("Notes written" in rl and "Files on the RO" in rl, "the release lists Notes written and Files on the RO")
+    ok("Story and notes on every operation" in rl and "Files on the RO" in rl, "the release lists what's open in the checks — the story and notes, and Files on the RO")   # 17.5: one box
     ok("Release anyway" in rl or "open — why" in rl or "check" in rl.lower(), "releasing without them asks for a reason")
-    fb = await pg.evaluate("(()=>{ const r=[...document.querySelectorAll('.tg-pop.rl .tg-ck')].find(x=>/Files on the RO/.test(x.textContent)); return r ? !!r.querySelector('[data-action=goto-ro]') : null; })()")
-    ok(fb, "Files on the RO has Open RO")
+    fb = await pg.evaluate("(()=>{ const r=document.querySelector('.tg-pop.rl .tg-rwarn'); return r ? !!r.querySelector('[data-p=checks]') : null; })()")
+    ok(fb, "the open checks have Finish the checks first")
     await pg.screenshot(path=os.path.join(OUT, "a1_release.png"))
     print("ERRORS", errs[:6]); ok(not errs, "Complete part: no console errors")
     await b.close()

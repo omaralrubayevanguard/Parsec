@@ -116,7 +116,7 @@
   "ro-page/px-components.js": "The RO page's components from the Parsec design system: pop-overs (one at a time, fixed to the viewport), the modal with scrim, StatusMenu, PartStatus dropdown, the Transfer / Add operation / Delete dialogs.",
   "ro-page/header-page.js": "The RO page header (pxHeader): breadcrumb with the RO number (click copies it), the pager, the customer and contact with its menu (16.3 B), the counters (hours, parts, files), the options menu.",
   "ro-page/layout.js": "The RO page in your layout (Parsec 12): the one-panel page — operations in the middle, the truck card and the sections on the right (ROPS), who is on it, the right column's fit.",
-  "ro-page/release-bypass.js": "Release without checks: the truck card's way past the truck checks, with a reason and an Activity line.",
+  "ro-page/release-bypass.js": "The RO page's Release button (it opens Release, which asks why while checks are open) and the line an older RO released without checks still shows.",
   "ro-page/declined.js": "Declined on the operation's status menu (14.8 A) and the complaint edited in place while the clock runs or not.",
   "ro-page/time-tab.js": "An open operation's Time tab: every punch from its start to its stop, typed times, stops, the day bar; Parsec 15's notes that are not on a punch.",
   "ro-page/tab-actions.js": "Each tab's actions at the right of the tabs: attach, paste a screenshot, the notes paragraph to copy (Time), add a part (Parts).",

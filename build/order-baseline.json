@@ -678,6 +678,7 @@
 "kit/colors.js \u00b7 var JT_KEY",
 "kit/colors.js \u00b7 var PX_THS",
 "sample/sample-trucks.js \u00b7 var S25_MAIN",
+"pages/triage/popovers.js \u00b7 var TG_REL_COVER",
 "pages/triage/actions.js \u00b7 document.addEventListener() \u00b7 on document input (capture)",
 "pages/triage/actions.js \u00b7 document.addEventListener() \u00b7 on document change (capture)",
 "pages/triage/actions.js \u00b7 document.addEventListener() \u00b7 on document focusout (capture)",

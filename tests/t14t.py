@@ -53,7 +53,7 @@ async def main():
         await view(pg, "triage", f"U.tgSel='{A}'; U.tgView='desk';")
         await pg.screenshot(path=os.path.join(OUT, "t3_triage_off.png"))
         # release it (anyway — notes and files are open on sample data), then one Undo
-        await pg.evaluate(f"(()=>{{ __tg.tgOpenPop('release', '{A}'); const U=__tg.UI(); U.tgRL=Object.assign(U.tgRL||{{}}, {{ reason: 'Customer is at the counter', to: 'o', other: 'Driver' }}); __tg.tgRelease(true); }})()"); await pg.wait_for_timeout(800)
+        await pg.evaluate(f"(()=>{{ __tg.tgOpenPop('release', '{A}'); const R0=__tg.getRO('{A}'); __tg.v141Hand(R0).forEach(x=>{{ (R0.release=R0.release||{{}})[x[0]]=true; }}); /* 17.5: Before it goes is ticked first */ const U=__tg.UI(); U.tgRL=Object.assign(U.tgRL||{{}}, {{ reason: 'Customer is at the counter', to: 'o', other: 'Driver' }}); __tg.tgRelease(true); }})()"); await pg.wait_for_timeout(800)
         rel = await pg.evaluate(f"(()=>{{ const ro=__tg.getRO('{A}'); return [__tg.roStatus(ro).status, !!ro.dateClosed, __tg.roIsDone(ro), (document.querySelector('.toast')||{{}}).textContent||'']; }})()")
         ok(rel[0] == "Complete – Released" and rel[1] and rel[2], f"Release: Released and closed now ({rel[:3]})")
         ok("still open:" in rel[3] and " the ro " not in rel[3].lower().replace("on the ro", "ON THE RO"), f"the release toast says what's open by name ({rel[3][:110]})")

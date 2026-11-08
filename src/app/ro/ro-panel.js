@@ -77,10 +77,8 @@ function rpRelBtn(ro){
   try{
     if(!ro || ro.shop || ro.id === SHOP_RO_ID || ro.dateClosed || tyCat(ro) === "arr" || (typeof can === "function" && !can("ro.release"))) return "";
     if((roStatus(ro) || {}).status === "Complete – Released") return "";
-    var rt = rtNeeded(ro), qc = qcNeeded(ro), ready = (!rt || trxPassed(ro)) && (!qc || trxQcDone(ro));
-    if(!ready && (rt || qc)) return "";
-    var all = trxAllDone(ro);
-    return '<button class="btn btn-sm' + (all ? " btn-primary" : "") + '" data-action="triage-release" data-ro="' + rpE(ro.id) + '" title="' + (all ? "Release the truck" : "Release — the work isn’t all done yet") + '">' + tgI("release", 14) + "Release</button>";
+    var rt = rtNeeded(ro), qc = qcNeeded(ro), ready = (!rt || trxPassed(ro)) && (!qc || trxQcDone(ro)) && trxAllDone(ro);   /* 17.5: always there; it asks why while something is open */
+    return '<button class="btn btn-sm' + (ready ? " btn-primary" : "") + '" data-action="tg-pop" data-p="release" data-ro="' + rpE(ro.id) + '" title="' + (ready ? "Release the truck — completes the RO" : "Release the truck — asks why while checks are still open") + '">' + tgI("release", 14) + "Release</button>";
   }catch(e){ return ""; }
 }
 /* 17.3: the RO page's three switches — Road test before release · Truck checks before release · Warranty RO */

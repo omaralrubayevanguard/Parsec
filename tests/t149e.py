@@ -68,7 +68,7 @@ async def main():
         # Release pop with checks open: Release is greyed out and says how many; Release anyway waits for a reason
         await pg.evaluate(f"__tg.tgOpenPop('rl', {json.dumps(rid)})"); await pg.wait_for_timeout(500)
         x = await pg.evaluate("(()=>{ const b=[...document.querySelectorAll('.tg-pop.rl .btn-primary')].find(x=>x.disabled); return b ? b.getAttribute('data-tip') : null; })()")
-        ok(x is None or (x.startswith("Not yet — ") and "open|Fix them, or release anyway" in x), f"Release: greyed out with the count ({x})")
+        ok(x is None or x in ("Not yet — tick Before it goes first", "Pick a reason first"), f"Release: greyed out says what's missing ({x})")   # 17.5: one Release button
         await pg.evaluate("(()=>{ const b=document.querySelector('[data-action=\"tg-rl\"][data-f=\"any\"]'); b && b.click(); })()"); await pg.wait_for_timeout(300)
         x = await pg.evaluate(DTIP('[data-action="tg-rl-go"][data-v="any"]'))
         ok(x is None or (x[2] and x[0] == "Pick a reason first"), f"Release anyway waits for a reason ({x})")

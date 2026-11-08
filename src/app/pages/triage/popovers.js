@@ -1,7 +1,7 @@
 /* Parsec · pages/triage · popovers.js
    Triage's pop-overs: release, free spots, search; the sample trucks from the catalog sit beside them.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   tgPopHtml tgFreeSpots tgRelChecks tgRelPop tgVin tgFind tgSrRow tgSearchHtml (8 functions)
+   declares   tgPopHtml tgFreeSpots tgRelChecks tgRelQcHtml tgRelPop tgVin tgFind tgSrRow tgSearchHtml TG_REL_COVER (9 functions, 1 constant)
    state      ros
    uses       access/ import/ kit/ pages/ pages/foreman/ ro/ state/
 */
@@ -31,30 +31,49 @@ function tgRelChecks(ro){
   v141RelLines(ro, L);   /* Parsec 14.1: Story on every operation · Hours */
   var trq = trxRelCheck(ro); if(trq) L.push(trq);   /* Parsec 14: none when the RO needs no road test */
   if(gaps.length) L.push({ k: "gaps", ok: false, t: "Paperwork", d: gaps.join(" · "), fix: "Open RO" });
+  /* 17.5: the story and the punch notes are one check */
+  var iN = -1, iS = -1; L.forEach(function(c, i){ if(c.k === "notes") iN = i; if(c.k === "story") iS = i; });
+  if(iN > -1 && iS > -1){ var cn = L[iN], cs = L[iS], bad = !cs.ok ? cs : !cn.ok ? cn : cs;
+    L[iN] = { k: bad.k, ok: cn.ok && cs.ok, t: "Story and notes on every operation", d: cn.ok && cs.ok ? "every operation and punch" : bad.d, fix: bad.fix, op: bad.op }; L.splice(iS, 1); }
   return L;
+}
+/* 17.5: with truck checks on, Release doesn't list them again — they show as one line, or one box when they're open */
+var TG_REL_COVER = { ops: 1, parts: 1, notes: 1, story: 1, files: 1, road: 1, qc: 1 };
+function tgRelQcHtml(ro){
+  var h = "", rt = ro.roadTest, C = trxQc(ro), done = trxQcDone(ro);
+  if(rtNeeded(ro)) h += trxPassed(ro) ? '<div class="tg-rdone"><i>' + tgI("check", 12) + '</i><span><b>Road test passed</b>' + esc((rt.at ? fmtTime(rt.at) : "") + (rt.driver ? " · " + tgFirst(rt.driver) : rt.by ? " · " + tgFirst(rt.by) : "")) + '</span></div>' : "";
+  if(done) return h + '<div class="tg-rdone"><i>' + tgI("check", 12) + '</i><span><b>Truck checks done</b>' + esc((C.at ? fmtTime(C.at) : "") + (C.by ? " · " + tgFirst(C.by) : "") + " · " + C.total + " of " + C.total) + '</span></div>';
+  var open = C.auto.filter(function(x){ return !x.ok; }).map(function(x){ return x.t; });
+  if(C.n < C.of) open.push("walk-around " + C.n + " of " + C.of);
+  if(rtNeeded(ro) && !trxPassed(ro) && open.indexOf("Road test passed") < 0) open.unshift("Road test");
+  var k = C.total - C.done;
+  return h + '<div class="tg-rwarn"><b>' + (k ? "Truck checks aren’t done · " + k + " open" : "Truck checks aren’t marked checked") + '</b>' + (open.length ? '<span>' + esc(open.join(" · ")) + '</span>' : '')
+    + '<button class="tg-link" data-action="tg-pop" data-p="checks" data-ro="' + ro.id + '">Finish the checks first ›</button></div>';
 }
 function tgRelPop(ro, head, style){
   var A = UI.tgRL || (UI.tgRL = {}), C = tgRelChecks(ro), bad = C.filter(function(c){ return !c.ok; }), L = tgPeople(ro), rs = releaseState(ro);
   if(A.to == null){ var di = -1; L.forEach(function(p, i){ if(di < 0 && p.r === "Driver") di = i; }); A.to = di > -1 ? di : L.length ? tgDefTo(ro) : "o"; }
   v141WalkSync(ro); var hand = v141Hand(ro);   /* Parsec 14.1: keys and clean come from the walk-around */
-  var handBad = hand.filter(function(x){ return !rs[x[0]]; });
+  var handBad = hand.filter(function(x){ return !rs[x[0]]; }), qc = qcNeeded(ro);
   var n = C.length + hand.length, done = n - bad.length - handBad.length, CC = 2 * Math.PI * 9;
+  if(qc){ var C1 = C.filter(function(c){ return !TG_REL_COVER[c.k]; }), b1 = C1.filter(function(c){ return !c.ok; }).length + (trxQcDone(ro) ? 0 : 1);   /* 17.5: the truck checks count as one */
+    n = C1.length + 1 + hand.length; done = n - b1 - handBad.length; }
   var fixF = function(c){
     if(c.k === "notes") return '<div class="tg-fix"><input data-no-draft data-tg-in="rl-note" placeholder="What was done on that punch" value="' + esc(A.note || "") + '"><button class="btn btn-sm btn-primary" data-action="tg-rl-save" data-k="notes">Save note</button></div>';
     if(c.k === "road") return '<div class="tg-fix"><span class="lb">Result</span><span class="tg-seg3"><button class="' + ((A.road || "Pass") === "Pass" ? 'on ok' : '') + '" data-action="tg-rl" data-f="road" data-v="Pass">Pass</button><button class="' + (A.road === "Fail" ? 'on no' : '') + '" data-action="tg-rl" data-f="road" data-v="Fail">Fail</button></span><input data-no-draft data-tg-in="rl-mi" placeholder="Miles" style="max-width:80px" value="' + esc(A.mi || "") + '"><button class="btn btn-sm btn-primary" data-action="tg-rl-save" data-k="road">Save</button></div>';
     return '<div class="tg-fix"><span class="lb">' + (c.k === "ops" ? 'Marks every open operation complete.' : 'Marks every part on the RO installed.') + '</span><button class="btn btn-sm btn-primary" data-action="tg-rl-save" data-k="' + c.k + '">' + c.fix + '</button></div>'; };
-  var cks = '<div class="tg-cks">' + C.map(function(c){ return '<div class="tg-ck ' + (c.ok ? 'ok' : 'no') + '"><i></i><span>' + esc(c.t) + '</span><small>' + esc(c.d) + '</small>' + (!c.ok && c.fix && A.fix !== c.k ? (c.k === "gaps" || c.k === "files" || c.k === "story" ? '<button class="tg-link" data-action="goto-ro" data-ro="' + ro.id + '">Open RO</button>' : c.k === "road" || c.k === "qc" ? '<button class="tg-link" data-action="tg-pop" data-p="' + (c.k === "qc" ? 'checks' : 'road') + '" data-ro="' + ro.id + '">' + (c.k === "qc" ? 'Truck checks…' : 'Road test…') + '</button>' : '<button class="tg-link" data-action="tg-rl" data-f="fix" data-v="' + c.k + '">' + c.fix + '</button>') : '') + '</div>' + (A.fix === c.k && !c.ok ? fixF(c) : ''); }).join('') + '</div>';
-  var handH = v141WalkH(ro) + '<span class="tg-lbl top">Handover</span><div class="tg-r">' + hand.map(function(x){ var on = !!rs[x[0]]; return '<button class="tg-chip tick' + (on ? ' on' : '') + '" data-action="tg-rl" data-f="tick" data-v="' + x[0] + '" title="' + esc(x[1]) + '">' + (on ? tgI("check", 12) : '') + esc({ keys: "Keys back", clean: "Truck clean", invoice: "Invoice closed", notify: "Customer told" }[x[0]] || x[1]) + '</button>'; }).join('') + '</div>';
+  var CL = qc ? C.filter(function(c){ return !TG_REL_COVER[c.k] && !c.ok; }) : C;   /* 17.5 */
+  var cks = (qc ? tgRelQcHtml(ro) : '') + '<div class="tg-cks">' + CL.map(function(c){ return '<div class="tg-ck ' + (c.ok ? 'ok' : 'no') + '"><i></i><span>' + esc(c.t) + '</span><small>' + esc(c.d) + '</small>' + (!c.ok && c.fix && A.fix !== c.k ? (c.k === "gaps" || c.k === "files" || c.k === "story" ? '<button class="tg-link" data-action="goto-ro" data-ro="' + ro.id + '">Open RO</button>' : c.k === "road" || c.k === "qc" ? '<button class="tg-link" data-action="tg-pop" data-p="' + (c.k === "qc" ? 'checks' : 'road') + '" data-ro="' + ro.id + '">' + (c.k === "qc" ? 'Truck checks…' : 'Road test…') + '</button>' : '<button class="tg-link" data-action="tg-rl" data-f="fix" data-v="' + c.k + '">' + c.fix + '</button>') : '') + '</div>' + (A.fix === c.k && !c.ok ? fixF(c) : ''); }).join('') + '</div>';
+  var handH = (qc ? '' : v141WalkH(ro)) + '<span class="tg-lbl top">Before it goes</span><div class="tg-r">' + hand.map(function(x){ var on = !!rs[x[0]]; return '<button class="tg-chip tick' + (on ? ' on' : '') + '" data-action="tg-rl" data-f="tick" data-v="' + x[0] + '" title="' + esc(x[1]) + '">' + (on ? tgI("check", 12) : '') + esc({ keys: "Keys back", clean: "Truck clean", invoice: "Invoice closed", notify: "Customer told" }[x[0]] || x[1]) + '</button>'; }).join('') + '</div>';
   var pname = A.to === "o" ? (A.other || "") : (L[A.to] || {}).n || "";
   var ppl = '<span class="tg-lbl top">Picked up by</span><div class="tg-r">' + L.map(function(q, i){ return '<button class="tg-pchip' + (A.to === i ? ' on' : '') + '" data-action="tg-rl" data-f="to" data-v="' + i + '"><span class="tg-av">' + esc(tgIni(q.n)) + '</span><b>' + esc(q.n) + '</b><small>' + esc(q.r || "") + '</small></button>'; }).join('') + '<button class="tg-chip' + (A.to === "o" ? ' on' : '') + '" data-action="tg-rl" data-f="to" data-v="o">' + (L.length ? 'Someone else' : 'Name') + '</button></div>' + (A.to === "o" ? '<input class="tg-wide" data-no-draft data-tg-in="rl-other" placeholder="Who picked it up" value="' + esc(A.other || "") + '">' : '');
   var line = '<div class="tg-rline"><span>' + tgI("key", 13) + 'Key tag <b class="tg-no">' + esc(ro.keyTag || "—") + '</b>' + (pname ? ' to ' + esc(tgFirst(pname)) : '') + '</span><span>' + tgI("pin", 13) + esc(tgSpotLbl(tgSpotOf(ro))) + ' frees up</span><span>' + tgI("check", 13) + 'Moves to Released today</span></div>';
   var tx = L.length ? '<label class="tg-opt"><input type="checkbox" data-tg-ck="rl-text"' + (A.text ? ' checked' : '') + '>Copy the “Ready for pickup” text too</label>' : '';
-  var nb = bad.length + handBad.length;
-  var any = nb && A.any ? '<div class="tg-any"><span class="tg-lbl">Release with ' + nb + ' check' + (nb > 1 ? 's' : '') + ' open — why?</span><div class="tg-r">' + TG_RSN.map(function(x){ return '<button class="tg-chip' + (A.reason === x ? ' on' : '') + '" data-action="tg-rl" data-f="reason" data-v="' + esc(x) + '">' + esc(x) + '</button>'; }).join('') + '</div><input class="tg-wide" data-no-draft data-tg-in="rl-why" placeholder="' + (v141Hours(ro).bad ? 'Why is nothing clocked? (needed) — ' : '') + 'Note (optional)" value="' + esc(A.why || "") + '"></div>' : '';
-  var acts = !nb ? '<div class="tg-acts"><span class="hint">All checks pass</span><button class="btn btn-sm" data-action="tg-pop-x">Cancel<span class="tg-kbd">Esc</span></button><button class="btn btn-sm btn-primary" data-action="tg-rl-go" data-v="ok">' + tgI("release", 13) + 'Release<span class="tg-kbd">↵</span></button></div>'
-    : A.any ? '<div class="tg-acts"><button class="btn btn-sm tg-gh" data-action="tg-rl" data-f="back">Back</button><button class="btn btn-sm" data-action="tg-rl-go" data-v="any"' + (A.reason ? '' : ' disabled data-tip="Pick a reason first"') + '>Release anyway<span class="tg-kbd">↵</span></button></div>'
-    : '<div class="tg-acts"><span class="hint">Fix ' + nb + ' to unlock</span><button class="btn btn-sm" data-action="tg-rl" data-f="any">Release anyway…</button><button class="btn btn-sm btn-primary" disabled data-tip="Not yet — ' + nb + ' check' + (nb > 1 ? 's' : '') + ' open|Fix them, or release anyway">' + tgI("release", 13) + 'Release</button></div>';
-  return '<div class="tg-pop rl" data-tg-keep' + style + '>' + head("Release") + '<div class="tg-rsum' + (nb ? ' bad' : '') + '"><svg class="tg-ring' + (nb ? '' : ' ok') + '" width="22" height="22" viewBox="0 0 22 22"><circle class="t" cx="11" cy="11" r="9" style="stroke-width:3"/><circle class="p" cx="11" cy="11" r="9" style="stroke-width:3" stroke-dasharray="' + (CC * done / n).toFixed(1) + ' ' + CC.toFixed(1) + '"/></svg><b>Ready to close</b><small>' + done + ' of ' + n + (nb ? ' · ' + nb + ' open' : '') + '</small>' + v10Ready(done, n) + '</div>' + cks + handH + ppl + line + tx + any + acts + '</div>';
+  var nb = n - done - handBad.length, nh = handBad.length;   /* 17.5: open checks ask why; Before it goes is ticked, not excused */
+  var any = nb ? '<div class="tg-any"><span class="tg-lbl">' + (qc && !trxQcDone(ro) ? 'Why release now?' : 'Release with ' + nb + ' open — why?') + '</span><div class="tg-r">' + TG_RSN.map(function(x){ return '<button class="tg-chip' + (A.reason === x ? ' on' : '') + '" data-action="tg-rl" data-f="reason" data-v="' + esc(x) + '">' + esc(x) + '</button>'; }).join('') + '</div><input class="tg-wide" data-no-draft data-tg-in="rl-why" placeholder="' + (v141Hours(ro).bad ? 'Why is nothing clocked? (needed) — ' : '') + 'Note (optional)" value="' + esc(A.why || "") + '"></div>' : '';
+  var goOff = nh ? ' disabled data-tip="Not yet — tick Before it goes first"' : nb && !A.reason ? ' disabled data-tip="Pick a reason first"' : '';
+  var acts = '<div class="tg-acts"><span class="hint">Completes the RO and releases the truck.</span><button class="btn btn-sm" data-action="tg-pop-x">Cancel<span class="tg-kbd">Esc</span></button><button class="btn btn-sm btn-primary" data-action="tg-rl-go" data-v="' + (nb ? 'any' : 'ok') + '"' + goOff + '>' + tgI("release", 13) + (nb ? 'Release anyway' : 'Release') + '<span class="tg-kbd">↵</span></button></div>';   /* 17.5: one Release button */
+  return '<div class="tg-pop rl" data-tg-keep' + style + '>' + head("Release") + '<div class="tg-rsum' + (nb || nh ? ' bad' : '') + '"><svg class="tg-ring' + (nb || nh ? '' : ' ok') + '" width="22" height="22" viewBox="0 0 22 22"><circle class="t" cx="11" cy="11" r="9" style="stroke-width:3"/><circle class="p" cx="11" cy="11" r="9" style="stroke-width:3" stroke-dasharray="' + (CC * done / n).toFixed(1) + ' ' + CC.toFixed(1) + '"/></svg><b>Ready to close</b><small>' + done + ' of ' + n + (nb ? ' · ' + nb + ' open' : '') + '</small>' + v10Ready(done, n) + '</div>' + cks + handH + ppl + line + tx + any + acts + '</div>';
 }
 
 /* ---------- search: where is it? ---------- */

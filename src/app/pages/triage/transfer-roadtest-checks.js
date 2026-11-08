@@ -209,10 +209,10 @@ function trxAuto(ro){
   var inn = pts.filter(function(p){ return p.status === "Installed"; }).length, rt = ro.roadTest;
   return [
     { t: "All operations closed", ok: L.length > 0 && done === L.length, d: done + " of " + L.length },
-    { t: "Story on every operation", ok: !noStory, d: noStory ? noStory + " without a cause and correction" : "complaint, cause, correction" },
     { t: "Parts installed", ok: inn === pts.length, d: pts.length ? inn + " of " + pts.length : "no parts" },
     { t: "Road test passed", ok: trxPassed(ro), d: trxPassed(ro) ? (rt.miles ? rt.miles + " mi" : "passed") + (rt.at ? " · " + fmtTime(rt.at) : "") : rt && rt.result === "Fail" ? "failed — test it again" : "not logged yet", road: !trxPassed(ro) },
-    (function(){ var nn = 0; L.forEach(function(op){ STATE.punches.forEach(function(p){ if(p.opId === op.id && p.stop && !noteEntries(p.notes).length) nn++; }); }); return { t: "Notes written", ok: !nn, d: nn ? nn + " punch" + (nn === 1 ? "" : "es") + " with no note" : "every punch has a note" }; })(),
+    (function(){ var nn = 0; L.forEach(function(op){ STATE.punches.forEach(function(p){ if(p.opId === op.id && p.stop && !noteEntries(p.notes).length) nn++; }); });   /* 17.5: the story and the punch notes are one check */
+      return { t: "Story and notes on every operation", ok: !noStory && !nn, d: noStory ? noStory + " without a cause and correction" : nn ? nn + " punch" + (nn === 1 ? "" : "es") + " with no note" : "every operation and punch" }; })(),
     (function(){ var nf = roFilesN(ro); return { t: "Files on the RO", ok: nf > 0, d: nf ? nf + " file" + (nf === 1 ? "" : "s") : "none yet — photos, the paperwork" }; })(),
     { t: "Hours", ok: true, info: true, d: (Math.round(b * 10) / 10) + " of " + (Math.round(q * 10) / 10) + " quoted" }
   ].filter(function(x){ return x.t !== "Road test passed" || rtNeeded(ro); });
@@ -228,9 +228,11 @@ function trxChecksPop(ro, head, style){
     + (W.length ? '' : '<p class="tg-none">No walk-around checks — add the shop’s.</p>') + '</div>'
     + (E.edit ? '<div class="trx-add"><input data-no-draft data-tg-in="trx-qadd" placeholder="Add a check — e.g. Mud flaps on" value="' + esc(E.add || "") + '"><button class="btn btn-sm" data-action="tg-qc" data-f="add">' + tgI("plus", 12) + 'Add</button></div><div class="tg-goal">' + tgI("info", 12) + 'The list is the shop’s — every RO gets it</div>' : '');
   var left = (C.total - C.done);
-  var foot = '<div class="tg-acts"><span class="hint">' + (C.all && C.aok ? (C.at ? 'Done ' + fmtTime(C.at) + (C.by ? ' · ' + esc(tgFirst(C.by)) : '') : 'Every check done') : left + ' to go — Release asks for a reason') + '</span>'
-    + (C.all && !C.aok ? '' : '') + '<button class="btn btn-sm' + (C.all && C.aok ? ' btn-primary' : '') + '" data-action="tg-qc-go">' + tgI("release", 13) + (C.all && C.aok ? 'Release…' : 'Release anyway…') + '</button></div>';
-  return '<div class="tg-pop xf trx-q" data-tg-keep' + style + '>' + head("Truck checks") + '<div class="trx-qs' + (C.all && C.aok ? ' ok' : '') + '"><b>' + C.done + ' of ' + C.total + '</b><span>' + (C.all && C.aok ? 'ready to release' : 'before release') + '</span></div>' + auto + walk + foot + '</div>';
+  var ok = C.all && C.aok, marked = ok && !!C.at;   /* 17.5: the checks get the truck ready; Mark checked hands it to Release, which is the only thing that releases it */
+  var foot = '<div class="tg-acts"><span class="hint">' + (marked ? 'Checked ' + fmtTime(C.at) + (C.by ? ' · ' + esc(tgFirst(C.by)) : '') : ok ? 'Marks the truck checked. It doesn’t release it.' : left + ' to go. You can still release — it asks why.') + '</span>'
+    + (marked ? '<button class="btn btn-sm btn-primary" data-action="tg-qc-go">' + tgI("release", 13) + 'Release…</button>'
+      : '<button class="btn btn-sm btn-primary trx-mark" data-action="tg-qc" data-f="mark"' + (ok ? '' : ' disabled data-tip="Not yet — ' + left + ' to go"') + '>' + tgI("check", 13) + 'Mark checked</button>') + '</div>';
+  return '<div class="tg-pop xf trx-q" data-tg-keep' + style + '>' + head("Truck checks") + '<div class="trx-qs' + (ok ? ' ok' : '') + '"><b>' + C.done + ' of ' + C.total + '</b><span>' + (marked ? 'checked — ready for Release' : ok ? 'all done — mark it checked' : 'getting it ready for release') + '</span></div>' + auto + walk + foot + '</div>';
 }
 function trxQcSet(f, v){
   var P = UI.tgPop, ro = P && tgRoById(P.ro), E = UI.trxQ || (UI.trxQ = { edit: false, add: "" }), W = trxWalk(); if(!ro) return;
@@ -239,13 +241,17 @@ function trxQcSet(f, v){
   if(f === "del"){ var w0 = W[+v]; if(w0 == null) return; pushUndo("truck checks list"); W.splice(+v, 1); scheduleSave(true); return; }
   if(f === "tick"){ var w = W[+v]; if(w == null) return; var Q = ro.truckChecks && typeof ro.truckChecks === "object" ? ro.truckChecks : (ro.truckChecks = { ticks: [] }); if(!Array.isArray(Q.ticks)) Q.ticks = [];
     pushUndo("truck check"); var i = Q.ticks.indexOf(w); if(i > -1) Q.ticks.splice(i, 1); else Q.ticks.push(w);
-    var C = trxQc(ro); if(C.all && C.aok){ if(!Q.doneAt){ Q.doneAt = nowIso(); Q.doneBy = tgMe(); try{ audit("checks", roLabel(ro) + " truck checks done", ro); }catch(e){} } } else { delete Q.doneAt; delete Q.doneBy; }
+    var C = trxQc(ro); if(!(C.all && C.aok)){ delete Q.doneAt; delete Q.doneBy; }   /* 17.5: ticking doesn't mark it checked — Mark checked does */
     scheduleSave(true); return; }
+  if(f === "mark"){ var C2 = trxQc(ro); if(!(C2.all && C2.aok)) return; var Q2 = ro.truckChecks && typeof ro.truckChecks === "object" ? ro.truckChecks : (ro.truckChecks = { ticks: [] });
+    pushUndo("truck checks"); Q2.doneAt = nowIso(); Q2.doneBy = tgMe(); try{ audit("checks", roLabel(ro) + " truck checks done", ro); }catch(e){}
+    UI.tgPop = null; scheduleSave(true); pushToast(tgNum(ro) + " is checked — Release is next.", true); return; }
 }
-function trxQcDone(ro){ var C = trxQc(ro); return C.all && C.aok; }
+function trxQcDone(ro){ var C = trxQc(ro); return C.all && C.aok && !!C.at; }   /* 17.5: checked = every check done and Mark checked pressed */
 /* the Release pop-up counts the truck checks too — the open ones need a reason, like every other check */
 function trxRelCheck(ro){ if(!qcNeeded(ro)) return null; var C = trxQc(ro); /* the operations, parts and road test have their own lines here — this one is the walk-around */
-  return { k: "qc", ok: C.all, t: "Truck checks", d: C.all ? (C.of ? "walk-around done" : "no walk-around list") + (C.at ? " " + fmtTime(C.at) : "") + (C.by ? " · " + tgFirst(C.by) : "") : (C.of - C.n) + " of " + C.of + " walk-around not ticked", fix: "Truck checks" }; }
+  var ok = trxQcDone(ro);   /* 17.5: done means marked checked */
+  return { k: "qc", ok: ok, t: "Truck checks", d: ok ? "checked" + (C.at ? " " + fmtTime(C.at) : "") + (C.by ? " · " + tgFirst(C.by) : "") : C.all && C.aok ? "all done — not marked checked yet" : (C.total - C.done) + " of " + C.total + " open", fix: "Truck checks" }; }
 
 /* ---------- Needs action: Road test, Truck checks, Ready to go ---------- */
 function trxNeed(ro, c, lt, a){

@@ -97,7 +97,8 @@ function tgRelFix(k){
 function tgRelease(any){
   var ro = tgRoById((UI.tgPop || {}).ro); if(!ro) return; var A = UI.tgRL || {}, L = tgPeople(ro), bad = tgRelChecks(ro).filter(function(c){ return !c.ok; }), rs = releaseState(ro);
   v141WalkSync(ro); var handBad = v141Hand(ro).filter(function(x){ return !rs[x[0]]; });
-  if((bad.length || handBad.length) && !any) return; if(any && (!A.reason || (v141Hours(ro).bad && !String(A.why || "").trim()))) return;   /* Parsec 14.1: 0 h clocked needs a note */
+  if(handBad.length) return;   /* 17.5: Before it goes is ticked first, even releasing anyway */
+  if(bad.length && !any) return; if(any && (!A.reason || (v141Hours(ro).bad && !String(A.why || "").trim()))) return;   /* Parsec 14.1: 0 h clocked needs a note */
   var who = A.to === "o" ? String(A.other || "").trim() : (L[A.to] || {}).n || "", before = tgFlat();
   if(A.text && L.length){ var q = L[A.to] || L[0]; tgCopy(tgFill(tgTplBody("rdy"), ro, q)); }
   pushUndo("release");

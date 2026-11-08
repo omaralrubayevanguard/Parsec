@@ -301,8 +301,8 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `actions.js` | Doing things on Triage: tgDo for every action, nudge, accept, snooze, settle, release; tgAct handles clicks; typing, ticking, keys and dragging; the selected RO's stage progress. | 41 | 24 | 0 |
 | `model.js` | Triage's model: icons and groups, small helpers (tgNum, roShortNo — an RO goes by its last 4 digits), who has an RO and for how long, ETA from the contact log, late, people and text templates, clashes, Needs action. | 21 | 55 | 14 |
 | `page.js` | The Triage page: header, Needs action on the left, the log form (shared with the Inbox composer), approvals with a record, the Inbox / Desk / Yard views. | 47 | 17 | 0 |
-| `popovers.js` | Triage's pop-overs: release, free spots, search; the sample trucks from the catalog sit beside them. | 14 | 8 | 0 |
-| `transfer-roadtest-checks.js` | Transfer step by step, the road test and the truck checks (12.1), from any page (12.2): TRX pop-overs, who is in each department, the checks, the Needs action cards for them. | 39 | 43 | 8 |
+| `popovers.js` | Triage's pop-overs: release, free spots, search; the sample trucks from the catalog sit beside them. | 16 | 9 | 1 |
+| `transfer-roadtest-checks.js` | Transfer step by step, the road test and the truck checks (12.1), from any page (12.2): TRX pop-overs, who is in each department, the checks, the Needs action cards for them. | 40 | 43 | 8 |
 | `yard-map.js` | Triage's yard map: TY_CAT (arrival → released, the categories), tyCat(ro), late, where a truck is. | 4 | 11 | 1 |
 
 ## pages/warranty/  — Warranty: claims, board, money
@@ -386,7 +386,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `picking.js` | Picking several operations or parts at once on the RO page: the selection, the bulk actions, the pick toolbar. | 25 | 23 | 1 |
 | `px-components.js` | The RO page's components from the Parsec design system: pop-overs (one at a time, fixed to the viewport), the modal with scrim, StatusMenu, PartStatus dropdown, the Transfer / Add operation / Delete dialogs. | 29 | 31 | 3 |
 | `rail-fold.js` | Folding the RO page's right column (17.3): a fold button at its top, a strip of icons when folded (a click opens it at that part), the \ key, remembered per page, folds by itself under 1 100 px. | 4 | 8 | 4 |
-| `release-bypass.js` | Release without checks: the truck card's way past the truck checks, with a reason and an Activity line. | 5 | 7 | 1 |
+| `release-bypass.js` | The RO page's Release button (it opens Release, which asks why while checks are open) and the line an older RO released without checks still shows. | 1 | 4 | 0 |
 | `render-header.js` | The RO header band: compact or open, Details, delete RO. | 17 | 4 | 2 |
 | `render.js` | The RO page's render: openState (which card is open), renderNow draws every part into the shadow root, flipCards animates, and the scroll / pin bookkeeping. | 20 | 16 | 2 |
 | `state.js` | The RO page's state: R (shadow root), HOST, RO, S (per-RO UI state: open card, tabs, selection), mounting into the app's page, and the small date conversions. | 10 | 30 | 16 |
