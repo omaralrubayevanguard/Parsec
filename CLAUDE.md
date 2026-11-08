@@ -11,12 +11,12 @@ Read this first, every session. It says **how to work on Parsec with the user**.
 
 ## Every session
 
-1. Switch to the round's branch and `git pull` (see Git): `git fetch` then `git checkout v<next version>`.
+1. `git pull` on `main`, since another session may have pushed.
 2. Find the area in `docs/AREAS.md` and read the headers of its files, not the whole app.
 3. Change `src/`, `styles/` or `assets/`, never `dist/` or a built file.
 4. `python build.py`: every guard must pass.
 5. Run the tests for what you touched.
-6. Commit and push to the round's branch (see Git), then tell the user in a few lines what changed.
+6. Commit and push to `main` yourself, after every change (see Git), then tell the user in a few lines what changed.
 7. Send the built file in the chat, `dist/Parsec.html` renamed `Parsec_<version>.html`, after every change, unless the user asks you to hold.
 
 ## Commands
@@ -55,13 +55,12 @@ The tests need Playwright for Python, set up once per computer with `pip install
 1. In `src/app/kit/version.js`, write the new `BUILD` line (the version and a one-line summary) and move the old one to `BUILD_WAS`. So far a round of changes has been a point release (16.1, 16.2, 16.3); ask before a whole number goes up.
 2. Run `python build.py`, then the whole suite. It should be all green, or you should know why not: `tests/RESULTS-17.md` lists the tests that already failed on 16.3.
 3. Add the new entry at the top of `CHANGELOG.txt`, in the same shape as the others. Line 2 says which version is the newest.
-4. Commit on the round's branch and push. GitHub refuses tag pushes from cloud sessions, so give the user the commands to run in the top Parsec folder: `git fetch`, `git tag -a v17.5 <commit> -m "Parsec 17.5"`, `git push origin v17.5`. The next round's branch starts from this one.
+4. Commit and push to `main`. GitHub refuses tag pushes from cloud sessions, so give the user the commands to run in the top Parsec folder: `git pull`, `git tag -a v17.5 <commit> -m "Parsec 17.5"`, `git push origin v17.5`.
 5. Give the user `dist/Parsec.html` renamed `Parsec_<version>.html`. That one file is what goes to the shop; the test build never ships.
 
 ## Git
 
-- **One branch per round, named for its version** (`v17.5`, `v17.6`, …). Every change of the round is committed and pushed to that branch, never to `main`.
-- **Branches are never merged into `main`.** `main` stays at 17.4 (plus these rules). So each new round's branch starts from the previous round's branch, not from `main`, or the earlier rounds' changes would be lost. If the round's branch doesn't exist yet, make it from the newest round branch (or from `main` for the first one, `v17.5`).
+- **Work on `main`, no branches.** Commit and push each finished change yourself, right away; the user doesn't run git for changes, only for release tags. Use a branch only when the user asks for one.
 - One finished change per commit. The message says what changed for the user, e.g. "Time Log: drag an edge to change a punch".
 - Commit mock-ups too (`mockups/`), with the change they led to, or on their own when they're delivered.
 - Never commit `dist/`, anything from the real `Parsec Data/` folder or its exports, real customer data (names, phones, VINs), passwords or keys. The repository stays private.
