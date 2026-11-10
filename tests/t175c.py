@@ -12,6 +12,7 @@ def ok(c, m):
 STACK = "Part #\nDescription\nQty\nUnit\nCore\nExt\nSalesman\nVOL-85013702\nClutch kit 15.5\"\n1\n$1,240.00\n$150.00\n$1,390.00\nRyan Burke\nVOL-20518417\nPilot bearing\n1\n$38.50\n$0.00\n$38.50\nRyan Burke"
 BARE = "21707132\nFILTER, OIL\n2\n$45.20\n85137594\nSENSOR, NOX\n1\n$412.00"
 LBL = "Part Number: 21707132\nDescription: FILTER, OIL\nQuantity: 2\nUnit Price: $45.20\n\nPart Number: 85137594\nDescription: SENSOR, NOX\nQuantity: 1\nUnit Price: $412.00"
+ASIST = "22769526\t\n1.00\n (1.000/0.000)\tGet parts availability\tCHARGE AIR COOLER Catalog\t\t\n1,008.23\n0.00\n$1,008.23\t\n\n \n1675066\t\n2.00\n (2.000/0.000)\tGet parts availability\tSEALING RING Catalog\t\t\n5.64\n0.00\n$11.28\t\n"
 PLAIN = "Check and advise for ABS and parking lights come on when park brakes are released\nReplace driver side mirror glass"
 P = "t => { const P = __tg.IMPX.parse(t); return P.parts.map(x => [x.pn, x.desc, String(x.qty), x.price != null ? x.price : x.unit]); }"
 async def main():
@@ -27,6 +28,8 @@ async def main():
         ok(a == [["21707132", "FILTER, OIL", "2", 45.2], ["85137594", "SENSOR, NOX", "1", 412]], "…and without a header: part number, description, qty, cost (%s)" % a)
         a = await pg.evaluate(P, LBL)
         ok(a == [["21707132", "FILTER, OIL", "2", 45.2], ["85137594", "SENSOR, NOX", "1", 412]], "Part Number / Description / Quantity / Unit Price blocks (%s)" % a)
+        a = await pg.evaluate("t => __tg.IMPX.parse(t).parts.map(x => [x.pn, x.desc, String(x.qty), x.price])", ASIST)
+        ok(a == [["22769526", "CHARGE AIR COOLER", "1", 1008.23], ["1675066", "SEALING RING", "2", 5.64]], "ASIST’s parts grid: part number, name, qty, cost — without Catalog or Get parts availability (%s)" % a)
         rid, oid, n0 = await pg.evaluate("(() => { const r = __tg.S().ros.find(r => !r.shop && !r.dateClosed && r.operations.length >= 2); return [r.id, r.operations[1].id, r.operations[1].parts.length]; })()")
         # parts tab → these parts go on that operation
         await pg.evaluate("([id, op, t]) => __tg.IMPX.open({ ro: id, opId: op, text: t })", [rid, oid, BARE]); await pg.wait_for_timeout(900)

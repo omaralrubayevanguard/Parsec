@@ -479,6 +479,9 @@
   var MONEYL = /^\(?-?\$?\s*-?\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?\)?$/, LBLP = /^(part\s*(?:number|no\.?|#)|p\/?n|item(?:\s*(?:number|#))?)\s*[:#.]?\s*(.*)$/i,
     LBLD = /^desc(?:ription)?\s*[:.]?\s*(.*)$/i, LBLQ = /^(?:qty|quantity)\s*[:.]?\s*(.*)$/i, LBLC = /^(?:unit\s*price|price|cost|unit\s*cost|net|list(?:\s*price)?|amount|sell)\s*[:.]?\s*(.*)$/i;
   function unstack(L){
+    /* ASIST's parts grid: drop "Get parts availability", "Catalog" and the (shipped/back-order) marks, then read it one cell at a time */
+    var AS = L.some(function(l){ return /get parts availability|\(\s*\d+\.\d{3}\s*\/\s*\d+\.\d{3}\s*\)/i.test(l); });
+    if(AS) L = [].concat.apply([], L.map(function(l){ return String(l).replace(/get parts availability/gi, "").replace(/\(\s*\d+(?:\.\d+)?\s*\/\s*\d+(?:\.\d+)?\s*\)/g, "").replace(/\s+catalog(?=\s*(?:\t|$))/gi, "").split("\t").map(function(c){ return c.trim(); }).filter(Boolean); }));
     var one = function(l){ return String(l).trim() && splitCells(l).length === 1; }, pnL = function(l){ var t = l.trim(); return one(t) && isPn(t) && !MONEYL.test(t); }, numL = function(l){ var t = l.trim(); return one(t) && MONEYL.test(t); },
       txtL = function(l){ var t = l.trim(); return one(t) && /[a-z]{2}/i.test(t) && !isPn(t) && !MONEYL.test(t); };
     /* labelled blocks */
@@ -509,7 +512,12 @@
         if(numL(t) || /^\d{1,4}(?:\.\d+)?$/.test(t)){ cells.push(t); nums++; j++; continue; }
         if(txtL(t) && (!txt || nums) && cells.length < 9){ cells.push(t); if(!txt) txt = 1; j++; continue; }
         break; }
-      if(nums && txt){ out.push(cells.join("\t")); rows++; i = j; } else { out.push(L[i]); i++; }
+      if(nums && txt){   /* the row in one order — part number, description, the numbers, then the rest — with a header when there was none */
+        var pn0 = cells[0], tx = cells.slice(1).filter(function(c){ return !numL(c) && !/^\d{1,4}(?:\.\d+)?$/.test(c); }), nm = cells.slice(1).filter(function(c){ return numL(c) || /^\d{1,4}(?:\.\d+)?$/.test(c); });
+        nm = nm.map(function(c, ix){ return ix === 0 && nm.length >= 2 && /^\d+(?:\.\d+)?$/.test(c) ? String(+c) : /^\(?-?\$/.test(c) ? c : "$" + c; });   /* qty as a count, the rest as money */
+        if(txtL(cells[0])){ pn0 = cells[1]; tx = [cells[0]].concat(tx.filter(function(c){ return c !== cells[1]; })); }
+        if(!rows && !out.some(function(l){ return /\t/.test(l) && HDW.test(String(l).split("\t")[0].trim()); })) out.push(["Part #", "Description"].concat([["Unit"], ["Qty", "Unit"], ["Qty", "Unit", "Ext"], ["Qty", "Unit", "Core", "Ext"]][Math.min(nm.length, 4) - 1]).concat(tx.slice(1).map(function(){ return "Salesman"; })).join("\t"));
+        out.push([pn0, tx[0]].concat(nm).concat(tx.slice(1)).join("\t")); rows++; i = j; } else { out.push(L[i]); i++; }
     }
     return out;
   }
