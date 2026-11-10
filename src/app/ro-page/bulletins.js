@@ -1,7 +1,7 @@
 /* Parsec · ro-page · bulletins.js
    Files on the RO: saving to the folder (or IndexedDB until there is one), shrinking images, thumbnails, the bulletin log entries that carry files.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   saveFileViaAnchor saveFile downloadAttachment shrinkImage folderOn safeName roFolderName roDirByName legacyName fileHome readFromFolder uniqueName … (26 functions, 12 constants)
+   declares   saveFileViaAnchor saveFile downloadAttachment shrinkImage folderOn safeName roFolderName roDirByName legacyName fileHome readFromFolder uniqueName … (27 functions, 13 constants)
    state      ros
    uses       data/ kit/ ro/ shell/ state/
    at load    2× a timer · on window focus · on document visibilitychange
@@ -208,6 +208,31 @@ function attWalk(dir, pre, depth) {
   }).then(function () { return out; }, function () { return out; });
 }
 /* what the scan found shows: the RO page when its RO changed, and the app's lists, panels and counts */
+/* 17.5: a file put straight into an RO's folder (beside its page, not in Attachments) moves into Attachments, so it shows
+   on the RO like any other. Parsec's own files stay; a file that can't be moved is left where it is and not tried again. */
+var ROOT_SKIP = {};
+function attFromRoot(d, folder) {
+  return dirEntries(d).then(function (es) {
+    var L = es.filter(function (e) { return e.kind === 'file' && e.name !== RO_FILE && !PD_PAGE_RE.test(e.name) && !/\.json(\.gz)?$/i.test(e.name) && !SKIP_FILE.test(e.name) && !ROOT_SKIP[folder + '/' + e.name]; });
+    if (!L.length) return 0;
+    return d.getDirectoryHandle(PD_ATT, { create: true }).then(function (a) {
+      return L.reduce(function (p, e) {
+        return p.then(function () {
+          return e.getFile().then(function (file) {
+            if (Date.now() - file.lastModified < 4000) return;   /* still being copied in: the next pass takes it */
+            return uniqueName(a, e.name).then(function (nm) {
+              var key = folder + '/' + nm; WRITING[key] = 1;
+              return a.getFileHandle(nm, { create: true }).then(function (fh) { return fh.createWritable(); })
+                .then(function (w) { return w.write(file).then(function () { return w.close(); }); })
+                .then(function () { delete WRITING[key]; return d.removeEntry(e.name).catch(function () { ROOT_SKIP[folder + '/' + e.name] = 1; }); },
+                  function () { delete WRITING[key]; ROOT_SKIP[folder + '/' + e.name] = 1; return a.removeEntry(nm).catch(function () {}); });
+            });
+          }).catch(function () {});
+        });
+      }, Promise.resolve());
+    });
+  }).catch(function () { return 0; });
+}
 function jcScanShow(touched) {
   var busy = R && R.activeElement && /^(INPUT|TEXTAREA|SELECT)$/.test(R.activeElement.tagName);
   if (HOST && HOST.isConnected && RO && (!touched || touched[RO.id]) && !busy) render();
@@ -233,7 +258,7 @@ function scanFolder() {
         /* 17.1: a file the app is still copying in (or one it couldn't) no longer holds up the rest of the RO's files */
         var settled = recs.filter(function (r) { return r[1].inFolder && r[1].folder === folder; });
         return pdDirPath(root, folder, false)
-          .then(function (d) { return d.getDirectoryHandle(PD_ATT).then(function (a) { return attWalk(a, ''); }, function () { return []; }); }, function () { return null; })
+          .then(function (d) { return attFromRoot(d, folder).then(function () { return d.getDirectoryHandle(PD_ATT).then(function (a) { return attWalk(a, ''); }, function () { return []; }); }); }, function () { return null; })   /* 17.5: the RO folder's loose files first */
           .then(function (ents) {
             if (!ents) return;
             var onDisk = {}; ents.forEach(function (x) { onDisk[x.path] = x.h; });

@@ -94,7 +94,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `_close.js` | Closes the New RO import closure. | 0 | 0 | 0 |
 | `_open.js` | Opens the New RO import closure (IMPX): paste the ASIST case page, or drop screenshots, and get an RO with its fields and operations. | 0 | 0 | 1 |
 | `create.js` | Create RO / Apply: setF writes each accepted field through the RO details table; operations and parts are added or updated. | 12 | 6 | 3 |
-| `dialog-layout.js` | The one extraction window's parts (17.3): the slim strip of files read, the Found line, the RO as a ticket, the list of things to check and the Check view, where everything goes (New RO, an open RO, Inventory, the Library), documents and photos, the footer. | 13 | 15 | 2 |
+| `dialog-layout.js` | The one extraction window's parts (17.3): the slim strip of files read, the Found line, the RO as a ticket, the list of things to check and the Check view, where everything goes (New RO, an open RO, Inventory, the Library), documents and photos, the footer. | 14 | 15 | 2 |
 | `dialog.js` | The import dialog: the field rows, operation cards, totals, notes, the last-contact suggestion (16.3), what is hidden until needed. | 29 | 23 | 3 |
 | `field-rules.js` | What each kind of value can hold (17.3): a number, a date, an amount or a part number can't hold letters, so the screenshot reader's O, l, I, S and B are put back as 0, 1, 5 and 8; a VIN is repaired with its check digit. | 5 | 7 | 6 |
 | `fields.js` | The RO's fields as rows of the dialog (SPEC: label, group, source), the operations' rows, what changed vs the existing RO. | 17 | 27 | 7 |
@@ -360,7 +360,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `attachments-view.js` | The attachments large view: list, keys, rename, delete, open. | 24 | 17 | 5 |
 | `build-and-fold.js` | ropBuild draws the RO page's sections in order; every section folds (Parsec 14.4) and remembers it. | 6 | 5 | 1 |
 | `builders.js` | Small builders: fields, dropdowns, the pop-over pinning (a pop-over stays put while the page redraws), live updaters for totals. | 19 | 17 | 3 |
-| `bulletins.js` | Files on the RO: saving to the folder (or IndexedDB until there is one), shrinking images, thumbnails, the bulletin log entries that carry files. | 17 | 26 | 12 |
+| `bulletins.js` | Files on the RO: saving to the folder (or IndexedDB until there is one), shrinking images, thumbnails, the bulletin log entries that carry files. | 19 | 27 | 13 |
 | `cause-correction.js` | The Time tab's Cause and Correction (17.3): the two lines beside the notes, the notes underlined amber or green, click a sentence to move it, ask after a hand edit, ✦ suggests, copy the story. | 8 | 5 | 0 |
 | `clock-card-actions.js` | What you do on the clock card: hold to stop with a reason, lap / split, fix the start, notes, reopen; ockAuto for lunch and the end of the day (reminders only since Parsec 15). | 25 | 23 | 8 |
 | `clock-card-draw.js` | The clock card's pieces, markup and ticker: the big time, the ring, segments and facts; focus mode (the big shop-floor view); ockTick updates every card in place each second; the time bar's initials and note pins, and the note added where you click (17.1). | 52 | 83 | 1 |
