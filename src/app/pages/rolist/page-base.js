@@ -55,18 +55,20 @@ var PERM_ACTS = [
   ["Parts and money", [["p.order", "Order parts"], ["p.stock", "Adjust stock counts"], ["p.cost", "See costs and prices"], ["w.claim", "File warranty claims"]]],
   ["Admin", [["a.people", "Manage people and PINs"], ["a.settings", "Change settings and automations"], ["a.data", "Export or reset the data"]]],
   /* 17.3: which Settings menus they see — Me and Shortcuts are everyone's */
-  ["Settings menus", [["s.shop", "See The shop settings"], ["s.people", "See People & access"], ["s.data", "See Data settings"], ["s.auto", "See Automations"]]]
+  ["Settings menus", [["s.shop", "See The shop settings"], ["s.people", "See People & access"], ["s.data", "See Data settings"], ["s.auto", "See Automations"]]],
+  /* 17.5: the Library’s accessory kits — everyone reads; this changes the list */
+  ["Library", [["l.kits", "Change the accessory kits"]]]
 ];
 /* what each action stops, said plainly — "You can’t delete ROs" */
 var PERM_VERB = { "ro.new": "open new ROs", "ro.status": "change an RO’s status", "ro.release": "release a truck", "ro.reopen": "reopen a completed RO", "ro.del": "delete ROs",
   "t.own": "start the clock", "t.editown": "fix your punches", "t.editall": "fix someone else’s punches", "t.move": "move time to someone else", "t.approve": "approve timesheets", "t.others": "see other people’s time",
   "p.order": "order parts", "p.stock": "adjust stock counts", "p.cost": "see costs and prices", "w.claim": "file warranty claims",
   "a.people": "manage people and PINs", "a.settings": "change settings and automations", "a.data": "export or reset the data",
-  "s.shop": "see The shop settings", "s.people": "see People & access", "s.data": "see the Data settings", "s.auto": "see Automations" };
+  "s.shop": "see The shop settings", "s.people": "see People & access", "s.data": "see the Data settings", "s.auto": "see Automations", "l.kits": "change the accessory kits" };
 var PERM_ROLE_ACTS = {
   "Technician": "t.own t.editown",
-  "Foreman": "ro.new ro.status ro.release ro.reopen t.own t.editown t.editall t.move t.approve t.others p.order s.shop s.auto",
-  "Manager": "ro.new ro.status ro.release ro.reopen ro.del t.own t.editown t.editall t.move t.approve t.others p.order p.stock p.cost w.claim a.people a.settings s.shop s.people s.data s.auto",
+  "Foreman": "ro.new ro.status ro.release ro.reopen t.own t.editown t.editall t.move t.approve t.others p.order s.shop s.auto l.kits",
+  "Manager": "ro.new ro.status ro.release ro.reopen ro.del t.own t.editown t.editall t.move t.approve t.others p.order p.stock p.cost w.claim a.people a.settings s.shop s.people s.data s.auto l.kits",
   "Service writer": "ro.new ro.status ro.release ro.reopen t.own p.order p.cost w.claim s.shop",
   "Warranty admin": "ro.status t.own p.cost w.claim s.shop",
   "Triage": "ro.new ro.status ro.release t.own",

@@ -62,9 +62,10 @@ async def main():
         o = await pg.evaluate("(() => { const r = __tg.S().ros.find(x => !x.shop && (x.operations||[]).length >= 2 && !x.dateClosed); const op = r.operations[1]; return [r.id, op.id, (op.parts||[]).length]; })()")
         await pg.evaluate("x => __tg.IMPX.open({ ro: x[0], opId: x[1] })", o); await pg.wait_for_timeout(200)
         await pg.evaluate("t => __tg.IMPX.addText(t)", FX("x132", "s4_quote.txt")); await pg.wait_for_timeout(300)
-        await dlg("w.querySelector('[data-ix=apply]').click()"); await pg.wait_for_timeout(500)
+        await dlg("w.querySelector('[data-ix=pladd]').click()"); await pg.wait_for_timeout(500)   # 17.5: parts on their own — the Parts list's Add
         o2 = await pg.evaluate("x => { const r = __tg.getRO(x[0]); const op = r.operations.find(q => q.id === x[1]); return [(op.parts||[]).length, r.operations.length]; }", o)
         ok(o2[0] == o[2] + 4, "Extract parts: the quote's parts go on that operation (%s → %s)" % (o[2], o2[0]))
+        await pg.evaluate("__tg.IMPX.close()"); await pg.wait_for_timeout(150)   # 17.5: the window stays open after Add
         # files dropped anywhere in Parsec open the window
         await pg.evaluate("""async () => { const f = await """ + PHOTO + """; const dt = new DataTransfer(); dt.items.add(f);
           document.body.dispatchEvent(new DragEvent('dragover', { dataTransfer: dt, bubbles: true, cancelable: true }));

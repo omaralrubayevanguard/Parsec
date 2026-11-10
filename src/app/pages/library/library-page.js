@@ -14,7 +14,7 @@
   const esc = PG.e;
   const U = { tab: 'shop', q: '', fg: '', ro: null, op: null, open: null, sk: 'fgrp', sd: 1, tm: '', ty: '', tro: '', chk: false, olds: {} };   /* sk / sd: the Procedures column sorted, and which way · 17.3: tm / ty / tro the truck filter, chk To check, olds the older releases unfolded */
   const rd = () => { try{ PG.keepScroll(render); }catch(e){ render(); } };
-  const ICP = { add: '<path d="M12 5v14M5 12h14"/>', search: '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>', x: '<path d="M6 6l12 12M18 6L6 18"/>',
+  const ICP = { add: '<path d="M12 5v14M5 12h14"/>', copy: '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>', paste: '<rect x="6" y="5" width="12" height="16" rx="2"/><path d="M9 5V3.5h6V5M9 11h6M9 15h4"/>', search: '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>', x: '<path d="M6 6l12 12M18 6L6 18"/>',
     edit: '<path d="M4.5 19.5l1-4L15 6l3 3-9.5 9.5z"/>', del: '<path d="M5 7h14M10 7V5h4v2M7 7l1 13h8l1-13"/>', chev: '<path d="M9 6l6 6-6 6"/>' };
   const ic = (n, s) => `<svg class="tg-ic" viewBox="0 0 24 24" width="${s || 14}" height="${s || 14}" aria-hidden="true">${ICP[n] || ''}</svg>`;
   const kinds = () => LIB_KINDS;
@@ -63,7 +63,7 @@
 
   /* ---------- the page ---------- */
   function view(){
-    if(U.tab !== 'codes' && U.tab !== 'shop' && !libKind(U.tab)) U.tab = 'shop';
+    if(U.tab !== 'codes' && U.tab !== 'shop' && U.tab !== 'kits' && !libKind(U.tab)) U.tab = 'shop';
     return `<div class="tg lib" data-pg="library">${head()}${tabs()}<div class="lib-body">${tools()}<div class="lib-list" id="lib-list">${list()}</div></div>
       <input type="file" id="lib-file" accept=".pdf,application/pdf,image/*" multiple hidden data-ch="file"></div>`;
   }
@@ -76,9 +76,10 @@
     kinds().forEach(k => { if(!k.page) n[k.k] = libDocs().filter(d => d && d.kind === k.k).length; });
     n.models = libModelsN();
     const shopN = forShop().length;
-    return `<nav class="lib-tabs" role="tablist" aria-label="Library"><button class="lib-tab k-shop${U.tab === 'shop' ? ' on' : ''}" role="tab" aria-selected="${U.tab === 'shop'}" data-a="tab" data-k="shop" title="The documents that fit the trucks on the open ROs"><i></i>For the shop<small>${shopN}</small></button>${kinds().map(k => `<button class="lib-tab k-${k.k}${U.tab === k.k ? ' on' : ''}" role="tab" aria-selected="${U.tab === k.k}" data-a="tab" data-k="${k.k}"><i></i>${esc(k.tab)}<small>${n[k.k] || 0}</small></button>`).join('')}</nav>`;
+    return `<nav class="lib-tabs" role="tablist" aria-label="Library"><button class="lib-tab k-shop${U.tab === 'shop' ? ' on' : ''}" role="tab" aria-selected="${U.tab === 'shop'}" data-a="tab" data-k="shop" title="The documents that fit the trucks on the open ROs"><i></i>For the shop<small>${shopN}</small></button>${kinds().map(k => `<button class="lib-tab k-${k.k}${U.tab === k.k ? ' on' : ''}" role="tab" aria-selected="${U.tab === k.k}" data-a="tab" data-k="${k.k}"><i></i>${esc(k.tab)}<small>${n[k.k] || 0}</small></button>`).join('')}<button class="lib-tab k-kits${U.tab === 'kits' ? ' on' : ''}" role="tab" aria-selected="${U.tab === 'kits'}" data-a="tab" data-k="kits" title="Software kit numbers for standard configuration changes"><i></i>Accessory kits<small>${kitAll().length}</small></button></nav>`;   /* 17.5: kits.js */
   }
   function tools(){
+    if(U.tab === 'kits') return kitTools();   /* 17.5 */
     const C = roCtx();
     const docTab = U.tab === 'shop' || !!SHOP_KINDS[U.tab];
     const src = U.tab === 'codes' ? codeRows().concat([]) : libDocs().filter(d => d && d.kind === U.tab);
@@ -89,7 +90,7 @@
       ${docTab ? truckChips() : fgs.length > 1 || U.fg ? `<div class="lib-fgs" role="group" aria-label="Function group">${chip('', 'All')}${fgs.map(g => chip(g, g === '-' ? 'No group' : g + ' ' + LIB_FG[g], G[g])).join('')}</div>` : ''}
       ${C ? `<div class="lib-ctx">For <b>RO ${esc(C.ro.roNumber || '')}</b>${C.op ? ` · OP ${(C.ro.operations || []).indexOf(C.op) + 1} ${esc(String(C.op.complaint || '').slice(0, 40))}` : ''}${C.model ? ' · ' + esc(C.model) : ''} — its codes, function groups${U.tab === 'recall' ? ' and recalls' : ''}<button class="lib-ctx-x" data-a="all" title="Show the whole Library">Show all ${ic('x', 12)}</button></div>` : ''}</div>`;
   }
-  function list(){ if(String(U.q || '').trim() && U.tab !== 'models') return searchAll(); if(U.tab === 'shop') return shopList(); return U.tab === 'codes' ? codesList() : U.tab === 'models' ? libModelsHtml(U.q) : U.tab === 'proc' || U.tab === 'diag' ? procList(U.tab) : docsList(); }
+  function list(){ if(U.tab === 'kits') return kitsHtml(); if(String(U.q || '').trim() && U.tab !== 'models') return searchAll(); if(U.tab === 'shop') return shopList(); return U.tab === 'codes' ? codesList() : U.tab === 'models' ? libModelsHtml(U.q) : U.tab === 'proc' || U.tab === 'diag' ? procList(U.tab) : docsList(); }
 
   /* procedures: Impact's table with Model and Year, under function group headings; a column header sorts, again reverses */
   const PCOLS = [['fgrp', 'Fgrp'], ['title', 'Title'], ['info', 'Info type'], ['num', 'ID / Operation'], ['model', 'Model'], ['years', 'Year']];
@@ -158,7 +159,8 @@
   function pick(){ const f = document.getElementById('lib-file'); if(f){ f.value = ''; f.click(); } }
   function intake(files){ if(files && files.length) libIntake(files, null, r => { if(r.filed.length){ const k = r.filed[r.filed.length - 1].kind; if(k && k !== U.tab){ U.tab = r.filed.some(d => d.kind === U.tab) ? U.tab : k; } } rd(); }); }
   const H = {
-    tab: tt => { U.tab = tt.dataset.k; U.fg = ''; U.open = null; rd(); },
+    ...KITH,   /* 17.5: the Accessory kits tab */
+    tab: tt => { U.tab = tt.dataset.k; U.fg = ''; U.open = null; U.km = null; rd(); },
     fg: tt => { U.fg = U.fg === tt.dataset.v ? '' : tt.dataset.v; rd(); },
     all: () => { U.ro = null; U.op = null; U.q = ''; U.fg = ''; U.tm = ''; U.ty = ''; U.tro = ''; U.chk = false; rd(); },
     add: () => pick(),
@@ -174,8 +176,8 @@
       pgAsk({ head: 'Take ' + libDocChipText(d) + ' out of the Library?', sub: 'ROs that used it keep their copy in Attachments. The file stays in Parsec Data/Library.', buttons: [{ k: 'no', l: 'Keep it' }, { k: 'yes', l: 'Take it out', pri: true }] },
         k => { if(k !== 'yes') return; pushUndo('library'); libRemove(d); try{ libClose(); }catch(e){} rd(); pushToast(libDocChipText(d) + ' is out of the Library.'); }); }
   };
-  function input(tt){ if(tt.dataset.in === 'q'){ U.q = tt.value; relist(); } }
-  function change(tt){ if(tt.dataset.ch === 'file') intake(tt.files); else if(tt.dataset.ch === 'ty' || tt.dataset.ch === 'tro'){ U[tt.dataset.ch] = tt.value; rd(); } }
+  function input(tt){ if(tt.dataset.in === 'q'){ U.q = tt.value; relist(); } else if(String(tt.dataset.in || '').indexOf('kit-') === 0) kitInput(tt); }
+  function change(tt){ if(String(tt.dataset.ch || '').indexOf('kit-') === 0){ kitChange(tt); return; } if(tt.dataset.ch === 'file') intake(tt.files); else if(tt.dataset.ch === 'ty' || tt.dataset.ch === 'tro'){ U[tt.dataset.ch] = tt.value; rd(); } }
   function keydown(ev){
     if(ev.ctrlKey || ev.metaKey || ev.altKey || PG.typing(ev)) return;
     if(ev.key === '/'){ const q = document.getElementById('lib-q'); if(q){ ev.preventDefault(); q.focus(); } }

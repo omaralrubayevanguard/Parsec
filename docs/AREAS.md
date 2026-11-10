@@ -219,7 +219,8 @@ Load order is `build/manifest.txt`; this page is for finding things.
 |---|---|---:|---:|---:|
 | `_close.js` | Closes the Library page closure. | 0 | 0 | 0 |
 | `_open.js` | Opens the Library page closure (LIBPG). | 0 | 0 | 1 |
-| `library-page.js` | The Library page: tabs (Fault codes, CBRs, TSBs, FSBs, Recalls, Models, Procedures), the search, the function-group filter, documents in Impact’s columns by function group, procedures with sortable columns, codes by module with their FTBs, adding by button or drop. | 18 | 20 | 11 |
+| `kits.js` | The Library’s Accessory kits tab (17.5): software kit numbers for standard changes — the list and the kit beside it, search and group chips, Copy, Add to an RO…, New kit, Paste a list; changing the list is the l.kits permission. | 13 | 10 | 7 |
+| `library-page.js` | The Library page: tabs (Fault codes, CBRs, TSBs, FSBs, Recalls, Models, Procedures), the search, the function-group filter, documents in Impact’s columns by function group, procedures with sortable columns, codes by module with their FTBs, adding by button or drop. | 19 | 20 | 11 |
 | `shop-and-cards.js` | The Library page (17.3): For the shop (the documents that fit the open ROs), the bar by kind and what needs you, one search across every kind, the truck filter, To check, the document cards with older releases folded, and the panel opened by pointing at a row. | 9 | 10 | 4 |
 | `view.js` | viewLibrary() and libOpenFor(): the page module’s entry and opening it narrowed to an RO and operation. | 0 | 2 | 0 |
 

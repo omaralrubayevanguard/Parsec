@@ -156,6 +156,7 @@ pages/assets/_close.js
 pages/assets/view.js
 pages/library/_open.js
 pages/library/shop-and-cards.js
+pages/library/kits.js
 pages/library/library-page.js
 pages/library/_close.js
 pages/library/view.js

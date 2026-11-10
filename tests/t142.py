@@ -60,7 +60,8 @@ async def main():
         # 17.3: Extract opens the one extraction window, aimed at this operation
         await pg.evaluate("t => __tg.IMPX.addText(t)", "21899123  Release bearing  2  96.00\n20518417  Pilot bearing  1  38.50"); await pg.wait_for_timeout(400)
         fx = await pg.evaluate("[__tg.IMPX.isOpen() ? __tg.IMPX.state().acc.parts.length : -1, (document.querySelector('#imp-dlg [data-ix=apply]')||{}).textContent||'']")
-        await pg.evaluate("(()=>{ const b=document.querySelector('#imp-dlg [data-ix=apply]'); if(b) b.click(); })()"); await pg.wait_for_timeout(500)
+        await pg.evaluate("(()=>{ const b=document.querySelector('#imp-dlg [data-ix=pladd]'); if(b) b.click(); })()"); await pg.wait_for_timeout(500)   # 17.5: the Parts list's Add; the window stays
+        await pg.evaluate("__tg.IMPX.close()"); await pg.wait_for_timeout(200)
         n3 = await pg.evaluate(f"__tg.getRO('{q0[0]}').operations.find(o=>o.id==='{q0[1]}').parts.length")
         ok(fx[0] == 2 and n3 == n2 + 2, f"Extract: two lines read and added ({fx}, {n2}→{n3})")
         # 4 · RO list: the pane's card and an operation's quote; the Time column
