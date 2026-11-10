@@ -89,7 +89,7 @@ function ropRename(j, span) {
   inp.addEventListener('click', function (e) { e.stopPropagation(); });
   inp.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Enter') { e.preventDefault(); fin(true); } else if (e.key === 'Escape') { e.preventDefault(); fin(false); } });
   inp.addEventListener('blur', function () { fin(true); });
-  span.replaceWith(inp); inp.focus(); inp.select();
+  span.replaceWith(inp); autoWidthInput(inp, 120, 1600); inp.focus(); inp.select();   /* 17.5: as wide as its text, so the rest of the row still folds the card */
 }
 function ropOpRow(j, i, on, stash) {
   var st = opStatus(j), nm = typeof st === 'string' ? st : st.status, live = !!runningPunchOf(j);

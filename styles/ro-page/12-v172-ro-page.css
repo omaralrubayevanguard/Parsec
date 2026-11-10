@@ -146,3 +146,6 @@
 .rop-fsopen { margin-bottom: 6px; color: var(--ink-2); box-shadow: inset 0 0 0 1px var(--hairline); }
 .px-ro.rf-anim .rop-rail { transition: width .22s cubic-bezier(.2,.8,.2,1), flex-basis .22s cubic-bezier(.2,.8,.2,1); }
 @media (prefers-reduced-motion: reduce) { .px-ro.rf-anim .rop-rail { transition: none; } }
+/* 17.5: the complaint is as wide as its text (shown or being changed); the rest of the row is free to click to open and fold the card */
+.rop-orow > .px-row__t { flex: 0 1 auto; margin-right: auto; }
+.rop-orow > .rop-ren { flex: 0 1 auto; max-width: 100%; margin-right: auto; }
