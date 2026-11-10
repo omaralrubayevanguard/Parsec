@@ -102,7 +102,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `open.js` | Open and close the dialog, its input and key handling, the drag-and-drop of screenshots. | 12 | 7 | 0 |
 | `read-checks.js` | Checking what was read against itself (17.3): the VIN's model-year letter against the Year, dates in order, the RO number against the shop's others, hours against the labor price, a part's quantity and price against its line total. | 4 | 9 | 1 |
 | `read-match.js` | Matching what was read to what Parsec already knows (17.3): a customer spelled one letter off, the truck by its VIN or unit, a part number one character off a known one, what a fault code means. | 4 | 7 | 2 |
-| `read-text.js` | Reading the pasted text: labels and cells, dates, money, names, the case fields (RO #, customer, VIN, unit…), operations with complaint / cause / correction, parts and amounts. | 47 | 45 | 21 |
+| `read-text.js` | Reading the pasted text: labels and cells, dates, money, names, the case fields (RO #, customer, VIN, unit…), operations with complaint / cause / correction, parts and amounts. | 50 | 46 | 26 |
 
 ## kit/  — shared helpers every page uses: icons, formatters, the status look, tooltips, constants
 

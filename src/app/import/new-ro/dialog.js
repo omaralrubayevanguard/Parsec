@@ -195,6 +195,9 @@
   function addText(text, kind, name, file){
     if(!D || !String(text || "").trim()) return;
     var P = parse(text);
+    /* 17.5: pasted into an RO and nothing else read — short lines of plain words are new operations, one per line */
+    if(D.ro && !D.new && describe(P) === "nothing recognisable"){ var LL = String(text).split(/\r?\n/).map(function(l){ return l.trim(); }).filter(Boolean);
+      if(LL.length && LL.length <= 12 && LL.every(function(l){ return /[a-z]{3}/i.test(l) && l.length >= 6 && l.length <= 200 && !/\$\s*\d/.test(l); })) P.ops = LL.map(function(l){ var o = blankOp(0, cjClean(l.replace(/^\s*(?:op(?:eration)?\s*#?\s*)?\d{1,2}\s*[.):\-–]\s*/i, ""))); o.parts = []; return o; }); }
     D.pieces.forEach(function(p){ p.nw = 0; });
     var nImg = D.pieces.filter(function(p){ return p.kind === "image"; }).length + 1;
     var pc = { kind: kind || "text", role: "case", name: kind === "pdf" ? name : pieceName(kind || "text", P, nImg), what: describe(P), P: P, nw: 1 };

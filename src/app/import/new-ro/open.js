@@ -123,5 +123,5 @@
     if(o.files && o.files.length) readFiles(o.files);
     return D;
   }
-  return { partsTable: partsTable, open: open, close: close, parse: parse, mergeInto: mergeInto, blankAcc: blankAcc, findRo: findRo, mapStatus: mapStatus, describe: describe, parseWhen: parseWhen,
+  return { partsTable: partsTable, unstack: unstack, open: open, close: close, parse: parse, mergeInto: mergeInto, blankAcc: blankAcc, findRo: findRo, mapStatus: mapStatus, describe: describe, parseWhen: parseWhen,
     addText: function(t){ addText(t); }, state: function(){ return D; }, plan: function(){ return D ? plan() : null; }, counts: function(){ return D ? counts(plan()) : null; }, apply: function(){ apply(); }, isOpen: function(){ return !!D; }, statusText: function(m){ return NOW ? String(m).replace(/screenshot \d+ of \d+/i, "screenshot " + NOW[0] + " of " + NOW[1]) : m; }, reader: function(f){ OCRF = f; }, read: function(fl){ return readFiles(fl); } };

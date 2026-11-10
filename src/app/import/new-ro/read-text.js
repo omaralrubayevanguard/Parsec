@@ -2,7 +2,7 @@
    Reading the pasted text: labels and cells, dates, money, names, the case fields (RO #, customer, VIN, unit…), operations with complaint / cause / correction, parts and amounts.
    Flow: parse(text) → a fields object; everything else in new-ro works on that.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   pad parseWhen whenTxt whenIn money usd nameCase splitCells cellsOf labelOf labelish clean … (45 functions, 21 constants)
+   declares   pad parseWhen whenTxt whenIn money usd nameCase splitCells cellsOf labelOf labelish clean … (46 functions, 26 constants)
    uses       import/ pages/inventory/ ro/ shell/ trucks/
 */
   /* ---------------------------------------------------------------- reading the text */
@@ -474,8 +474,47 @@
       .replace(/\$(\d{1,3})(?:([.,])(\d{1,3}))? (\d{1,3})((?:[.,]\d{3})*[.,]\d{2})(?![\d.,])/g, function(m, a, sep, af, bi, br){ if(af == null) return "$" + a + bi + br; if(af.length + bi.length === 3) return "$" + a + "," + af + bi + br; return m; })
       .replace(/(\d{1,3})\.(\d{3})(?=[.,]\d{2}(?!\d))/g, "$1,$2");
   }
+  /* 17.5: parts or a table copied one cell per line, or as "Part Number: … / Description: … / Qty … / Price …" blocks — put each
+     row back on one line, so the parts table reads them like any pasted table */
+  var MONEYL = /^\(?-?\$?\s*-?\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?\)?$/, LBLP = /^(part\s*(?:number|no\.?|#)|p\/?n|item(?:\s*(?:number|#))?)\s*[:#.]?\s*(.*)$/i,
+    LBLD = /^desc(?:ription)?\s*[:.]?\s*(.*)$/i, LBLQ = /^(?:qty|quantity)\s*[:.]?\s*(.*)$/i, LBLC = /^(?:unit\s*price|price|cost|unit\s*cost|net|list(?:\s*price)?|amount|sell)\s*[:.]?\s*(.*)$/i;
+  function unstack(L){
+    var one = function(l){ return String(l).trim() && splitCells(l).length === 1; }, pnL = function(l){ var t = l.trim(); return one(t) && isPn(t) && !MONEYL.test(t); }, numL = function(l){ var t = l.trim(); return one(t) && MONEYL.test(t); },
+      txtL = function(l){ var t = l.trim(); return one(t) && /[a-z]{2}/i.test(t) && !isPn(t) && !MONEYL.test(t); };
+    /* labelled blocks */
+    var lv = function(re, l){ var m = re.exec(String(l).trim()); return !!(m && String(m[m.length - 1] || '').trim()); };
+    if(L.some(function(l){ return lv(LBLP, l) && !/^desc/i.test(String(l).trim()); }) && L.some(function(l){ return lv(LBLC, l) || lv(LBLQ, l); })){
+      var out0 = [], r = null, fl = function(){ if(r && (r.pn || r.desc)) out0.push([r.pn || "", r.desc || "", r.qty || "1", r.cost != null ? r.cost : ""].join("\t")); r = null; };
+      L.forEach(function(l){ var t = String(l).trim(), m;
+        if((m = LBLP.exec(t)) && m[2] && !/^desc/i.test(t)){ fl(); r = { pn: m[2].trim() }; return; }
+        if(r && (m = LBLD.exec(t))){ r.desc = m[1].trim(); return; } if(r && (m = LBLQ.exec(t))){ r.qty = m[1].trim(); return; }
+        if(r && (m = LBLC.exec(t))){ if(r.cost == null) r.cost = m[1].trim(); return; }
+        fl(); out0.push(l); });
+      fl(); return out0;
+    }
+    /* a header copied one cell per line goes back on one line */
+    var HDW = /^(?:part\s*#|part\s*(?:number|no\.?)|p\/n|pn|desc(?:ription)?|qty|quantity|unit(?:\s*price)?|price|core|ext(?:ended)?|list(?:\s*price)?|disc(?:ount)?|net|sales(?:man|person)?|bin|cost|amount|total)\s*:?$/i, L2 = [];
+    for(var h = 0; h < L.length; h++){ var k = h; while(k < L.length && HDW.test(String(L[k]).trim())) k++;
+      if(k - h >= 3){ L2.push(L.slice(h, k).map(function(x){ return x.trim(); }).join("\t")); h = k - 1; } else L2.push(L[h]); }
+    L = L2;
+    /* one cell per line: a row starts at a part number (or a description right before one) and takes the amounts after it */
+    var out = [], i = 0, rows = 0;
+    while(i < L.length){
+      var st = pnL(L[i]) ? i : (txtL(L[i]) && i + 1 < L.length && pnL(L[i + 1]) && !(i > 0 && pnL(L[i - 1])) ? i : -1);
+      if(st < 0){ out.push(L[i]); i++; continue; }
+      var cells = [L[i].trim()], j = i + 1, nums = 0, txt = txtL(L[i]) ? 1 : 0;
+      if(txt){ cells.push(L[j].trim()); j++; }
+      while(j < L.length){ var t = L[j].trim();
+        if(pnL(t) || (txtL(t) && j + 1 < L.length && pnL(L[j + 1]) && nums)) break;
+        if(numL(t) || /^\d{1,4}(?:\.\d+)?$/.test(t)){ cells.push(t); nums++; j++; continue; }
+        if(txtL(t) && (!txt || nums) && cells.length < 9){ cells.push(t); if(!txt) txt = 1; j++; continue; }
+        break; }
+      if(nums && txt){ out.push(cells.join("\t")); rows++; i = j; } else { out.push(L[i]); i++; }
+    }
+    return out;
+  }
   function parse(raw){
-    var text = fixMoney(fixDigits(fixLabels(cleanOcrText(String(raw || "")).replace(/\r/g, "").replace(/\u00a0/g, " "))));   /* 17.3: letters read for digits (field-rules.js) */
+    var text = fixMoney(fixDigits(fixLabels(unstack(cleanOcrText(String(raw || "")).replace(/\r/g, "").replace(/\u00a0/g, " ").split("\n")).join("\n"))));   /* 17.5: unstack first — before a label reads the next cell as its value */   /* 17.3: letters read for digits (field-rules.js) */
     var L = text.split("\n").map(function(l){ return l.replace(/[ \t]+$/, ""); }).filter(function(l){ return l.trim(); });
     var f = readLoose(text, L, readFields(L));
     try{ if(typeof v163ReadContact === "function") v163ReadContact(text, L, f); }catch(e){ console.error(e); }   /* Parsec 16.3: the contact and the driver */
