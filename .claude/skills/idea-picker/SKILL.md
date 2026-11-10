@@ -1,9 +1,9 @@
 ---
 name: "idea-picker"
-description: "Build an Idea picker (v5): an interactive ideas mock-up for picking visual references — animated drawn options and real screenshots, Love / OK / No, mix-and-match parts, blind compare, linked ideas that carry a pick forward, a mood board and a DESIGN.md spec to copy back. Use when asked for ideas, options, references or a mock-up before a UI, workflow or feature change."
+description: "Build an Idea picker (v5.1): an interactive ideas mock-up for picking visual references — animated drawn options and real screenshots, Love / OK / No, mix-and-match parts, blind compare, linked ideas that carry a pick forward, a mood board and a DESIGN.md spec to copy back, or a live click-through look with a deep Tune drawer for a whole restyle. Use when asked for ideas, options, references or a mock-up before a UI, workflow or feature change."
 ---
 
-# Idea picker (v5)
+# Idea picker (v5.1)
 
 An **Idea picker** is a single interactive HTML page that shows ideas for a change, drawn as they would look. Each idea's action plays as a short animation when an option is picked. The person picks one option per idea, or Skip, and copies the picks back into the chat. You build from those picks.
 
@@ -40,6 +40,26 @@ Decide this first; it sets the idea count and whether the live preview is on.
 | Visuals | the component itself, drawn once per idea | one screen or step per visual |
 
 More than 8 ideas about one component crowd the preview pane and repeat the same drawing; fewer than 10 across a workflow leave screens with no idea.
+
+## A third shape: the live look (new in v5.1)
+
+Use it when the ask is a whole new look (colours, lettering, layout, motion), not a change to one control or one flow. It is not built from `template.html`. The page is the app itself, drawn in the new look and clickable, with a **Tune the look** drawer in place of the idea cards. Two are in the Parsec repository under `mockups/`: "Parsec new look ideas mock-up.html" and "Parsec new look 2 ideas mock-up.html". Start from the newer one.
+
+- **Real screens, sample data, everything answers.** Draw the screens the person names plus the two or three most used. Every button, menu, window and message works on the sample data, with Undo. A page that isn't drawn says so in one line.
+- **Motion answers the person.** "Nothing moves before a pick" is for idea cards. Here things move when the person acts (press, point, drag, hold), a clock may run, and one start-up moment is fine. Put small moves on every part, and give each kind its own switch.
+- **Tune goes deep.** Group the controls by job: Colour, Lettering, Shape and depth, Motion, Layout, then a group for each family of parts. Three kinds of control:
+  - a **choice** (A / B / C, the first is the recommended one) for each part that has distinct designs: status marks, buttons, the main button, fields, switches, tabs, progress, windows, pop-overs, messages, icons, navigation;
+  - a **slider** for anything continuous: accent colour and strength, tint, how dark, corners, depth, outlines, spacing, text and figure size, speed, spring. Its name says which way it runs, and a double-click puts it back;
+  - a **switch** for each small move (press travel, ripple, lift, tilt, and so on).
+- **A Workbench page** shows every part on its own, with the same controls beside it and Love / OK / No for the part, so a part is judged and tuned where it sits.
+- **Your picks** keeps the format below. A choice reads `· <Idea>: B · <label>`, a moved slider `· Corners: 0 px`, switched-off moves `· Small moves: off <name>, <name>`, and screens and parts `♥ … · ok … · no …`. Untouched sliders and switches are not listed and not counted as unpicked.
+- **Checks** (there is no `ipCheck` here):
+  - a click-through script over every flow, with no console errors;
+  - text contrast of at least 4.5:1 in every colour set, day and night;
+  - no sideways scroll and no overlap from 360 to 1920 px, with the drawer open and with each navigation style;
+  - reduced motion still works;
+  - a magnified look at the backdrop and other quiet layers. A layer that never shows passes every other check.
+  - Each option key is written on `<html>` as `data-<key>`, so keep the keys clear of the `data-` names the page uses as selectors.
 
 ## How to run it
 
@@ -159,6 +179,9 @@ References:
   - **Linear** (dark, from Linear) — near-black canvas, indigo `#5e6ad2`, Inter at 600, 8 px cards / 6 px controls, compact 12 px padding.
   - Each theme sets colour tokens plus `--head`/`--hw` (heading font and weight), `--rc`/`--rp`/`--rv`/`--rb`/`--rs` (card, panel, visual, control, tag corners) and `--cp`/`--gg` (card padding, grid gap). The frame uses only these, so switching theme restyles everything. Keep the names. Old saved `mist` / `obsidian` picks open as Carbon / Linear.
   - The visuals follow the colour tokens for free. Keep their own radii fixed: they draw the product, not the picker.
+**New in v5.1**
+- **The live look** is a third shape of mock-up for a whole restyle. It has its own section above and does not use the template.
+
 **New in v5**
 - **Cards** sit one per row, full width (beside the live preview when it's on). From 900 px wide the **options sit beside the picture** in a right-hand column (220–280 px; 280–360 px for Love / OK / No and mix), with the note under them; below 900 px they stack under the picture. A drawn visual is at least 220 px tall; draw at the product's real size — don't scale the drawing up. A picked card gets an accent ring; a skipped one doesn't. The current card (for the keyboard) gets a stronger ring. A card whose `needs` parent isn't picked is dimmed with a "needs: …" badge; once the parent is picked it reads "from <Parent> · <option>".
 - **No Compare, Blind or Pin on the cards.** A card holds the title, the picture, the options and the note.

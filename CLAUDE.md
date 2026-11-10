@@ -81,6 +81,7 @@ The skill is in this repository: `.claude/skills/idea-picker/SKILL.md`, with `te
   - A **Your picks** panel that gathers the picks into text to copy back into the chat, in the skill's exact format.
   - Every action animated the way it would really happen. Nothing moves until an option is picked; then it plays once and holds the result, and ↻ appears after the pick.
   - Parsec's real look, names and numbers.
+  - A whole new look is shown as a **live look**: the app itself to click through, with a Tune drawer that goes deep (a choice for each part, sliders, a switch for each small move) and a Workbench page. The skill has the details.
 - **Where it goes:** save it as `mockups/Parsec <topic> ideas mock-up.html` and commit it. Then show it where the user can click it:
   - In a chat that publishes artifacts, publish it.
   - In Claude Code on the user's computer, give the file's path to open in the browser.
