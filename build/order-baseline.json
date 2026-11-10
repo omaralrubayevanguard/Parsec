@@ -94,7 +94,7 @@
 "pages/shop-data.js \u00b7 var PG_SD",
 "pages/technician/_open.js \u00b7 var CX \u00b7 on document focusout, on document paste",
 "pages/inbox/_open.js \u00b7 var IB",
-"pages/timelog/_open.js \u00b7 var TL \u00b7 on document pointerdown (capture), on document pointermove, on document pointerup, on document dblclick",
+"pages/timelog/_open.js \u00b7 var TL \u00b7 on document pointerdown (capture), on document pointermove, on document pointerup, on document pointerdown (capture), on document pointermove, on document pointerup, on document dblclick",
 "pages/parts/_open.js \u00b7 var PT",
 "pages/fixes/_open.js \u00b7 var FX",
 "pages/career/_open.js \u00b7 var CR",

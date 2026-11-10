@@ -34,6 +34,7 @@ ro-page/clock-card-actions.js
 pages/parts/stages.js
 
 clock/change-running-clock.js
+clock/clock-edit.js
 
 shell/lists-fold.js
 shell/page-search.js
@@ -78,6 +79,7 @@ pages/timelog/model.js
 pages/timelog/draw.js
 pages/timelog/popovers.js
 pages/timelog/fixes.js
+pages/timelog/clock-rows.js
 pages/timelog/actions.js
 pages/timelog/_close.js
 pages/timelog/view.js

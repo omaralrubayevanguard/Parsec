@@ -13,10 +13,12 @@
     if(d === 'spl'){ p.v = t.value; const f = findP(p.pid), el = document.querySelector('[data-pg="timelog"] .tg-pop .tk-spd'); if(f && el){ const m = pm(t.value, +t.dataset.cur); el.textContent = m != null && m > f.p.s && m < f.p.e ? dur(m - f.p.s) + ' · ' + dur(f.p.e - m) : '—'; } return; }
     if(d === 'cra'){ p.a = t.value; return; } if(d === 'crb'){ p.b = t.value; return; }
     if(d === 'sn'){ p.n = t.value; const b = document.querySelector('[data-pg="timelog"] .tg-pop [data-a="tsignn"]'); if(b){ b.disabled = !t.value.trim(); if(b.disabled) b.setAttribute('data-tip', 'Write the note first'); else b.removeAttribute('data-tip'); } return; }
+    if(d === 'shed'){ p.v = t.value; return; }   /* 17.5: the pop-over redraws on Enter or when the field is left */
     if(d === 'shin'){ p.v = t.value; const m = pm(t.value, +t.dataset.cur), r1 = document.querySelector('[data-pg="timelog"] .tg-pop .tk-shd'); if(r1) r1.textContent = m != null && m <= NOW ? dur(NOW - m) : '—'; }
     if(d === 's' || d === 'e'){ const f = findP(p.pid); if(!f) return; const e0 = p.e != null ? p.e : f.p.e != null ? hm(f.p.e) : '', s0 = pm(p.s != null ? p.s : hm(f.p.s), f.p.s); const m = f.p.e == null && !String(e0).trim() ? (s0 != null ? NOW - s0 : 0) : (pm(e0, f.p.e) || 0) - (s0 || 0), r = document.querySelector('[data-pg="timelog"] .tk-tg .ro'); if(r) r.textContent = m > 0 ? dur(m) : '—'; }
     if(d === 'note'){ const f = findP(t.dataset.nid); if(!f) return; if(!p._sn){ pushUndo('work notes'); p._sn = 1; } f.raw.notes = t.value; const n = [...document.querySelectorAll('[data-pg="timelog"] .tg-pop [data-nid]')].filter(x => !x.value.trim()).length, h = document.querySelector('[data-pg="timelog"] .tg-pop .tk-nleft'); if(h) h.textContent = n ? n + ' left' : 'All done'; } }
   function change(t){ if(t.dataset.in === 'note') scheduleSave(true);
+    if(t.dataset.in === 'shed'){ const c0 = +t.dataset.cur, v = pm(t.value, c0); if(v != null && U.pop){ U.pop.v = hm(v); rd(); } return; }
     if(t.classList && t.classList.contains('tk-tin')){ const c0 = t.dataset.cur !== '' && t.dataset.cur != null ? +t.dataset.cur : null, v = pm(t.value, c0); if(v != null && t.value.trim() !== hm(v)){ t.value = hm(v); input(t); } } }   /* Parsec 14.6: 715 becomes 07:15 */
   function fieldKey(t, ev){ const k = ev.key, d = t.dataset.in;
     if(k === 'Escape'){ t.blur(); if(U.pop){ if(U.drag && U.drag.pending) U.drag = null; U.pop = null; rd(); } ev.preventDefault(); return true; }
@@ -49,7 +51,8 @@
     if(k === 'a'){ const b = document.querySelector('[data-pg="timelog"] [data-a="pop"][data-p="add"]'); if(b){ H.pop(b); return stop(); } }
     if(k >= '1' && k <= '4'){ if(k === '4' && role() === 'tech') return stop(); U.view = ['day', 'week', 'sheet', 'shop'][+k - 1]; if(U.view !== 'shop' && U.who === 'ALL') U.who = techs()[0] || null; rd(); return stop(); }
   }
-  function after(){ PG.placePop(U); if(U.kb) PG.kbScroll(); const f = document.querySelector('[data-pg="timelog"] .tg-pop [data-in="s"], [data-pg="timelog"] .tg-pop [data-in="shin"]'); if(f && U.pop && !U.pop._f){ U.pop._f = 1; f.focus(); f.select(); }
+  function after(){ PG.placePop(U); if(U.kb) PG.kbScroll(); const f = document.querySelector('[data-pg="timelog"] .tg-pop [data-in="s"], [data-pg="timelog"] .tg-pop [data-in="shin"], [data-pg="timelog"] .tg-pop [data-in="shed"]');
+    document.querySelectorAll('[data-pg="timelog"] .tk-whc .tk-whi.on').forEach(b => { const c = b.parentNode; c.scrollTop = b.offsetTop - c.clientHeight / 2 + b.offsetHeight / 2; }); if(f && U.pop && !U.pop._f){ U.pop._f = 1; f.focus(); f.select(); }
     if(U.pop && U.pop.type === 'notes' && !U.pop._nf){ U.pop._nf = 1; const el = document.querySelector('[data-pg="timelog"] .tg-pop [data-nid]'); if(el) el.focus(); } }
   const TK = { clk: () => { const c = U.who && U.who !== 'ALL' ? (flush(), calc(U.who, TODAY)) : null; return c ? dur(c.clocked) : null; } };
   /* the Inbox: timesheets to sign or approve */

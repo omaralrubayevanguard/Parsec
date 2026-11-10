@@ -51,6 +51,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 |---|---|---:|---:|---:|
 | `air-and-lunch-blocks.js` | Air and lunch blocks on the day: a deleted time entry stays as air and says what it was (15 C), who wrote a note, the air reason as a note. | 9 | 14 | 0 |
 | `change-running-clock.js` | Change a clock while it runs (12.7 e): move the running punch to another job, stop it at a typed time, the shift's limits. | 10 | 15 | 0 |
+| `clock-edit.js` | Change a day clock’s clock in or clock out on any day (17.5): its limits, the punches a new time leaves outside (trim or block), the change marked edited, deleting a clock segment. | 5 | 8 | 0 |
 | `day-clock-watch.js` | The day clock watches for you, on every page (14.6 G): “Still on the clock?” after the shift end, a job running before the clock-in, the clock-out check — corner cards drawn by v146Tick. | 14 | 31 | 1 |
 | `day-clock.js` | The day clock (shifts): clock in when the day starts, out when it ends; lunch off the clock; shiftsForDate, openShift. | 8 | 14 | 0 |
 | `lunch-reminder.js` | The lunch reminder (14.7 C): a corner card at lunch time; nothing is clocked out by itself. | 2 | 6 | 0 |
@@ -287,8 +288,9 @@ Load order is `build/manifest.txt`; this page is for finding things.
 |---|---|---:|---:|---:|
 | `_close.js` | Closes the Time Log closure. | 0 | 0 | 0 |
 | `_open.js` | Opens the Time Log closure (TL): one person's day and pay period from the punches and day clocks. | 0 | 0 | 1 |
-| `actions.js` | Typing, dragging and keys on the Time Log; the delete question. | 9 | 7 | 2 |
-| `draw.js` | The Time Log's drawing: the day strip, the track, the drag layer, Fix these on top of the Day view, the sign bar, the pay-period and Shop views. | 51 | 21 | 4 |
+| `actions.js` | Typing, dragging and keys on the Time Log; the delete question. | 10 | 7 | 2 |
+| `clock-rows.js` | The Time Log’s clock rows (17.5): click a clock in / out time to change it — typed, suggested times and a time wheel, a reason, trims the punches outside; drag the IN / OUT flags; the row’s ⋯ menu. | 9 | 4 | 5 |
+| `draw.js` | The Time Log's drawing: the day strip, the track, the drag layer, Fix these on top of the Day view, the sign bar, the pay-period and Shop views. | 52 | 21 | 4 |
 | `fixes.js` | The fixes in one place (14.6): ACT (every fix action), runFix, ask (a request to the foreman), the reasons, drag to change a time. | 32 | 8 | 7 |
 | `model.js` | The Time Log's model: the day built from punches and day clocks (dayOf / calc), the pay period, evidence for an end time (14.6), fix requests → the foreman approves, Fix these items, deleted punches as air (15). | 20 | 21 | 53 |
 | `popovers.js` | The Time Log's pop-overs: a punch, a day clock, split / merge, the air reason, Move time. | 22 | 12 | 4 |

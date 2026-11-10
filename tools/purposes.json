@@ -296,5 +296,7 @@
   "library/read-more.js": "More from a document (17.3): its part numbers, labor operations and hours, chassis ranges, symptoms and the repair in one line; the two likeliest kinds when the number doesn't say; the fields worth checking; and using them on an operation.",
   "library/intake-list.js": "Filing a stack of files (17.3): a progress window while they read, then one list with each file's kind, number and whether it's ready, needs a check or is already in the Library; open a row to check it, or file the ready ones in one click.",
   "pages/library/shop-and-cards.js": "The Library page (17.3): For the shop (the documents that fit the open ROs), the bar by kind and what needs you, one search across every kind, the truck filter, To check, the document cards with older releases folded, and the panel opened by pointing at a row.",
-  "library/viewer-use.js": "The document panel's use (17.3): what it's valid for, its symptoms and repair steps to tick from an operation, Attach to… with the ROs it fits first, and the expand button that makes the panel a page of its own."
+  "library/viewer-use.js": "The document panel's use (17.3): what it's valid for, its symptoms and repair steps to tick from an operation, Attach to… with the ROs it fits first, and the expand button that makes the panel a page of its own.",
+  "clock/clock-edit.js": "Change a day clock’s clock in or clock out on any day (17.5): its limits, the punches a new time leaves outside (trim or block), the change marked edited, deleting a clock segment.",
+  "pages/timelog/clock-rows.js": "The Time Log’s clock rows (17.5): click a clock in / out time to change it — typed, suggested times and a time wheel, a reason, trims the punches outside; drag the IN / OUT flags; the row’s ⋯ menu."
 }

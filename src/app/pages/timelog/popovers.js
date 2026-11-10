@@ -9,6 +9,7 @@
   function findP(id){ const raw = STATE.punches.find(p => p.id === id); if(!raw) return null; const k = localDay(raw.start); return { t: punchWho(raw), k, p: punchOf(raw, k), raw }; }
   function pop(){
     const p = U.pop; if(!p) return '';
+    if(p.type === 'shed') return shedPop(p); if(p.type === 'shm') return shmPop(p);   /* 17.5: clock-rows.js */
     const hd = (t, sub) => `<div class="tg-ph"><b>${t}</b>${sub ? `<span class="cu">${sub}</span>` : ''}<button class="btn btn-sm ib" data-a="popx">${ic('x', 14)}</button></div>`;
     if(p.type === 'who') return `<div class="tg-pop menu tk-pop-m"><div class="tk-mih">Whose time</div>${techs().map(t => `<button class="tg-mi${techSame(U.who, t) ? ' on' : ''}" data-a="who" data-t="${esc(t)}">${av(t)}${esc(t)}</button>`).join('')}<button class="tg-mi${U.who === 'ALL' ? ' on' : ''}" data-a="who" data-t="ALL">${av('ALL')}Whole shop<span class="meta">Shop view</span></button><div class="tk-mnote">A technician sees only their own time. The foreman and the manager can open anyone’s.</div></div>`;
     if(p.type === 'add') return `<div class="tg-pop menu tk-pop-m"><button class="tg-mi" data-action="open-manual-punch">${ic('clock', 14)}Add a punch…<span class="meta">${kbd('A')}</span></button><button class="tg-mi" data-action="open-add-shift" data-day="${U.day || TODAY}">${ic('plus', 14)}Add a clock in / out…</button><div class="tk-mnote">Import CSV and Backup are on the Settings page — they’re not day-to-day.</div></div>`;
