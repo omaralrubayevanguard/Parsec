@@ -33,9 +33,9 @@ async def main():
         rid, oid, n0 = await pg.evaluate("(() => { const r = __tg.S().ros.find(r => !r.shop && !r.dateClosed && r.operations.length >= 2); return [r.id, r.operations[1].id, r.operations[1].parts.length]; })()")
         # parts tab → these parts go on that operation
         await pg.evaluate("([id, op, t]) => __tg.IMPX.open({ ro: id, opId: op, text: t })", [rid, oid, BARE]); await pg.wait_for_timeout(900)
-        sel = await pg.evaluate("(() => { const s = document.querySelector('#imp-dlg [data-ix=pto]'); return s ? s.value : null; })()")
+        sel = await pg.evaluate("(() => { const s = document.querySelector('#imp-dlg [data-ixpl=to]'); return s ? s.value : null; })()")
         ok(sel == oid, "the window says which operation the parts go on — the one they were pasted from (%s)" % sel)
-        await pg.evaluate("__tg.IMPX.apply()"); await pg.wait_for_timeout(700)
+        await pg.click("#imp-dlg [data-ix=pladd]"); await pg.wait_for_timeout(700)
         got = await pg.evaluate("([id, op]) => __tg.getRO(id).operations.find(o => o.id === op).parts.map(p => [p.partNumber, p.description])", [rid, oid])
         ok(len(got) == n0 + 2 and ["85137594", "SENSOR, NOX"] in [list(x) for x in got], "Apply adds both parts to that operation (%s)" % got[-2:])
         # plain lines → new operations, shown on the window like the parts

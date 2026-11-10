@@ -151,3 +151,22 @@
 #imp-dlg .ix-ppl,#imp-dlg .ix-lp{background:none;box-shadow:inset 0 0 0 1px var(--px-hair);color:var(--px-ink2)}
 .ix[data-new="1"] .ix-op .ix-oh > .ix-bd,.ix[data-new="1"] .ix-note .ix-bd{display:none}
 .ix-on small.ix-pa.st{color:var(--px-accent,var(--px-ink));font-weight:500}   /* 17.3: the status the paperwork gives */
+/* 17.5: parts pasted on their own — a Parts list of its own (parts-list.js) */
+#imp-dlg .ix-pl{width:100%;border-collapse:collapse;font-size:12.5px;table-layout:fixed}
+#imp-dlg .ix-pl th{font-size:11px;font-weight:600;color:var(--px-ink3);text-align:left;padding:6px 6px 4px;white-space:nowrap}
+#imp-dlg .ix-pl th:nth-child(1){width:26px}#imp-dlg .ix-pl th:nth-child(2){width:110px}#imp-dlg .ix-pl th:nth-child(4){width:52px}#imp-dlg .ix-pl th:nth-child(5){width:84px}#imp-dlg .ix-pl th:nth-child(6){width:84px}#imp-dlg .ix-pl th:nth-child(7){width:190px}#imp-dlg .ix-pl th:nth-child(8){width:70px}
+#imp-dlg .ix-pl td{padding:3px 6px;box-shadow:inset 0 1px 0 var(--px-hair);color:var(--px-ink);vertical-align:middle}
+#imp-dlg .ix-pl .r{text-align:right}
+#imp-dlg .ix-pl td.x{font-family:var(--px-mono);font-size:12px;white-space:nowrap;color:var(--px-ink2)}
+#imp-dlg .ix-pl input.ix-plc{all:unset;box-sizing:border-box;width:100%;height:auto !important;padding:4px 6px !important;border:0 !important;border-radius:6px;font:inherit;color:inherit;cursor:text;text-overflow:ellipsis;background:transparent !important;box-shadow:none !important}   /* plain text until it is clicked */
+#imp-dlg .ix-pl input.ix-plc.r{text-align:right;font-family:var(--px-mono);font-size:12px}
+#imp-dlg .ix-pl td.pn input.ix-plc{font-family:var(--px-mono);font-size:12px}
+#imp-dlg .ix-pl input.ix-plc:hover:not(:disabled){box-shadow:inset 0 0 0 1px var(--px-hair) !important}
+#imp-dlg .ix-pl input.ix-plc:focus{box-shadow:inset 0 0 0 1px var(--px-ink),0 0 0 3px color-mix(in srgb,var(--px-ink) 12%,transparent) !important;background:var(--px-panel) !important}
+#imp-dlg .ix-plto{width:100%;height:28px;font-size:12px}
+#imp-dlg .ix-pl tr.off td:not(:first-child){opacity:.5}
+#imp-dlg .ix-pl tr.ad td{color:var(--px-ink2)}
+#imp-dlg .ix-pldup{display:block;padding:0 6px 3px;font-size:11px;color:var(--px-warn)}
+#imp-dlg .ix-pla{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 7px;border-radius:10px;font-size:11px;font-weight:500;background:var(--px-good-t);color:var(--px-good);white-space:nowrap}
+#imp-dlg .ix-pltot{display:flex;justify-content:space-between;padding:8px 6px 2px;font-size:12px;color:var(--px-ink3)}
+#imp-dlg .ix-pltot b{font-family:var(--px-mono);color:var(--px-ink);font-weight:600}

@@ -21,7 +21,8 @@
   }
   function close(){ var w = document.getElementById("imp-dlg"); if(w) w.remove(); document.documentElement.classList.remove("ix-open"); var b = D && D.back; D = null; try{ if(b && b.isConnected) b.focus({ preventScroll: true }); }catch(e){} }
   /* 17.3: closing with something read asks first, in the footer */
-  function tryClose(){ if(D && (D.pieces.length || Object.keys(D.edits).length) && !D.ask){ D.ask = true; draw(); var b = document.querySelector('#imp-dlg [data-ix="askno"]'); if(b) b.focus(); return; } close(); }
+  function tryClose(){ if(D && plOn() && (D.pl || []).some(function(r){ return r.added; })){ close(); return; }   /* 17.5: parts added — nothing to lose */
+    if(D && (D.pieces.length || Object.keys(D.edits).length) && !D.ask){ D.ask = true; draw(); var b = document.querySelector('#imp-dlg [data-ix="askno"]'); if(b) b.focus(); return; } close(); }
   function bind(w){
     /* point at a file: the Found line says what it gave */
     w.addEventListener("mouseover", function(e){ var pc = e.target.closest && e.target.closest("[data-pc]"), fd = w.querySelector("[data-fd]"); if(!fd) return;
@@ -31,6 +32,7 @@
       var t = e.target.closest && e.target.closest("[data-ix]"); if(!t || !w.contains(t)) return;
       var a = t.getAttribute("data-ix");
       if(a !== "target" && a !== "tgt" && D.menu){ D.menu = false; if(a !== "close") draw(); }
+      if(a === "pladd"){ plAdd(); return; }   /* 17.5 */
       if(a === "close") tryClose();
       else if(a === "askno"){ D.ask = false; draw(); }
       else if(a === "askyes") close();
@@ -58,10 +60,11 @@
       else if(a === "newinstead"){ D.forceNew = true; match(); draw(); }
       else if(a === "drop" && !(e.target.closest && e.target.closest("[data-ix-paste], button"))) t.focus();
     });
-    w.addEventListener("input", function(e){ var t = e.target; if(t.getAttribute && t.getAttribute("data-ixf")) onInput(t); });
+    w.addEventListener("input", function(e){ var t = e.target; if(t.getAttribute && t.getAttribute("data-ixpl")){ if(t.type !== "checkbox" && t.tagName !== "SELECT") plSet(t, false); return; } if(t.getAttribute && t.getAttribute("data-ixf")) onInput(t); });
     w.addEventListener("change", function(e){
       var t = e.target;
       if(t.id === "ix-shots" || t.id === "ix-pdf"){ var fl = Array.prototype.slice.call(t.files || []); t.value = ""; readFiles(fl); return; }
+      if(t.getAttribute("data-ixpl")){ plSet(t, true); return; }   /* 17.5 */
       if(t.getAttribute("data-ix") === "pcon"){ var pc = D.pieces[+t.getAttribute("data-i")]; if(pc) pc.off = !t.checked; draw(); return; }
       if(t.getAttribute("data-ix") === "opon"){ D.skip[t.getAttribute("data-k")] = !t.checked; draw(); return; }
       if(t.getAttribute("data-ix") === "pto"){ D.opId = t.value; D.opAuto = false; rebuild(); return; }   /* 17.3 */

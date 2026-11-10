@@ -31,10 +31,11 @@ async def main():
            "it lands as a new operation with its hours, Cause and Correction; the RO's story is untouched (%s)" % r)
         # parts on their own
         await pg.evaluate("([id, t]) => __tg.IMPX.open({ ro: id, text: t })", [rid, PARTS]); await pg.wait_for_timeout(900)
-        sel = await pg.evaluate("() => { const s = document.querySelector('#imp-dlg select[data-ix=pto]'); return s ? [s.options.length, s.selectedIndex] : null; }")
-        ok(sel and sel[0] == n0 + 1 and sel[1] == 0, "parts pasted: “These parts go on” lists the RO's operations, the first picked (%s)" % sel)
-        await pg.evaluate("() => { const s = document.querySelector('#imp-dlg select[data-ix=pto]'); s.selectedIndex = 1; s.dispatchEvent(new Event('change', { bubbles: true })); }"); await pg.wait_for_timeout(500)
-        await pg.evaluate("__tg.IMPX.apply()"); await pg.wait_for_timeout(700)
+        sel = await pg.evaluate("() => { const s = document.querySelector('#imp-dlg select[data-ixpl=to]'); return s ? [s.options.length, s.selectedIndex] : null; }")
+        ok(sel and sel[0] >= 2 and sel[1] == 0, "parts pasted: each row's Goes on menu lists the RO's operations, the first picked (%s)" % sel)   # 17.5: a menu on each row
+        for i in range(2):
+            await pg.evaluate("i => { const s = document.querySelectorAll('#imp-dlg select[data-ixpl=to]')[i]; s.selectedIndex = 1; s.dispatchEvent(new Event('change', { bubbles: true })); }", i); await pg.wait_for_timeout(300)
+        await pg.click("#imp-dlg [data-ix=pladd]"); await pg.wait_for_timeout(700)
         q = await pg.evaluate("id => { const R = __tg.getRO(id); return { n: R.operations.length, on2: (R.operations[1].parts || []).map(p => p.partNumber), named: R.operations.some(o => o.complaint === 'Parts') }; }", rid)
         ok(q["n"] == n0 + 1 and "21479638" in q["on2"] and "20532237" in q["on2"] and not q["named"], "the parts go on Op 2 as picked — no new operation (%s)" % q)
         ok(not errs, "no page errors (%s)" % errs[:2])

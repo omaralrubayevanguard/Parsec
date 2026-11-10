@@ -43,7 +43,8 @@
   /* Found: what came in, each a jump to its section */
   function lyFound(Pl, upd, C){
     var K = lyCounts(Pl), b = [];
-    if(K.fields) b.push(["ix-s-ro", "RO"]); if(K.ops) b.push(["ix-s-ops", lyPl(K.ops, "operation")]); if(K.parts) b.push(["ix-s-ops", lyPl(K.parts, "part")]);
+    var pl = plOn();   /* 17.5: parts on their own — no operation is read, the Parts list is where they are */
+    if(K.fields) b.push(["ix-s-ro", "RO"]); if(K.ops && !pl) b.push(["ix-s-ops", lyPl(K.ops, "operation")]); if(K.parts) b.push([pl ? "ix-s-parts" : "ix-s-ops", lyPl(K.parts, "part")]);
     if(K.docs) b.push(["ix-s-docs", lyPl(K.docs, "document")]); if(K.photos) b.push(["ix-s-ph", lyPl(K.photos, "photo")]); if(K.notes) b.push(["ix-s-notes", lyPl(K.notes, "note")]);
     if(D.acc.totals) b.push(["ix-s-tot", "totals"]);
     var seg = upd ? '<div class="ix-seg" role="group" aria-label="Show"><button data-ix="only" data-v="0" aria-pressed="' + !D.only + '">Everything</button><button data-ix="only" data-v="1" aria-pressed="' + D.only + '">Changes only</button></div>' : '';
@@ -110,6 +111,7 @@
   /* the footer: where it goes, what's left to check, the one button */
   function lyFoot(Pl, C, L, upd){
     if(D.ask) return '<div class="ix-df"><span class="ix-ask">Close without saving? What was read is lost.</span><button class="ix-btn" data-ix="askno">Keep working</button><button class="ix-btn pri" data-ix="askyes">Close</button></div>';
+    if(plOn()) return plFoot();   /* 17.5 */
     var K = lyCounts(Pl), dest, prim, dis = false;
     if(D.target === "inv"){ var n = lyParts().length; prim = n ? "Add " + lyPl(n, "part") + " to Inventory" : "No parts read"; dis = !n; dest = '<b>Inventory</b> ' + n; }
     else if(D.target === "lib"){ prim = K.docs ? "File " + lyPl(K.docs, "document") : "No documents read"; dis = !K.docs; dest = '<b>Library</b> ' + K.docs; }

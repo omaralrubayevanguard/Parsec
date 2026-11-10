@@ -126,7 +126,7 @@
     var ppl = Pl.people.length ? '<div class="ix-ppl">' + ic("user", 13) + '<span><b>' + Pl.people.length + (Pl.people.length === 1 ? ' person joins' : ' people join') + ' the Team</b> — no pages, no sign-in: ' + Pl.people.map(function(p){ return esc(p.n) + ' (' + esc(p.why) + ')'; }).join(", ") + '</span></div>' : '';
     var reading = D.busy ? '<div class="imp-status busy" id="imp-status" role="status">' + esc(D.busy) + '</div>' : '<div class="imp-status" id="imp-status" role="status" aria-live="polite">' + esc(D.msg || "") + '</div>';
     var C2 = [["new", C.new, "new"], ["upd", C.upd, "updated"], ["kept", C.kept, "kept yours"], ["edit", C.edit, "typed"], ["same", C.same, "same"]].filter(function(x){ return x[1]; });
-    var chips = upd && C2.length ? '<div class="ix-sum">' + C2.map(function(x){ return '<span class="' + x[0] + '"><b>' + x[1] + '</b>' + x[2] + '</span>'; }).join("") + '</div>' : '<div class="ix-sum" hidden></div>';
+    var chips = upd && C2.length && !plOn() ? '<div class="ix-sum">' + C2.map(function(x){ return '<span class="' + x[0] + '"><b>' + x[1] + '</b>' + x[2] + '</span>'; }).join("") + '</div>' : '<div class="ix-sum" hidden></div>';
     var body;
     if(empty) body = lyEmpty(phone);
     else {
@@ -144,7 +144,7 @@
       if(partial) ticket = '<div class="ix-mu ix-roskip">Nothing for the RO’s own fields in this — only ' + (D.pieces.some(function(p){ return !p.off && p.P && p.P.ops.length; }) ? 'operations' : 'parts') + '. <button class="ix-lk" data-ix="allf">Show the RO’s fields</button></div>';
       body = (D.checking != null ? '' : lyNote(L))
         + ticket
-        + '<section class="ix-sec" id="ix-s-ops" data-for="ro inv"><div class="ix-sh"><h4>Operations</h4><span>' + Pl.ops.length + '</span><em>→ on the RO · parts on each</em></div>' + ptoSel + (ptoSel ? '' : lpSel) + (Pl.ops.length ? '<div class="ix-ops">' + Pl.ops.map(opCard).join("") + '</div>' : '<div class="ix-mu ix-none">No operations read yet.</div>') + '</section>'
+        + (plOn() ? plHtml() : '<section class="ix-sec" id="ix-s-ops" data-for="ro inv"><div class="ix-sh"><h4>Operations</h4><span>' + Pl.ops.length + '</span><em>→ on the RO · parts on each</em></div>' + ptoSel + (ptoSel ? '' : lpSel) + (Pl.ops.length ? '<div class="ix-ops">' + Pl.ops.map(opCard).join("") + '</div>' : '<div class="ix-mu ix-none">No operations read yet.</div>') + '</section>')   /* 17.5: parts on their own → parts-list.js */
         + lyExtras()
         + (partial && !Pl.notes.length && !ppl ? '' : '<section class="ix-sec" id="ix-s-notes" data-for="ro"><div class="ix-sh"><h4>Notes</h4><span>' + Pl.notes.length + '</span><em>→ Activity, with who and when</em></div>' + ppl + notesHtml(Pl) + '</section>')
         + (partial && !D.acc.totals ? '' : '<section class="ix-sec" id="ix-s-tot" data-for="ro"><div class="ix-sh"><h4>Totals</h4><em>checked against what Parsec adds up</em></div>' + totals(Pl) + '</section>');   /* 17.3: not for a partial paste with none */
