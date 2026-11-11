@@ -19,6 +19,7 @@ The test build is the app plus src/test/hooks.js (window.__tg), nothing else.
 import os, sys, re, json, time, shutil, gzip, subprocess, datetime
 H = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(H)
 args = sys.argv[1:]
+if "--help" in args or "-h" in args: print(__doc__); sys.exit(0)   # a help flag must never start the 40-minute suite
 def opt(name, default=None):
     if name in args:
         i = args.index(name); v = args[i + 1]; del args[i:i + 2]; return v
