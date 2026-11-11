@@ -462,7 +462,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 
 | file | what it is | KB | functions | constants |
 |---|---|---:|---:|---:|
-| `more-themes.js` | Thirteen more themes (17.3): cool blues, indigo, violet, steel, carbon and four grid backgrounds, each one line you can delete. | 4 | 2 | 0 |
+| `more-themes.js` | Fourteen more themes (17.3, 17.5): cool blues, indigo, violet, steel, carbon, Carbon with Charcoal (the new look's palette) and four grid backgrounds, each one line you can delete. | 5 | 2 | 0 |
 
 ## trucks/  — the truck pictures: the catalog, matching an RO to a body, the banner, peek, notes on the truck
 

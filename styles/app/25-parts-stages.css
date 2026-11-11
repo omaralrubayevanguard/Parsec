@@ -37,7 +37,7 @@
 @keyframes pst-pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--sc) 45%,transparent)}100%{box-shadow:0 0 0 9px transparent}}
 .pst-t .lb{font-size:12.5px;line-height:16px;color:var(--tg-ink3);}
 .pst-t li.d .lb{color:var(--tg-ink2);}
-.pst-t li.c .lb{color:var(--sc);font-weight:600;}
+.pst-t li.c .lb{color:color-mix(in srgb,var(--sc) 78%,var(--tg-ink,#1D1C1A));font-weight:600;}   /* the stage's colour, pulled toward the ink so the word reads at 4.5 to 1 in every theme */
 .pst-t small{font-size:11.5px;line-height:15px;color:var(--tg-ink3);max-width:100%;overflow-wrap:anywhere;}
 .pst-t small .a1,.pst-held .a1{color:var(--tg-warn);font-weight:500;}
 .pst-t small .a2,.pst-held .a2{color:var(--tg-bad);font-weight:600;}
