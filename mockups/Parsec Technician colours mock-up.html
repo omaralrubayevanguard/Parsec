@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Parsec Technician Colours</title>
+<style>
+/* Layout: a rail of palettes on the left, the Technician page twice (night, day) on the right. The rail's own colours stay quiet so the palettes are judged alone. */
+:root{--bg:#ecebe8;--panel:#f7f6f3;--ink:#1c1c1e;--ink2:#4a4a4f;--ink3:#626268;--line:#d9d7d1;--sel:#1c1c1e;--onsel:#f7f6f3;color-scheme:light;
+  --f:"Segoe UI",system-ui,-apple-system,sans-serif;--fd:"Bahnschrift","DIN Alternate","Roboto Condensed","Arial Narrow",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#131315;--panel:#1b1b1e;--ink:#ecebe8;--ink2:#b6b5b0;--ink3:#97968f;--line:#2c2c30;--sel:#ecebe8;--onsel:#1b1b1e;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#131315;--panel:#1b1b1e;--ink:#ecebe8;--ink2:#b6b5b0;--ink3:#97968f;--line:#2c2c30;--sel:#ecebe8;--onsel:#1b1b1e;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:400 14px/1.45 var(--f);-webkit-font-smoothing:antialiased}
+button,textarea{font:inherit;color:inherit}
+.app{display:grid;grid-template-columns:300px minmax(0,1fr);gap:24px;max-width:1360px;margin:0 auto;padding-block:24px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.rail{position:sticky;top:24px;align-self:start;display:grid;gap:16px;max-height:calc(100vh - 48px);overflow:auto;padding-right:2px}
+.rail h1{margin:0;font:600 20px/1.2 var(--f);text-wrap:balance}
+.rail>p{margin:4px 0 0;color:var(--ink3);font-size:13px}
+.pals{display:grid;gap:6px}
+.pal{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 10px;align-items:center;padding:10px 10px 10px 12px;border-radius:10px;background:var(--panel);box-shadow:inset 0 0 0 1px var(--line);cursor:pointer;transition:box-shadow .2s,transform .15s}
+.pal:hover{box-shadow:inset 0 0 0 1px var(--ink3)}
+.pal:active{transform:scale(.99)}
+.pal[aria-selected="true"]{box-shadow:inset 0 0 0 2px var(--sel)}
+.pal:focus-visible{outline:2px solid var(--sel);outline-offset:2px}
+.pal b{font-weight:600;font-size:13.5px}.pal small{display:block;color:var(--ink3);font-size:12px}
+.sws{grid-column:1/-1;display:flex;gap:0;height:14px;border-radius:4px;overflow:hidden}
+.sws i{flex:1}.sws i.wide{flex:2.4}
+.rate{display:flex;gap:2px}
+.rate button{all:unset;cursor:pointer;min-width:26px;height:24px;padding:0 6px;border-radius:6px;text-align:center;font-size:11.5px;font-weight:600;color:var(--ink3);box-sizing:border-box;transition:background .15s,color .15s,transform .12s}
+.rate button:hover{background:var(--bg)}.rate button:active{transform:scale(.9)}
+.rate button[aria-pressed="true"]{background:var(--sel);color:var(--onsel)}
+.rate button:focus-visible{outline:2px solid var(--sel)}
+.picks{display:grid;gap:8px;padding:12px;border-radius:10px;background:var(--panel);box-shadow:inset 0 0 0 1px var(--line)}
+.picks h2{margin:0;font:600 13px/1 var(--f)}
+.picks pre{margin:0;white-space:pre-wrap;font:12px/1.5 ui-monospace,Consolas,monospace;color:var(--ink2)}
+.picks textarea{min-height:54px;resize:vertical;padding:8px;border:0;border-radius:7px;background:var(--bg);box-shadow:inset 0 0 0 1px var(--line);font-size:13px}
+.picks textarea:focus{outline:2px solid var(--sel)}
+.cp{all:unset;cursor:pointer;justify-self:start;height:32px;padding:0 14px;border-radius:8px;background:var(--sel);color:var(--onsel);font-weight:600;font-size:13px;line-height:32px;transition:transform .12s}
+.cp:active{transform:scale(.96)}.cp:focus-visible{outline:2px solid var(--sel);outline-offset:2px}
+.stage{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:24px;align-content:start}
+.fr{margin:0;display:grid;gap:8px;min-width:0}
+.fr figcaption{font-size:12px;font-weight:600;color:var(--ink3)}
+@media (max-width:860px){.app{grid-template-columns:minmax(0,1fr)}.rail{position:static;max-height:none}.pals{grid-auto-flow:column;grid-auto-columns:minmax(220px,1fr);overflow-x:auto;padding-bottom:6px}.stage{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- the Technician page: every colour comes from the palette (set by script on .tp) ---------- */
+.tp{--r:12px;border-radius:16px;background:var(--g);color:var(--t1);padding:16px 16px 18px;font:400 13px/1.35 var(--f);box-shadow:0 0 0 1px rgba(0,0,0,.08),0 24px 48px -28px rgba(0,0,0,.55);transition:background-color .45s,color .45s;position:relative;overflow:hidden}
+.tp *{transition:background-color .45s,color .45s,box-shadow .45s,border-color .45s}
+.tb{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.logo{font:600 12px/1 var(--fd);letter-spacing:.2em;color:var(--t2);margin-right:auto}
+.av{width:28px;height:28px;border-radius:50%;background:var(--c2);color:var(--t2);display:grid;place-items:center;font:600 10px/1 var(--f);font-style:normal}
+.h1 b{display:block;font:600 20px/1.15 var(--f)}.h1 small{display:block;margin-top:3px;font-size:12px;color:var(--t3)}
+.tabs{position:relative;display:flex;gap:18px;margin:14px 0 14px;font-size:13px}
+.tabs button{all:unset;cursor:pointer;padding-bottom:7px;color:var(--t3)}.tabs button[aria-selected="true"]{color:var(--t1);font-weight:600}
+.tabs button:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+.tabs i{position:absolute;left:0;bottom:0;height:2px;border-radius:1px;background:var(--t1);transition:transform .35s cubic-bezier(.2,.8,.2,1),width .35s cubic-bezier(.2,.8,.2,1),background-color .45s}
+.card{border-radius:var(--r);background:var(--c1)}
+.jc{padding:14px;display:grid;gap:12px}
+.jc.flash{animation:flash .9s ease-out}
+@keyframes flash{0%{box-shadow:0 0 0 2px var(--a)}100%{box-shadow:0 0 0 2px transparent}}
+.row1{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.row1 small{font-size:12px;color:var(--t3)}
+.pill{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 10px 0 11px;border-radius:8px;background:var(--c2);font-size:12.5px;font-weight:600;white-space:nowrap;transition:transform .12s,background-color .45s}
+.pill:active{transform:scale(.96)}.pill:focus-visible{outline:2px solid var(--a)}
+.pill svg{width:10px;height:10px;stroke:var(--t3);fill:none;stroke-width:2}
+.lp{flex:none;display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--lc);box-shadow:0 0 0 2px rgba(0,0,0,.28),0 0 9px color-mix(in srgb,var(--lc) 50%,transparent)}
+.lp.off{background:var(--w);box-shadow:0 0 0 2px rgba(0,0,0,.28),inset 0 1px 2px rgba(0,0,0,.45)}
+.hm{font:500 40px/1 var(--fd);letter-spacing:.01em;font-variant-numeric:tabular-nums}
+.hm.off{color:var(--t3)}
+.jl b{display:block;font-size:13.5px;font-weight:600}.jl small{display:block;margin-top:2px;font-size:12px;color:var(--t2)}
+.hrs{display:grid;gap:6px}
+.hrs-t{display:flex;justify-content:space-between;font-size:12px;color:var(--t2)}.hrs-t b{font:500 15px/1 var(--fd);color:var(--t1)}
+.bar{position:relative;height:6px;border-radius:3px;background:var(--ln)}
+.bar u{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:var(--a);transition:width .6s cubic-bezier(.2,.8,.2,1),background-color .45s}
+.bar s{position:absolute;top:-3px;bottom:-3px;width:2px;border-radius:1px;background:var(--t1)}
+.stg{display:grid;gap:6px}
+.segs{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.segs i{height:4px;border-radius:2px;background:var(--ln)}.segs i.d{background:var(--t3)}.segs i.n{background:var(--t1)}
+.stg small{font-size:12px;color:var(--t3)}.stg small b{color:var(--t1);font-weight:600}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.btn{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;justify-content:center;height:40px;padding:0 12px;border-radius:10px;background:var(--c2);color:var(--t1);font-size:13px;font-weight:600;white-space:nowrap;position:relative;overflow:hidden;transition:transform .12s,background-color .45s,color .45s}
+.btn:active{transform:scale(.97)}.btn:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+.btn.p{background:var(--a);color:var(--on)}
+.btn.wide{grid-column:1/-1}
+.btn.hold::before{content:"";position:absolute;inset:0;background:color-mix(in srgb,var(--bad) 30%,transparent);transform:scaleX(var(--p,0));transform-origin:left;transition:transform .15s linear}
+.btn.hold.going::before{transition:transform .9s linear;transform:scaleX(1)}
+.btn.hold span{position:relative}
+.h2{margin:16px 0 8px;font-size:12px;font-weight:600;color:var(--t3)}
+.ups{display:grid;gap:6px}
+.up{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;align-items:center;gap:3px 10px;padding:10px 10px 10px 12px;transition:transform .3s cubic-bezier(.2,.8,.2,1),opacity .3s,background-color .45s}
+.up b{font:500 16px/1 var(--fd)}.up span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px}
+.up small{grid-column:2/4;font-size:12px;color:var(--t3)}.up small.al{color:var(--t2)}
+.go{all:unset;cursor:pointer;grid-row:1/3;grid-column:4;height:28px;padding:0 11px;border-radius:7px;background:var(--c2);font-size:12px;font-weight:600;transition:transform .12s,background-color .45s}
+.go:active{transform:scale(.94)}.go:focus-visible{outline:2px solid var(--a)}
+.up.in{animation:rin .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes rin{from{opacity:0;transform:translateY(-6px)}}
+.menu{position:absolute;z-index:5;min-width:220px;padding:5px;border-radius:10px;background:var(--c2);box-shadow:0 0 0 1px var(--ln),0 18px 36px -14px rgba(0,0,0,.55);transform-origin:top left;animation:pop .18s cubic-bezier(.2,.8,.2,1)}
+@keyframes pop{from{opacity:0;transform:scale(.96) translateY(-4px)}}
+.menu button{all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;width:100%;box-sizing:border-box;height:30px;padding:0 9px;border-radius:7px;font-size:12.5px}
+.menu button:hover,.menu button:focus-visible{background:color-mix(in srgb,var(--t1) 9%,transparent)}
+.menu button[aria-checked="true"]{font-weight:600}
+.toast{position:absolute;left:16px;right:16px;bottom:14px;z-index:6;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:var(--c2);box-shadow:0 0 0 1px var(--ln),0 16px 30px -12px rgba(0,0,0,.5);font-size:12.5px;animation:tin .3s cubic-bezier(.2,.8,.2,1)}
+.toast i{width:6px;height:11px;margin:-3px 3px 0 2px;border:solid var(--a);border-width:0 2px 2px 0;transform:rotate(45deg)}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}}
+@media (prefers-reduced-motion:reduce){*,*::before{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="rail">
+    <div><h1>Technician colours</h1><p>Eight new palettes. Pick one to see it night and day, and rate the ones worth keeping.</p></div>
+    <div class="pals" id="pals" role="listbox" aria-label="Palettes"></div>
+    <section class="picks" aria-label="Your picks"><h2>Your picks</h2><pre id="pk"></pre><textarea id="nt" placeholder="Anything else" aria-label="Anything else"></textarea><button class="cp" id="cp" type="button">Copy for the chat</button></section>
+  </aside>
+  <main class="stage" id="stage">
+    <figure class="fr"><figcaption>Night</figcaption><div class="tp" data-mode="night"></div></figure>
+    <figure class="fr"><figcaption>Day</figcaption><div class="tp" data-mode="day"></div></figure>
+  </main>
+</div>
+<script>
+(() => {
+'use strict';
+const PALS = [{"name":"Onyx & Cobalt","line":"onyx with a cobalt blue","night":{"g":"#0c0d0f","c1":"#161719","c2":"#202224","w":"#070709","ln":"#2d2e30","t1":"#eceef3","t2":"#b8bbc0","t3":"#878a8e","a":"#6a9cfb","on":"#0f0f11","ok":"#76cf8a","wt":"#efba64","cu":"#6bcac9","su":"#bb99e3","bad":"#ef675c","dn":"#e3decf"},"day":{"g":"#eff3f8","c1":"#f8fafd","c2":"#fcfeff","w":"#e3e8ed","ln":"#cfd5db","t1":"#111419","t2":"#383b41","t3":"#63676e","a":"#2256bb","on":"#fbfaf7","ok":"#1c8742","wt":"#b77610","cu":"#007277","su":"#7c50a8","bad":"#c52c2a","dn":"#3a3d43"}},{"name":"Graphite & Amethyst","line":"soft graphite with a violet","night":{"g":"#26262a","c1":"#313136","c2":"#3d3c42","w":"#1f1f23","ln":"#4a4a4f","t1":"#eeedf5","t2":"#cbcad2","t3":"#a9a8af","a":"#be95ec","on":"#0f0f11","ok":"#76cf8a","wt":"#efba64","cu":"#73b1e6","su":"#ea91bc","bad":"#ef675c","dn":"#e3decf"},"day":{"g":"#f3f1f7","c1":"#faf9fd","c2":"#fefdff","w":"#e8e6ec","ln":"#d5d3da","t1":"#141319","t2":"#3a3a41","t3":"#66666d","a":"#733ea4","on":"#fbfaf7","ok":"#1c8742","wt":"#b77610","cu":"#1f6cb0","su":"#a53c75","bad":"#c52c2a","dn":"#3a3d43"}},{"name":"Charcoal & Ice","line":"blue-grey with a pale ice blue","night":{"g":"#141f25","c1":"#1d2a31","c2":"#28353d","w":"#0e171d","ln":"#34424b","t1":"#e6f0f6","t2":"#bdc6cc","t3":"#959ea4","a":"#afe1ee","on":"#0f0f11","ok":"#76cf8a","wt":"#efba64","cu":"#73b1e6","su":"#bb99e3","bad":"#ef675c","dn":"#e3decf"},"day":{"g":"#edf4f7","c1":"#f7fbfd","c2":"#fcfeff","w":"#e2e8ec","ln":"#ced6da","t1":"#0f1518","t2":"#353c40","t3":"#60686d","a":"#14546e","on":"#fbfaf7","ok":"#1c8742","wt":"#b77610","cu":"#1f6cb0","su":"#7c50a8","bad":"#c52c2a","dn":"#3a3d43"}},{"name":"Navy & Rose","line":"deep navy with a dusty rose","night":{"g":"#0c1626","c1":"#152133","c2":"#1f2c3f","w":"#07101d","ln":"#2a394e","t1":"#e9eff8","t2":"#bbc0c9","t3":"#8e949c","a":"#f096ab","on":"#0f0f11","ok":"#76cf8a","wt":"#efba64","cu":"#73b1e6","su":"#bb99e3","bad":"#ed6b42","dn":"#e3decf"},"day":{"g":"#f9f0ee","c1":"#fef9f8","c2":"#fffdfc","w":"#eee5e3","ln":"#ddd1cf","t1":"#101419","t2":"#373b41","t3":"#62676d","a":"#a53458","on":"#fbfaf7","ok":"#1c8742","wt":"#b77610","cu":"#1f6cb0","su":"#7c50a8","bad":"#c03900","dn":"#3a3d43"}},{"name":"Carbon & Turquoise","line":"true black with turquoise","night":{"g":"#090909","c1":"#131313","c2":"#1d1d1d","w":"#040404","ln":"#292929","t1":"#efeeeb","t2":"#b9b8b6","t3":"#868583","a":"#5ad5cb","on":"#0f0f11","ok":"#76cf8a","wt":"#efba64","cu":"#73b1e6","su":"#bb99e3","bad":"#ef675c","dn":"#e3decf"},"day":{"g":"#f2f2f2","c1":"#fafafa","c2":"#fdfdfd","w":"#e7e7e7","ln":"#d4d4d4","t1":"#111419","t2":"#383b41","t3":"#63676e","a":"#006c70","on":"#fbfaf7","ok":"#1c8742","wt":"#b77610","cu":"#1f6cb0","su":"#7c50a8","bad":"#c52c2a","dn":"#3a3d43"}},{"name":"Pewter & Saffron","line":"warm grey with a saffron yellow","night":{"g":"#23211d","c1":"#2f2c28","c2":"#3a3833","w":"#1c1a17","ln":"#47453f","t1":"#f2eee7","t2":"#cbc7c0","t3":"#a5a29b","a":"#f0c551","on":"#0f0f11","ok":"#76cf8a","wt":"#f0995b","cu":"#73b1e6","su":"#bb99e3","bad":"#ef675c","dn":"#e3decf"},"day":{"g":"#f5f2ea","c1":"#fcfaf5","c2":"#fefdfb","w":"#eae7de","ln":"#d8d4c9","t1":"#16130e","t2":"#3e3a34","t3":"#6a665f","a":"#9d6800","on":"#fbfaf7","ok":"#1c8742","wt":"#ba5d1d","cu":"#1f6cb0","su":"#7c50a8","bad":"#c52c2a","dn":"#3a3d43"}},{"name":"Spruce & Pearl","line":"deep spruce green with pearl","night":{"g":"#0b1e1e","c1":"#142929","c2":"#1e3535","w":"#071717","ln":"#2a4242","t1":"#e5f2f1","t2":"#bac6c6","t3":"#909c9c","a":"#f5e3e2","on":"#0f0f11","ok":"#76cf8a","wt":"#efba64","cu":"#73b1e6","su":"#bb99e3","bad":"#ef675c","dn":"#e3decf"},"day":{"g":"#ecf5f3","c1":"#f6fbfa","c2":"#fbfefd","w":"#e0eae7","ln":"#ccd7d4","t1":"#0e1615","t2":"#343d3d","t3":"#5f6969","a":"#1c5151","on":"#fbfaf7","ok":"#1c8742","wt":"#b77610","cu":"#1f6cb0","su":"#7c50a8","bad":"#c52c2a","dn":"#3a3d43"}},{"name":"Plum & Peach","line":"dark plum with a soft peach","night":{"g":"#21131e","c1":"#2d1d29","c2":"#392735","w":"#190d16","ln":"#473342","t1":"#f5ebf2","t2":"#c7bec4","t3":"#9b9399","a":"#f5c299","on":"#0f0f11","ok":"#76cf8a","wt":"#efba64","cu":"#73b1e6","su":"#bb99e3","bad":"#ef675c","dn":"#e3decf"},"day":{"g":"#f8eff5","c1":"#fef8fc","c2":"#fffcfe","w":"#eee4ea","ln":"#dcd0d7","t1":"#171216","t2":"#3f383d","t3":"#6b6469","a":"#703265","on":"#fbfaf7","ok":"#1c8742","wt":"#b77610","cu":"#1f6cb0","su":"#7c50a8","bad":"#c52c2a","dn":"#3a3d43"}}];
+const $ = (s, r) => (r || document).querySelector(s), $$ = (s, r) => [...(r || document).querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const KEY = 'parsec-tech-colours-1';
+/* sample data only */
+const RO = {
+  4466: { cust: 'Summit Freightways', truck: '2021 Volvo VNL 860', op: 'Op 1 · Clutch slipping – replace clutch', q: 2.70, b: 0.63, st: 'Working', stage: 4, ready: 'Ready tomorrow 7:16' },
+  4460: { cust: 'Iron Horse Logistics', truck: '2020 Volvo VNR 640', op: 'Op 1 · Air leak at the dash', q: 1.60, b: 0.40, st: 'Waiting – Parts', stage: 3, ready: 'Ready Thu 8:46' },
+  2091: { cust: 'Great Lakes Bulk', truck: '2019 Volvo VNL 760', op: 'Op 2 · DEF sensor fault', q: 1.20, b: 0.30, st: 'Waiting – Customer', stage: 2, ready: 'Ready tomorrow 10:40' },
+  2648: { cust: 'Copperline Transport', truck: '2022 Volvo VNL 860', op: 'Op 1 · Turbo actuator', q: 3.10, b: 1.10, st: 'Waiting – Tech Support', stage: 1, ready: 'Ready tomorrow 10:40' },
+  3964: { cust: 'Midway Auto Transport', truck: '2021 Volvo VNR 300', op: 'Op 1 · Front brakes', q: 2.20, b: 2.97, st: 'Waiting – Foreman', stage: 4, ready: 'Ready today 15:31', note: 'Over its quote by 0.77 h' },
+  8166: { cust: 'Granite State Express', truck: '2018 Volvo VNL 670', op: 'Op 2 · Brake chamber', q: 0.90, b: 0, st: 'Hold Tech', stage: 4, ready: 'Ready tomorrow 10:40' },
+  2459: { cust: 'Silverline LTL', truck: '2023 Volvo VNL 640', op: 'Op 3 · Road test', q: 0.50, b: 0.50, st: 'Complete – Road test', stage: 6, ready: 'Ready tomorrow 10:40' }
+};
+const ST = ['Working', 'Waiting – Parts', 'Waiting – Sublet', 'Waiting – Foreman', 'Waiting – Tech Support', 'Waiting – Customer', 'Complete – Road test', 'Complete – Released', 'Hold Tech', 'Declined'];
+const tone = s => s === 'Working' ? 'ok' : /Customer/.test(s) ? 'cu' : /Tech Support/.test(s) ? 'su' : /^Waiting/.test(s) ? 'wt' : s === 'Complete – Road test' ? 'dn' : s === 'Declined' ? 'bad' : 'off';
+const STAGES = ['Check-in', 'Diag', 'Approval', 'Parts', 'Repair', 'Road test', 'Close-out'];
+const S = { p: 0, job: '4466', on: true, t0: Date.now() - 3130000, tab: 0, rate: {}, notes: '' };
+try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); if (o.rate) S.rate = o.rate; if (typeof o.notes === 'string') S.notes = o.notes; if (o.p >= 0 && o.p < PALS.length) S.p = o.p; } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ rate: S.rate, notes: S.notes, p: S.p })); } catch (e) {} };
+const lamp = s => `<i class="lp${tone(s) === 'off' ? ' off' : ''}" style="--lc:var(--${tone(s)})"></i>`;
+const hms = ms => { const s = Math.max(0, Math.floor(ms / 1000)); return Math.floor(s / 3600) + ':' + String(Math.floor(s / 60) % 60).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
+const burnt = () => { const r = RO[S.job]; return r.b + (S.on ? (Date.now() - S.t0) / 3600000 : 0); };
+
+/* ---------- the palette rail ---------- */
+function rail() {
+  $('#pals').innerHTML = PALS.map((p, i) => { const n = p.night, d = p.day;
+    return `<div class="pal" role="option" tabindex="${i === S.p ? 0 : -1}" aria-selected="${i === S.p}" data-i="${i}"><div><b>${esc(p.name)}</b><small>${esc(p.line)}</small></div>
+      <div class="rate" role="group" aria-label="Rate ${esc(p.name)}">${[['love', '♥'], ['ok', 'OK'], ['no', 'No']].map(([v, l]) => `<button type="button" data-r="${v}" aria-pressed="${S.rate[p.name] === v}" aria-label="${l === '♥' ? 'Love' : l}">${l}</button>`).join('')}</div>
+      <div class="sws" aria-hidden="true"><i class="wide" style="background:${n.g}"></i><i style="background:${n.c2}"></i><i style="background:${n.t1}"></i><i style="background:${n.a}"></i><i style="background:${d.g}"></i><i style="background:${d.a}"></i><i style="background:${n.ok}"></i><i style="background:${n.wt}"></i><i style="background:${n.cu}"></i><i style="background:${n.bad}"></i></div></div>`; }).join('');
+}
+function picks() {
+  const by = v => PALS.filter(p => S.rate[p.name] === v).map(p => p.name), a = by('love'), b = by('ok'), c = by('no'), n = PALS.length - a.length - b.length - c.length;
+  const L = ['Parsec · Technician colours — my picks', 'Palettes:'];
+  const r = [a.length ? '♥ ' + a.join(', ') : '', b.length ? 'ok ' + b.join(', ') : '', c.length ? 'no ' + c.join(', ') : ''].filter(Boolean).join(' · ');
+  L.push('· Rated: ' + (r || 'none yet'));
+  L.push('· Looking at: ' + PALS[S.p].name);
+  if (n && r) L.push(`(not rated yet: ${n})`);
+  if (S.notes.trim()) L.push('Notes: ' + S.notes.trim());
+  return L.join('\n');
+}
+function sync() { $('#pk').textContent = picks(); }
+
+/* ---------- the Technician page ---------- */
+function paint() {
+  const p = PALS[S.p];
+  $$('.tp').forEach(tp => { const t = p[tp.dataset.mode]; Object.keys(t).forEach(k => tp.style.setProperty('--' + k, t[k])); });
+}
+function page() {
+  const r = RO[S.job], ups = Object.keys(RO).filter(k => k !== S.job), h = burnt(), over = h > r.q;
+  return `<div class="tb"><b class="logo">Parsec</b><i class="av" aria-label="Mike Rodriguez">MR</i></div>
+  <div class="h1"><b>Technician</b><small>Mike Rodriguez, ${S.on ? 'on the clock' : 'off the clock'}</small></div>
+  <div class="tabs" role="tablist">${['Today', 'Up next', 'Time'].map((n, i) => `<button type="button" role="tab" aria-selected="${S.tab === i}" data-tab="${i}">${n}</button>`).join('')}<i></i></div>
+  <div class="card jc">
+    <div class="row1"><button type="button" class="pill" data-a="status" aria-haspopup="menu">${lamp(r.st)}<span>${esc(r.st)}</span><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3"/></svg></button><small>${esc(r.ready)}</small></div>
+    <div><b class="hm${S.on ? '' : ' off'}" data-clk>${S.on ? hms(Date.now() - S.t0) : '0:00:00'}</b></div>
+    <div class="jl"><b>RO ${S.job}, ${esc(r.op)}</b><small>${esc(r.cust)} · ${esc(r.truck)}</small></div>
+    <div class="hrs"><div class="hrs-t"><span><b data-h>${h.toFixed(2)}</b> of ${r.q.toFixed(2)} h</span><span data-left>${over ? (h - r.q).toFixed(2) + ' h over' : (r.q - h).toFixed(2) + ' h left'}</span></div>
+      <div class="bar"><u data-bar style="width:${Math.min(100, h / (r.q * 1.25) * 100).toFixed(1)}%${over ? ';background:var(--bad)' : ''}"></u><s style="left:80%"></s></div></div>
+    <div class="stg"><div class="segs">${STAGES.map((n, i) => `<i class="${i < r.stage ? 'd' : i === r.stage ? 'n' : ''}"></i>`).join('')}</div><small><b>${STAGES[r.stage]}</b>, step ${r.stage + 1} of 7</small></div>
+  </div>
+  <div class="acts">${S.on ? `<button type="button" class="btn p" data-a="done">Mark ${esc(r.op.split(' · ')[0])} complete</button><button type="button" class="btn" data-a="switch">Switch job…</button><button type="button" class="btn wide hold" data-hold><span>Hold to clock out</span></button>`
+    : `<button type="button" class="btn p wide" data-a="in">Clock in on RO ${S.job}</button>`}</div>
+  <div class="h2">Up next</div>
+  <div class="ups">${ups.map(k => { const u = RO[k]; return `<div class="card up" data-ro="${k}">${lamp(u.st)}<b>${k}</b><span>${esc(u.cust)}</span><button type="button" class="go" data-a="start" data-ro="${k}" aria-label="Start RO ${k}">Start</button><small${u.note ? ' class="al"' : ''}>${esc(u.note || u.st)}</small></div>`; }).join('')}</div>`;
+}
+function render(flash) {
+  $$('.tp').forEach(tp => { tp.innerHTML = page(); tabLine(tp); if (flash) $('.jc', tp).classList.add('flash'); });
+}
+function tabLine(tp) { const b = $('.tabs [aria-selected="true"]', tp), i = $('.tabs i', tp); if (b && i) { i.style.width = b.offsetWidth + 'px'; i.style.transform = `translateX(${b.offsetLeft}px)`; } }
+function tick() {
+  if (!S.on) return; const r = RO[S.job], h = burnt(), over = h > r.q;
+  $$('[data-clk]').forEach(e => { e.textContent = hms(Date.now() - S.t0); });
+  $$('[data-h]').forEach(e => { e.textContent = h.toFixed(2); });
+  $$('[data-left]').forEach(e => { e.textContent = over ? (h - r.q).toFixed(2) + ' h over' : (r.q - h).toFixed(2) + ' h left'; });
+  $$('[data-bar]').forEach(e => { e.style.width = Math.min(100, h / (r.q * 1.25) * 100).toFixed(1) + '%'; e.style.background = over ? 'var(--bad)' : ''; });
+}
+function toast(tp, msg) {
+  $$('.toast').forEach(t => t.remove());
+  $$('.tp').forEach(t => { const el = document.createElement('div'); el.className = 'toast'; el.setAttribute('role', 'status'); el.innerHTML = '<i></i><span>' + esc(msg) + '</span>'; t.appendChild(el); setTimeout(() => el.remove(), 2600); });
+}
+function closeMenu() { $$('.menu').forEach(m => m.remove()); }
+function select(i) { S.p = i; save(); rail(); paint(); sync(); const el = $(`.pal[data-i="${i}"]`); if (el && document.activeElement && document.activeElement.closest && document.activeElement.closest('.pal')) el.focus(); }
+
+/* ---------- what the clicks do ---------- */
+document.addEventListener('click', e => {
+  const t = e.target;
+  const rb = t.closest('.rate button'); if (rb) { const p = PALS[+rb.closest('.pal').dataset.i]; S.rate[p.name] = S.rate[p.name] === rb.dataset.r ? undefined : rb.dataset.r; if (!S.rate[p.name]) delete S.rate[p.name]; save(); rail(); sync(); return; }
+  const pl = t.closest('.pal'); if (pl) { select(+pl.dataset.i); return; }
+  if (t.closest('#cp')) { const txt = picks(), b = $('#cp'), done = w => { b.textContent = w; setTimeout(() => { b.textContent = 'Copy for the chat'; }, 1600); };
+    const fb = () => { const r = document.createRange(); r.selectNodeContents($('#pk')); const g = getSelection(); g.removeAllRanges(); g.addRange(r); let ok = false; try { ok = document.execCommand('copy'); } catch (x) {} done(ok ? 'Copied' : 'Selected. Now copy it'); };
+    try { navigator.clipboard.writeText(txt).then(() => done('Copied'), fb); } catch (x) { fb(); } return; }
+  const mi = t.closest('.menu button'); if (mi) { RO[S.job].st = mi.dataset.st; closeMenu(); render(); toast(null, `RO ${S.job} is now ${mi.dataset.st}`); return; }
+  if (!t.closest('.menu')) closeMenu();
+  const tb = t.closest('[data-tab]'); if (tb) { S.tab = +tb.dataset.tab; $$('.tp').forEach(tp => { $$('[data-tab]', tp).forEach(b => b.setAttribute('aria-selected', String(+b.dataset.tab === S.tab))); tabLine(tp); }); return; }
+  const a = t.closest('[data-a]'); if (!a) return;
+  const act = a.dataset.a, tp = a.closest('.tp');
+  if (act === 'status') { const m = document.createElement('div'); m.className = 'menu'; m.setAttribute('role', 'menu');
+    m.innerHTML = ST.map(s => `<button type="button" role="menuitemradio" aria-checked="${RO[S.job].st === s}" data-st="${esc(s)}">${lamp(s)}${esc(s)}</button>`).join('');
+    const b = a.getBoundingClientRect(), f = tp.getBoundingClientRect(); m.style.left = (b.left - f.left) + 'px'; m.style.top = (b.bottom - f.top + 6) + 'px'; tp.appendChild(m); const c = $('[aria-checked="true"]', m) || $('button', m); c.focus(); return; }
+  if (act === 'start') { const k = a.dataset.ro, was = S.job; if (S.on) { RO[was].b = burnt(); RO[was].st = 'Hold Tech'; } S.job = k; RO[k].st = 'Working'; S.on = true; S.t0 = Date.now(); render(true); toast(null, `Clocked in on RO ${k}`); return; }
+  if (act === 'switch') { const k = Object.keys(RO).find(x => x !== S.job && RO[x].st !== 'Complete – Road test'); RO[S.job].b = burnt(); RO[S.job].st = 'Hold Tech'; S.job = k; RO[k].st = 'Working'; S.t0 = Date.now(); render(true); toast(null, `Switched to RO ${k}`); return; }
+  if (act === 'done') { RO[S.job].b = burnt(); RO[S.job].st = 'Complete – Road test'; RO[S.job].stage = 5; S.on = false; render(true); toast(null, `RO ${S.job}: ${RO[S.job].op.split(' · ')[0]} marked complete`); return; }
+  if (act === 'in') { S.on = true; S.t0 = Date.now(); RO[S.job].st = 'Working'; render(true); toast(null, `Clocked in on RO ${S.job}`); return; }
+});
+/* hold to clock out: keep pressing until the bar fills */
+let HOLD = null;
+document.addEventListener('pointerdown', e => { const b = e.target.closest('[data-hold]'); if (!b || e.button > 0) return; b.classList.add('going'); HOLD = { b, t: setTimeout(() => { HOLD = null; RO[S.job].b = burnt(); RO[S.job].st = 'Hold Tech'; S.on = false; render(); toast(null, `Clocked out of RO ${S.job}`); }, 900) }; });
+const cancel = () => { if (!HOLD) return; clearTimeout(HOLD.t); HOLD.b.classList.remove('going'); HOLD = null; };
+document.addEventListener('pointerup', cancel); document.addEventListener('pointercancel', cancel);
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeMenu(); return; }
+  const pl = e.target.closest && e.target.closest('.pal');
+  if (pl && !e.target.closest('.rate')) { const i = +pl.dataset.i;
+    if (['ArrowDown', 'ArrowRight'].includes(e.key)) { e.preventDefault(); select((i + 1) % PALS.length); }
+    else if (['ArrowUp', 'ArrowLeft'].includes(e.key)) { e.preventDefault(); select((i + PALS.length - 1) % PALS.length); }
+    else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(i); } }
+  const m = e.target.closest && e.target.closest('.menu');
+  if (m && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) { e.preventDefault(); const bs = $$('button', m), i = bs.indexOf(e.target); bs[(i + (e.key === 'ArrowDown' ? 1 : bs.length - 1)) % bs.length].focus(); }
+  const hb = e.target.closest && e.target.closest('[data-hold]');
+  if (hb && (e.key === 'Enter' || e.key === ' ') && !e.repeat && !HOLD) { e.preventDefault(); hb.classList.add('going'); HOLD = { b: hb, t: setTimeout(() => { HOLD = null; RO[S.job].b = burnt(); RO[S.job].st = 'Hold Tech'; S.on = false; render(); toast(null, `Clocked out of RO ${S.job}`); }, 900) }; }
+});
+document.addEventListener('keyup', e => { if (e.key === 'Enter' || e.key === ' ') cancel(); });
+document.addEventListener('input', e => { if (e.target.id === 'nt') { S.notes = e.target.value; save(); sync(); } });
+addEventListener('resize', () => $$('.tp').forEach(tabLine));
+
+rail(); paint(); render(); sync(); $('#nt').value = S.notes;
+setInterval(tick, 1000);
+})();
+</script>
+</body>
+</html>
