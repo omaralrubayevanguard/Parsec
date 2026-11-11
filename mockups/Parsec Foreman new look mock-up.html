@@ -1,0 +1,855 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Parsec Foreman Mock-up</title>
+<style>
+/* Layout: the Foreman page as the shop will see it (what needs you on the left, the floor on the right); beside it, a rail that shows what each skill changed. Dark only, by choice. */
+:root{color-scheme:dark;
+  /* reference: the raw palette (Carbon with Charcoal, lightest) */
+  --carbon-950:#141414;--carbon-900:#1b1b1b;--carbon-800:#2f2f2f;--carbon-700:#3d3d3d;--carbon-600:#4a4a4a;--carbon-500:#6e6e6e;
+  --platinum-100:#f0f2f4;--platinum-300:#cbcdcf;--platinum-500:#a7a9ab;
+  --cobalt-300:#93bbff;--cobalt-400:#72a6ff;--cobalt-ink:#0f0f11;
+  --green-400:#76cf8a;--amber-400:#efba64;--teal-400:#6bcac9;--violet-400:#bb99e3;--red-400:#ef675c;--red-300:#ff9389;--white-200:#e3e8ee;
+  /* semantic: what each value is for */
+  --surface-ground:var(--carbon-900);--surface-card:var(--carbon-800);--surface-raised:var(--carbon-700);--surface-well:var(--carbon-950);
+  --border:var(--carbon-600);--border-strong:var(--carbon-500);
+  --text:var(--platinum-100);--text-2:var(--platinum-300);--text-3:var(--platinum-500);
+  --action:var(--cobalt-400);--action-hover:var(--cobalt-300);--on-action:var(--cobalt-ink);
+  --surface-card-hover:#363636;--surface-raised-hover:#484848;--surface-top:var(--carbon-600);--surface-top-hover:#585858;--tint:rgba(255,255,255,.08);--ink-on-light:#161616;--ink-on-light-hover:#333;--status-alert-dim:#b9453c;
+  --status-working:var(--green-400);--status-waiting:var(--amber-400);--status-customer:var(--teal-400);--status-support:var(--violet-400);--status-alert:var(--red-400);--status-done:var(--white-200);--text-alert:var(--red-300);
+  /* scales */
+  --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;
+  --r1:7px;--r2:10px;--r3:14px;
+  --t-fast:120ms;--t:200ms;--t-slow:340ms;--ease:cubic-bezier(.2,.8,.2,1);
+  --f:"Segoe UI",system-ui,-apple-system,sans-serif;--fd:"Bahnschrift","DIN Alternate","Roboto Condensed","Arial Narrow",system-ui,sans-serif;
+  --fs-1:12px;--fs-2:13px;--fs-3:14px;--fs-4:16px;--fs-5:20px;--fs-6:30px}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--surface-ground);color:var(--text);font:400 var(--fs-2)/1.45 var(--f);-webkit-font-smoothing:antialiased}
+button,textarea,input{font:inherit;color:inherit}
+h1,h2,h3,p,ul,ol{margin:0;padding:0}ul,ol{list-style:none}
+:focus-visible{outline:2px solid var(--action);outline-offset:2px;border-radius:var(--r1)}
+.page{display:grid;grid-template-columns:minmax(0,1fr) 336px;gap:var(--s5);max-width:1500px;margin:0 auto;padding-block:20px 72px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.app{min-width:0;display:grid;gap:var(--s4);align-content:start}
+.skip{position:absolute;left:-9999px}.skip:focus{position:static;justify-self:start;padding:6px 10px;background:var(--surface-raised);border-radius:var(--r1);color:var(--text)}
+.fig{font-family:var(--fd);font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.no{font:500 16px/1 var(--fd);font-variant-numeric:tabular-nums;letter-spacing:.02em}
+svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---- Button: primary (.p), plain, quiet (.q), small (.sm), hold (.hold) ---- */
+.btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:32px;padding:0 12px;border-radius:var(--r1);background:var(--surface-raised);color:var(--text);font-size:var(--fs-2);font-weight:600;white-space:nowrap;position:relative;overflow:hidden;user-select:none;transition:transform var(--t-fast) var(--ease),background-color var(--t),box-shadow var(--t)}
+.btn:hover{background:var(--surface-raised-hover)}.btn:active{transform:scale(.96)}
+.btn:focus-visible{outline:2px solid var(--action);outline-offset:2px}
+.btn.p{background:var(--action);color:var(--on-action)}.btn.p:hover{background:var(--action-hover)}
+.btn.q{background:transparent;box-shadow:inset 0 0 0 1px var(--border)}.btn.q:hover{background:var(--tint);box-shadow:inset 0 0 0 1px var(--border-strong)}
+.btn.sm{min-height:28px;padding:0 10px;font-size:var(--fs-1)}
+.btn.ib{padding:0;width:32px}
+.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+.btn.hold::before{content:"";position:absolute;inset:0;background:color-mix(in srgb,var(--status-alert) 38%,transparent);transform:scaleX(0);transform-origin:left;transition:transform .16s linear}
+.btn.hold.going::before{transition:transform .9s linear;transform:scaleX(1)}
+.btn.hold>*{position:relative}
+kbd{font:600 10.5px/1 var(--f);padding:3px 4px;border-radius:4px;background:rgba(0,0,0,.3);color:var(--text-2)}
+.btn.p kbd{background:rgba(0,0,0,.16);color:var(--on-action)}
+[data-keys="off"] kbd.h{display:none}
+
+/* ---- Lamp: one status mark everywhere; a shape and a colour ---- */
+.lamp{flex:none;display:inline-grid;place-items:center;width:14px;height:14px;color:var(--lc,var(--text-3))}
+.lamp svg{width:12px;height:12px;fill:currentColor;filter:drop-shadow(0 0 4px color-mix(in srgb,currentColor 45%,transparent))}
+.lamp[data-t="working"]{--lc:var(--status-working)}.lamp[data-t="waiting"]{--lc:var(--status-waiting)}.lamp[data-t="customer"]{--lc:var(--status-customer)}
+.lamp[data-t="support"]{--lc:var(--status-support)}.lamp[data-t="alert"]{--lc:var(--status-alert)}.lamp[data-t="done"]{--lc:var(--status-done)}
+.lamp[data-t="off"] svg{fill:none;stroke:var(--text-3);stroke-width:1.6;filter:none}
+.lamp.live svg{animation:breathe 2.4s ease-in-out infinite}
+@keyframes breathe{50%{opacity:.5;transform:scale(.86)}}
+.st{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-1);font-weight:600;color:var(--text-2);white-space:nowrap}
+
+/* ---- header ---- */
+.hd{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:var(--s3) var(--s5)}
+.hd h1{font:600 22px/1.1 var(--f)}
+.hd-r{display:flex;align-items:center;gap:var(--s2)}
+.facts{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.fact{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:baseline;gap:6px;min-height:32px;padding:5px 10px;border-radius:var(--r1);color:var(--text-2);font-size:var(--fs-1);transition:background-color var(--t),color var(--t),transform var(--t-fast)}
+.fact b{font:500 17px/1 var(--fd);color:var(--text);font-variant-numeric:tabular-nums;display:inline-block}
+.fact:hover{background:var(--surface-card)}.fact:active{transform:scale(.96)}
+.fact[aria-pressed="true"]{background:var(--text);color:var(--surface-ground)}.fact[aria-pressed="true"] b{color:var(--surface-ground)}
+.fact.s{cursor:default}.fact.s:hover{background:none}.fact.s:active{transform:none}
+.fact b.tick{animation:tick .5s var(--ease)}
+@keyframes tick{0%{transform:translateY(-70%);opacity:0}60%{transform:translateY(8%)}100%{transform:none;opacity:1}}
+.tabs{position:relative;display:flex;gap:2px;padding:3px;border-radius:var(--r2);background:var(--surface-well);justify-self:start;max-width:100%;overflow-x:auto}
+.tabs button{all:unset;box-sizing:border-box;cursor:pointer;position:relative;z-index:1;display:inline-flex;align-items:center;gap:7px;min-height:32px;padding:0 13px;border-radius:var(--r1);color:var(--text-3);font-size:var(--fs-2);font-weight:600;white-space:nowrap;transition:color var(--t)}
+.tabs button:hover{color:var(--text)}.tabs button[aria-selected="true"]{color:var(--text)}
+.tabs button:focus-visible{outline:2px solid var(--action);outline-offset:-2px}
+.tabs i.ind{position:absolute;top:3px;left:0;height:calc(100% - 6px);border-radius:var(--r1);background:var(--surface-raised);transition:transform var(--t-slow) var(--ease),width var(--t-slow) var(--ease)}
+.bar2{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s3)}
+
+/* ---- body ---- */
+.body{display:grid;grid-template-columns:320px minmax(0,1fr);gap:var(--s4);align-items:start}
+.h2{display:flex;align-items:center;gap:8px;font:600 var(--fs-2)/1.2 var(--f);color:var(--text-2);margin-bottom:var(--s2)}
+.h2 .ct{font:500 14px/1 var(--fd);color:var(--text);padding:3px 7px;border-radius:999px;background:var(--surface-card)}
+.h2 small{margin-left:auto;font-weight:400;color:var(--text-3)}
+.grp{margin:var(--s3) 0 5px;font-size:var(--fs-1);font-weight:600;color:var(--text-3)}
+.grp:first-of-type{margin-top:0}
+.needs ul{display:grid;gap:6px}
+.need{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 10px;padding:10px 12px;border-radius:var(--r2);background:var(--surface-card);cursor:pointer;transition:background-color var(--t),box-shadow var(--t),opacity var(--t),transform var(--t) var(--ease)}
+.need:hover{background:var(--surface-card-hover)}
+.need.on{background:var(--surface-raised);box-shadow:0 0 0 1px var(--border-strong)}
+.need:focus-visible{outline:2px solid var(--action);outline-offset:2px;border-radius:var(--r2)}
+.need .ic{grid-row:1/3;align-self:start;margin-top:1px;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:var(--surface-well);color:var(--text-2)}
+.need.on .ic{background:var(--surface-ground)}
+.need .t{display:flex;align-items:baseline;gap:8px;min-width:0}
+.need .t span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.need p{grid-column:2;color:var(--text-2);font-size:var(--fs-1)}
+.need .acts{grid-column:2;display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.need .more{display:none}.need.on .more,.need:focus-within .more{display:inline-flex;animation:fadein var(--t) var(--ease)}
+@keyframes fadein{from{opacity:0;transform:translateX(-4px)}}
+.need.out{opacity:0;transform:translateX(18px) scale(.98)}
+.need.drag{opacity:.35}
+.tk{all:unset;box-sizing:border-box;cursor:pointer;flex:none;width:24px;height:24px;margin:-2px -4px -2px auto;border-radius:6px;display:grid;place-items:center;box-shadow:inset 0 0 0 1.5px var(--border-strong);transition:background-color var(--t),box-shadow var(--t),transform var(--t-fast)}
+.tk:active{transform:scale(.85)}.tk svg{width:14px;height:14px;stroke:var(--on-action);stroke-width:2.4;fill:none;stroke-dasharray:20;stroke-dashoffset:20;transition:stroke-dashoffset var(--t-slow) var(--ease)}
+.tk[aria-pressed="true"],.tk[aria-checked="true"]{background:var(--action);box-shadow:none}.tk[aria-pressed="true"] svg,.tk[aria-checked="true"] svg{stroke-dashoffset:0}
+.batch{position:sticky;bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;padding:8px 8px 8px 12px;border-radius:var(--r2);background:var(--surface-raised);box-shadow:0 0 0 1px var(--border-strong),0 14px 28px -12px #000;font-weight:600;animation:rise var(--t-slow) var(--ease)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}}
+.clear{padding:22px 14px;border-radius:var(--r2);background:var(--surface-card);text-align:center;color:var(--text-2)}
+.clear b{display:block;font-size:var(--fs-4);color:var(--text);margin-bottom:2px}
+.clear svg{width:30px;height:30px;stroke:var(--status-working);stroke-width:2;fill:none;margin-bottom:6px;stroke-dasharray:40;stroke-dashoffset:40;animation:draw .7s .1s var(--ease) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+details.done{margin-top:var(--s3)}
+details.done summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px;min-height:28px;color:var(--text-3);font-size:var(--fs-1);font-weight:600;border-radius:var(--r1)}
+details.done summary::-webkit-details-marker{display:none}
+details.done summary svg{transition:transform var(--t) var(--ease)}details.done[open] summary svg{transform:rotate(90deg)}
+.dn{display:flex;align-items:center;gap:8px;padding:6px 0 6px 2px;color:var(--text-2);font-size:var(--fs-1)}
+.dn span{flex:1;min-width:0}
+
+/* ---- the selected RO ---- */
+.main{min-width:0;display:grid;gap:var(--s4)}
+.main.vin>*{animation:vin var(--t-slow) var(--ease) backwards}.main.vin>*:nth-child(2){animation-delay:50ms}
+@keyframes vin{from{opacity:0;transform:translateY(6px)}}
+.sel{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:var(--s3) var(--s5);padding:var(--s4);border-radius:var(--r3);background:var(--surface-card)}
+.sel.flash{animation:flash .7s ease-out}
+@keyframes flash{0%{box-shadow:0 0 0 2px var(--action)}100%{box-shadow:0 0 0 2px transparent}}
+.sel-h{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap}
+.sel-h .big{font:500 var(--fs-6)/1 var(--fd);letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.sel h2{font:600 var(--fs-4)/1.25 var(--f);margin-top:8px;text-wrap:balance}
+.sel .sub{color:var(--text-2);margin-top:2px}
+.kv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s3);margin-top:var(--s3)}
+.kv div{min-width:0}.kv small{display:block;color:var(--text-3);font-size:var(--fs-1)}.kv b{display:block;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sel-r{display:grid;gap:var(--s3);align-content:start}
+.hrs-t{display:flex;justify-content:space-between;align-items:baseline;font-size:var(--fs-1);color:var(--text-2)}.hrs-t b{font:500 16px/1 var(--fd);color:var(--text)}
+.meter{position:relative;height:6px;border-radius:3px;background:var(--border);margin-top:6px}
+.meter u{position:absolute;inset:0 auto 0 0;border-radius:3px;background:var(--text);transition:width .6s var(--ease)}
+.meter u.over{background:repeating-linear-gradient(135deg,var(--status-alert) 0 4px,var(--status-alert-dim) 4px 8px)}
+.meter s{position:absolute;top:-3px;bottom:-3px;width:2px;border-radius:1px;background:var(--text)}
+.segs{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:6px}.segs i{height:4px;border-radius:2px;background:var(--border)}.segs i.d{background:var(--text-3)}.segs i.n{background:var(--text)}
+.sel small.cap{font-size:var(--fs-1);color:var(--text-3)}.sel small.cap b{color:var(--text);font-weight:600}
+.over{color:var(--text-alert);font-weight:600}
+.sel-a{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;padding-top:var(--s3);border-top:1px solid var(--border)}
+
+/* ---- Floor: the bay board ---- */
+.board{position:relative;display:grid;gap:6px}
+.axis,.bay{display:grid;grid-template-columns:68px minmax(140px,200px) minmax(0,1fr) 100px;gap:var(--s3);align-items:center}
+.axis{font-size:11px;color:var(--text-3);padding:0 var(--s3)}
+.axis .ticks{position:relative;height:16px}.axis .ticks span{position:absolute;top:0;transform:translateX(-50%);font-family:var(--fd);font-variant-numeric:tabular-nums}
+.axis .ticks .nowl{color:var(--on-action);background:var(--action);padding:1px 5px;border-radius:4px;font-weight:600;z-index:1;transition:left 1s linear}
+.bay{padding:8px var(--s3);min-height:56px;border-radius:var(--r2);background:var(--surface-card);transition:background-color var(--t),box-shadow var(--t),transform var(--t) var(--ease)}
+.bay-n{display:flex;align-items:baseline;gap:6px}.bay-n b{font:500 22px/1 var(--fd)}.bay-n small{color:var(--text-3);font-size:var(--fs-1)}
+.truck{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;align-items:center;gap:2px 8px;min-height:40px;padding:5px 10px;border-radius:var(--r1);background:var(--surface-raised);transition:transform var(--t-fast) var(--ease),background-color var(--t),box-shadow var(--t)}
+.truck:hover{background:var(--surface-raised-hover)}.truck:active{transform:scale(.98)}
+.truck[aria-current="true"]{box-shadow:0 0 0 1.5px var(--text)}
+.truck small{grid-column:1/-1;color:var(--text-2);font-size:var(--fs-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.truck.in{animation:dropin .5s var(--ease)}
+@keyframes dropin{0%{opacity:0;transform:translateY(-12px) scale(.96)}60%{transform:translateY(2px)}}
+.av{flex:none;width:24px;height:24px;border-radius:50%;background:var(--surface-well);color:var(--text-2);display:inline-grid;place-items:center;font:600 10px/1 var(--f);font-style:normal}
+.av.lg{width:36px;height:36px;font-size:12px}
+.empty{color:var(--text-3);font-size:var(--fs-1)}
+.strip{position:relative;height:22px;border-radius:5px;background:var(--surface-well);overflow:hidden}
+.strip .lunch{position:absolute;top:0;bottom:0;background:var(--tint)}
+.strip u{position:absolute;top:4px;bottom:4px;border-radius:3px;background:var(--text-3);transition:left var(--t-slow) var(--ease),width var(--t-slow) var(--ease)}
+.strip u.done{background:var(--carbon-500)}
+.strip u.late{background:repeating-linear-gradient(135deg,var(--status-alert) 0 4px,var(--status-alert-dim) 4px 8px);border-radius:0 3px 3px 0}
+.strip u.grow{animation:grow .6s var(--ease)}
+@keyframes grow{from{transform:scaleX(0);transform-origin:left}}
+.strip s{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--action);transition:left 1s linear}
+.free{font-size:var(--fs-1);color:var(--text-2);text-align:right;white-space:nowrap}.free b{font:500 15px/1 var(--fd);color:var(--text)}
+[data-drop].can{box-shadow:0 0 0 1.5px var(--action);background:color-mix(in srgb,var(--action) 10%,var(--surface-card))}
+[data-drop].cant{opacity:.45}
+[data-drop].hot{transform:scale(1.012);background:color-mix(in srgb,var(--action) 22%,var(--surface-card))}
+.ghost{position:fixed;z-index:60;pointer-events:none;padding:6px 10px;border-radius:var(--r1);background:var(--surface-raised);box-shadow:0 0 0 1px var(--border-strong),0 18px 30px -10px #000;font-weight:600;transform:rotate(-2deg);display:flex;gap:8px;align-items:center}
+
+/* ---- Techs ---- */
+.techs{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:var(--s3)}
+.tech{display:grid;gap:var(--s3);padding:var(--s4);border-radius:var(--r3);background:var(--surface-card);transition:background-color var(--t),box-shadow var(--t),transform var(--t) var(--ease)}
+.tech-h{display:flex;align-items:center;gap:10px}.tech-h b{display:block;font-size:var(--fs-3)}.tech-h small{display:block;color:var(--text-3);font-size:var(--fs-1)}
+.tech-s{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.tech-s .fig{font-size:20px;font-weight:500}
+.cells{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;margin-top:6px}.cells i{height:8px;border-radius:2px;background:var(--border);transition:background-color var(--t-slow)}.cells i.on{background:var(--text)}.cells i.half{background:linear-gradient(90deg,var(--text) 50%,var(--border) 50%)}
+.q{display:flex;flex-wrap:wrap;gap:6px;min-height:30px;align-items:center}
+.chip{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:6px;min-height:30px;padding:0 9px;border-radius:var(--r1);background:var(--surface-raised);transition:transform var(--t-fast) var(--ease),background-color var(--t),box-shadow var(--t)}
+.chip:hover{background:var(--surface-raised-hover)}.chip:active{transform:scale(.95)}.chip[aria-current="true"]{box-shadow:0 0 0 1.5px var(--text)}
+.chip.in{animation:dropin .5s var(--ease)}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding-top:var(--s3);border-top:1px solid var(--border)}
+.nums small{display:block;color:var(--text-3);font-size:11.5px}.nums b{font:500 17px/1.2 var(--fd)}
+
+/* ---- Yard ---- */
+.yard{display:grid;grid-template-columns:22px repeat(6,minmax(0,1fr));gap:5px;padding:var(--s3);border-radius:var(--r3);background:var(--surface-card);align-items:center}
+.yard .rw{font:500 14px/1 var(--fd);color:var(--text-3)}
+.spot{position:relative;min-height:50px;border-radius:var(--r1);background:var(--surface-well);display:grid;place-items:center;transition:background-color var(--t),box-shadow var(--t),transform var(--t) var(--ease)}
+.spot>small{position:absolute;top:3px;left:5px;font:500 10.5px/1 var(--fd);color:var(--text-3)}
+.spot .chip{min-height:28px;padding:0 6px;margin-top:8px;gap:4px}
+
+/* ---- Tomorrow ---- */
+.tmr{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:var(--s4);align-items:start}
+.card{padding:var(--s4);border-radius:var(--r3);background:var(--surface-card)}
+.plan{display:grid;gap:6px;counter-reset:n}
+.pl{counter-increment:n;display:grid;grid-template-columns:22px auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:8px 8px 8px 10px;border-radius:var(--r2);background:var(--surface-raised);transition:transform var(--t-slow) var(--ease)}
+.pl::before{content:counter(n);font:500 15px/1 var(--fd);color:var(--text-3);text-align:center}
+.pl div{min-width:0}.pl div b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pl div small{color:var(--text-3);font-size:var(--fs-1)}
+.pl .mv{display:flex;gap:4px}
+.fld{display:grid;gap:6px}.fld label{font-size:var(--fs-1);font-weight:600;color:var(--text-2)}
+.fld textarea,.fld input{width:100%;padding:9px 10px;border:0;border-radius:var(--r1);background:var(--surface-well);box-shadow:inset 0 0 0 1px var(--border);resize:vertical;transition:box-shadow var(--t)}
+.fld textarea{min-height:110px}
+.fld textarea:focus,.fld input:focus{outline:none;box-shadow:inset 0 0 0 2px var(--action)}
+.fld small{color:var(--text-3);font-size:var(--fs-1)}
+
+/* ---- Pop-over, sheet, toast ---- */
+.veil{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.5);animation:fade var(--t)}
+@keyframes fade{from{opacity:0}}
+.pop{position:absolute;z-index:50;width:330px;max-width:calc(100vw - 24px);padding:var(--s3);border-radius:var(--r3);background:var(--surface-raised);box-shadow:0 0 0 1px var(--border-strong),0 26px 50px -18px #000;animation:pop var(--t) var(--ease)}
+@keyframes pop{from{opacity:0;transform:scale(.94)}}
+.pop.bye{animation:bye var(--t-fast) ease-in forwards}@keyframes bye{to{opacity:0;transform:scale(.97)}}
+.pop.sheet{position:fixed;left:50%;top:50%;width:560px;max-height:calc(100% - 48px);overflow:auto;translate:-50% -50%;padding:var(--s5)}
+.pop h2{font:600 var(--fs-3)/1.3 var(--f);text-wrap:balance}.pop h2+p{color:var(--text-2);font-size:var(--fs-1);margin-top:2px}
+.pop .x{position:absolute;top:8px;right:8px;background:transparent}
+.opts{display:grid;gap:4px;margin-top:var(--s3)}
+.opt{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:2px 10px;min-height:44px;padding:6px 10px;border-radius:var(--r1);transition:background-color var(--t-fast),transform var(--t-fast)}
+.opt:hover,.opt:focus-visible{background:var(--tint)}.opt:active{transform:scale(.98)}
+.opt b{font-weight:600}.opt small{grid-column:2;color:var(--text-2);font-size:var(--fs-1)}
+.opt .tag{grid-row:1/3;grid-column:3;font-size:11px;font-weight:600;padding:3px 7px;border-radius:999px;background:var(--action);color:var(--on-action)}
+.opt kbd{grid-row:1/3;grid-column:1}
+.opt[disabled]{cursor:not-allowed;opacity:.5}.opt[disabled]:hover{background:none}
+.facts3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:var(--s3);padding:10px;border-radius:var(--r1);background:var(--surface-card)}
+.facts3 small{display:block;color:var(--text-3);font-size:11.5px}.facts3 b{font:500 17px/1.2 var(--fd)}
+.quote{margin-top:var(--s2);padding:8px 10px;border-radius:var(--r1);background:var(--surface-card);color:var(--text-2);font-size:var(--fs-1)}
+.chk{display:flex;align-items:flex-start;gap:10px;padding:8px 4px;cursor:pointer;border-radius:var(--r1)}.chk .tk{margin:0}
+.pop-a{display:flex;flex-wrap:wrap;gap:8px;margin-top:var(--s3)}
+.hint{margin-top:8px;color:var(--text-3);font-size:var(--fs-1)}
+.sw{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:40px;cursor:pointer}
+.sw button{all:unset;box-sizing:border-box;cursor:pointer;flex:none;width:40px;height:24px;border-radius:12px;background:var(--surface-well);box-shadow:inset 0 0 0 1px var(--border-strong);position:relative;transition:background-color var(--t)}
+.sw button::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--text-3);transition:transform var(--t) var(--ease),background-color var(--t)}
+.sw button[aria-checked="true"]{background:var(--action);box-shadow:none}.sw button[aria-checked="true"]::after{transform:translateX(16px);background:var(--on-action)}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;margin-top:var(--s3);align-items:center}.keys span{color:var(--text-2)}
+pre.out{margin:var(--s3) 0 0;padding:12px;border-radius:var(--r1);background:var(--surface-well);white-space:pre-wrap;font:12.5px/1.55 ui-monospace,Consolas,monospace;color:var(--text-2);max-height:260px;overflow:auto}
+.res{display:grid;gap:2px;margin-top:8px;max-height:260px;overflow:auto}
+.tok{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:8px}
+.tok div{display:flex;align-items:center;gap:8px;font-size:var(--fs-1);color:var(--text-2);min-width:0}.tok i{flex:none;width:22px;height:22px;border-radius:6px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.tok code,.sys code{font:11.5px ui-monospace,Consolas,monospace;color:var(--text)}
+.sys h3{margin-top:var(--s4);font:600 var(--fs-1)/1 var(--f);color:var(--text-3)}
+.sys .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+.toasts{position:fixed;z-index:70;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));translate:-50% 0;display:grid;gap:8px;width:min(440px,calc(100vw - 32px));pointer-events:none}
+.toast{pointer-events:auto;position:relative;overflow:hidden;display:flex;align-items:center;gap:10px;padding:10px 10px 10px 14px;border-radius:var(--r2);background:var(--platinum-100);color:var(--ink-on-light);font-weight:600;box-shadow:0 18px 36px -12px #000;animation:tin var(--t-slow) var(--ease)}
+.toast span{flex:1;min-width:0}
+.toast.bad{background:var(--surface-raised);color:var(--text);box-shadow:0 0 0 1.5px var(--status-alert),0 18px 36px -12px #000}
+.toast .btn{background:var(--ink-on-light);color:var(--platinum-100)}.toast .btn:hover{background:var(--ink-on-light-hover)}.toast .btn:focus-visible{outline-color:var(--ink-on-light)}
+.toast kbd{background:rgba(255,255,255,.16);color:var(--platinum-100)}
+.toast::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:100%;background:rgba(0,0,0,.28);transform-origin:left;animation:left var(--life,6s) linear forwards}
+.toast.bad::after{background:var(--status-alert)}
+.toast:hover::after,.toast:focus-within::after{animation-play-state:paused}
+@keyframes left{to{transform:scaleX(0)}}@keyframes tin{from{opacity:0;transform:translateY(14px) scale(.97)}}
+.toast.bye{transition:opacity var(--t),transform var(--t);opacity:0;transform:translateY(8px)}
+.spot-ring{position:absolute;z-index:30;pointer-events:none;border-radius:var(--r2);box-shadow:0 0 0 2px var(--platinum-100),0 0 0 9999px rgba(0,0,0,.45);animation:ring 2.6s var(--ease) forwards}
+.spot-ring.multi{box-shadow:0 0 0 2px var(--platinum-100)}
+@keyframes ring{0%{opacity:0;transform:scale(1.06)}12%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0}}
+
+/* ---- the rail: what each skill changed ---- */
+.rail{position:sticky;top:16px;align-self:start;display:grid;gap:var(--s3);max-height:calc(100vh - 32px);overflow:auto;padding:2px 2px 2px var(--s4);border-left:1px solid var(--border)}
+.rail h2{font:600 var(--fs-4)/1.25 var(--f)}.rail>p{color:var(--text-2);font-size:var(--fs-1);margin-top:-6px}
+.sk{display:grid;gap:8px;padding:12px;border-radius:var(--r2);background:var(--surface-card)}
+.sk-h{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+.sk-h b{font-size:var(--fs-2)}.sk-h small{display:block;color:var(--text-3);font-size:11.5px}
+.rate{display:flex;gap:2px}
+.rate button{all:unset;box-sizing:border-box;cursor:pointer;min-width:30px;height:26px;padding:0 6px;border-radius:6px;text-align:center;font-size:11.5px;font-weight:600;color:var(--text-3);transition:background-color var(--t),color var(--t),transform var(--t-fast)}
+.rate button:hover{background:var(--surface-raised);color:var(--text)}.rate button:active{transform:scale(.88)}
+.rate button[aria-pressed="true"]{background:var(--text);color:var(--surface-ground)}
+.sk ul{display:grid;gap:2px}
+.sk li button{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:14px minmax(0,1fr);gap:6px;width:100%;padding:5px 6px;border-radius:6px;color:var(--text-2);font-size:var(--fs-1);line-height:1.4;transition:background-color var(--t-fast),color var(--t-fast)}
+.sk li button:hover{background:var(--surface-raised);color:var(--text)}
+.sk li button svg{width:12px;height:12px;margin-top:3px;stroke:var(--text-3);fill:none;stroke-width:2;transition:transform var(--t) var(--ease),stroke var(--t)}
+.sk li button:hover svg{transform:translateX(2px);stroke:var(--text)}
+.sk li.f{display:grid;grid-template-columns:14px minmax(0,1fr);gap:6px;padding:5px 6px;color:var(--text-2);font-size:var(--fs-1);line-height:1.4}.sk li.f::before{content:"·";text-align:center;color:var(--text-3)}
+.picks{display:grid;gap:8px;padding:12px;border-radius:var(--r2);background:var(--surface-card)}
+.picks h3{font:600 var(--fs-2)/1 var(--f)}
+.picks pre{margin:0;white-space:pre-wrap;font:12px/1.5 ui-monospace,Consolas,monospace;color:var(--text-2)}
+.picks textarea{min-height:60px;resize:vertical;padding:8px;border:0;border-radius:var(--r1);background:var(--surface-well);box-shadow:inset 0 0 0 1px var(--border)}
+.picks textarea:focus{outline:none;box-shadow:inset 0 0 0 2px var(--action)}
+
+@media (max-width:1180px){.page{grid-template-columns:minmax(0,1fr)}.rail{position:static;max-height:none;border-left:0;padding:var(--s5) 0 0;border-top:1px solid var(--border)}}
+@media (max-width:860px){.body{grid-template-columns:minmax(0,1fr)}.hd{grid-template-columns:minmax(0,1fr) auto}.facts{grid-column:1/-1;grid-row:2}.sel,.tmr{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:640px){.axis{display:none}.bay{grid-template-columns:44px minmax(0,1fr) auto;gap:8px}.strip{display:none}.kv{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pop:not(.sheet){position:fixed;left:0!important;right:0;top:auto!important;bottom:0;width:auto;max-width:none;border-radius:var(--r3) var(--r3) 0 0;padding-bottom:calc(var(--s4) + env(safe-area-inset-bottom,0px));padding-left:max(var(--s3),env(safe-area-inset-left,0px));padding-right:max(var(--s3),env(safe-area-inset-right,0px));transform-origin:bottom center!important;animation:up var(--t-slow) var(--ease)}
+  .pop.sheet{width:calc(100% - 24px);padding:var(--s4)}
+  .btn,.fact,.tabs button{min-height:40px}.btn.sm{min-height:36px}.btn.ib{width:40px}.tk{width:28px;height:28px}}
+@keyframes up{from{transform:translateY(100%)}}
+@media (pointer:coarse){[data-keys] kbd.h{display:none}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
+.need.in{animation:dropin .5s var(--ease)}
+.need:not(.on) .btn.p{background:var(--surface-raised);color:var(--text)}.need:not(.on) .btn.p:hover{background:var(--surface-raised-hover)}
+.rows{display:grid;gap:6px}
+.lk{all:unset;cursor:pointer;color:var(--action);text-decoration:underline;text-underline-offset:2px}
+.pk{all:unset;box-sizing:border-box;cursor:pointer;flex:1;min-width:0;min-height:24px;display:flex;align-items:baseline;gap:8px}
+.pk:focus-visible{outline:none}
+.need:has(.pk:focus-visible){outline:2px solid var(--action);outline-offset:2px}
+.need .t{align-items:center}
+.tabs b{font:500 13px/1 var(--fd);color:var(--text-2)}
+.opt b{grid-column:2}
+.res kbd{display:none}
+.hd-r{flex-wrap:wrap;justify-content:flex-end}
+[data-drag]{user-select:none;-webkit-user-select:none}
+@media (pointer:coarse){.dragtip{display:none}}
+@media (max-width:640px){.hd-r{gap:6px}.hd-r [data-a="newro"] span{display:none}.hd-r [data-a="newro"]{width:40px;padding:0}.rate button{min-width:40px;height:36px}.h2 small.dragtip{display:none}}
+@media (prefers-reduced-motion:reduce){.spot-ring{animation:none!important;opacity:1}}
+.need .acts{display:none}.need.on .acts{display:flex;animation:fadein var(--t) var(--ease)}.need.on .more{display:inline-flex;animation:none}
+.btn.p.hold::before{background:rgba(0,0,0,.3)}
+.fact:not(.s){background:var(--surface-card)}.fact:not(.s):hover{background:var(--surface-raised)}.fact[aria-pressed="true"],.fact[aria-pressed="true"]:hover{background:var(--text)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:8px;font-size:11.5px;color:var(--text-3)}
+.legend span{display:inline-flex;align-items:center;gap:6px}.legend i{width:14px;height:8px;border-radius:2px;background:var(--text-3)}
+.legend i.l{background:repeating-linear-gradient(135deg,var(--status-alert) 0 4px,var(--status-alert-dim) 4px 8px)}.legend i.n{width:2px;height:12px;background:var(--action)}.legend i.u{background:rgba(255,255,255,.14)}
+@media (max-width:640px){.legend{display:none}}
+:root{--carbon-400:#949494;--border-field:var(--carbon-400);--picked:var(--platinum-100)}
+.fld textarea,.fld input,.picks textarea{box-shadow:inset 0 0 0 1px var(--border-field)}
+.tk{box-shadow:inset 0 0 0 1.5px var(--border-field)}
+.sw button{box-shadow:inset 0 0 0 1px var(--border-field)}
+.tabs i.ind{background:var(--picked)}.tabs button[aria-selected="true"],.tabs button[aria-selected="true"]:hover,.tabs button[aria-selected="true"] b{color:var(--surface-ground)}
+.need.on{box-shadow:0 0 0 1.5px var(--text-3)}
+::placeholder{color:var(--text-3);opacity:1}
+.app{grid-template-columns:minmax(0,1fr)}
+.tabs{min-width:0;flex:0 1 auto}
+@media (max-width:640px){.tabs button{padding:0 10px;gap:5px}}
+.pop .btn:not(.p):not(.q),.need.on .btn:not(.p):not(.q),.batch .btn:not(.p){background:var(--surface-top)}.pop .btn:not(.p):not(.q):hover,.need.on .btn:not(.p):not(.q):hover{background:var(--surface-top-hover)}
+.pop .btn.q,.need.on .btn.q{box-shadow:inset 0 0 0 1px var(--carbon-500)}
+@media (max-width:640px){.spot{min-height:58px}.spot .chip{flex-direction:column;gap:2px;min-height:38px;padding:3px 4px;margin-top:12px}.spot .chip .no{font-size:13px}
+  .bay-n{flex-direction:column;align-items:flex-start;gap:1px}.bay-n small{font-size:11px}.bay{grid-template-columns:46px minmax(0,1fr) auto}}
+/* the focus ring, last and strong, so no part can switch it off by accident */
+:is(button,a,summary,input,textarea,[tabindex]):focus-visible{outline:2px solid var(--action);outline-offset:2px}
+.pk:focus-visible,.fld textarea:focus-visible,.fld input:focus-visible,.picks textarea:focus-visible{outline:none}
+.tabs button:focus-visible{outline-offset:1px}
+.toast .btn:focus-visible{outline-color:var(--ink-on-light)}
+.pk,.btn,.tk,.truck,.chip{scroll-margin:28px}
+.need.ringdemo{outline:2px solid var(--action);outline-offset:2px}
+
+</style>
+<div class="page">
+  <main class="app" id="app">
+    <a class="skip" href="#needs">Skip to Needs action</a>
+    <header class="hd">
+      <h1>Foreman</h1>
+      <div class="facts" id="facts" role="group" aria-label="The shop right now"></div>
+      <div class="hd-r" id="hdr"></div>
+    </header>
+    <div class="bar2">
+      <div class="tabs" role="tablist" aria-label="Foreman views" id="tabs"></div>
+      <span class="st" id="shop"></span>
+    </div>
+    <div class="body">
+      <section class="needs" id="needs" aria-labelledby="nh" tabindex="-1"></section>
+      <div class="main" id="main" role="tabpanel" tabindex="-1"></div>
+    </div>
+  </main>
+  <aside class="rail" id="rail" aria-label="What each skill changed"></aside>
+</div>
+<div id="pophost"></div>
+<div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+<script>
+(() => {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- icons and the status lamp ---------- */
+const IC = {
+  search: '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>', doc: '<path d="M7 3.75h7l4 4v12.5H7z"/><path d="M14 3.75v4h4M10 12.5h5M10 16h5"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M12 3.5V6M12 18v2.5M3.5 12H6M18 12h2.5M6 6l1.8 1.8M16.2 16.2L18 18M6 18l1.8-1.8M16.2 7.8L18 6"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>', check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>', x: '<path d="M6 6l12 12M18 6L6 18"/>', chevR: '<path d="M9.5 6.5L15 12l-5.5 5.5"/>',
+  clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>', user: '<circle cx="12" cy="8.5" r="3.5"/><path d="M5 19.5c1-3.6 3.8-5 7-5s6 1.4 7 5"/>',
+  grid: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+  pin: '<path d="M12 21s6.5-5.8 6.5-11a6.5 6.5 0 10-13 0C5.5 15.2 12 21 12 21z"/><circle cx="12" cy="10" r="2.3"/>',
+  sun: '<circle cx="12" cy="12" r="3.8"/><path d="M12 3v2.2M12 18.8V21M3 12h2.2M18.8 12H21M5.6 5.6l1.6 1.6M16.8 16.8l1.6 1.6M5.6 18.4l1.6-1.6M16.8 7.2l1.6-1.6"/>',
+  send: '<path d="M20 4L3.5 11l6.5 2.5L12.5 20z"/><path d="M10 13.5L20 4"/>', flag: '<path d="M6 21V4M6 5h11l-2 4 2 4H6"/>',
+  road: '<path d="M8 3.5L5 20.5M16 3.5l3 17M12 5v2.5M12 11v2.5M12 17v2.5"/>', qc: '<path d="M12 3.5l7 2.5v5.5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6z"/><path d="M8.8 12l2.3 2.3 4.2-4.6"/>',
+  wrench: '<path d="M20 7.5a4.5 4.5 0 01-6.2 4.2L6.5 19 5 17.5l7.3-7.3A4.5 4.5 0 0116.5 4l-2.3 2.3.5 3 3 .5z"/>', in: '<path d="M4 20V9.5l8-5 8 5V20"/><path d="M12 10v7M9 14.2l3 3 3-3"/>',
+  eye: '<path d="M2.8 12S6.2 6 12 6s9.2 6 9.2 6-3.4 6-9.2 6-9.2-6-9.2-6z"/><circle cx="12" cy="12" r="2.6"/>', up: '<path d="M12 19V5M6 11l6-6 6 6"/>', down: '<path d="M12 5v14M6 13l6 6 6-6"/>',
+  bell: '<path d="M6.5 16.5V11a5.5 5.5 0 0111 0v5.5l1.5 1.5h-14z"/><path d="M10 20.5h4"/>', snz: '<path d="M19.5 14.5A8 8 0 019.5 4.5a8 8 0 1010 10z"/>',
+  help: '<circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.6a2.5 2.5 0 114 2c-.9.6-1.6 1.1-1.6 2.2M12 16.8v.2"/>' };
+const ic = n => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${IC[n] || ''}</svg>`;
+const LS = { working: '<circle cx="6" cy="6" r="5"/>', waiting: '<path d="M6 .8l5.2 5.2L6 11.2.8 6z"/>', customer: '<path fill-rule="evenodd" d="M6 1a5 5 0 100 10A5 5 0 006 1zm0 2.6a2.4 2.4 0 110 4.8 2.4 2.4 0 010-4.8z"/>',
+  support: '<rect x="1.3" y="1.3" width="9.4" height="9.4" rx="2"/>', alert: '<path d="M6 .9l5.5 9.8H.5z"/>', done: '<path fill-rule="evenodd" d="M6 .8a5.2 5.2 0 100 10.4A5.2 5.2 0 006 .8zm2.9 3.9L5.3 8.5 3.1 6.3l.9-.9 1.3 1.3 2.7-2.9z"/>', off: '<circle cx="6" cy="6" r="4.3"/>' };
+const tone = s => s === 'Working' ? 'working' : /Customer|Writer/.test(s) ? 'customer' : /Tech Support/.test(s) ? 'support' : /^Waiting/.test(s) ? 'waiting' : /^Complete|^Finished|^Released/.test(s) ? 'done' : 'off';
+/* the one status mark: a shape and a colour; pass a label only where no words sit beside it */
+const lamp = (t, label, live) => `<span class="lamp${live ? ' live' : ''}" data-t="${t}"${label ? ` role="img" aria-label="${esc(label)}"` : ' aria-hidden="true"'}><svg viewBox="0 0 12 12">${LS[t]}</svg></span>`;
+const stat = (s, live) => `<span class="st">${lamp(tone(s), '', live)}${esc(s)}</span>`;
+
+/* ---------- shop time: starts at 10:42 and runs in real time ---------- */
+const T0 = Date.now(), NOW0 = 642, DAY0 = 420, DAY1 = 960, LUNCH = [690, 750];
+const now = () => NOW0 + (Date.now() - T0) / 60000;
+const hm = m => `${Math.floor(m / 60)}:${String(Math.floor(m % 60)).padStart(2, '0')}`;
+const dur = s => `${Math.floor(s / 3600)}:${String(Math.floor(s / 60) % 60).padStart(2, '0')}:${String(Math.floor(s) % 60).padStart(2, '0')}`;
+const pct = m => Math.max(0, Math.min(100, (m - DAY0) / (DAY1 - DAY0) * 100));
+
+/* ---------- sample data (invented) ---------- */
+const TECHS = { MR: { n: 'Mike Rodriguez', sk: ['Drivetrain', 'Brakes'], day: 3.6, eff: 104 }, LM: { n: 'Luis Mendez', sk: ['Aftertreatment', 'Engine'], day: 3.5, eff: 91 },
+  DK: { n: 'Dana Kowalski', sk: ['Electrical', 'HVAC'], day: 3.2, eff: 112 }, PS: { n: 'Priya Shah', sk: ['Engine', 'Hydraulics'], day: 2.9, eff: 98 } };
+const first = k => TECHS[k].n.split(' ')[0];
+const STAGES = ['Check-in', 'Diagnose', 'Estimate', 'Parts', 'Repair', 'QC', 'Release'];
+const FRESH = () => ({
+  ros: {
+    4466: { cust: 'Summit Freightways', truck: '2021 Volvo VNL 860', job: 'Clutch slipping, replace clutch', skill: 'Drivetrain', st: 'Working', tech: 'MR', bay: 1, yard: 'A2', q: 2.7, b: 1.5, stage: 5, due: 'Today 14:10', from: 590, to: 850 },
+    5656: { cust: 'Iron Horse Logistics', truck: '2019 Volvo VNL 760', job: 'DEF doser fault, engine derate', skill: 'Aftertreatment', st: 'Working', tech: 'LM', bay: 2, yard: 'A4', q: 3.2, b: 2.9, stage: 5, due: 'Today 15:31', from: 430, to: 985, dueM: 931 },
+    2459: { cust: 'Silverline LTL', truck: '2020 Volvo VNR 640', job: 'Alignment after new steer tires', skill: 'Drivetrain', st: 'Complete – Road test', tech: 'MR', bay: 4, yard: 'B3', q: 1.4, b: 1.3, stage: 6, due: 'Today 12:00', from: 480, to: 630, fin: 1 },
+    2253: { cust: 'Great Lakes Bulk', truck: '2022 Volvo VNL 860', job: 'A/C blows warm at idle', skill: 'HVAC', st: 'Finished – QC', tech: 'DK', bay: 5, yard: 'B5', q: 2, b: 1.85, stage: 6, due: 'Today 13:00', from: 450, to: 620, fin: 1 },
+    3964: { cust: 'Midway Auto Transport', truck: '2018 Volvo VNL 670', job: 'Air leak at the dash', skill: 'Brakes', st: 'Waiting – Foreman', tech: 'MR', bay: 0, yard: 'D5', q: 1.5, b: 2.27, stage: 5, due: 'Tomorrow 10:00' },
+    2648: { cust: 'Copperline Transport', truck: '2021 Volvo VNL 760', job: 'Turbo actuator fault', skill: 'Engine', st: 'Waiting – Tech Support', tech: 'LM', bay: 0, yard: 'C3', q: 2.4, b: 0.9, stage: 2, due: 'Tomorrow 15:00' },
+    6773: { cust: 'Northgate Cartage', truck: '2020 Volvo VNL 760', job: 'No start, batteries dead', skill: 'Electrical', st: 'Not started', tech: '', bay: 0, yard: 'E2', q: 1.2, b: 0, stage: 1, due: 'Tomorrow 12:00' },
+    7310: { cust: 'Red Clover Farms', truck: '2017 Volvo VHD 430', job: 'PTO will not engage', skill: 'Hydraulics', st: 'Not started', tech: '', bay: 0, yard: 'E4', q: 1.8, b: 0, stage: 1, due: 'Thu 9:00' },
+    8166: { cust: 'Granite State Express', truck: '2018 Volvo VNL 670', job: 'Brake chamber, left rear', skill: 'Brakes', st: 'Waiting – Parts', tech: 'MR', bay: 0, yard: 'B1', q: 0.9, b: 0, stage: 4, due: 'Today 16:00' } },
+  clocks: { MR: { ro: '4466', at: 590 }, LM: { ro: '5656', at: 565 }, DK: { ro: '2253', at: 450 } },
+  bays: [[1, 'Lift'], [2, 'Lift'], [3, 'Crane'], [4, 'Align'], [5, 'Lift'], [6, 'UpTime']],
+  need: [
+    { id: 1, g: 'clock', ro: '2253', tech: 'DK', why: 'Dana’s clock is still running, but the RO is finished.' },
+    { id: 2, g: 'free', tech: 'PS', why: 'Nothing in the queue. 5.1 h free today.' },
+    { id: 3, g: 'sent', ro: '3964', why: 'Mike asks for more time. Over its quote by 0.77 h.' },
+    { id: 4, g: 'you', ro: '2648', why: 'Tech support case on the turbo actuator. Luis needs your call.' },
+    { id: 5, g: 'road', ro: '2459', why: 'Repair done. Needs a road test before it goes.' },
+    { id: 6, g: 'qc', ro: '2253', why: 'Finished. Check it before release.' },
+    { id: 7, g: 'tech', ro: '6773', why: 'In the yard, spot E2. No one has it yet.' },
+    { id: 8, g: 'tech', ro: '7310', why: 'In the yard, spot E4. No one has it yet.' },
+    { id: 9, g: 'in', ro: '8166', why: 'Parts are here. Ready to come in.' },
+    { id: 10, g: 'watch', ro: '5656', why: 'Will not make today 15:31. Still on Op 1.' } ],
+  done: [], nid: 10,
+  plan: [['5656', 'Finish the DEF doser', 'LM'], ['3964', 'Dash out for the air leak', 'MR'], ['2648', 'Turbo actuator, after tech support', 'LM'], ['9012', 'PM service A. Arrives 07:30', '']],
+  note: '', cfg: { qc: true, keys: true } });
+const PLANX = { 9012: 'Summit Freightways' };
+let D = FRESH();
+const GRP = [['clock', 'clock', 'Clocks'], ['free', 'user', 'Free techs'], ['sent', 'send', 'Sent to you'], ['you', 'flag', 'Waiting on you'], ['road', 'road', 'Road test'], ['qc', 'qc', 'QC before release'], ['tech', 'wrench', 'Needs a tech'], ['in', 'in', 'Bring in'], ['watch', 'eye', 'Watch']];
+const FILT = { you: n => n.g === 'sent' || n.g === 'you', tech: n => n.g === 'tech', late: n => n.g === 'watch' };
+const S = { view: 'floor', selId: 1, sel: '2253', selT: '', filter: '', ticks: [], fresh: [], rate: {}, notes: '' };
+const KEY = 'parsec-foreman-skills-1';
+try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); if (o.rate) S.rate = o.rate; if (typeof o.notes === 'string') S.notes = o.notes; } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ rate: S.rate, notes: S.notes })); } catch (e) {} };
+
+/* ---------- what the page works out from the data ---------- */
+const ro = no => D.ros[no];
+const live = no => Object.keys(D.clocks).find(k => D.clocks[k].ro === String(no));
+const mine = k => Object.keys(D.ros).filter(no => ro(no).tech === k && !ro(no).gone);
+const booked = k => TECHS[k].day + mine(k).reduce((s, no) => s + (ro(no).fin ? 0 : Math.max(0, ro(no).q - ro(no).b)), 0);
+const freeH = k => Math.max(0, 8 - booked(k));
+const inBay = n => Object.keys(D.ros).find(no => ro(no).bay === n && !ro(no).gone);
+const yardRos = () => Object.keys(D.ros).filter(no => !ro(no).bay && !ro(no).gone);
+const where = r => r.bay ? 'Bay ' + r.bay : 'Yard ' + r.yard;
+const fits = (r, k) => TECHS[k].sk.includes(r.skill);
+const rank = r => Object.keys(TECHS).sort((a, b) => (fits(r, b) - fits(r, a)) || (freeH(b) - freeH(a)));
+const shown = () => D.need.filter(n => !S.filter || FILT[S.filter](n));
+
+/* ---------- drawing the page ---------- */
+const PREV = {};
+const rolled = root => $$('[data-c]', root).forEach(b => { const k = b.dataset.c; if (k in PREV && PREV[k] !== b.textContent) b.classList.add('tick'); PREV[k] = b.textContent; });
+function facts() {
+  const used = D.bays.filter(b => inBay(b[0])).length, on = Object.keys(D.clocks).length, c = k => D.need.filter(FILT[k]).length;
+  const f = (k, txt) => `<button class="fact" data-a="filter" data-f="${k}" data-k="f-${k}" aria-pressed="${S.filter === k}" title="${S.filter === k ? 'Show everything again' : 'Show only these in Needs action'}"><b data-c="${k}">${c(k)}</b>${txt}</button>`;
+  $('#facts').innerHTML = `<span class="fact s"><b data-c="bays">${used}</b>of ${D.bays.length} bays in use</span><span class="fact s"><b data-c="on">${on}</b>of ${Object.keys(TECHS).length} on the clock</span>`
+    + f('you', 'waiting on you') + f('tech', c('tech') === 1 ? 'needs a tech' : 'need a tech') + f('late', 'late');
+  rolled($('#facts'));
+}
+const VIEWS = [['floor', 'grid', 'Floor'], ['techs', 'user', 'Techs'], ['yard', 'pin', 'Yard'], ['tmr', 'sun', 'Tomorrow']];
+function tabs() {
+  const t = $('#tabs');
+  if (!t.firstChild) t.innerHTML = VIEWS.map(([k, i, n], x) => `<button role="tab" id="tab-${k}" data-a="view" data-v="${k}" data-k="tab-${k}" aria-controls="main" title="${n}  (${x + 1})">${ic(i)}<span>${n}</span>${k === 'yard' ? '<b></b>' : ''}</button>`).join('') + '<i class="ind"></i>';
+  $$('[role=tab]', t).forEach(b => { const on = b.dataset.v === S.view; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; });
+  $('#tab-yard b').textContent = yardRos().length;
+  const on = $('#tab-' + S.view), ind = $('.ind', t); ind.style.width = on.offsetWidth + 'px'; ind.style.transform = `translateX(${on.offsetLeft}px)`;
+  $('#main').setAttribute('aria-labelledby', 'tab-' + S.view);
+}
+function needItem(n) {
+  const r = n.ro && ro(n.ro), on = S.selId === n.id, g = GRP.find(x => x[0] === n.g), id = `data-id="${n.id}"`;
+  const kb = k => on ? `<kbd class="h">${k}</kbd>` : '';
+  const P = (a, label) => `<button class="btn sm p" data-a="${a}" ${id} data-k="n${n.id}-p">${label}${kb('↵')}</button>`;
+  const acts = { clock: `<button class="btn sm p hold" data-hold="stop" ${id} data-k="n${n.id}-p" title="Press and hold, so a clock never stops by accident"><span>Hold to stop the clock</span></button><button class="btn sm q more" data-a="fine" ${id} data-k="n${n.id}-f">Leave it running</button>`,
+    free: P('give', 'Give work'), sent: P('decide', 'Decide'), you: P('gotit', 'I’ve got it'), road: P('roaddone', 'Road test done'), qc: P('qc', 'Start QC'),
+    tech: P('assign', 'Assign') + `<button class="btn sm q more" data-a="bringin" ${id} data-k="n${n.id}-b">Bring in</button>`, in: P('bringin', 'Bring in'), watch: P('nudge', 'Nudge ' + (r && r.tech ? first(r.tech) : '')) }[n.g]
+    + (n.g === 'clock' ? '' : `<button class="btn sm q more" data-a="snooze" ${id} data-k="n${n.id}-s">Snooze${kb('S')}</button>`);
+  const tick = n.g === 'tech' ? `<button class="tk" role="checkbox" aria-checked="${S.ticks.includes(n.id)}" data-a="tick" ${id} data-k="n${n.id}-t" aria-label="Tick RO ${n.ro} to plan it with others" title="Tick to plan several together  (X)"><svg viewBox="0 0 24 24">${IC.check}</svg></button>` : '';
+  return `<li class="need${on ? ' on' : ''}${S.fresh.includes(n.id) ? ' in' : ''}" data-a="pick" ${id}${r && !live(n.ro) ? ` data-drag="${n.ro}"` : ''}><span class="ic">${ic(g[1])}</span>
+    <div class="t"><button class="pk" data-a="pick" ${id} data-k="n${n.id}"${on ? ' aria-current="true"' : ''}>${r ? `<b class="no">${n.ro}</b><span>${esc(r.cust)}</span>` : `<span>${esc(TECHS[n.tech].n)} is free</span>`}</button>${tick}</div>
+    <p>${esc(n.why)}</p><div class="acts">${acts}</div></li>`;
+}
+function needs() {
+  const L = shown(), el = $('#needs');
+  let h = `<h2 class="h2" id="nh">Needs action<b class="ct" data-c="need">${D.need.length}</b>${S.filter ? `<small>Showing ${L.length} of ${D.need.length}. <button class="lk" data-a="filter" data-f="${S.filter}" data-k="showall">Show all</button></small>` : ''}</h2>`;
+  if (!D.need.length) h += `<div class="clear"><svg viewBox="0 0 24 24" aria-hidden="true">${IC.check}</svg><b>All clear</b>Nothing needs you right now.</div>`;
+  else if (!L.length) h += `<div class="clear">Nothing like that right now.</div>`;
+  else GRP.forEach(([g, , name]) => { const it = L.filter(n => n.g === g); if (it.length) h += `<h3 class="grp">${name}</h3><ul>${it.map(needItem).join('')}</ul>`; });
+  if (S.ticks.length > 1) h += `<div class="batch"><span>${S.ticks.length} trucks ticked</span><button class="btn sm p" data-a="plan" data-k="plan">Plan together<kbd class="h">P</kbd></button></div>`;
+  if (D.done.length) h += `<details class="done"${S.doneOpen ? ' open' : ''}><summary data-k="done">${ic('chevR')}Cleared today <b class="fig">${D.done.length}</b></summary>${D.done.map(d => `<div class="dn"><span>${esc(d.text)}</span>${d.snz ? `<button class="btn sm q" data-a="wake" data-id="${d.id}" data-k="w${d.id}">Bring back</button>` : ''}</div>`).join('')}</details>`;
+  el.innerHTML = h; rolled(el);
+  const dt = $('details.done', el); if (dt) dt.addEventListener('toggle', () => { S.doneOpen = dt.open; });
+}
+const chip = no => { const r = ro(no); return `<button class="chip${S.fresh.includes('c' + no) ? ' in' : ''}" data-a="sel" data-ro="${no}" data-k="c${no}"${live(no) ? '' : ` data-drag="${no}"`} title="${esc(r.cust)}, ${esc(r.st)}"${S.sel === no ? ' aria-current="true"' : ''}><b class="no">${no}</b>${lamp(tone(r.st), r.st, !!live(no))}</button>`; };
+function selPanel() {
+  const r = S.sel && ro(S.sel);
+  if (!r && S.selT) { const k = S.selT, t = TECHS[k], b = booked(k);
+    return `<section class="sel" id="sel" aria-label="${esc(t.n)}"><div><div class="sel-h"><i class="av lg">${k}</i><div><h2 style="margin:0">${esc(t.n)}</h2><p class="sub">${t.sk.join(', ')}</p></div></div></div>
+      <div class="sel-r"><div><div class="hrs-t"><span><b>${b.toFixed(1)}</b> of 8 h booked</span><span>${freeH(k).toFixed(1)} h free today</span></div><div class="meter"><u style="width:${b / 8 * 100}%"></u></div></div></div>
+      <div class="sel-a"><button class="btn p" data-a="give" data-t="${k}" data-k="s-give">Give work</button></div></section>`; }
+  if (!r || r.gone) return `<section class="sel" id="sel"><p class="empty" style="grid-column:1/-1">Pick a truck or an item to see it here.</p></section>`;
+  const no = S.sel, k = live(no), over = r.b > r.q, top = Math.max(r.q, r.b), mark = r.q / top * 100;
+  return `<section class="sel${S.fresh.includes('sel') ? ' flash' : ''}" id="sel" aria-label="RO ${no}">
+    <div><div class="sel-h"><b class="big">${no}</b>${stat(r.st, !!k)}</div><h2>${esc(r.job)}</h2><p class="sub">${esc(r.cust)}, ${esc(r.truck)}</p>
+      <div class="kv"><div><small>Tech</small><b>${r.tech ? esc(TECHS[r.tech].n) : 'No one yet'}</b></div><div><small>Where</small><b>${where(r)}</b></div><div><small>Due</small><b>${r.due}</b></div></div></div>
+    <div class="sel-r"><div><div class="hrs-t"><span><b>${r.b.toFixed(2)}</b> of ${r.q.toFixed(2)} h</span>${over ? `<span class="over">Over by ${(r.b - r.q).toFixed(2)} h</span>` : `<span>${(r.q - r.b).toFixed(2)} h left</span>`}</div>
+        <div class="meter" role="img" aria-label="${r.b.toFixed(2)} of ${r.q.toFixed(2)} hours used"><u style="width:${over ? mark : r.b / top * 100}%"></u>${over ? `<u class="over" style="left:${mark}%;width:${100 - mark}%"></u><s style="left:${mark}%"></s>` : ''}</div></div>
+      <div><div class="segs" aria-hidden="true">${STAGES.map((_, i) => `<i class="${i + 1 < r.stage ? 'd' : i + 1 === r.stage ? 'n' : ''}"></i>`).join('')}</div><small class="cap"><b>${STAGES[r.stage - 1]}</b>, step ${r.stage} of 7</small></div>
+      ${k ? `<div class="hrs-t"><span>${first(k)}’s clock</span><b class="fig" data-clk="${k}"></b></div>` : ''}</div>
+    <div class="sel-a">${!r.tech ? `<button class="btn" data-a="assign" data-ro="${no}" data-k="s-as">Assign<kbd class="h">A</kbd></button>` : k ? '' : `<button class="btn" data-a="assign" data-ro="${no}" data-k="s-as">Give to someone else<kbd class="h">A</kbd></button>`}
+      ${r.bay ? (k ? '' : `<button class="btn" data-a="toyard" data-ro="${no}" data-k="s-yd">Move to the yard</button>`) : `<button class="btn" data-a="bringin" data-ro="${no}" data-k="s-in">Bring in</button>`}
+      <button class="btn q" data-a="open" data-ro="${no}" data-k="s-op">Open the RO</button></div></section>`;
+}
+function floor() {
+  const N = now(), row = ([n, type]) => { const no = inBay(n), r = no && ro(no);
+    let strip = `<i class="lunch" style="left:${pct(LUNCH[0])}%;width:${pct(LUNCH[1]) - pct(LUNCH[0])}%"></i>`, free = '<span class="empty">Free now</span>';
+    if (r) { const end = Math.min(r.to, DAY1), late = r.dueM && r.to > r.dueM, gr = S.fresh.includes('b' + no) ? ' grow' : '';
+      strip += `<u class="${r.fin ? 'done' : ''}${gr}" style="left:${pct(r.from)}%;width:${pct(late ? r.dueM : end) - pct(r.from)}%"></u>` + (late ? `<u class="late" style="left:${pct(r.dueM)}%;width:${pct(end) - pct(r.dueM)}%"></u>` : '');
+      free = r.fin ? (r.st === 'Finished – QC' ? 'Waiting for QC' : 'Ready to move') : late ? `<span class="over">Runs past ${hm(r.dueM)}</span>` : `Free at <b>${hm(r.to)}</b>`; }
+    return `<div class="bay" role="listitem" data-drop="bay:${n}"><div class="bay-n"><b>${n}</b><small>${type}</small></div>
+      ${r ? `<button class="truck${S.fresh.includes('b' + no) ? ' in' : ''}" data-a="sel" data-ro="${no}" data-k="b${no}"${live(no) ? '' : ` data-drag="${no}"`}${S.sel === no ? ' aria-current="true"' : ''}><b class="no">${no}</b>${lamp(tone(r.st), r.st, !!live(no))}<span></span>${r.tech ? `<i class="av" title="${esc(TECHS[r.tech].n)}">${r.tech}</i>` : ''}<small>${esc(r.cust)}</small></button>` : '<span class="empty">Empty</span>'}
+      <div class="strip" aria-hidden="true">${strip}<s style="left:${pct(N)}%"></s></div><div class="free">${free}</div></div>`; };
+  const tk = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16].filter(h => Math.abs(pct(h * 60) - pct(N)) > 11);
+  return `<section aria-labelledby="fh"><h2 class="h2" id="fh">The floor<small class="dragtip">Drag a truck into a bay, or use Bring in</small></h2><div class="board" id="board">
+    <div class="axis" aria-hidden="true"><span></span><span></span><div class="ticks">${tk.map(h => `<span style="left:${pct(h * 60)}%">${h}</span>`).join('')}<span class="nowl" style="left:${pct(N)}%">${hm(N)}</span></div><span></span></div>
+    <div role="list" class="rows">${D.bays.map(row).join('')}</div></div><p class="legend" aria-hidden="true"><span><i class="b"></i>Booked</span><span><i class="l"></i>Runs late</span><span><i class="n"></i>Now</span><span><i class="u"></i>Lunch</span></p></section>`;
+}
+function techs() {
+  const card = k => { const t = TECHS[k], c = D.clocks[k], b = booked(k), q = mine(k);
+    return `<article class="tech" data-drop="tech:${k}" aria-label="${esc(t.n)}"><div class="tech-h"><i class="av lg">${k}</i><div><b>${esc(t.n)}</b><small>${t.sk.join(', ')}</small></div></div>
+      <div class="tech-s">${c ? `<span class="st">${lamp('working', '', 1)}On RO ${c.ro}</span><b class="fig" data-clk="${k}"></b>` : `<span class="st">${lamp('off')}Off the clock</span>`}</div>
+      <div><div class="hrs-t"><span><b>${b.toFixed(1)}</b> of 8 h booked</span><span>${freeH(k).toFixed(1)} h free</span></div><div class="cells" aria-hidden="true">${Array.from({ length: 8 }, (_, i) => `<i class="${b >= i + 1 ? 'on' : b > i + .25 ? 'half' : ''}"></i>`).join('')}</div></div>
+      <div class="q">${q.map(chip).join('') || '<span class="empty">Nothing in the queue</span>'}</div>
+      <div class="nums"><div><small>Worked today</small><b>${t.day.toFixed(1)} h</b></div><div><small>Efficiency</small><b>${t.eff}%</b></div><div><small>Trucks</small><b>${q.length}</b></div></div>
+      <button class="btn sm q" data-a="give" data-t="${k}" data-k="g${k}">${ic('plus')}Give work</button></article>`; };
+  return `<section aria-labelledby="th"><h2 class="h2" id="th">Techs<small class="dragtip">Drag a truck onto a tech, or use Give work</small></h2><div class="techs">${Object.keys(TECHS).map(card).join('')}</div></section>`;
+}
+function yard() {
+  const at = {}; yardRos().forEach(no => { at[ro(no).yard] = no; });
+  return `<section aria-labelledby="yh"><h2 class="h2" id="yh">Yard<b class="ct">${yardRos().length}</b><small class="dragtip">Drag a truck to another spot or into a bay</small></h2><div class="yard">${'ABCDE'.split('').map(R => `<b class="rw" aria-hidden="true">${R}</b>` + [1, 2, 3, 4, 5, 6].map(c => { const s = R + c;
+    return `<div class="spot" data-drop="spot:${s}"><small>${s}</small>${at[s] ? chip(at[s]) : ''}</div>`; }).join('')).join('')}</div></section>`;
+}
+function tmr() {
+  const row = ([no, what, k], i) => `<li class="pl" data-ro="${no}"><b class="no">${no}</b><div><b>${esc(ro(no) ? ro(no).cust : PLANX[no])}</b><small>${k ? first(k) : 'No tech yet'}: ${esc(what)}</small></div><span class="mv">
+    <button class="btn sm ib q" data-a="mv" data-i="${i}" data-d="-1" data-k="pu${no}" aria-label="Move RO ${no} up"${i ? '' : ' disabled'}>${ic('up')}</button><button class="btn sm ib q" data-a="mv" data-i="${i}" data-d="1" data-k="pd${no}" aria-label="Move RO ${no} down"${i === D.plan.length - 1 ? ' disabled' : ''}>${ic('down')}</button></span></li>`;
+  return `<div class="tmr"><section class="card" aria-labelledby="ph"><h2 class="h2" id="ph">Tomorrow’s plan<small>First truck in at 7:00</small></h2><ol class="plan">${D.plan.map(row).join('')}</ol></section>
+    <section class="card" aria-labelledby="hh"><h2 class="h2" id="hh">Handoff note</h2><div class="fld"><label for="note">For the next shift</label><textarea id="note" data-k="note">${esc(D.note)}</textarea><small>Goes on the shift handover with the trucks that carry over.</small></div>
+    <div class="pop-a"><button class="btn p" data-a="handover" data-k="t-hand">Build the handover</button></div></section></div>`;
+}
+function tickClocks() {
+  const N = now(); $$('[data-clk]').forEach(e => { const c = D.clocks[e.dataset.clk]; e.textContent = c ? dur((N - c.at) * 60) : ''; });
+  $$('.strip s').forEach(s => { s.style.left = pct(N) + '%'; }); const l = $('.nowl'); if (l) { l.style.left = pct(N) + '%'; l.textContent = hm(N); }
+  $('#shop').innerHTML = `Shop time <b class="fig">${hm(N)}</b>`;
+}
+function main(anim) {
+  const m = $('#main'); m.innerHTML = (S.view === 'tmr' ? '' : selPanel()) + ({ floor, techs, yard, tmr })[S.view]();
+  if (anim && !RM) { m.classList.remove('vin'); void m.offsetWidth; m.classList.add('vin'); clearTimeout(main.t); main.t = setTimeout(() => m.classList.remove('vin'), 480); }
+  tickClocks();
+}
+function render(o = {}) {
+  const ae = document.activeElement, k = o.focus || (ae && ae.dataset && ae.dataset.k) || '';
+  facts(); tabs(); needs(); main(o.view); S.fresh = [];
+  if (k) { const el = $(`[data-k="${k}"]`); if (el && !el.closest('#pophost') && el !== document.activeElement) el.focus({ preventScroll: true }); }
+}
+
+/* ---------- messages: Undo sits in the message, so nothing has to ask "Are you sure?" ---------- */
+let UNDO = null, POP = null, HELD = 0;
+function toast(msg, o = {}) {
+  const host = $('#toasts'); host.innerHTML = '';
+  const t = document.createElement('div'), life = o.undo ? 8000 : 5000; t.className = 'toast' + (o.tone === 'bad' ? ' bad' : ''); t.style.setProperty('--life', life + 'ms');
+  t.innerHTML = `<span>${esc(msg)}</span>` + (o.undo ? `<button class="btn sm" data-a="undo" data-k="undo">Undo<kbd class="h">Ctrl Z</kbd></button>` : '');
+  host.append(t); UNDO = o.undo || null;
+  const bye = () => { t.classList.add('bye'); setTimeout(() => t.remove(), 220); if (UNDO === o.undo) UNDO = null; };
+  let tm = setTimeout(bye, life); const hold = () => clearTimeout(tm), rel = () => { clearTimeout(tm); tm = setTimeout(bye, 2500); };
+  t.addEventListener('pointerenter', hold); t.addEventListener('pointerleave', rel); t.addEventListener('focusin', hold); t.addEventListener('focusout', rel);
+}
+const snap = () => { const j = JSON.stringify(D), u = JSON.stringify([S.ticks, S.selId, S.sel, S.selT, S.view]); return () => { D = JSON.parse(j); [S.ticks, S.selId, S.sel, S.selT, S.view] = JSON.parse(u); render(); toast('Put back the way it was.'); }; };
+function act(fn, msg, o) { const u = snap(); fn(); render(o); toast(msg, { undo: u }); }
+const setSel = n => { S.selId = n ? n.id : 0; if (n) { S.sel = n.ro || ''; S.selT = n.ro ? '' : n.tech; } };
+function clearNeed(id, text, snz) { const i = D.need.findIndex(x => x.id === id); if (i < 0) return; const [n] = D.need.splice(i, 1); D.done.unshift({ ...n, text, snz }); S.ticks = S.ticks.filter(x => x !== id); }
+/* an item leaves: it slides out, the list closes up, the next one is picked and takes the focus */
+function settle(id, fn, msg, text, snz) {
+  const el = $(`.need[data-id="${id}"]`), ix = Math.max(0, shown().findIndex(n => n.id === id)), ae = document.activeElement, kb = !!(ae && ae.closest('#needs, #pophost'));
+  const go = () => { const u = snap(); fn && fn(); clearNeed(id, text, snz); const L = shown(), nx = L[Math.min(ix, L.length - 1)]; setSel(nx); render({ focus: kb ? (nx ? 'n' + nx.id : 'done') : '' }); toast(msg, { undo: u }); };
+  closePop(false); if (el && !RM) { el.classList.add('out'); setTimeout(go, 200); } else go();
+}
+
+/* ---------- what the foreman can do ---------- */
+const busy = x => x.fin ? '' : x.to >= DAY1 ? ' for the rest of the day' : ' until ' + hm(x.to);
+const onClock = no => `RO ${no} is on ${first(live(no))}’s clock. Stop the clock before it moves.`;
+function assignTo(no, k) {
+  const r = ro(no); if (r.tech === k) return toast(`RO ${no} is already with ${first(k)}.`);
+  if (live(no)) return toast(onClock(no), { tone: 'bad' });
+  const n = D.need.find(x => x.g === 'tech' && x.ro === String(no)), fn = () => { r.tech = k; S.fresh.push('c' + no); const fr = D.need.find(x => x.g === 'free' && x.tech === k); if (fr) clearNeed(fr.id, `${TECHS[k].n} got RO ${no}`); };
+  const msg = `RO ${no} given to ${TECHS[k].n}`; if (n) settle(n.id, fn, msg, `RO ${no} given to ${first(k)}`); else { closePop(false); act(fn, msg); }
+}
+function toBay(no, n) {
+  const r = ro(no), has = inBay(n); if (r.bay === n) return;
+  if (has) { const x = ro(has); return toast(`Bay ${n} has RO ${has}${busy(x)}. Pick an empty bay.`, { tone: 'bad' }); }
+  if (live(no)) return toast(onClock(no), { tone: 'bad' });
+  const it = D.need.find(x => x.g === 'in' && x.ro === String(no)), N = Math.round(now()), len = Math.round(Math.max(.3, r.q - r.b) * 60);
+  const fn = () => { r.bay = n; if (!r.fin) { r.from = N; r.to = N + len + (N < LUNCH[0] && N + len > LUNCH[0] ? 60 : 0); if (/Parts/.test(r.st)) r.st = 'Not started'; } S.fresh.push('b' + no); if (S.view === 'techs' || S.view === 'tmr') S.view = 'floor'; };
+  const msg = `RO ${no} brought in to Bay ${n}`; if (it) settle(it.id, fn, msg, msg); else { closePop(false); act(fn, msg); }
+}
+function toYard(no, spot) {
+  const r = ro(no); if (live(no)) return toast(onClock(no), { tone: 'bad' });
+  const at = {}; yardRos().forEach(x => { if (x !== String(no)) at[ro(x).yard] = x; });
+  if (spot && at[spot]) return toast(`Spot ${spot} has RO ${at[spot]}. Pick an empty spot.`, { tone: 'bad' });
+  let s = spot || r.yard; if (at[s]) s = 'ABCDE'.split('').flatMap(R => [1, 2, 3, 4, 5, 6].map(c => R + c)).find(x => !at[x]);
+  if (!r.bay && s === r.yard) return;
+  act(() => { const was = r.bay; r.bay = 0; r.yard = s; S.fresh.push('c' + no); if (was && S.view === 'floor') S.view = 'yard'; }, r.bay ? `RO ${no} moved out to the yard, spot ${s}` : `RO ${no} moved to spot ${s}`);
+}
+function stopClock(id) { const n = D.need.find(x => x.id === id); if (!n) return; const k = n.tech, r = ro(n.ro); HELD = Date.now();
+  settle(id, () => { delete D.clocks[k]; }, `${first(k)}’s clock stopped. End time set to ${hm(r.to)}, when the RO was finished.`, `${first(k)}’s clock stopped at ${hm(r.to)}`); }
+
+/* ---------- pop-overs: each returns [name, html, sheet?] ---------- */
+const opt = (a, i, b, small, tag, dis) => `<button class="opt" ${a} data-n="${i}"${dis ? ' disabled' : ''}><kbd class="h">${i}</kbd><b>${b}</b>${small ? `<small>${small}</small>` : ''}${tag ? `<span class="tag">${tag}</span>` : ''}</button>`;
+const tk = (a, on, k) => `<button class="tk" role="checkbox" aria-checked="${on}" ${a} data-k="${k}"><svg viewBox="0 0 24 24">${IC.check}</svg></button>`;
+const about = r => `About ${Math.max(.3, r.q - r.b).toFixed(1)} h`;
+const POPS = {
+  assign(no) { const r = ro(no);
+    return [`Give RO ${no} to a tech`, `<h2>Who gets RO ${no}?</h2><p>${esc(r.job)}. Needs ${r.skill}. ${about(r)}.</p><div class="opts">${rank(r).map((k, i) =>
+      opt(`data-a="assignto" data-ro="${no}" data-t="${k}"`, i + 1, esc(TECHS[k].n), `${fits(r, k) ? 'Does ' + r.skill : 'No ' + r.skill + ' on the list'}. ${r.tech === k ? 'Has it now' : freeH(k).toFixed(1) + ' h free today'}`, i === 0 && fits(r, k) && r.tech !== k ? 'Best fit' : '', r.tech === k)).join('')}</div>`]; },
+  give(k) { const t = TECHS[k], L = Object.keys(D.ros).filter(no => !ro(no).tech && !ro(no).gone).sort((a, b) => fits(ro(b), k) - fits(ro(a), k));
+    return [`Give work to ${t.n}`, `<h2>What does ${first(k)} get?</h2><p>${t.sk.join(', ')}. ${freeH(k).toFixed(1)} h free today.</p>` + (L.length ? `<div class="opts">${L.map((no, i) => { const r = ro(no);
+      return opt(`data-a="assignto" data-ro="${no}" data-t="${k}"`, i + 1, `<span class="no">${no}</span> ${esc(r.cust)}`, `${esc(r.job)}. ${r.q.toFixed(1)} h`, i === 0 && fits(r, k) ? 'Best fit' : ''); }).join('')}</div>` : '<p class="hint">Every truck has a tech. To move one, pick it and choose Give to someone else.</p>')]; },
+  decide(no) { const r = ro(no), ov = r.b - r.q, a = `data-ro="${no}"`;
+    return [`Decide on RO ${no}`, `<h2>More time on RO ${no}?</h2><p>${esc(r.cust)}. ${esc(r.job)}.</p><div class="facts3"><div><small>Quoted</small><b>${r.q.toFixed(2)} h</b></div><div><small>On it so far</small><b>${r.b.toFixed(2)} h</b></div><div><small>Over by</small><b class="over">${ov.toFixed(2)} h</b></div></div>
+      <p class="quote">${first(r.tech)}: “The leak is behind the cluster. The dash has to come out.”</p><div class="opts">${opt(`data-a="approve" ${a} data-h="1"`, 1, 'Approve 1.0 h more', `Covers the overrun and leaves ${(1 - ov).toFixed(2)} h`, 'Covers it')}${opt(`data-a="approve" ${a} data-h="0.5"`, 2, 'Approve 0.5 h more', `Still ${(ov - .5).toFixed(2)} h short`)}${opt(`data-a="towriter" ${a}`, 3, 'Send to the writer for a new quote', 'The customer hears about it first')}</div>`]; },
+  snooze(id) { const N = now(), o = [[hm(N + 30), '30 minutes'], ['12:30', 'After lunch'], ['tomorrow 7:00', 'Tomorrow morning']];
+    return ['Snooze this item', `<h2>Snooze until when?</h2><p>It comes back to Needs action then.</p><div class="opts">${o.map(([t, l], i) => opt(`data-a="snzto" data-id="${id}" data-t="${t}"`, i + 1, l, 'Back at ' + t)).join('')}</div>`]; },
+  bringin(no) { const r = ro(no), need = /Brakes|Drivetrain|PM/.test(r.skill) ? 'Lift' : r.skill === 'Hydraulics' ? 'Crane' : '', short = r.q <= 1;
+    const sc = ([n, type]) => (inBay(n) ? -9 : 0) + (type === need ? 2 : 0) + (type === 'UpTime' && short ? 3 : 0), L = [...D.bays].sort((a, b) => sc(b) - sc(a));
+    return [`Bring RO ${no} in`, `<h2>Which bay for RO ${no}?</h2><p>${esc(r.job)}. ${about(r)}.</p><div class="opts">${L.map(([n, type], i) => { const has = inBay(n), x = has && ro(has);
+      return opt(`data-a="tobay" data-ro="${no}" data-b="${n}"`, i + 1, `Bay ${n}, ${type}`, has ? `Has RO ${has}${busy(x)}` : type === 'UpTime' && short ? 'Empty. Made for short jobs' : type === need ? `Empty. Has the ${type.toLowerCase()} this job needs` : 'Empty', i === 0 && !has ? 'Best fit' : '', has); }).join('')}</div>`]; },
+  qc(no) { const r = ro(no);
+    return [`QC for RO ${no}`, `<h2>QC before RO ${no} goes</h2><p>${esc(r.cust)}. ${esc(r.job)}.</p><div class="opts">${['Walk-around: tools out, covers on, no leaks', 'Cab clean. Keys and paperwork with the truck'].map((c, i) => `<label class="chk">${tk('data-a="qctick"', false, 'qc' + i)}<span>${c}</span></label>`).join('')}</div>
+      <div class="pop-a"><button class="btn p" data-a="qcpass" data-ro="${no}" data-k="qcp" disabled>Pass QC</button><button class="btn q" data-a="qcback" data-k="qcb">Send back</button></div><p class="hint" id="qch">Tick both checks to pass.</p>
+      <div class="opts" id="qcwhy" hidden>${['Story missing', 'Parts to return', 'Recheck the repair', 'Clean up'].map((w, i) => opt(`data-a="qcsend" data-ro="${no}" data-w="${w}"`, i + 1, w)).join('')}</div>`]; },
+  plan() { const load = {}, rows = S.ticks.map(id => D.need.find(n => n.id === id)).filter(Boolean).map(n => { const r = ro(n.ro), left = k => freeH(k) - (load[k] || 0), k = Object.keys(TECHS).sort((a, b) => (fits(r, b) - fits(r, a)) || (left(b) - left(a)))[0]; load[k] = (load[k] || 0) + r.q; return [n.id, n.ro, k]; });
+    S.planRows = rows;
+    return ['Plan together', `<h2>Plan ${rows.length} trucks together</h2><p>Each truck goes to the best fit with time left.</p><div class="opts">${rows.map(([, no, k]) => `<div class="opt" style="pointer-events:none"><span class="no" style="grid-row:1/3">${no}</span><b>${esc(TECHS[k].n)}</b><small>${ro(no).skill}. ${ro(no).q.toFixed(1)} h</small></div>`).join('')}</div>
+      <div class="pop-a"><button class="btn p" data-a="plango" data-k="plango">Assign ${rows.length === 2 ? 'both' : 'all ' + rows.length}</button><button class="btn q" data-a="close">Not now</button></div>`]; },
+  settings() { const sw = (k, t) => `<label class="sw"><span>${t}</span><button role="switch" aria-checked="${D.cfg[k]}" data-a="cfg" data-cfg="${k}" data-k="cfg-${k}"></button></label>`;
+    return ['Foreman settings', `<h2>Foreman settings</h2><p>Shop day 7:00 to 16:00. Lunch 11:30 to 12:30.</p><div class="opts">${sw('qc', 'QC before release')}${sw('keys', 'Shortcut keys, and their hints on buttons')}</div>`]; },
+  keys() { const K = [['J  K', 'Move through Needs action'], ['↵', 'Do the item’s next step'], ['A', 'Assign the picked truck'], ['S', 'Snooze the item'], ['X', 'Tick a truck to plan it with others'], ['P', 'Plan the ticked trucks together'], ['1 2 3 4', 'Floor, Techs, Yard, Tomorrow'], ['/', 'Search'], ['1 – 6', 'In a pop-over: pick that option'], ['Esc', 'Close, or clear the filter'], ['Ctrl Z', 'Undo']];
+    return ['Keyboard shortcuts', `<h2>Keyboard shortcuts</h2><p>Every one of these also has a button.</p><div class="keys">${K.map(([k, t]) => `<kbd>${k}</kbd><span>${t}</span>`).join('')}</div>`]; },
+  search() { return ['Search', `<h2>Search</h2><div class="fld" style="margin-top:8px"><label for="q">RO, customer, truck or spot</label><input id="q" data-k="q" autocomplete="off" spellcheck="false"></div><div class="res" id="res"></div><p class="hint" id="qh" role="status">Type a number or a name.</p>`]; },
+  handover() { const L = D.plan.filter(p => ro(p[0]));
+    return ['Shift handover', `<h2>Shift handover</h2><p>Tick what the next shift needs to know about.</p><div class="opts">${L.map(([no, what], i) => `<label class="chk">${tk(`data-a="hotick" data-ro="${no}"`, true, 'ho' + i)}<span><b class="no">${no}</b> ${esc(ro(no).cust)}: ${esc(what)}</span></label>`).join('')}</div>
+      <div class="fld" style="margin-top:12px"><label for="honote">Note for the next shift</label><textarea id="honote" data-k="honote" style="min-height:64px">${esc(D.note)}</textarea></div>
+      <div class="pop-a"><button class="btn p" data-a="hobuild" data-k="hob">Build the handover</button></div><div id="hoout"></div>`, 1]; } };
+function openPop(spec, anchor) {
+  const [label, html, sheet] = spec, host = $('#pophost'); POP = null;
+  host.innerHTML = (sheet ? '<div class="veil" data-a="close"></div>' : '') + `<div class="pop${sheet ? ' sheet' : ''}" role="dialog" aria-modal="${!!sheet}" aria-label="${esc(label)}" tabindex="-1">${html}${sheet ? `<button class="btn ib x" data-a="close" aria-label="Close">${ic('x')}</button>` : ''}</div>`;
+  const p = $('.pop', host); POP = { p, k: anchor && anchor.dataset.k };
+  if (!sheet && anchor && innerWidth > 640) { const r = anchor.getBoundingClientRect(), w = p.offsetWidth, h = p.offsetHeight, x = Math.max(12, Math.min(r.left, innerWidth - w - 12)), below = r.bottom + 8 + h < innerHeight || r.top < h + 16, y = below ? r.bottom + 8 : r.top - h - 8;
+    p.style.left = x + scrollX + 'px'; p.style.top = y + scrollY + 'px'; p.style.transformOrigin = `${Math.max(0, r.left + r.width / 2 - x)}px ${below ? 0 : h}px`; }
+  ($('input', p) || $('button:not([disabled])', p) || p).focus({ preventScroll: true });
+}
+function closePop(refocus = true) {
+  if (!POP) return; const { p, k } = POP, v = $('.veil'); POP = null; p.classList.add('bye'); if (v) v.remove(); setTimeout(() => { if (p.parentNode) p.remove(); }, RM ? 0 : 130);
+  if (refocus && k) { const el = $(`[data-k="${k}"]`); if (el) el.focus({ preventScroll: true }); }
+}
+const setView = (v, f) => { if (S.view === v) return; S.view = v; render({ view: 1, focus: f ? 'tab-' + v : '' }); };
+const needOf = a => D.need.find(x => x.id === +a.dataset.id);
+const roOf = a => a.dataset.ro || (needOf(a) || {}).ro;
+
+/* ---------- every click on the page ---------- */
+const A = {
+  pick(a) { const n = needOf(a); if (!n) return; setSel(n); S.fresh.push('sel'); render({ focus: a.classList.contains('pk') ? 'n' + n.id : '' }); },
+  sel(a) { const no = a.dataset.ro; closePop(false); S.sel = no; S.selT = ''; S.selId = (D.need.find(x => x.ro === no) || { id: 0 }).id; S.fresh.push('sel'); if (S.view === 'tmr') S.view = 'floor'; render(); if (innerWidth <= 860) $('#sel').scrollIntoView({ block: 'nearest', behavior: RM ? 'auto' : 'smooth' }); },
+  view(a) { setView(a.dataset.v); },
+  filter(a) { const f = a.dataset.f; S.filter = S.filter === f ? '' : f; const L = shown(); if (S.filter && L.length && !L.some(n => n.id === S.selId)) setSel(L[0]); render({ focus: 'f-' + f }); },
+  tick(a) { const id = +a.dataset.id; S.ticks = S.ticks.includes(id) ? S.ticks.filter(x => x !== id) : [...S.ticks, id]; render(); },
+  assign(a) { openPop(POPS.assign(roOf(a)), a); }, assignto(a) { assignTo(a.dataset.ro, a.dataset.t); },
+  give(a) { openPop(POPS.give(a.dataset.t || needOf(a).tech), a); },
+  decide(a) { openPop(POPS.decide(roOf(a)), a); }, bringin(a) { openPop(POPS.bringin(roOf(a)), a); }, qc(a) { openPop(POPS.qc(roOf(a)), a); },
+  snooze(a) { openPop(POPS.snooze(a.dataset.id), a); }, plan(a) { openPop(POPS.plan(), a); },
+  settings(a) { openPop(POPS.settings(), a); }, keys(a) { openPop(POPS.keys(), a); }, search(a) { openPop(POPS.search(), a); }, handover(a) { openPop(POPS.handover(), a); },
+  close() { closePop(); }, undo() { if (UNDO) { const u = UNDO; UNDO = null; u(); } },
+  tobay(a) { toBay(a.dataset.ro, +a.dataset.b); }, toyard(a) { toYard(a.dataset.ro); },
+  open(a) { toast(`RO ${a.dataset.ro} opens on its own page. That page is not part of this mock-up.`); },
+  newro() { toast('New RO opens the import window. It is not part of this mock-up.'); },
+  fine(a) { const n = needOf(a); settle(n.id, null, `Left ${first(n.tech)}’s clock running`, `Left ${first(n.tech)}’s clock running`); },
+  gotit(a) { const n = needOf(a); settle(n.id, null, `RO ${n.ro} is with you now. ${first(ro(n.ro).tech)} can see that.`, `You took RO ${n.ro}`); },
+  nudge(a) { const n = needOf(a), k = first(ro(n.ro).tech); settle(n.id, null, `Nudged ${k} about RO ${n.ro}`, `Nudged ${k} about RO ${n.ro}`); },
+  roaddone(a) { const n = needOf(a), no = n.ro; settle(n.id, () => { ro(no).st = 'Finished – QC'; if (D.cfg.qc) { D.need.push({ id: ++D.nid, g: 'qc', ro: no, why: 'Road test passed. Check it before release.' }); S.fresh.push(D.nid); } }, `Road test done on RO ${no}. ${D.cfg.qc ? 'It is waiting for QC.' : 'It is ready to release.'}`, `Road test done on RO ${no}`); },
+  approve(a) { const no = a.dataset.ro, h = +a.dataset.h, r = ro(no), n = D.need.find(x => x.g === 'sent' && x.ro === no), left = r.q + h - r.b;
+    settle(n.id, () => { r.q += h; r.st = 'Hold Tech'; }, `Approved ${h.toFixed(1)} h more on RO ${no}. ${left >= 0 ? first(r.tech) + ' can carry on.' : 'It is still ' + (-left).toFixed(2) + ' h over.'}`, `Approved ${h.toFixed(1)} h more on RO ${no}`); },
+  towriter(a) { const no = a.dataset.ro, n = D.need.find(x => x.g === 'sent' && x.ro === no); settle(n.id, () => { ro(no).st = 'Waiting – Writer'; }, `RO ${no} sent to the writer for a new quote`, `RO ${no} sent to the writer`); },
+  snzto(a) { const n = needOf(a), t = a.dataset.t; settle(n.id, null, `Snoozed until ${t}`, `${n.ro ? 'RO ' + n.ro : TECHS[n.tech].n} snoozed until ${t}`, 1); },
+  wake(a) { const id = +a.dataset.id; act(() => { const i = D.done.findIndex(d => d.id === id), d = D.done.splice(i, 1)[0]; D.need.push({ id: d.id, g: d.g, ro: d.ro, tech: d.tech, why: d.why }); S.fresh.push(id); setSel(D.need[D.need.length - 1]); }, 'Back in Needs action', { focus: 'n' + id }); },
+  qctick(a) { a.setAttribute('aria-checked', a.getAttribute('aria-checked') !== 'true'); const all = $$('[data-a="qctick"]', POP.p).every(x => x.getAttribute('aria-checked') === 'true'); $('[data-a="qcpass"]', POP.p).disabled = !all; $('#qch').textContent = all ? 'Both checks done.' : 'Tick both checks to pass.'; },
+  qcback() { $('#qcwhy').hidden = false; $('#qch').textContent = 'Why is it going back?'; $('#qcwhy .opt').focus(); },
+  qcpass(a) { const no = a.dataset.ro, r = ro(no), n = D.need.find(x => x.g === 'qc' && x.ro === no), bay = r.bay; settle(n.id, () => { r.st = 'Released'; r.gone = 1; r.bay = 0; }, `RO ${no} passed QC and is released.${bay ? ` Bay ${bay} is free.` : ''}`, `RO ${no} passed QC`); },
+  qcsend(a) { const no = a.dataset.ro, r = ro(no), w = a.dataset.w, n = D.need.find(x => x.g === 'qc' && x.ro === no);
+    settle(n.id, () => { r.st = live(no) ? 'Working' : 'Hold Tech'; r.fin = 0; r.stage = 5; r.to = Math.round(now()) + 30; const c = D.need.find(x => x.g === 'clock' && x.ro === no); if (c) clearNeed(c.id, `${first(r.tech)}’s clock kept running`); }, `RO ${no} sent back to ${first(r.tech)}: ${w.toLowerCase()}`, `RO ${no} sent back: ${w.toLowerCase()}`); },
+  plango() { const rows = S.planRows || [], u = snap(); closePop(false); rows.forEach(([id]) => { const e = $(`.need[data-id="${id}"]`); e && e.classList.add('out'); });
+    setTimeout(() => { rows.forEach(([id, no, k]) => { ro(no).tech = k; S.fresh.push('c' + no); const fr = D.need.find(x => x.g === 'free' && x.tech === k); if (fr) clearNeed(fr.id, `${TECHS[k].n} got RO ${no}`); clearNeed(id, `RO ${no} given to ${first(k)}`); });
+      S.ticks = []; const nx = shown()[0]; setSel(nx); render({ focus: nx ? 'n' + nx.id : '' }); toast(`${rows.length} trucks planned: ${rows.map(([, no, k]) => `${no} to ${first(k)}`).join(', ')}`, { undo: u }); }, RM ? 0 : 200); },
+  cfg(a) { const k = a.dataset.cfg; D.cfg[k] = !D.cfg[k]; a.setAttribute('aria-checked', D.cfg[k]); document.documentElement.dataset.keys = D.cfg.keys ? 'on' : 'off'; },
+  mv(a) { const i = +a.dataset.i, d = +a.dataset.d, j = i + d, no = D.plan[i][0], was = {}; $$('.pl').forEach(e => { was[e.dataset.ro] = e.getBoundingClientRect().top; });
+    [D.plan[i], D.plan[j]] = [D.plan[j], D.plan[i]]; render(); const b = $(`[data-k="p${d < 0 ? 'u' : 'd'}${no}"]`); (b.disabled ? $(`[data-k="p${d < 0 ? 'd' : 'u'}${no}"]`) : b).focus();
+    if (!RM) $$('.pl').forEach(e => { const dy = was[e.dataset.ro] - e.getBoundingClientRect().top; if (dy) { e.style.transition = 'none'; e.style.transform = `translateY(${dy}px)`; void e.offsetWidth; e.style.transition = ''; e.style.transform = ''; } }); },
+  hotick(a) { a.setAttribute('aria-checked', a.getAttribute('aria-checked') !== 'true'); },
+  hobuild() { const L = $$('[data-a="hotick"]', POP.p).filter(x => x.getAttribute('aria-checked') === 'true').map(x => x.dataset.ro), d = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+    const txt = `Shift handover, ${d}, ${hm(now())}\n\nCarrying over\n` + (L.map(no => { const r = ro(no), p = D.plan.find(x => x[0] === no); return `RO ${no}, ${r.cust}: ${p[1]}. ${r.tech ? first(r.tech) + ' has it' : 'No tech yet'}. ${where(r)}.`; }).join('\n') || 'Nothing carries over.') + (D.note.trim() ? `\n\nNote\n${D.note.trim()}` : '');
+    $('#hoout').innerHTML = `<pre class="out" id="hotxt" tabindex="0">${esc(txt)}</pre><div class="pop-a"><button class="btn" data-a="copyho" data-k="hoc">Copy the handover</button></div>`; $('[data-k="hoc"]').focus(); },
+  copyho(a) { copyText($('#hotxt').textContent, a, 'Copy the handover', $('#hotxt')); } };
+function copyText(t, a, label, box) {
+  const ok = () => { a.textContent = 'Copied'; setTimeout(() => { a.textContent = label; }, 1600); }, fb = () => { const r = document.createRange(); r.selectNodeContents(box); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast('Copy did not work here. The text is selected: press Ctrl C.'); };
+  try { navigator.clipboard.writeText(t).then(ok, fb); } catch (e) { fb(); }
+}
+
+/* ---------- clicks, keys, hold, drag ---------- */
+let NOCLICK = false, HOLD = null, DR = null;
+document.addEventListener('click', e => {
+  if (NOCLICK) return;
+  if (e.target.closest('[data-hold]')) { if (Date.now() - HELD > 1500) toast('Press and hold to stop the clock.'); return; }
+  let a = e.target.closest('[data-a]');
+  if (POP && !e.target.closest('#pophost')) { const same = a && a.dataset.k && a.dataset.k === POP.k; closePop(false); if (same) return; }
+  if (!a) return;
+  const li = a.closest('.need');
+  if (li && a !== li && !/^(pick|tick)$/.test(a.dataset.a) && S.selId !== +li.dataset.id) { setSel(needOf(li)); const k = a.dataset.k; render(); a = $(`[data-k="${k}"]`) || a; }
+  const f = A[a.dataset.a]; if (f) f(a, e);
+});
+document.addEventListener('input', e => { const t = e.target;
+  if (t.id === 'note' || t.id === 'honote') D.note = t.value;
+  else if (t.id === 'nt') { S.notes = t.value; save(); picks(); }
+  else if (t.id === 'q') { const q = t.value.trim().toLowerCase(), L = q ? Object.keys(D.ros).filter(no => { const r = ro(no); return !r.gone && [no, r.cust, r.truck, where(r), r.job].join(' ').toLowerCase().includes(q); }) : [];
+    $('#res').innerHTML = L.map((no, i) => { const r = ro(no); return opt(`data-a="sel" data-ro="${no}"`, i + 1, `<span class="no">${no}</span> ${esc(r.cust)}`, `${esc(r.truck)}. ${where(r)}`); }).join('');
+    $('#qh').textContent = !q ? 'Type a number or a name.' : L.length ? `${L.length} ${L.length === 1 ? 'truck' : 'trucks'}. Press Enter for the first.` : `No truck matches “${t.value.trim()}”. Try the RO number or the customer’s name.`; } });
+const holdStart = b => { if (HOLD) return; b.classList.add('going'); HOLD = { b, t: setTimeout(() => { const x = HOLD.b; HOLD = null; x.classList.remove('going'); stopClock(+x.dataset.id); }, 900) }; };
+const holdEnd = () => { if (!HOLD) return; clearTimeout(HOLD.t); HOLD.b.classList.remove('going'); HOLD = null; };
+document.addEventListener('keydown', e => {
+  const t = e.target, is = s => !!(t.matches && t.matches(s)), typing = is('input, textarea'), hb = t.closest && t.closest('[data-hold]');
+  if (hb && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); if (!e.repeat) holdStart(hb); return; }
+  if (POP) {
+    if (e.key === 'Escape') { e.preventDefault(); closePop(); }
+    else if (e.key === 'Tab') { const f = $$('button:not([disabled]), input, textarea, [tabindex="0"]', POP.p).filter(x => x.offsetParent !== null), i = f.indexOf(document.activeElement); if (!f.length) return;
+      if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); } else if (!e.shiftKey && i === f.length - 1) { e.preventDefault(); f[0].focus(); } }
+    else if (typing && e.key === 'Enter' && t.id === 'q') { const b = $('#res .opt'); if (b) b.click(); }
+    else if (!typing && /^[1-9]$/.test(e.key)) { const b = $(`[data-n="${e.key}"]`, POP.p); if (b && b.offsetParent !== null) { e.preventDefault(); b.click(); } }
+    else if (!typing && /^Arrow(Up|Down)$/.test(e.key)) { const f = $$('.opt:not([disabled])', POP.p).filter(x => x.offsetParent !== null && x.tagName === 'BUTTON'), i = f.indexOf(document.activeElement), up = e.key === 'ArrowUp';
+      if (f.length) { e.preventDefault(); f[(i < 0 ? (up ? f.length - 1 : 0) : i + (up ? f.length - 1 : 1)) % f.length].focus(); } }
+    return; }
+  if (e.key === 'Escape' && S.filter) { S.filter = ''; render(); return; }
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !typing) { if (UNDO) { e.preventDefault(); A.undo(); } return; }
+  if (is('[role=tab]') && /^Arrow(Left|Right)$/.test(e.key)) { e.preventDefault(); const i = VIEWS.findIndex(v => v[0] === S.view); setView(VIEWS[(i + (e.key === 'ArrowRight' ? 1 : VIEWS.length - 1)) % VIEWS.length][0], 1); return; }
+  if (is('.pk') && e.key === 'Enter') { e.preventDefault(); const n = needOf(t); if (S.selId !== n.id) { setSel(n); render({ focus: 'n' + n.id }); } const b = $(`[data-k="n${n.id}-p"]`); if (n.g === 'clock') { b.focus(); toast('Hold Enter to stop the clock.'); } else b.click(); return; }
+  if (typing || e.ctrlKey || e.metaKey || e.altKey || !D.cfg.keys) return;
+  const k = e.key.length === 1 ? e.key.toLowerCase() : e.key, L = shown(), ix = L.findIndex(n => n.id === S.selId), cur = L[ix], hit = s => { const b = $(`[data-k="${s}"]`); if (b) { e.preventDefault(); b.click(); } };
+  if (k === 'j' || k === 'k') { if (!L.length) return; e.preventDefault(); const n = L[Math.max(0, Math.min(L.length - 1, ix < 0 ? 0 : ix + (k === 'j' ? 1 : -1)))]; setSel(n); S.fresh.push('sel'); render({ focus: 'n' + n.id }); $(`[data-k="n${n.id}"]`).scrollIntoView({ block: 'nearest' }); }
+  else if (k === 's' && cur && cur.g !== 'clock') hit(`n${cur.id}-s`);
+  else if (k === 'a') hit(cur && cur.g === 'tech' ? `n${cur.id}-p` : 's-as');
+  else if (k === 'x' && cur && cur.g === 'tech') hit(`n${cur.id}-t`);
+  else if (k === 'p') hit('plan');
+  else if (/^[1-4]$/.test(k)) setView(VIEWS[k - 1][0]);
+  else if (k === '/') hit('h-search');
+  else if (k === '?') hit('h-keys');
+});
+document.addEventListener('keyup', e => { if (e.key === 'Enter' || e.key === ' ') holdEnd(); });
+document.addEventListener('pointerdown', e => {
+  const b = e.target.closest('[data-hold]'); if (b && !e.button) return holdStart(b);
+  if (e.pointerType !== 'mouse' || e.button || POP) return; const el = e.target.closest('[data-drag]'); if (el && !e.target.closest('.tk')) DR = { no: el.dataset.drag, x: e.clientX, y: e.clientY, el };
+});
+document.addEventListener('pointerout', e => { if (HOLD && e.target.closest && e.target.closest('[data-hold]') === HOLD.b && !HOLD.b.contains(e.relatedTarget)) holdEnd(); });
+document.addEventListener('pointercancel', holdEnd);
+/* dragging is a shortcut for the mouse; Assign, Bring in and Give work do the same from a button */
+document.addEventListener('pointermove', e => { if (!DR) return;
+  if (!DR.g) { if (Math.hypot(e.clientX - DR.x, e.clientY - DR.y) < 7) return; const r = ro(DR.no); DR.g = document.createElement('div'); DR.g.className = 'ghost'; DR.g.innerHTML = `<b class="no">${DR.no}</b>${lamp(tone(r.st))}<span>${esc(r.cust)}</span>`; document.body.append(DR.g); DR.el.classList.add('drag'); document.body.style.userSelect = 'none';
+    $$('[data-drop]').forEach(d => { const [t, v] = d.dataset.drop.split(':'), ok = t === 'bay' ? !inBay(+v) : t === 'tech' ? r.tech !== v : !yardRos().some(x => ro(x).yard === v); d.classList.add(ok ? 'can' : 'cant'); }); }
+  DR.g.style.left = e.clientX + 12 + 'px'; DR.g.style.top = e.clientY + 10 + 'px';
+  const h = document.elementFromPoint(e.clientX, e.clientY), d = h && h.closest('[data-drop]'); if (DR.hot !== d) { if (DR.hot) DR.hot.classList.remove('hot'); DR.hot = d; if (d && d.classList.contains('can')) d.classList.add('hot'); } });
+document.addEventListener('pointerup', () => { holdEnd(); if (!DR) return; const d = DR; DR = null; if (!d.g) return; d.g.remove(); d.el.classList.remove('drag'); document.body.style.userSelect = ''; $$('[data-drop]').forEach(x => x.classList.remove('can', 'cant', 'hot')); NOCLICK = true; setTimeout(() => { NOCLICK = false; }, 0);
+  if (d.hot) { const [t, v] = d.hot.dataset.drop.split(':'); if (t === 'bay') toBay(d.no, +v); else if (t === 'tech') assignTo(d.no, v); else toYard(d.no, v); } });
+
+/* ---------- the rail: what each skill changed, and your picks ---------- */
+function spot(sel, multi) {
+  $$('.spot-ring').forEach(e => e.remove());
+  const els = $$(sel).filter(e => e.offsetParent !== null && !e.closest('#rail, #pophost')).slice(0, multi ? 16 : 1); if (!els.length) return toast('Nothing like that is on this view right now.');
+  els[0].scrollIntoView({ block: 'center', behavior: RM ? 'auto' : 'smooth' });
+  setTimeout(() => els.forEach(e => { const r = e.getBoundingClientRect(), d = document.createElement('div'), p = multi ? 3 : 6; d.className = 'spot-ring' + (multi ? ' multi' : '');
+    Object.assign(d.style, { left: r.left + scrollX - p + 'px', top: r.top + scrollY - p + 'px', width: r.width + 2 * p + 'px', height: r.height + 2 * p + 'px' }); document.body.append(d); setTimeout(() => d.remove(), 2700); }), RM ? 0 : 380);
+}
+const pickG = g => { const n = D.need.find(x => x.g === g); if (!n) { toast('That item is already cleared. Press Start over to see it again.'); return false; } closePop(false); S.filter = ''; setSel(n); render(); return true; };
+function demo(kind) {
+  const find = g => D.need.find(n => n.g === g), go = (n, key) => { if (!n) return toast('That item is already cleared. Press Start over to see it again.'); closePop(false); S.filter = ''; setSel(n); render(); const b = $(`[data-k="n${n.id}-${key || 'p'}"]`); b.scrollIntoView({ block: 'center', behavior: RM ? 'auto' : 'smooth' }); setTimeout(() => b.click(), 420); };
+  if (kind === 'assign') go(find('tech')); else if (kind === 'bringin') go(find('in')); else if (kind === 'decide') go(find('sent')); else if (kind === 'undo') go(find('watch') || find('you') || find('road'));
+  else if (kind === 'full') { const no = yardRos().find(x => !live(x)), full = D.bays.find(b => inBay(b[0])); if (!no || !full) return toast('Every bay is empty right now. Press Start over to see it again.'); setView('floor'); $('#board').scrollIntoView({ block: 'center', behavior: RM ? 'auto' : 'smooth' }); toBay(no, full[0]); }
+}
+const SK = [
+  ['look', 'Look, type, layout', 'frontend-design', [
+    ['Colour sits only on what is live: a lamp, the clock line, the one next step', () => spot('.lamp:not([data-t="off"]), .nowl, .need.on .btn.p', 1)],
+    ['Road-sign figures for RO numbers, bays and times', () => spot('.need .no, .bay-n b, .sel .big, #shop b, .free b', 1)],
+    ['One loud thing: the bay board, a day strip with a now line', () => { setView('floor'); spot('#board'); }],
+    ['Three shades of grey do the grouping, with no boxes or borders', () => spot('#needs ul, #sel', 1)]]],
+  ['move', 'Animations and states', 'interaction-design', [
+    ['Undo sits in the message. Nothing asks “Are you sure?”', () => demo('undo')],
+    ['Hold to stop a clock, so it can’t happen by accident', () => { if (pickG('clock')) spot('[data-hold]'); }],
+    ['Pop-overs open from the button you pressed, best fit first', () => demo('assign')],
+    ['Shortcut keys sit on the buttons. Press ? for the list', () => A.keys($('[data-k="h-keys"]'))],
+    ['Counts roll, a lamp breathes on a running clock, rows slide out', () => spot('.lamp.live, .fact b', 1)]]],
+  ['sys', 'Tokens and parts', 'design-systems', [
+    ['One list of named values feeds every part', () => A.system()],
+    ['One status lamp: the same on the list, the bays and the techs', () => spot('.lamp', 1)],
+    ['One button in four kinds: next step, plain, quiet, hold', () => spot('.btn', 1)]]],
+  ['a11y', 'Readability and keyboard', 'accessibility-audit', [
+    ['Every status has its own shape and a word, not only a colour', () => spot('.st, .truck .lamp', 1)],
+    ['Dragging is never the only way. Every drop also has a button', () => { if (pickG('tech') || pickG('in')) spot('.need.on [data-a="assign"], .need.on [data-a="bringin"], #sel [data-a="assign"], #sel [data-a="bringin"]', 1); }],
+    ['The focus ring always shows. Press Tab to walk the page', () => { const li = $('.need'); if (!li) return toast('Press Tab to see the blue ring move through the page.'); li.scrollIntoView({ block: 'center', behavior: RM ? 'auto' : 'smooth' }); li.classList.add('ringdemo'); setTimeout(() => li.classList.remove('ringdemo'), 2800); toast('This blue ring follows the Tab key through every control.'); }],
+    ['Text contrast measured 5,925 times, on every view and pop-over. Lowest: 4.6 to 1. Pass mark: 4.5'], ['Found and fixed: 48 controls with no focus ring, field outlines too faint to see, a sideways scroll on phones']]],
+  ['words', 'Words on screen', 'ux-writing', [
+    ['Each item starts with why it needs you', () => spot('.need p', 1)],
+    ['Buttons say what happens: “Bring in”, “Pass QC”, never “OK”', () => demo('bringin')],
+    ['A problem says what is wrong and what to do next', () => demo('full')],
+    ['An empty list says so: “All clear. Nothing needs you right now.”']]],
+  ['crit', 'Review before you see it', 'design-critique', [
+    ['Header cut from seven facts to five. Three of them are the filters', () => spot('#facts')],
+    ['Decide without leaving the page: the three numbers are in the pop-over', () => demo('decide')],
+    ['Extra actions stay folded until you pick an item', () => spot('.need.on .acts')],
+    ['Caught in review and fixed: buttons with no visible shape on a picked row, ten blue buttons competing, hour numbers hidden under the clock label']]]];
+function picksText() {
+  const by = r => SK.filter(s => S.rate[s[0]] === r).map(s => s[1]), parts = [['♥', 'love'], ['ok', 'ok'], ['no', 'no']].map(([m, r]) => by(r).length ? `${m} ${by(r).join(', ')}` : '').filter(Boolean), left = SK.filter(s => !S.rate[s[0]]).length;
+  return `Parsec · Foreman mock-up — my picks\nSkills:\n· Rated: ${parts.join(' · ') || 'none yet'}` + (left ? `\n(not rated yet: ${left})` : '') + (S.notes.trim() ? `\nNotes: ${S.notes.trim()}` : '');
+}
+const picks = () => { $('#pk').textContent = picksText(); };
+function rail() {
+  $('#rail').innerHTML = `<h2>What each skill changed</h2><p>Press a line to see it on the page. Rate each skill, then copy your picks back to the chat.</p>` + SK.map(([k, name, skill, tips]) =>
+    `<section class="sk" aria-label="${name}"><div class="sk-h"><div><b>${name}</b><small>${skill}</small></div><div class="rate" role="group" aria-label="Rate ${name}">${[['love', '♥', 'Love it'], ['ok', 'OK', 'It is OK'], ['no', 'No', 'Not for me']].map(([r, t, l]) => `<button data-a="rate" data-s="${k}" data-r="${r}" data-k="r-${k}-${r}" aria-pressed="${S.rate[k] === r}" aria-label="${l}">${t}</button>`).join('')}</div></div>
+      <ul>${tips.map(([t, f], i) => f ? `<li><button data-a="tip" data-s="${k}" data-i="${i}" data-k="tip-${k}-${i}"><svg viewBox="0 0 24 24" aria-hidden="true">${IC.chevR}</svg><span>${t}</span></button></li>` : `<li class="f"><span>${t}</span></li>`).join('')}</ul></section>`).join('')
+    + `<section class="picks" aria-label="Your picks"><h3>Your picks</h3><pre id="pk"></pre><label class="grp" for="nt" style="margin:0">Notes</label><textarea id="nt" placeholder="Anything to change">${esc(S.notes)}</textarea><div class="pop-a" style="margin:0"><button class="btn p" data-a="copy" data-k="copy">Copy for the chat</button><button class="btn q" data-a="reset" data-k="reset">Start over</button></div></section>`;
+  picks();
+}
+Object.assign(A, {
+  rate(a) { const k = a.dataset.s; S.rate[k] = S.rate[k] === a.dataset.r ? '' : a.dataset.r; $$(`[data-a="rate"][data-s="${k}"]`).forEach(b => b.setAttribute('aria-pressed', S.rate[k] === b.dataset.r)); save(); picks(); },
+  tip(a) { SK.find(s => s[0] === a.dataset.s)[3][+a.dataset.i][1](); },
+  copy(a) { copyText(picksText(), a, 'Copy for the chat', $('#pk')); },
+  reset() { closePop(false); D = FRESH(); Object.assign(S, { view: 'floor', selId: 1, sel: '2253', selT: '', filter: '', ticks: [], fresh: [], doneOpen: false }); document.documentElement.dataset.keys = 'on'; render({ view: 1 }); toast('Back to the start.'); },
+  system() { const col = [['surface-ground', 'the page'], ['surface-card', 'cards, rows'], ['surface-raised', 'picked rows, pop-overs'], ['surface-well', 'fields, tracks'], ['border', 'lines, empty bars'], ['text', 'words'], ['text-2', 'second line'], ['text-3', 'labels'], ['action', 'the next step, the now line'], ['status-working', 'on the clock'], ['status-waiting', 'waiting on the shop'], ['status-customer', 'their move'], ['status-support', 'outside help'], ['status-alert', 'late or over'], ['status-done', 'finished']];
+    const sq = (w, h, r, t) => `<span style="display:inline-grid;gap:4px;justify-items:start;font-size:11.5px;color:var(--text-2)"><i style="display:block;width:${w}px;height:${h}px;border-radius:${r}px;background:var(--text-3)"></i>${t}</span>`;
+    openPop(['The design system', `<div class="sys"><h2>One list of named values</h2><p>Every part on this page reads from this list. Change a value once and it changes everywhere.</p>
+      <h3>Colour, named by what it is for</h3><div class="tok">${col.map(([n, w]) => `<div><i style="background:var(--${n})"></i><span><code>${n}</code><br>${w}</span></div>`).join('')}</div>
+      <h3>Spacing</h3><div class="row">${[4, 8, 12, 16, 24, 32].map(n => sq(n, 12, 2, n)).join('')}</div>
+      <h3>Corners</h3><div class="row">${[7, 10, 14].map(n => sq(34, 26, n, n)).join('')}</div>
+      <h3>Speed</h3><div class="row"><span class="st">120 ms, a press</span><span class="st">200 ms, a change</span><span class="st">340 ms, a move</span></div>
+      <h3>Lettering</h3><div class="row"><span class="fig" style="font-size:26px">4466&ensp;0:52:10</span><span style="color:var(--text-2);flex:1;min-width:200px">Segoe UI for words, Bahnschrift for figures. Both come with Windows, so there is nothing to install.</span></div>
+      <h3>Status lamp</h3><div class="row">${[['working', 'On the clock'], ['waiting', 'Waiting on the shop'], ['customer', 'Their move'], ['support', 'Outside help'], ['alert', 'Late or over'], ['done', 'Finished'], ['off', 'Nobody on it']].map(([t, n]) => `<span class="st">${lamp(t)}${n}</span>`).join('')}</div>
+      <h3>Button</h3><div class="row"><span class="btn p" style="cursor:default">Next step</span><span class="btn" style="cursor:default">Plain</span><span class="btn q" style="cursor:default">Quiet</span><span class="btn hold" style="cursor:default"><span>Hold</span></span></div></div>`, 1], $('[data-k="tip-sys-0"]')); } });
+
+/* ---------- start ---------- */
+$('#hdr').innerHTML = `<button class="btn ib q" data-a="search" data-k="h-search" aria-label="Search" title="Search for an RO, a customer or a spot  (/)">${ic('search')}</button><button class="btn ib q" data-a="handover" data-k="h-hand" aria-label="Shift handover" title="Shift handover: what the next shift needs">${ic('doc')}</button><button class="btn ib q" data-a="settings" data-k="h-set" aria-label="Foreman settings" title="Foreman settings">${ic('gear')}</button><button class="btn ib q" data-a="keys" data-k="h-keys" aria-label="Keyboard shortcuts" title="Keyboard shortcuts  (?)">${ic('help')}</button><button class="btn" data-a="newro" data-k="h-new" aria-label="New RO">${ic('plus')}<span>New RO</span></button>`;
+document.documentElement.lang = document.documentElement.lang || 'en'; document.documentElement.dataset.keys = 'on';
+render(); rail(); setInterval(tickClocks, 1000); addEventListener('resize', tabs);
+})();
+
+</script>
