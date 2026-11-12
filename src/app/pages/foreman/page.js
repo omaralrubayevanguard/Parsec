@@ -23,14 +23,12 @@ function fmHead(){
   var rk = n("risk");
   var views = [["floor", "grid", "Floor"], ["techs", "user", "Techs"], ["yard", "pin", "Yard"], ["tmr", "clock", "Tomorrow"]].concat(typeof rlEmbOk === "function" && rlEmbOk() ? [["ros", "list", "ROs"]] : []);
   var search = psmBtn("foreman", "Search — RO, unit, customer, VIN or spot");   /* Parsec 13.1 — the icon opens the search window */
-  /* two rows: the title, the facts and the tools; under them the views and the shop's clock. The facts that filter are buttons; the two that only tell are plain. */
-  return '<header class="tg-head" data-key="fm-head"><h1 class="tg-h1">Foreman</h1><span class="tg-facts">'
-    + '<span class="tg-hf fm-fact"><b>' + used + '</b>of ' + fl.length + ' bays in use</span><span class="tg-hf fm-fact fm-o2"><b>' + on + '</b>of ' + fmTechs().length + ' on the clock</span>'
-    + f("you", "waiting on you") + f("tech", n("tech") === 1 ? "needs a tech" : "need a tech") + (rk ? f("risk", "at risk", true) : '') + f("late", "late", true) + '</span>'
-    + '<div class="fm-tools">' + search + '<button class="btn ib tg-srch-b" data-v10="hand" title="Shift handover — what the next shift needs" aria-label="Shift handover">' + tgI("doc", 16) + '</button><button class="btn ib tg-srch-b" data-action="fm-pop" data-p="cfg" title="Foreman settings — shop day, bay types, QC, the badge" aria-label="Foreman settings">' + tgI("gear", 16) + '</button>'
-    + '<button class="btn tg-newro" data-action="ty-newro" title="New repair order">' + tgI("plus", 15) + '<span>New RO</span></button></div>'
-    + '<div class="tg-views" role="tablist">' + views.map(function(x, i){ return '<button role="tab" aria-selected="' + (UI.fmView === x[0]) + '" class="' + (UI.fmView === x[0] ? 'on' : '') + '" data-action="fm-view" data-v="' + x[0] + '" title="' + (x[0] === "ros" ? "Every open RO — the RO list, your columns" : x[2] + ' (' + (i + 1) + ')') + '">' + tgI(x[1], 14) + (x[0] === "ros" ? rlEmbTab() : x[2] + (x[0] === "yard" ? '<b class="fm-n" title="On the yard">' + Y.length + '</b>' : '')) + '</button>'; }).join('') + '</div>'
-    + '<span class="fm-clock">Shop time <b data-clock-now>' + fmHM(fmNowH()) + '</b></span>'
+  return '<header class="tg-head" data-key="fm-head"><h1 class="tg-h1">Foreman</h1><span class="tg-facts"><button class="tg-hf fm-o1" data-action="fm-filt" data-k="" title="Show everything"><b>' + Y.length + '</b>on the yard</button><i class="fm-o1">·</i>'
+    + '<span class="tg-hf" style="cursor:default"><b>' + used + '/' + fl.length + '</b>bays</span><i>·</i><span class="tg-hf fm-o2" style="cursor:default"><b>' + on + '</b>on the clock</span><i class="fm-o2">·</i>'
+    + f("you", "waiting on you") + '<i>·</i>' + f("tech", "need a tech") + (rk ? '<i>·</i>' + f("risk", "at risk", true) : '') + '<i>·</i>' + f("late", "late", true) + '</span>'
+    + '<div class="tg-views" role="tablist">' + views.map(function(x, i){ return '<button role="tab" aria-selected="' + (UI.fmView === x[0]) + '" class="' + (UI.fmView === x[0] ? 'on' : '') + '" data-action="fm-view" data-v="' + x[0] + '" title="' + (x[0] === "ros" ? "Every open RO — the RO list, your columns" : x[2] + ' (' + (i + 1) + ')') + '">' + tgI(x[1], 14) + (x[0] === "ros" ? rlEmbTab() : x[2]) + '</button>'; }).join('') + '</div>'
+    + '<span class="tg-hsep"></span>' + search + '<button class="btn ib tg-srch-b" data-v10="hand" title="Shift handover — what the next shift needs" aria-label="Shift handover">' + tgI("doc", 16) + '</button><button class="btn ib tg-srch-b" data-action="fm-pop" data-p="cfg" title="Foreman settings — shop day, bay types, QC, the badge" aria-label="Foreman settings">' + tgI("gear", 16) + '</button>'
+    + '<button class="btn btn-primary tg-newro" data-action="ty-newro" title="New repair order">' + tgI("plus", 15) + '<span>New RO</span></button>'
     + (UI.fmSrch ? '<div class="tg-srpop" data-fm-keep>' + fmSearchHtml() + '</div>' : '') + '</header>';
 }
 
@@ -47,7 +45,7 @@ function fmList(){
       + (ro.isTech ? '<span class="tg-gi"><span class="tg-av">' + esc(tgIni(ro.name)) + '</span></span>' : trkGi(ro, tgI(x.ic, 15))) + '<span class="tg-t">' + (ro.isTech ? '' : '<b class="tg-no">' + esc(tgNum(ro)) + '</b>') + '<b class="tg-cu">' + esc(ro.customerName || "") + '</b>'
       + (x.back ? '<span class="tg-back">' + tgI("clock", 11) + 'Back</span>' : '') + (ro.isTech ? '' : tgSpotChip(ro)) + '</span>'
       + '<span class="tg-w' + (x.late && !x.back ? ' late' : '') + '">' + v10Age(ro) + esc(x.why) + '</span>'
-      + '<button class="btn btn-sm ib tg-snz" data-action="fm-pop" data-p="snooze" data-ro="' + ro.id + '" title="Snooze  (S)">' + tgI("clock", 15) + '<span class="fm-sl">Snooze</span></button>'
+      + '<button class="btn btn-sm ib tg-snz" data-action="fm-pop" data-p="snooze" data-ro="' + ro.id + '" title="Snooze  (S)">' + tgI("clock", 15) + '</button>'
       + '<button class="btn btn-sm' + (x.act === "decide" || x.act === "bring" || x.act === "qc" ? ' btn-primary' : '') + ' tg-go" data-action="fm-do" data-ro="' + ro.id + '">' + esc(x.btn) + (on && kb ? '<span class="tg-kbd">↵</span>' : '') + '</button></div>'; };
   var body;
   if(!L.length){
@@ -147,7 +145,7 @@ function fmDayV(sel, ym){
       if(ro.promisedAt && localDay(ro.promisedAt) === todayStr()){ var ph = fmH(new Date(ro.promisedAt).getTime()); h += '<i class="pm' + (k ? ' bad' : '') + '" style="left:' + P(X(ph)) + '" title="Promised ' + fmHM(ph) + '"></i>'; }
       from = f.t == null ? T1 : f.t; edge = X(st) + Math.max(3, X(end) - X(st)); }
     pl.forEach(function(x){ var at = x.fmPlan.at != null ? x.fmPlan.at : from, e = fmAddWork(at, fmLeft(x)); h += '<button class="bar plan' + (sel && sel.id === x.id ? ' sel' : '') + '" data-action="fm-sel" data-ro="' + x.id + '" style="left:' + P(X(at)) + ';width:' + P(Math.max(3, X(e) - X(at))) + '" title="Planned"><b>' + esc(tgNum(x)) + '</b>' + esc(tgFirst(x.assignedTech || "")) + ' · planned</button>'; from = Math.max(from, e); edge = Math.max(edge, X(at) + Math.max(3, X(e) - X(at))); });
-    if(from < T1 - 0.2) h += '<button class="gap" data-action="fm-fill" data-bay="' + esc(b) + '"' + (from > T0 + 0.01 ? ' data-at="' + from.toFixed(3) + '"' : '') + ' style="left:' + P(Math.max(X(from), edge)) + ';width:' + P(100 - Math.max(X(from), edge)) + '">' + (from > T0 + 0.01 ? 'free ~' + fmHM(from) : tgI("plus", 11) + 'free now — fill ' + esc(tgSpotLbl(b))) + '</button>';   /* a free stretch under 12 minutes is too thin to press, so it isn't offered */
+    if(from < T1 - 0.05) h += '<button class="gap" data-action="fm-fill" data-bay="' + esc(b) + '"' + (from > T0 + 0.01 ? ' data-at="' + from.toFixed(3) + '"' : '') + ' style="left:' + P(Math.max(X(from), edge)) + ';width:' + P(100 - Math.max(X(from), edge)) + '">' + (from > T0 + 0.01 ? 'free ~' + fmHM(from) : tgI("plus", 11) + 'free now — fill ' + esc(tgSpotLbl(b))) + '</button>';
     return '<div class="fm-drow"><span class="lab" title="' + esc(fmBayTxt(b) || tgZone(b)) + '">' + esc(tgSpotLbl(b)) + '</span><div class="trk">' + lun + h + '</div></div>'; }).join('');
   return '<div class="fm-day">' + axis + rows + '<div class="tg-leg"><span><i class="lg on"></i>On the clock</span><span><i class="lg next"></i>Up next</span><span><i class="lg wait"></i>Waiting — no time yet</span><span><i class="lg plan"></i>Planned</span><span><i class="pmk"></i>Promised</span><span><i class="lg lun"></i>Lunch</span><span class="hint">Click a free stretch to fill it</span></div></div>';
 }
