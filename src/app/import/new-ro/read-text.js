@@ -522,11 +522,13 @@
     return out;
   }
   function parse(raw){
+    var AX = asxRead(raw); raw = AX.rest;   /* 17.5: ASIST's Operations and Parts tables, copied from the browser (asist-tables.js) */
     var text = fixMoney(fixDigits(fixLabels(unstack(cleanOcrText(String(raw || "")).replace(/\r/g, "").replace(/\u00a0/g, " ").split("\n")).join("\n"))));   /* 17.5: unstack first — before a label reads the next cell as its value */   /* 17.3: letters read for digits (field-rules.js) */
     var L = text.split("\n").map(function(l){ return l.replace(/[ \t]+$/, ""); }).filter(function(l){ return l.trim(); });
     var f = readLoose(text, L, readFields(L));
     try{ if(typeof v163ReadContact === "function") v163ReadContact(text, L, f); }catch(e){ console.error(e); }   /* Parsec 16.3: the contact and the driver */
     var O = readOps(L), notes = readNotes(L), tot = readTotals(L);
+    AX.ops.forEach(function(o){ if(!O.ops.some(function(x){ return x.no && x.no === o.no; })) O.ops.push(o); }); O.parts = O.parts.concat(AX.parts);
     if(f.status && /^(approved|pending|declined)$/i.test(f.status)) delete f.status;
     /* 17.3: one operation pasted on its own — "Operation 3", Complaint / Cause / Correction, the hours — is an operation, not the
        case's story (the case's story needs the case page: an RO #, a customer or the truck around it) */

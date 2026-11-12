@@ -1,7 +1,7 @@
 /* Parsec · ro-page · picking.js
    Picking several operations or parts at once on the RO page: the selection, the bulk actions, the pick toolbar.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   ropSelReset ropSelOps ropSelParts ropPool ropJobOf ropAny ropToggle ropAll ropCk ropPickClick ropDecorOps ropPartsHead … (23 functions, 1 constant)
+   declares   ropSelReset ropSelOps ropSelParts ropPool ropJobOf ropAny ropToggle ropAll ropCk ropPickClick ropDecorOps ropMoneyOk … (24 functions, 1 constant)
    state      punches
    uses       access/ automations/ data/ kit/ library/ pages/ pages/warranty/ ro/ shell/ state/ trucks/
 */
@@ -45,18 +45,25 @@ function ropDecorOps(box) {
     row.insertBefore(ropCk(!!ROPS.o[id], false, 'Pick operation ' + ropN(j), function (e) { ropToggle('o', id, e); }), row.firstChild);
   });
 }
+/* 17.5: the parts table on the operation card reads like ASIST's: Part (its number under it) · Qty · Unit · Core · Ext · Salesman · Status.
+   Ext is qty × (unit + core), the way ASIST adds it; the money columns show only to someone allowed to see costs. */
+function ropMoneyOk() { return typeof permCost !== 'function' || permCost(); }
 function ropPartsHead(job, parts, pane) {
   if (!parts.length) return;
-  var n = ROPS.pOp === job.id ? parts.filter(function (p) { return ROPS.p[p.id]; }).length : 0, ext = parts.some(function (p) { return +p.core > 0 || p.salesman; });
-  pane.appendChild(el('div', { class: 'px-li rop-pth' + (ext ? ' is-ext' : '') }, [ropCk(n > 0 && n === parts.length, n > 0, 'Pick every part on Op ' + ropN(job), function () { ropAll('p', job.id); }),
-    el('span', { text: 'Part' }), el('span', { text: 'Number' }), el('span', { class: 'r', text: 'Qty' })].concat(ext ? [el('span', { class: 'r', text: 'Core' }), el('span', { text: 'Salesman' })] : []).concat([el('span', { text: 'Status' })])));
+  var n = ROPS.pOp === job.id ? parts.filter(function (p) { return ROPS.p[p.id]; }).length : 0, $ok = ropMoneyOk();
+  pane.appendChild(el('div', { class: 'px-li rop-pth is-full' + ($ok ? ' is-money' : '') }, [ropCk(n > 0 && n === parts.length, n > 0, 'Pick every part on Op ' + ropN(job), function () { ropAll('p', job.id); }),
+    el('span', { text: 'Part' }), el('span', { class: 'r', text: 'Qty' })]
+    .concat($ok ? [el('span', { class: 'r rop-c-un', text: 'Unit' }), el('span', { class: 'r rop-c-co', text: 'Core' }), el('span', { class: 'r', text: 'Ext' })] : [])
+    .concat([el('span', { class: 'rop-c-sm', text: 'Salesman' }), el('span', { text: 'Status' })])));
 }
 function ropPartRow(job, p, b, eta, parts) {
-  var ext = parts.some(function (x) { return +x.core > 0 || x.salesman; }), on = ROPS.pOp === job.id && !!ROPS.p[p.id];
-  var pr$ = priceOf(p.price); var cells = [el('span', { class: 'px-li__t', html: esc(ptName(p)) + (pr$ && (typeof permCost !== 'function' || permCost()) ? ' <small class="px-num">· ' + esc(pxMoney(pr$)) + (+p.qty > 1 ? ' ea' : '') + '</small>' : '') + (eta && !partInHand(p) ? ' <small>· ETA ' + esc(eta) + '</small>' : '') }), el('span', { class: 'px-id px-muted', text: p.partNumber || '' }), el('span', { class: 'r', text: p.qty || '1' })];
-  if (ext) cells.push(el('span', { class: 'r px-muted', text: +p.core > 0 ? pxMoney(+p.core) : '' }), el('span', { class: 'px-muted rop-ell', text: p.salesman || '' }));
+  var on = ROPS.pOp === job.id && !!ROPS.p[p.id], $ok = ropMoneyOk(), q = parseFloat(p.qty); if (!isFinite(q)) q = 1;
+  var un = priceOf(p.price), co = priceOf(p.core), ext = q * (un + co), m = function (v) { return pxMoney(v); };
+  var cells = [el('span', { class: 'px-li__t rop-c-pt', title: ptName(p) + (p.partNumber ? ' · ' + p.partNumber : ''), html: '<b>' + esc(ptName(p)) + '</b>' + (p.partNumber || (eta && !partInHand(p)) ? '<small><span class="px-id">' + esc(p.partNumber || '') + '</span>' + (eta && !partInHand(p) ? (p.partNumber ? ' · ' : '') + 'ETA ' + esc(eta) : '') + '</small>' : '') }), el('span', { class: 'r px-num', text: p.qty === '' || p.qty == null ? '1' : String(p.qty) })];
+  if ($ok) cells.push(el('span', { class: 'r px-num px-muted rop-c-un', text: un ? m(un) : '' }), el('span', { class: 'r px-num px-muted rop-c-co', text: co ? m(co) : '' }), el('span', { class: 'r px-num', text: un || co ? m(ext) : '' }));
+  cells.push(el('span', { class: 'px-muted rop-ell rop-c-sm', text: p.salesman || '', title: p.salesman || '' }));
   cells.push(b);
-  var row = el('div', { class: 'px-li px-li--part rop-prow' + (ext ? ' is-ext' : '') + (on ? ' is-sel' : ''), 'data-part': p.id }, [ropCk(on, false, 'Pick ' + ptName(p), function (e) { ropToggle('p', p.id, e, job.id); })].concat(cells));
+  var row = el('div', { class: 'px-li px-li--part rop-prow is-full' + ($ok ? ' is-money' : '') + (on ? ' is-sel' : ''), 'data-part': p.id }, [ropCk(on, false, 'Pick ' + ptName(p), function (e) { ropToggle('p', p.id, e, job.id); })].concat(cells));
   row.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('.px-pstat')) return; ropPickClick(e, 'p', p.id, job.id); });
   return row;
 }

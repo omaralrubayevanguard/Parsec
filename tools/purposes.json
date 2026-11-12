@@ -299,6 +299,7 @@
   "library/viewer-use.js": "The document panel's use (17.3): what it's valid for, its symptoms and repair steps to tick from an operation, Attach to… with the ROs it fits first, and the expand button that makes the panel a page of its own.",
   "clock/clock-edit.js": "Change a day clock’s clock in or clock out on any day (17.5): its limits, the punches a new time leaves outside (trim or block), the change marked edited, deleting a clock segment.",
   "pages/timelog/clock-rows.js": "The Time Log’s clock rows (17.5): click a clock in / out time to change it — typed, suggested times and a time wheel, a reason, trims the punches outside; drag the IN / OUT flags; the row’s ⋯ menu.",
+  "import/new-ro/asist-tables.js": "ASIST's Operations and Parts tables copied from the browser (17.5): each row read as a stream of cells under the header's columns, so the boxes the copy puts on lines of their own land in the right column; ASIST's buttons and notes skipped.",
   "import/new-ro/parts-list.js": "Parts pasted on their own into an RO (17.5): a Parts list of its own — ticks, cells to change, a menu on each row for the operation, Add that keeps the window open and marks each row Added.",
   "pages/library/kits.js": "The Library’s Accessory kits tab (17.5): software kit numbers for standard changes — the list and the kit beside it, search and group chips, Copy, Add to an RO…, New kit, Paste a list; changing the list is the l.kits permission."
 }

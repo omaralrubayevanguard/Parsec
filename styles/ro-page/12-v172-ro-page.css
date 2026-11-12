@@ -149,3 +149,17 @@
 /* 17.5: the complaint is as wide as its text (shown or being changed); the rest of the row is free to click to open and fold the card */
 .rop-orow > .px-row__t { flex: 0 1 auto; margin-right: auto; }
 .rop-orow > .rop-ren { flex: 0 1 auto; max-width: 100%; margin-right: auto; }
+
+/* 17.5: the operation card's parts table — Part (its number under it) · Qty · Unit · Core · Ext · Salesman · Status (money columns only for who may see costs) */
+.px-li.rop-pth.is-full, .px-li.px-li--part.rop-prow.is-full { grid-template-columns: minmax(0, 1fr) 36px 110px 136px; column-gap: 8px; }
+.px-li.rop-pth.is-full.is-money, .px-li.px-li--part.rop-prow.is-full.is-money { grid-template-columns: minmax(0, 1fr) 36px 66px 58px 76px 100px 136px; }
+.rop-prow.is-full .rop-c-pt { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; text-align: left; min-width: 0; line-height: 1.25; }
+.rop-prow.is-full .rop-c-pt > * { max-width: 100%; }
+.rop-prow.is-full .rop-c-pt b { font-weight: inherit; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rop-prow.is-full .rop-c-pt small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rop-prow.is-full .px-num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rop-prow.is-full .rop-c-sm, .rop-pth.is-full .rop-c-sm { padding-left: 10px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+:host([data-device=phone]) .px-li.rop-pth.is-full, :host([data-device=phone]) .px-li.px-li--part.rop-prow.is-full { grid-template-columns: minmax(0, 1fr) 32px 136px; }
+:host([data-device=phone]) .px-li.rop-pth.is-full.is-money, :host([data-device=phone]) .px-li.px-li--part.rop-prow.is-full.is-money { grid-template-columns: minmax(0, 1fr) 32px 72px 136px; }
+:host([data-device=phone]) .rop-prow.is-full > .rop-c-un, :host([data-device=phone]) .rop-prow.is-full > .rop-c-co, :host([data-device=phone]) .rop-prow.is-full > .rop-c-sm,
+:host([data-device=phone]) .rop-pth.is-full > .rop-c-un, :host([data-device=phone]) .rop-pth.is-full > .rop-c-co, :host([data-device=phone]) .rop-pth.is-full > .rop-c-sm { display: none; }

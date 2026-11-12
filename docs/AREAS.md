@@ -93,6 +93,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 |---|---|---:|---:|---:|
 | `_close.js` | Closes the New RO import closure. | 0 | 0 | 0 |
 | `_open.js` | Opens the New RO import closure (IMPX): paste the ASIST case page, or drop screenshots, and get an RO with its fields and operations. | 0 | 0 | 1 |
+| `asist-tables.js` | ASIST's Operations and Parts tables copied from the browser (17.5): each row read as a stream of cells under the header's columns, so the boxes the copy puts on lines of their own land in the right column; ASIST's buttons and notes skipped. | 7 | 12 | 5 |
 | `create.js` | Create RO / Apply: setF writes each accepted field through the RO details table; operations and parts are added or updated. | 12 | 6 | 3 |
 | `dialog-layout.js` | The one extraction window's parts (17.3): the slim strip of files read, the Found line, the RO as a ticket, the list of things to check and the Check view, where everything goes (New RO, an open RO, Inventory, the Library), documents and photos, the footer. | 14 | 15 | 2 |
 | `dialog.js` | The import dialog: the field rows, operation cards, totals, notes, the last-contact suggestion (16.3), what is hidden until needed. | 29 | 23 | 3 |
@@ -100,7 +101,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `fields.js` | The RO's fields as rows of the dialog (SPEC: label, group, source), the operations' rows, what changed vs the existing RO. | 17 | 27 | 7 |
 | `matching.js` | Matching what was read to what the shop already has: the same RO (number, unit + customer), the same operation; merging a second paste into the first. | 4 | 10 | 0 |
 | `open.js` | Open and close the dialog, its input and key handling, the drag-and-drop of screenshots. | 12 | 7 | 0 |
-| `parts-list.js` | Parts pasted on their own into an RO (17.5): a Parts list of its own — ticks, cells to change, a menu on each row for the operation, Add that keeps the window open and marks each row Added. | 7 | 13 | 0 |
+| `parts-list.js` | Parts pasted on their own into an RO (17.5): a Parts list of its own — ticks, cells to change, a menu on each row for the operation, Add that keeps the window open and marks each row Added. | 7 | 14 | 0 |
 | `read-checks.js` | Checking what was read against itself (17.3): the VIN's model-year letter against the Year, dates in order, the RO number against the shop's others, hours against the labor price, a part's quantity and price against its line total. | 4 | 9 | 1 |
 | `read-match.js` | Matching what was read to what Parsec already knows (17.3): a customer spelled one letter off, the truck by its VIN or unit, a part number one character off a known one, what a fault code means. | 4 | 7 | 2 |
 | `read-text.js` | Reading the pasted text: labels and cells, dates, money, names, the case fields (RO #, customer, VIN, unit…), operations with complaint / cause / correction, parts and amounts. | 52 | 46 | 26 |
@@ -387,7 +388,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `open-operation.js` | The open operation card: the clock bar, part tiles with status and ETA, the job log; setPartStatus and the Receive all / Install all actions. | 26 | 18 | 8 |
 | `operation-header.js` | The operation row (17.1: the number, the complaint and the status, a blocker beside it, the job type its coloured edge), the status and job type menus, the ⋯ menu (rename, delete), and the open card's body with its facts. | 13 | 11 | 1 |
 | `page-helpers.js` | Helpers the RO page's renderers share: operation state chips, parts arrived checks, dropping files on a job, visit words, similar jobs. | 38 | 25 | 13 |
-| `picking.js` | Picking several operations or parts at once on the RO page: the selection, the bulk actions, the pick toolbar. | 25 | 23 | 1 |
+| `picking.js` | Picking several operations or parts at once on the RO page: the selection, the bulk actions, the pick toolbar. | 25 | 24 | 1 |
 | `px-components.js` | The RO page's components from the Parsec design system: pop-overs (one at a time, fixed to the viewport), the modal with scrim, StatusMenu, PartStatus dropdown, the Transfer / Add operation / Delete dialogs. | 29 | 31 | 3 |
 | `rail-fold.js` | Folding the RO page's right column (17.3): a fold button at its top, a strip of icons when folded (a click opens it at that part), the \ key, remembered per page, folds by itself under 1 100 px. | 4 | 8 | 4 |
 | `release-bypass.js` | The RO page's Release button (it opens Release, which asks why while checks are open) and the line an older RO released without checks still shows. | 1 | 4 | 0 |

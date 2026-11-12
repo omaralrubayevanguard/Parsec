@@ -1,0 +1,28 @@
+Part No	QTY (SHIPPED/BO)	Parts	Part Name	Info	Unit Price	Core Price	Ext. Price	Salesman	Actions
+23350657	
+1.00
+ (1.000/0.000)	Get parts availability	SENSOR Catalog		
+848.85
+0.00
+$848.85	
+
+Dana Brooks
+ 
+23163997	
+1.00
+ (1.000/0.000)	Get parts availability	WIRES Catalog		
+32.61
+0.00
+$32.61	
+
+Dana Brooks
+ 
+948211	
+10.00
+ (10.000/0.000)	Get parts availability	CABLE TIE Catalog		
+0.70
+0.00
+$7.00	
+
+Dana Brooks
+ 
