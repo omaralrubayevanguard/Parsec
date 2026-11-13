@@ -15,7 +15,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `people-and-demo-team.js` | People: staffList() and lookups by name / role (staffForTech, techNorm), initials and avatars (avatarSvg), the audit log (audit / auditLog), and the demo team used by the sample data. | 36 | 38 | 9 |
 | `permissions.js` | Who can do what: roles, each person's pages and actions, can(action) / canPage(page), the Admin's changes per person (permSet) and the sync of pages when a role changes. | 3 | 15 | 0 |
 | `pin-pad.js` | The PIN pad: open for a person, draw, keys and clicks, the first-time PIN, and sign in when it matches (lgSignIn). | 7 | 10 | 0 |
-| `pins.js` | PINs: salted SHA-256, never kept as typed (pinHash / pinValid), temporary PINs shown once, the Admin PIN. | 11 | 33 | 2 |
+| `pins.js` | PINs: salted SHA-256, never kept as typed (pinHash / pinValid), temporary PINs shown once, the Admin PIN. | 12 | 35 | 2 |
 | `portraits.js` | Portraits for the demo team: staffPhotoUrl picks a drawn or uploaded picture; PHOTO_MAP keeps what was chosen. | 3 | 2 | 5 |
 | `sign-in.js` | Who is using this computer (not a password): pxOut / pxSignedIn, the sign-in state in localStorage (tec_viewas), and the login page's data (lgStaff, lgClk). | 4 | 14 | 2 |
 
@@ -388,7 +388,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `open-operation.js` | The open operation card: the clock bar, part tiles with status and ETA, the job log; setPartStatus and the Receive all / Install all actions. | 26 | 18 | 8 |
 | `operation-header.js` | The operation row (17.1: the number, the complaint and the status, a blocker beside it, the job type its coloured edge), the status and job type menus, the ⋯ menu (rename, delete), and the open card's body with its facts. | 13 | 11 | 1 |
 | `page-helpers.js` | Helpers the RO page's renderers share: operation state chips, parts arrived checks, dropping files on a job, visit words, similar jobs. | 38 | 25 | 13 |
-| `picking.js` | Picking several operations or parts at once on the RO page: the selection, the bulk actions, the pick toolbar. | 25 | 24 | 1 |
+| `picking.js` | Picking several operations or parts at once on the RO page: the selection, the bulk actions, the pick toolbar. | 26 | 25 | 1 |
 | `px-components.js` | The RO page's components from the Parsec design system: pop-overs (one at a time, fixed to the viewport), the modal with scrim, StatusMenu, PartStatus dropdown, the Transfer / Add operation / Delete dialogs. | 29 | 31 | 3 |
 | `rail-fold.js` | Folding the RO page's right column (17.3): a fold button at its top, a strip of icons when folded (a click opens it at that part), the \ key, remembered per page, folds by itself under 1 100 px. | 4 | 8 | 4 |
 | `release-bypass.js` | The RO page's Release button (it opens Release, which asks why while checks are open) and the line an older RO released without checks still shows. | 1 | 4 | 0 |

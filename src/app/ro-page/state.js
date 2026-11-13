@@ -121,7 +121,9 @@ function blankJob(type) {
            declined: false, isStandard: false, punchesCollapsed: false };
 }
 function blankPart() {
-  return { id: 'pt_' + uid(), description: '', partNumber: '', eta: '', qty: '1', status: 'Not Ordered', statusChangedAt: nowIso() };
+  var p = { id: 'pt_' + uid(), description: '', partNumber: '', eta: '', qty: '1', status: 'Not Ordered', statusChangedAt: nowIso() };
+  var me = typeof partsMe === 'function' ? partsMe() : ''; if (me) p.salesman = me;   /* 17.5: a part added by someone in Parts is theirs */
+  return p;
 }
 function partInHand(p) { return p.status === 'Received' || p.status === 'Installed'; }
 

@@ -57,7 +57,7 @@
     var L = (D.pl || []).filter(function(r){ return r.on && !r.added && plOp(r.to); }); if(!L.length) return;
     pushUndo("add parts"); var by = {};
     L.forEach(function(r){ var op = plOp(r.to), part = { id: uid("pt"), description: String(r.desc || r.pn).trim(), partNumber: String(r.pn || "").trim(), qty: String(plNum(r.qty) == null ? 1 : plNum(r.qty)), status: "Not Ordered", eta: "", statusChangedAt: nowIso() };
-      if(r.cost != null && r.cost >= 0) part.price = String(r.cost); if(r.core) part.core = String(r.core); if(String(r.sales || "").trim()) part.salesman = String(r.sales).trim();
+      if(r.cost != null && r.cost >= 0) part.price = String(r.cost); if(r.core) part.core = String(r.core); if(String(r.sales || "").trim()) part.salesman = String(r.sales).trim(); else if(typeof partsMe === "function" && partsMe()) part.salesman = partsMe();
       if(!Array.isArray(op.parts)) op.parts = []; op.parts.push(part); r.added = true; r.on = false; by[plNo(op)] = (by[plNo(op)] || 0) + 1;
       if(+part.qty >= 0) try{ invAddFromPart(part, D.ro.roNumber); }catch(e){} });   /* a core return isn't a part to stock */
     try{ audit("parts", roLabel(D.ro) + " · " + L.length + " part" + (L.length > 1 ? "s" : "") + " pasted from ASIST", D.ro); }catch(e){}

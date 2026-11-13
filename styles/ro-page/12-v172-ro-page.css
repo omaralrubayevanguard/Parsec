@@ -151,8 +151,8 @@
 .rop-orow > .rop-ren { flex: 0 1 auto; max-width: 100%; margin-right: auto; }
 
 /* 17.5: the operation card's parts table — Part (its number under it) · Qty · Unit · Core · Ext · Salesman · Status (money columns only for who may see costs) */
-.px-li.rop-pth.is-full, .px-li.px-li--part.rop-prow.is-full { grid-template-columns: minmax(0, 1fr) 36px 110px 136px; column-gap: 8px; }
-.px-li.rop-pth.is-full.is-money, .px-li.px-li--part.rop-prow.is-full.is-money { grid-template-columns: minmax(0, 1fr) 36px 66px 58px 76px 100px 136px; }
+.px-li.rop-pth.is-full, .px-li.px-li--part.rop-prow.is-full { grid-template-columns: minmax(0, 1fr) 34px 128px 132px; column-gap: 8px; }
+.px-li.rop-pth.is-full.is-money, .px-li.px-li--part.rop-prow.is-full.is-money { grid-template-columns: minmax(0, 1fr) 34px 64px 54px 76px 128px 132px; }
 .rop-prow.is-full .rop-c-pt { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; text-align: left; min-width: 0; line-height: 1.25; }
 .rop-prow.is-full .rop-c-pt > * { max-width: 100%; }
 .rop-prow.is-full .rop-c-pt b { font-weight: inherit; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -163,3 +163,8 @@
 :host([data-device=phone]) .px-li.rop-pth.is-full.is-money, :host([data-device=phone]) .px-li.px-li--part.rop-prow.is-full.is-money { grid-template-columns: minmax(0, 1fr) 32px 72px 136px; }
 :host([data-device=phone]) .rop-prow.is-full > .rop-c-un, :host([data-device=phone]) .rop-prow.is-full > .rop-c-co, :host([data-device=phone]) .rop-prow.is-full > .rop-c-sm,
 :host([data-device=phone]) .rop-pth.is-full > .rop-c-un, :host([data-device=phone]) .rop-pth.is-full > .rop-c-co, :host([data-device=phone]) .rop-pth.is-full > .rop-c-sm { display: none; }
+/* 17.5: the Salesman menu on a part row */
+.rop-prow.is-full .rop-sm { width: 100%; min-width: 0; height: 26px; padding: 0 2px 0 4px; border: 1px solid transparent; border-radius: 6px; background-color: transparent; color: inherit; font: inherit; font-size: 12.5px; text-overflow: ellipsis; cursor: pointer; transition: border-color .15s, background-color .15s; }
+.rop-prow.is-full .rop-sm:hover { border-color: var(--line, rgba(0,0,0,.18)); background-color: var(--raised, rgba(0,0,0,.03)); }
+.rop-prow.is-full .rop-sm:focus-visible { outline: 2px solid var(--acc, #2f6fed); outline-offset: 1px; }
+.rop-prow.is-full .rop-c-sm { padding-left: 4px; }

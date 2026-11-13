@@ -1,7 +1,7 @@
 /* Parsec · access · pins.js
    PINs: salted SHA-256, never kept as typed (pinHash / pinValid), temporary PINs shown once, the Admin PIN.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   sha256hex pinSalt pinHash pinValid pinSet pinClear pinIs pinOk pinTempNew adminPinSet adminPinIs adminPinOk … (33 functions, 2 constants)
+   declares   sha256hex pinSalt pinHash pinValid pinSet pinClear pinIs pinOk pinTempNew adminPinSet adminPinIs adminPinOk … (35 functions, 2 constants)
    state      perm shop staff
    uses       data/ kit/ pages/ pages/rolist/ ro/ settings/ shell/ state/
    at load    on document dragstart · on document dragend · on document dragover · on document drop · on document keydown
@@ -71,6 +71,10 @@ function staffList(){ if(!Array.isArray(STATE.staff)) STATE.staff = [];
   if(!STATE.perm || STATE.staff.some(function(s){ return s && (!s.ov || "pin" in s); }) || (STATE.shop && STATE.shop.adminPin)) permMigrate();   /* Parsec 13 */
   return STATE.staff; }
 function viewAsId(){ try{ return localStorage.getItem("tec_viewas") || ""; }catch(e){ return ""; } }
+/* 17.5: the Parts department's people (role Parts, not switched off) — the Salesman menu on an operation's parts; the one
+   signed in, if they're one of them, goes on each part they add */
+function partsPeople(){ return staffList().filter(function(s){ return s && !s.off && s.role === "Parts" && String(s.name || "").trim(); }).map(function(s){ return String(s.name).trim(); }); }
+function partsMe(){ var me = viewAsStaff(); return me && !me.off && me.role === "Parts" ? String(me.name || "").trim() : ""; }
 function viewAsStaff(){ var id = viewAsId(); return id ? staffList().filter(function(s){ return s.id === id; })[0] || null : null; }
 function navAllowed(page){
   if(page === "profile") return true;

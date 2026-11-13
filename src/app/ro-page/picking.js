@@ -1,7 +1,7 @@
 /* Parsec · ro-page · picking.js
    Picking several operations or parts at once on the RO page: the selection, the bulk actions, the pick toolbar.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   ropSelReset ropSelOps ropSelParts ropPool ropJobOf ropAny ropToggle ropAll ropCk ropPickClick ropDecorOps ropMoneyOk … (24 functions, 1 constant)
+   declares   ropSelReset ropSelOps ropSelParts ropPool ropJobOf ropAny ropToggle ropAll ropCk ropPickClick ropDecorOps ropMoneyOk … (25 functions, 1 constant)
    state      punches
    uses       access/ automations/ data/ kit/ library/ pages/ pages/warranty/ ro/ shell/ state/ trucks/
 */
@@ -48,6 +48,20 @@ function ropDecorOps(box) {
 /* 17.5: the parts table on the operation card reads like ASIST's: Part (its number under it) · Qty · Unit · Core · Ext · Salesman · Status.
    Ext is qty × (unit + core), the way ASIST adds it; the money columns show only to someone allowed to see costs. */
 function ropMoneyOk() { return typeof permCost !== 'function' || permCost(); }
+/* 17.5: the salesman: a menu of the Parts department's people; a name read from ASIST that isn't one of them stays on the list */
+function ropSalesman(job, p) {
+  var cur = String(p.salesman || '').trim(), L = (typeof partsPeople === 'function' ? partsPeople() : []).slice();
+  if (cur && L.indexOf(cur) < 0) L.unshift(cur);
+  var s = el('select', { class: 'rop-sm', 'aria-label': 'Salesman for ' + ptName(p), title: cur ? 'Sold by ' + cur : 'Who in Parts sold this part' },
+    [el('option', { value: '', text: '—' })].concat(L.map(function (n) { var o = el('option', { value: n, text: n }); if (n === cur) o.selected = true; return o; })));
+  s.addEventListener('change', function () {
+    var v = s.value; if (v === cur) return;
+    pushUndo('salesman'); if (v) p.salesman = v; else delete p.salesman; save(true);
+    try { audit('part', ptName(p) + (v ? ' sold by ' + v : ' — salesman cleared') + ' on ' + roLabel(RO), RO); } catch (er) {}
+    render();
+  });
+  return el('span', { class: 'rop-c-sm' }, [s]);
+}
 function ropPartsHead(job, parts, pane) {
   if (!parts.length) return;
   var n = ROPS.pOp === job.id ? parts.filter(function (p) { return ROPS.p[p.id]; }).length : 0, $ok = ropMoneyOk();
@@ -61,10 +75,10 @@ function ropPartRow(job, p, b, eta, parts) {
   var un = priceOf(p.price), co = priceOf(p.core), ext = q * (un + co), m = function (v) { return pxMoney(v); };
   var cells = [el('span', { class: 'px-li__t rop-c-pt', title: ptName(p) + (p.partNumber ? ' · ' + p.partNumber : ''), html: '<b>' + esc(ptName(p)) + '</b>' + (p.partNumber || (eta && !partInHand(p)) ? '<small><span class="px-id">' + esc(p.partNumber || '') + '</span>' + (eta && !partInHand(p) ? (p.partNumber ? ' · ' : '') + 'ETA ' + esc(eta) : '') + '</small>' : '') }), el('span', { class: 'r px-num', text: p.qty === '' || p.qty == null ? '1' : String(p.qty) })];
   if ($ok) cells.push(el('span', { class: 'r px-num px-muted rop-c-un', text: un ? m(un) : '' }), el('span', { class: 'r px-num px-muted rop-c-co', text: co ? m(co) : '' }), el('span', { class: 'r px-num', text: un || co ? m(ext) : '' }));
-  cells.push(el('span', { class: 'px-muted rop-ell rop-c-sm', text: p.salesman || '', title: p.salesman || '' }));
+  cells.push(ropSalesman(job, p));
   cells.push(b);
   var row = el('div', { class: 'px-li px-li--part rop-prow is-full' + ($ok ? ' is-money' : '') + (on ? ' is-sel' : ''), 'data-part': p.id }, [ropCk(on, false, 'Pick ' + ptName(p), function (e) { ropToggle('p', p.id, e, job.id); })].concat(cells));
-  row.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('.px-pstat')) return; ropPickClick(e, 'p', p.id, job.id); });
+  row.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('.px-pstat, .rop-sm')) return; ropPickClick(e, 'p', p.id, job.id); });
   return row;
 }
 function ropAsk(who, ops, parts) {
