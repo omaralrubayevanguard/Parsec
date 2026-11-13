@@ -61,6 +61,7 @@ The tests need Playwright for Python, set up once per computer with `pip install
 ## Git
 
 - **Work on `main`, no branches.** Commit and push each finished change yourself, right away; the user doesn't run git for changes, only for release tags. Use a branch only when the user asks for one.
+- **The new look has its own branch, `new-look`** (asked for in Nov 2026; the plan is item 10 in `docs/NEXT.md`). Look work goes there; fixes and features go on `main` and are merged into `new-look` so it stays current. Say which branch a change is on.
 - One finished change per commit. The message says what changed for the user, e.g. "Time Log: drag an edge to change a punch".
 - Commit mock-ups too (`mockups/`), with the change they led to, or on their own when they're delivered.
 - Never commit `dist/`, anything from the real `Parsec Data/` folder or its exports, real customer data (names, phones, VINs), passwords or keys. The repository stays private.
