@@ -70,7 +70,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `folder-gate.js` | The shop folder comes first: before sign-in, Parsec asks for the folder (fsGateHtml) and says in words what went wrong (fsWhy). FS_LOCAL lets the tests and a quick look run without one. | 6 | 8 | 3 |
 | `import-export.js` | Reading an export back: verify every checksum (refuse on a mismatch), import it, and the round-trip check that compares an export with the live state (pdxDiff). | 14 | 21 | 0 |
 | `photo-shrink.js` | Photos wider than 1600 px or over 2 MB become a 1600 px JPEG before they are saved (v160Shrink); PDFs and small images stay as they are. | 1 | 1 | 1 |
-| `store-api.js` | What the rest of the app asks the store for: pdRoDir / pdAttList for an RO's folder and attachments, pd16Info and the banner on Your data, writeFileToFolder, and the Parsec 15 writers kept for the migration. | 28 | 37 | 10 |
+| `store-api.js` | What the rest of the app asks the store for: pdRoDir / pdAttList for an RO's folder and attachments, pd16Info and the banner on Your data, writeFileToFolder, and the Parsec 15 writers kept for the migration. | 29 | 38 | 10 |
 | `store-helpers.js` | Small store helpers with no installs: gzip / gunzip through the browser's CompressionStream, SHA-256 checksums, folder lookups (pdDirAt / pdPut), timestamps. | 3 | 9 | 0 |
 | `store-merge.js` | Merging two states record by record (two computers saved the same shop): newer mark wins, deletions carry, and a clash on the same record asks Keep this / Keep that (pdClashAsk). | 17 | 13 | 0 |
 | `store-read-write.js` | Reading and writing layout 16: pd16Read walks Parsec Data/ into a state; pd16Write writes only what changed (ROs by folder, the shop by topic, big topics by month), compressing Closed years. | 15 | 12 | 0 |
@@ -187,7 +187,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 | `actions.js` | Doing things on the Foreman page: set status, assign, route, done, snooze, nudge, accept; fmAct handles clicks; typing, keys and dragging. | 45 | 23 | 0 |
 | `floor-extras.js` | On the floor (Parsec 10): drag a truck to a free bay or Move truck, the bay that fits, how long a blocker has waited, the tech's day before you assign, the readiness count. | 9 | 8 | 0 |
 | `model.js` | The Foreman's model: shop settings (bays, skills), the shop day, techs (skills, shift, time off, hours), what a job needs and which bay fits, the floor, back-again trucks, clocks, Needs action, cleared today, findings, QC. | 31 | 81 | 17 |
-| `page.js` | The Foreman page: the header, Needs action on the left, the selected RO on top of the floor, Techs, Yard, Tomorrow (the plan and the handoff note), search. | 48 | 33 | 1 |
+| `page.js` | The Foreman page: the header, Needs action on the left, the selected RO on top of the floor, Techs, Yard, Tomorrow (the plan and the handoff note), search. | 50 | 33 | 1 |
 | `popovers.js` | The Foreman's pop-overs: Assign (candidates, capacity), Bring in, Decide, Snooze, shop settings, bay types. | 51 | 18 | 0 |
 | `quick-peek.js` | The RO quick peek on the Foreman floor: hover or Tab to a bay for the truck, complaint and who has it. | 5 | 4 | 2 |
 | `shift-handover.js` | The shift handover sheet from the Foreman header: pick the ROs, add a note, build it. | 7 | 7 | 1 |
@@ -463,7 +463,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 
 | file | what it is | KB | functions | constants |
 |---|---|---:|---:|---:|
-| `more-themes.js` | Thirteen more themes (17.3): cool blues, indigo, violet, steel, carbon and four grid backgrounds, each one line you can delete. | 4 | 2 | 0 |
+| `more-themes.js` | Fourteen more themes (17.3, 17.5): cool blues, indigo, violet, steel, carbon, Carbon with Charcoal (the new look's palette) and four grid backgrounds, each one line you can delete. | 5 | 2 | 0 |
 
 ## trucks/  — the truck pictures: the catalog, matching an RO to a body, the banner, peek, notes on the truck
 

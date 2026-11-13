@@ -1,7 +1,7 @@
 /* Parsec · data · store-api.js
    What the rest of the app asks the store for: pdRoDir / pdAttList for an RO's folder and attachments, pd16Info and the banner on Your data, writeFileToFolder, and the Parsec 15 writers kept for the migration.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   pdRoDir pdAttList pd16Info pd16BannerHtml writeFolderState15 migrateToRoFolders writeFileToFolder adoptFolderState15 connectFolder reconnectFolder restoreFolder themeOwn … (37 functions, 10 constants)
+   declares   pdRoDir pdAttList pd16Info pd16BannerHtml writeFolderState15 migrateToRoFolders writeFileToFolder adoptFolderState15 connectFolder reconnectFolder restoreFolder themeOwn … (38 functions, 10 constants)
    state      savedAt tombs
    uses       automations/ clock/ kit/ pages/fixes/ pages/technician/ ro/ ro-page/ shell/ state/
 */
@@ -186,6 +186,8 @@ function resolvedTheme(){
 }
 /* White, Near black and the extra themes recolour Ivory / Graphite through the --vv-* tokens */
 function themeVv(){ return /^vv/.test(THEME) || themeOwn(THEME); }
+/* the new look (docs/NEXT.md item 10): only a theme made for it switches it on; every other theme keeps the old look */
+function lookNew(){ var t = THEMES[THEME]; return !!(t && t.vars && t.look === "new"); }
 var THEME_SET = [];   /* the properties the last extra theme wrote on <html>, taken off again on the next change */
 function themePaint(de){
   THEME_SET.forEach(function(k){ de.style.removeProperty(k); }); THEME_SET = [];
@@ -201,6 +203,7 @@ function applyTheme(mode){
   var de = document.documentElement;
   de.setAttribute("data-theme", resolvedTheme());
   if(themeVv()) de.setAttribute("data-pal", "vv"); else de.removeAttribute("data-pal");
+  if(lookNew()) de.setAttribute("data-look", "new"); else de.removeAttribute("data-look");
   themePaint(de);
   try{ var jh = document.querySelector(".jc-host"); if(jh) jh.classList.toggle("pal-vv", themeVv()); }catch(e){}
   de.removeAttribute("data-feel"); de.removeAttribute("data-layout");

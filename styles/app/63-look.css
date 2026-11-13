@@ -1,0 +1,58 @@
+/* Parsec · styles/app · 63-look.css
+   The new look's shared values and parts (docs/NEXT.md item 10). Nothing here applies unless the theme is made for the new
+   look: applyTheme puts data-look="new" on <html> for those themes only, so every other theme keeps the old look. A page
+   joins by putting the class lk on its root (Foreman: <div class="tg fm lk">); its own layout goes in a file of its own.
+   Every colour comes from the theme's --vv-* values, so a light theme made for the new look works the same way.
+   Three surfaces do the grouping (ground, card, top) instead of lines; the accent is kept for what is live and for the one
+   next step; what is picked is shown in the ink colour. */
+
+/* ---------- the named values ---------- */
+:root[data-look="new"]{
+  --lk-ground:var(--vv-panel);                                             /* the page */
+  --lk-card:var(--vv-raised);                                              /* cards and rows */
+  --lk-top:color-mix(in srgb,var(--vv-ink) 7%,var(--vv-raised));           /* a picked row, a pop-over */
+  --lk-btn:color-mix(in srgb,var(--vv-ink) 14%,var(--vv-raised));          /* a plain button, on any surface */
+  --lk-btn-h:color-mix(in srgb,var(--vv-ink) 21%,var(--vv-raised));
+  --lk-well:var(--vv-canvas);                                              /* fields, tracks, icon tiles */
+  --lk-line:color-mix(in srgb,var(--vv-ink) 14%,var(--vv-raised));         /* quiet outlines, empty bars */
+  --lk-line-2:color-mix(in srgb,var(--vv-ink) 52%,var(--vv-raised));       /* field and tick-box outlines: 3 to 1 on a card */
+  --lk-text:var(--vv-ink);
+  --lk-text-2:color-mix(in srgb,var(--vv-ink) 84%,var(--vv-panel));
+  --lk-text-3:color-mix(in srgb,var(--vv-ink) 68%,var(--vv-panel));        /* labels: 4.5 to 1 on every surface */
+  --lk-action:var(--vv-acc);  --lk-on-action:var(--vv-panel);              /* the next step, the now line */
+  --lk-picked:var(--vv-ink);  --lk-on-picked:var(--vv-panel);              /* the picked view, a filter that is on */
+  --lk-r1:7px; --lk-r2:10px; --lk-r3:14px;
+  --lk-t1:120ms; --lk-t2:200ms; --lk-t3:340ms; --lk-ease:cubic-bezier(.2,.8,.2,1);
+}
+:root[data-look="new"] .lk{background:var(--lk-ground);
+  --lk-fig:"Bahnschrift","DIN Alternate","Roboto Condensed","Arial Narrow",var(--tg-sans,system-ui,sans-serif);}   /* road-sign figures (Bahnschrift ships with Windows); set on the page so it falls back to the page's own face */
+
+/* ---------- Button: next step (.btn-primary), plain, quiet (.tg-gh, icon) ---------- */
+:root[data-look="new"] .lk .btn{border:0;border-radius:var(--lk-r1);background:var(--lk-btn);color:var(--lk-text);font-weight:600;box-shadow:none;transition:transform var(--lk-t1) var(--lk-ease),background-color var(--lk-t2),box-shadow var(--lk-t2);}
+:root[data-look="new"] .lk .btn:hover{background:var(--lk-btn-h);}
+:root[data-look="new"] .lk .btn:active{transform:scale(.96);}
+:root[data-look="new"][data-theme] .lk .btn.btn-primary{background:var(--lk-action) !important;color:var(--lk-on-action) !important;box-shadow:none !important;}
+:root[data-look="new"][data-theme] .lk .btn.btn-primary:hover{background:color-mix(in srgb,var(--lk-action) 84%,var(--vv-ink)) !important;}
+:root[data-look="new"] .lk .btn:is(.tg-gh,.ib){background:transparent;box-shadow:inset 0 0 0 1px var(--lk-line);color:var(--lk-text-2);}
+:root[data-look="new"] .lk .btn:is(.tg-gh,.ib):hover{background:color-mix(in srgb,var(--vv-ink) 8%,transparent);box-shadow:inset 0 0 0 1px var(--lk-line-2);color:var(--lk-text);}
+:root[data-look="new"] .lk .btn[disabled],:root[data-look="new"] .lk .btn.dis{opacity:.45;cursor:not-allowed;transform:none;}
+:root[data-look="new"] .lk .btn .tg-kbd{background:rgba(0,0,0,.28);color:inherit;opacity:.9;}
+:root[data-look="new"] .lk .btn.btn-primary .tg-kbd{background:rgba(0,0,0,.16);}
+
+/* ---------- figures: numbers in the road-sign face; a page lists its own (Foreman: RO numbers, bays, times) ---------- */
+:root[data-look="new"] .lk .lk-fig{font-family:var(--lk-fig) !important;font-variant-numeric:tabular-nums;}
+
+/* ---------- pop-overs ---------- */
+:root[data-look="new"] .lk .tg-pop{background:var(--lk-top);border-radius:var(--lk-r3);box-shadow:0 0 0 1px var(--lk-line-2),0 26px 50px -18px #000;}
+:root[data-look="new"] .lk .tg-pop .btn:not(.btn-primary):not(.tg-gh):not(.ib){background:var(--lk-btn);}
+:root[data-look="new"] .lk .tg-mi{border-radius:var(--lk-r1);}
+:root[data-look="new"] .lk .tg-mi:hover,:root[data-look="new"] .lk .tg-mi.hv{background:color-mix(in srgb,var(--vv-ink) 9%,transparent);}
+
+/* ---------- readable everywhere: softer text reads from the list above, so it passes 4.5 to 1 on all three surfaces ---------- */
+:root[data-look="new"][data-theme] .lk{--tg-ink2:var(--lk-text-2) !important;--tg-ink3:var(--lk-text-3) !important;--tg-ink4:var(--lk-text-3) !important;
+  --iv-ink3:var(--lk-text-3) !important;--iv-ink4:var(--lk-text-3) !important;--px-ink2:var(--lk-text-2) !important;--px-ink3:var(--lk-text-3) !important;--px-ink4:var(--lk-text-3) !important;
+  --vv-ink2:var(--lk-text-2) !important;--vv-ink3:var(--lk-text-3) !important;--vv-ink4:var(--lk-text-3) !important;}   /* the same softer text under each of the names the older rules use */
+
+/* ---------- focus: one ring on every control. The app draws its ring as a shadow, which a part's own shadow can hide;
+   an outline can't be hidden that way, so the controls always show where the keyboard is. ---------- */
+:root[data-look="new"][data-theme][data-theme] .lk.lk.lk :is(button,a,select,summary,[tabindex],[role="button"]):focus-visible{outline:2px solid var(--lk-action) !important;outline-offset:2px !important;}
