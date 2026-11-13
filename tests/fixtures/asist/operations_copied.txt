@@ -1,0 +1,47 @@
+	
+
+operation
+
+approval status
+label
+labor hours
+parts
+total
+actions
+
+1
+CHECK AND ADVISE FOR INJECTOR FAULTS
+Approved
+View Details
+—
+2.00
+$0.00
+$420.00
+
+
+
+
+
+2
+CHECK FOR DAMAGED U-JOINT/YOKE FLANGE FROM TOWING
+Approved
+View Details
+—
+1.00
+$0.00
+$210.00
+
+
+
+
+
+3
+74 Complimentary Point Inspection
+[74 Point Inspection]
+Do Inspection
+Approved
+View Details
+—
+0.50
+$0.00
+$0.00

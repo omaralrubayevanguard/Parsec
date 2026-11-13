@@ -1,7 +1,7 @@
 /* Parsec · import/new-ro · asist-tables.js
    ASIST's Operations and Parts tables copied from the browser (17.5): each row read as a stream of cells under the header's columns, so the boxes the copy puts on lines of their own land in the right column; ASIST's buttons and notes skipped.
    ── facts (generated; run tools/headers.py to refresh) ──
-   declares   asxNum asxIsNum asxIsPn asxCells asxOnly asxCols asxPartsHead asxParts asxOpsHead asxOps asxJunk asxRead … (12 functions, 5 constants)
+   declares   asxNum asxIsNum asxIsPn asxCells asxOnly asxCols asxPartsHead asxParts asxOpsHead asxOps asxJunk asxRowHead … (13 functions, 5 constants)
    uses       import/ ro/
 */
   /* ---------------------------------------------------------------- the cells */
@@ -57,20 +57,22 @@
 
   /* ---------------------------------------------------------------- the Operations table */
   var ASX_OCOL = { name: /^operation$/i, ap: /^approval(?:\s*status)?$/i, label: /^label$/i, hours: /^labou?r\s*hours?$|^hours$/i, parts: /^parts$/i, total: /^total$/i };
-  function asxOpsHead(l){ return /\toperation|^\s*operation/i.test(l) && /labou?r\s*hours/i.test(l) && /\btotal\b/i.test(l) && asxOnly(l, ASX_OCOL, /^$/); }
+  function asxOpsHead(l){ return /\toperation|^\s*operation/i.test(l) && /labou?r\s*hours/i.test(l) && /\btotal\b/i.test(l) && asxOnly(l, ASX_OCOL, /^actions$/i); }
   function asxOps(L, h){
     var cols = asxCols(L[h], ASX_OCOL), nums = cols.filter(function(k){ return k === "hours" || k === "parts" || k === "total"; }); if(!nums.length) nums = ["hours", "parts", "total"];
     var C = asxCells(L, h + 1), ops = [], last = h, i = 0;
     var starts = function(k){ return C[k] && /^\d{1,2}$/.test(C[k].c) && C[k + 1] && /[A-Za-z]{3}/.test(C[k + 1].c) && !AP.test(C[k + 1].c); };
     while(i < C.length){
       if(!starts(i)){ i++; continue; }
-      var o = blankOp(+C[i].c, cjClean(C[i + 1].c)), j = i + 2, n = {};
+      var o = blankOp(+C[i].c, cjClean(C[i + 1].c)), j = i + 2, n = {}, ap = false;
       while(j < C.length && !starts(j)){
-        var c = C[j].c;
-        if(AP.test(c) && !o.approval) o.approval = normAp(AP.exec(c)[1]);
-        else if(asxIsNum(c)){ var k = nums.filter(function(x){ return n[x] == null; })[0]; if(!k) break; n[k] = asxNum(c); }
-        else if(cols.indexOf("label") > -1 && !o.label && n.hours == null && /[A-Za-z]{2}/.test(c)) o.label = c;
-        else break;
+        var c = C[j].c, full = !nums.some(function(x){ return n[x] == null; });
+        if(full) break;                                                                            /* the row is complete */
+        if(AP.test(c) && !o.approval){ o.approval = normAp(AP.exec(c)[1]); ap = true; }
+        else if(asxIsNum(c)){ n[nums.filter(function(x){ return n[x] == null; })[0]] = asxNum(c); }
+        else if(n.hours != null) break;
+        else if(ap && cols.indexOf("label") > -1 && !o.label && /[A-Za-z]{2}/.test(c)) o.label = c;
+        /* else: a line under the name before the approval (an inspection's [74 Point Inspection] · Do Inspection): passed over */
         j++;
       }
       if(n.hours == null && n.total == null){ i++; continue; }
@@ -85,8 +87,20 @@
 
   /* ---------------------------------------------------------------- both, out of the text */
   function asxJunk(l){ return !l.trim() || l.split("\t").every(function(c){ c = c.trim(); return !c || ASX_NOISE.test(c) || !/[A-Za-z0-9]/.test(c) || asxIsNum(c); }); }
+  function asxRowHead(L){
+    var known = function(t){ t = t.replace(/[•*]/g, "").trim(); if(!t || /\t/.test(t)) return false; if(/^(?:actions|info|parts)$/i.test(t)) return true;
+      for(var m in ASX_OCOL) if(ASX_OCOL[m].test(t)) return true; for(var q in ASX_PCOL) if(ASX_PCOL[q].test(t)) return true; return false; };
+    for(var i = 0; i < L.length; i++){
+      if(!/^(?:operation|part\s*(?:no\.?|#|number))$/i.test(L[i].replace(/[•*]/g, "").trim())) continue;
+      var got = [i], k = i + 1;
+      while(k < L.length && (known(L[k]) || !L[k].trim())){ if(L[k].trim()) got.push(k); k++; }
+      if(got.length < 4) continue;
+      L[i] = got.map(function(x){ return L[x].replace(/[•*]/g, "").trim(); }).join("\t"); got.slice(1).forEach(function(x){ L[x] = ""; });
+    }
+    return L;
+  }
   function asxRead(raw){
-    var L = String(raw || "").replace(/\r/g, "").split("\n"), ops = [], parts = [], keep = L.map(function(){ return true; }), i = 0;
+    var L = asxRowHead(String(raw || "").replace(/\r/g, "").split("\n")), ops = [], parts = [], keep = L.map(function(){ return true; }), i = 0;
     while(i < L.length){
       var r = asxPartsHead(L[i]) ? asxParts(L, i) : asxOpsHead(L[i]) ? asxOps(L, i) : null;
       if(!r || !((r.parts || r.ops).length)){ i++; continue; }

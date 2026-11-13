@@ -93,7 +93,7 @@ Load order is `build/manifest.txt`; this page is for finding things.
 |---|---|---:|---:|---:|
 | `_close.js` | Closes the New RO import closure. | 0 | 0 | 0 |
 | `_open.js` | Opens the New RO import closure (IMPX): paste the ASIST case page, or drop screenshots, and get an RO with its fields and operations. | 0 | 0 | 1 |
-| `asist-tables.js` | ASIST's Operations and Parts tables copied from the browser (17.5): each row read as a stream of cells under the header's columns, so the boxes the copy puts on lines of their own land in the right column; ASIST's buttons and notes skipped. | 7 | 12 | 5 |
+| `asist-tables.js` | ASIST's Operations and Parts tables copied from the browser (17.5): each row read as a stream of cells under the header's columns, so the boxes the copy puts on lines of their own land in the right column; ASIST's buttons and notes skipped. | 8 | 13 | 5 |
 | `create.js` | Create RO / Apply: setF writes each accepted field through the RO details table; operations and parts are added or updated. | 12 | 6 | 3 |
 | `dialog-layout.js` | The one extraction window's parts (17.3): the slim strip of files read, the Found line, the RO as a ticket, the list of things to check and the Check view, where everything goes (New RO, an open RO, Inventory, the Library), documents and photos, the footer. | 14 | 15 | 2 |
 | `dialog.js` | The import dialog: the field rows, operation cards, totals, notes, the last-contact suggestion (16.3), what is hidden until needed. | 29 | 23 | 3 |

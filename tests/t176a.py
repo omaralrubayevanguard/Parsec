@@ -39,6 +39,11 @@ async def main():
         ok(R["d"] == "2 operations", f"the operations table is recognised ({R['d']})")
         ok(R["ops"][0] == [1, "Replace batteries (2), clean cables and verify cut-off switch is functional", 1, 210, 599.92, 809.92], f"op 1: 1.0 h, labor $210 (total − parts) {R['ops'][0]}")
         ok(R["ops"][1][2:] == [1, 210, 732.72, 942.72], f"op 2 {R['ops'][1]}")
+        R = await pg.evaluate(READ, rd("operations_copied.txt"))   # the real copy: the header one cell per line, an inspection with lines of its own
+        ok(R["d"] == "3 operations", f"the operations table as ASIST copies it ({R['d']})")
+        ok(R["ops"][0] == [1, "Check and advise for injector faults", 2, 420, 0, 420] and R["ops"][2][:3] == [3, "74 Complimentary Point Inspection", 0.5], f"each operation's name, hours and labor {R['ops']}")
+        ap = await pg.evaluate("t=>__tg.IMPX.parse(t).ops.map(o=>o.approval)", rd("operations_copied.txt"))
+        ok(ap == ["Approved"] * 3, f"the approval is read; View Details and the inspection's own lines are passed over {ap}")
         R = await pg.evaluate(READ, rd("operations.txt") + "\n" + rd("parts_cores.txt"))
         ok(R["d"] == "2 operations · 3 parts", f"both tables in one paste ({R['d']})")
         # ---------------------------------------------------------------- New RO: no false warning on the hours
